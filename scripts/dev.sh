@@ -15,7 +15,13 @@ fi
 DATA_DIR="$(mktemp -d -t pb-dev-XXXXXX)"
 PORT="${PB_PORT:-8090}"
 HTTP="http://127.0.0.1:${PORT}"
-CORS_ORIGINS="${PB_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost}"
+# Dev-only CORS allowlist. Includes:
+#   - Vite dev server on localhost / 127.0.0.1
+#   - Capacitor's default https://localhost (debug APK bundled assets)
+#   - http://localhost (adb reverse + plain http WebView fallback)
+# These are dev-only origins. Production uses Caddy reverse-proxy and
+# a strict origin allowlist per docs/ARCHITECTURE.md.
+CORS_ORIGINS="${PB_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost,https://localhost}"
 
 PID=""
 

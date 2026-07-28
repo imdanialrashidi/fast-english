@@ -22,7 +22,7 @@
     "preview:app": "vite preview --config vite.app.config.ts",
     "setup:pocketbase": "bash scripts/setup-pocketbase.sh",
     "dev:server": "bash scripts/dev.sh",
-    "smoke:auth": "node scripts/smoke-auth.mjs",
+    "smoke:auth": "bash scripts/smoke-auth.sh node scripts/smoke-auth.mjs",
     "test:e2e": "playwright test",
     "android:sync": "cap sync android",
     "android:build:debug": "cd android && ./gradlew assembleDebug --no-daemon",

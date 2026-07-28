@@ -137,10 +137,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           password: input.password,
           passwordConfirm: input.passwordConfirm,
         });
-        // Auto-authenticate after signup.
-        const auth = await pb
-          .collection(COLLECTION)
-          .authWithPassword(input.email || phoneToInternalEmail(phone), input.password);
+        // Auto-authenticate after signup. Use the canonical phone as the
+        // identity so the lookup matches the stored record regardless of
+        // whether the user provided an email at signup. `phone` is a
+        // password identity field on the `fep_users` collection.
+        const auth = await pb.collection(COLLECTION).authWithPassword(phone, input.password);
         const user = toFepUser(auth.record ?? record);
         setState({ user, isAuthenticated: true, isInitializing: false });
         return user;
@@ -156,9 +157,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const phone = normalizeIranianPhone(input.phone);
       if (!phone) throw mapAuthError({ status: 400, message: 'invalid_phone' });
       try {
-        const auth = await pb
-          .collection(COLLECTION)
-          .authWithPassword(phoneToInternalEmail(phone), input.password);
+        // Authenticate with the canonical phone directly. `phone` is a
+        // password identity field on the `fep_users` collection, so the
+        // lookup works regardless of whether the user provided an email
+        // at signup or not.
+        const auth = await pb.collection(COLLECTION).authWithPassword(phone, input.password);
         const user = toFepUser(auth.record);
         setState({ user, isAuthenticated: true, isInitializing: false });
         return user;

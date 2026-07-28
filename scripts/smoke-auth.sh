@@ -31,6 +31,14 @@ trap cleanup EXIT INT TERM
 
 echo "smoke: starting PocketBase (data: $DATA_DIR, port: $PORT) ..."
 
+# Dev-only CORS allowlist mirroring scripts/dev.sh:
+#   - Vite dev server on localhost / 127.0.0.1
+#   - Capacitor's default https://localhost (debug APK bundled assets)
+#   - http://localhost (adb reverse + plain http WebView fallback)
+# These are dev-only origins. Production uses Caddy reverse-proxy and
+# a strict origin allowlist per docs/ARCHITECTURE.md.
+CORS_ORIGINS="${PB_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost,https://localhost}"
+
 PB_TELEMETRY=0 \
 PB_FEEDBACK=0 \
 server/pocketbase serve \
@@ -38,7 +46,7 @@ server/pocketbase serve \
   --dir "$DATA_DIR" \
   --migrationsDir server/pb_migrations \
   --hooksDir server/pb_hooks \
-  --origins "http://localhost" \
+  --origins "$CORS_ORIGINS" \
   --encryptionEnv "${PB_ENCRYPTION:-dev-encryption-key-not-for-prod}" \
   > "$DATA_DIR/pb.log" 2>&1 &
 PID=$!
@@ -49,6 +57,7 @@ for _ in $(seq 1 80); do
     echo "smoke: PocketBase ready at $HTTP"
     export PB_SMOKE_URL="$HTTP"
     export PB_SMOKE_PID="$PID"
+    export PB_DATA_DIR="$DATA_DIR"
     if [[ $# -gt 0 ]]; then
       "$@"
     fi

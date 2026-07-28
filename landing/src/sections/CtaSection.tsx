@@ -19,7 +19,6 @@ export function CtaSection() {
               <p className="text-sm text-white/85 leading-relaxed">
                 بدون نصب، در مرورگر موبایل یا دسکتاپ.
               </p>
-              <span className="mt-3 inline-block text-xs text-white/50">لینک ورود — به‌زودی</span>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5">
               <span className="block text-xs font-semibold text-white/60 mb-2">PWA</span>

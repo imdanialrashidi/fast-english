@@ -1,12 +1,18 @@
 // server/pb_hooks/main.pb.js
 // PocketBase JS hooks for the Fast English Podcast auth boundary.
 //
-// Phone is the user-facing identity. PB 0.39 forces `email` into
-// `passwordAuth.identityFields`, so the client SDK calls
-// `pb.collection('fep_users').authWithPassword(identity, password)`
-// where `identity` is the email, and the app-side `AuthProvider` resolves
-// phone→email before calling PB. The phone-login API route is available
-// as a server-side convenience for non-SDK callers (see bottom).
+// Phone is the user-facing identity. PB 0.39 passwordAuth.identityFields
+// accepts any indexed unique field, so `phone` is registered as the
+// primary identity and the client SDK calls
+// `pb.collection('fep_users').authWithPassword(canonicalPhone, password)`
+// directly. The app-side `AuthProvider` normalises the input to the
+// canonical `+989XXXXXXXXX` form before calling PB.
+//
+// The `fep_users` collection has an optional email field, so the create
+// hook derives `<canonicalPhone>@fep.local` when the client does not
+// supply a real email. The derived email is also registered in
+// `passwordAuth.identityFields` as a fallback so password lookups by
+// either identity succeed.
 //
 // All helpers are inlined into the hook callbacks because PB 0.39 JSVM
 // does not share top-level `function` declarations with hook scopes.
@@ -21,44 +27,45 @@ onRecordCreate((e) => {
   if (typeof raw !== 'string') {
     throw new BadRequestError('invalid phone');
   }
-  // Inline digit map.
-  var map0 = '۰',
-    map1 = '۱',
-    map2 = '۲',
-    map3 = '۳',
-    map4 = '۴';
-  var map5 = '۵',
-    map6 = '۶',
-    map7 = '۷',
-    map8 = '۸',
-    map9 = '۹';
-  var a0 = '٠',
-    a1 = '١',
-    a2 = '٢',
-    a3 = '٣',
-    a4 = '٤';
-  var a5 = '٥',
-    a6 = '٦',
-    a7 = '٧',
-    a8 = '٨',
-    a9 = '٩';
+  // Inline digit map (re-declared because PB 0.39 JSVM does not share
+  // top-level declarations with hook scopes).
+  var m0 = '۰',
+    m1 = '۱',
+    m2 = '۲',
+    m3 = '۳',
+    m4 = '۴';
+  var m5 = '۵',
+    m6 = '۶',
+    m7 = '۷',
+    m8 = '۸',
+    m9 = '۹';
+  var n0 = '٠',
+    n1 = '١',
+    n2 = '٢',
+    n3 = '٣',
+    n4 = '٤';
+  var n5 = '٥',
+    n6 = '٦',
+    n7 = '٧',
+    n8 = '٨',
+    n9 = '٩';
   var digits = '';
   for (var i = 0; i < raw.length; i++) {
     var ch = raw.charAt(i);
-    if (ch === map0 || ch === a0) digits += '0';
-    else if (ch === map1 || ch === a1) digits += '1';
-    else if (ch === map2 || ch === a2) digits += '2';
-    else if (ch === map3 || ch === a3) digits += '3';
-    else if (ch === map4 || ch === a4) digits += '4';
-    else if (ch === map5 || ch === a5) digits += '5';
-    else if (ch === map6 || ch === a6) digits += '6';
-    else if (ch === map7 || ch === a7) digits += '7';
-    else if (ch === map8 || ch === a8) digits += '8';
-    else if (ch === map9 || ch === a9) digits += '9';
+    if (ch === m0 || ch === n0) digits += '0';
+    else if (ch === m1 || ch === n1) digits += '1';
+    else if (ch === m2 || ch === n2) digits += '2';
+    else if (ch === m3 || ch === n3) digits += '3';
+    else if (ch === m4 || ch === n4) digits += '4';
+    else if (ch === m5 || ch === n5) digits += '5';
+    else if (ch === m6 || ch === n6) digits += '6';
+    else if (ch === m7 || ch === n7) digits += '7';
+    else if (ch === m8 || ch === n8) digits += '8';
+    else if (ch === m9 || ch === n9) digits += '9';
     else if (ch >= '0' && ch <= '9') digits += ch;
   }
   // Strip leading + and country-code variants.
-  if (digits.length === 13 && digits.indexOf('0098') === 0) digits = digits.substring(2);
+  if (digits.length === 14 && digits.indexOf('0098') === 0) digits = digits.substring(4);
   if (digits.length === 12 && digits.indexOf('98') === 0) digits = digits.substring(2);
   if (digits.length === 11 && digits.charAt(0) === '0') digits = digits.substring(1);
   if (digits.length !== 10 || digits.charAt(0) !== '9') {
@@ -66,8 +73,8 @@ onRecordCreate((e) => {
   }
   e.record.set('phone', '+98' + digits);
   // If the client did not provide a real email, derive one from the
-  // canonical phone so PB's password auth (which requires email as the
-  // identity in v0.39) can authenticate the user by phone.
+  // canonical phone so password auth (which still accepts the email
+  // identity field) can authenticate the user by phone.
   if (!e.record.get('email')) {
     e.record.set('email', '+98' + digits + '@fep.local');
   }
@@ -79,6 +86,11 @@ onRecordCreate((e) => {
   e.record.set('suggested_level', null);
   e.record.set('selected_level', null);
   e.record.set('suspended_reason', null);
+  // L2: never auto-verify public signups and never expose them via
+  // the directory. The hook is the last line of defence in case a
+  // future account slice forgets to clear these.
+  e.record.set('verified', false);
+  e.record.set('emailVisibility', false);
   e.next();
 }, 'fep_users');
 
@@ -88,6 +100,10 @@ onRecordUpdate((e) => {
     e.next();
     return;
   }
+  // H2: students must not be able to mutate their own protected fields
+  // even if a future slice loosens the collection-level updateRule.
+  // Superusers (operator/technical admin) are NOT subject to this
+  // check because PB has its own superuser context guard.
   var fields = [
     'role',
     'account_status',
@@ -97,6 +113,9 @@ onRecordUpdate((e) => {
     'suspended_reason',
     'verified',
     'emailVisibility',
+    'phone',
+    'email',
+    'password',
   ];
   if (e.originalRecord) {
     for (var i = 0; i < fields.length; i++) {
@@ -114,10 +133,17 @@ onRecordAuthRequest((e) => {
     e.next();
     return;
   }
-  e.next();
+  // C1: Block BEFORE e.next() so the token is never issued. The auth
+  // lookup already happened by the time this hook runs, so e.record is
+  // populated. PB returns a generic "Failed to authenticate" error;
+  // we add the `account_suspended` code so the client can show a
+  // Persian message.
   if (e.record && e.record.get('account_status') === 'suspended') {
-    throw new BadRequestError('Failed to authenticate.');
+    throw new BadRequestError('Failed to authenticate.', {
+      code: 'account_suspended',
+    });
   }
+  e.next();
 }, 'fep_users');
 
 onRecordAuthRefreshRequest((e) => {
@@ -125,11 +151,14 @@ onRecordAuthRefreshRequest((e) => {
     e.next();
     return;
   }
-  e.next();
+  // C1: Block BEFORE e.next() so no new token is generated.
   if (e.record && e.record.get('account_status') === 'suspended') {
     if (e.client && e.client.authStore) {
       e.client.authStore.clear();
     }
-    throw new BadRequestError('Failed to authenticate.');
+    throw new BadRequestError('Failed to authenticate.', {
+      code: 'account_suspended',
+    });
   }
+  e.next();
 }, 'fep_users');
