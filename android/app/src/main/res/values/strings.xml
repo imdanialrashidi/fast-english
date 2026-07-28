@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Fast English Podcast</string>
+    <string name="title_activity_main">Fast English Podcast</string>
+    <string name="package_name">com.fastenglishpodcast.app</string>
+    <string name="custom_url_scheme">com.fastenglishpodcast.app</string>
+</resources>

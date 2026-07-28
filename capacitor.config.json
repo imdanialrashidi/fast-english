@@ -1,0 +1,6 @@
+{
+  "appId": "com.fastenglishpodcast.app",
+  "appName": "Fast English Podcast",
+  "webDir": "dist-app",
+  "android": { "allowMixedContent": false }
+}

@@ -1,0 +1,70 @@
+/* Tailwind v4 — isolated to the landing surface only.
+   The app surface does not import this file and does not use Tailwind. */
+@import "tailwindcss";
+
+/* Restrict Tailwind class scanning to the landing surface only. */
+@source "../**/*.{ts,tsx,html}";
+
+/* Vazirmatn variable WOFF2 — self-hosted, isolated to the landing surface. */
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/Vazirmatn-VF.woff2") format("woff2-variations");
+}
+
+/* Landing-specific theme tokens. Kept local to the landing surface. */
+@theme {
+  --color-brand-midnight: #0b1220;
+  --color-brand-primary: #2563eb;
+  --color-brand-primary-dark: #1d4ed8;
+  --color-brand-secondary: #7c3aed;
+  --color-brand-surface: #f6f8fc;
+  --color-brand-text: #0f172a;
+  --color-brand-muted: #475569;
+  --color-brand-divider: #e2e8f0;
+
+  /* CEFR level tokens. Foreground meets AA contrast on each background. */
+  --color-cefr-a1-bg: #e0f2fe;
+  --color-cefr-a1-fg: #075985;
+  --color-cefr-a2-bg: #dcfce7;
+  --color-cefr-a2-fg: #166534;
+  --color-cefr-b1-bg: #fef3c7;
+  --color-cefr-b1-fg: #92400e;
+  --color-cefr-b2-bg: #ffedd5;
+  --color-cefr-b2-fg: #9a3412;
+  --color-cefr-c1-bg: #ede9fe;
+  --color-cefr-c1-fg: #5b21b6;
+  --color-cefr-c2-bg: #fce7f3;
+  --color-cefr-c2-fg: #9d174d;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: "Vazirmatn", "IRANSansX", "Tahoma", "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+#root {
+  min-height: 100dvh;
+}

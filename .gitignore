@@ -11,6 +11,7 @@ docs/private/**
 
 # Dependencies and environments
 node_modules/
+.pnpm-store/
 .venv/
 venv/
 vendor/
@@ -22,7 +23,17 @@ coverage/
 target/
 .next/
 .turbo/
+.vite/
+dist-app/
+dist-landing/
+playwright-report/
+test-results/
 *.log
+
+# PocketBase
+server/pb_data/
+server/pocketbase
+server/pocketbase.exe
 
 # Editors / OS
 .idea/
