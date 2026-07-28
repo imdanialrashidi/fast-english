@@ -1,0 +1,51 @@
+name: quality
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Detect project types
+        id: detect
+        shell: bash
+        run: |
+          [[ -f package.json ]] && echo "node=true" >> "$GITHUB_OUTPUT" || true
+          [[ -f pyproject.toml || -f requirements.txt ]] && echo "python=true" >> "$GITHUB_OUTPUT" || true
+          [[ -f go.mod ]] && echo "go=true" >> "$GITHUB_OUTPUT" || true
+
+      - uses: actions/setup-node@v7
+        if: steps.detect.outputs.node == 'true'
+        with:
+          node-version: 24
+
+      - uses: actions/setup-python@v7
+        if: steps.detect.outputs.python == 'true'
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-go@v6
+        if: steps.detect.outputs.go == 'true'
+        with:
+          go-version-file: go.mod
+
+      - name: Install dependencies
+        run: bash scripts/ci-install.sh
+
+      - name: Verify
+        run: bash scripts/verify.sh

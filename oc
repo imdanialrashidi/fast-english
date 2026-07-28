@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+set -a
+source "$ROOT_DIR/.opencode/models.env"
+set +a
+
+export OPENCODE_EXPERIMENTAL_LSP_TOOL=true
+
+cd "$ROOT_DIR"
+
+exec opencode --auto "$@"

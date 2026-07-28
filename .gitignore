@@ -1,0 +1,30 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Confidential project/client material
+docs/private/**
+!docs/private/.gitkeep
+
+# Dependencies and environments
+node_modules/
+.venv/
+venv/
+vendor/
+
+# Build, test, and framework output
+dist/
+build/
+coverage/
+target/
+.next/
+.turbo/
+*.log
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
