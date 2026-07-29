@@ -14,6 +14,7 @@ import {
   DESTINATION_COLLECTION,
   PAYMENT_REQUEST_PATH,
   PLANS_COLLECTION,
+  receiptDownloadPath,
 } from './constants';
 import { toPaymentError } from './errors';
 import { currentRequestResponseSchema, paymentDestinationSchema, planListSchema } from './schemas';
@@ -221,4 +222,93 @@ function normalizeLastFour(raw: string): string {
     .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
     .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
     .replace(/\D/g, '');
+}
+
+/**
+ * Fetch the owner's protected receipt as a Blob. The route is the
+ * dedicated `GET /api/fast-english/payment-requests/{id}/receipt`
+ * custom endpoint that requires `fep_users` auth.
+ *
+ * IMPORTANT: this function uses native `fetch()` because the
+ * PocketBase JS SDK 0.27.0 `Client.send()` always calls
+ * `response.json()` and cannot return binary data. The auth token
+ * is forwarded via the Authorization header. The token is never
+ * stored, logged, or put in the URL.
+ *
+ * The returned Blob is local to the caller — the caller is
+ * responsible for `URL.createObjectURL(blob)` and the matching
+ * `URL.revokeObjectURL()` when the URL is no longer needed.
+ *
+ * Errors map through the standard `toPaymentError` pipeline so the
+ * UI can show a stable Persian message.
+ */
+export async function fetchReceiptBlob(
+  recordId: string,
+  signal?: AbortSignal,
+): Promise<{ blob: Blob; contentType: string }> {
+  const pb = getPocketBase();
+  const url = pb.buildURL(receiptDownloadPath(recordId));
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: pb.authStore.token,
+        Accept: 'image/jpeg, image/png, image/webp',
+      },
+      cache: 'no-store',
+      signal,
+    });
+  } catch (err) {
+    // Network errors, abort, etc.
+    throw toPaymentError(err);
+  }
+
+  if (!response.ok) {
+    // Try to extract a structured error body for the existing mapper.
+    let body: unknown = {};
+    try {
+      body = await response.json();
+    } catch {
+      // ignore parse failure — mapper uses status only as fallback
+    }
+    throw toPaymentError({
+      response: {
+        status: response.status,
+        data: body,
+      },
+    });
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+
+  // Reject unexpected Content-Type — the server always returns a
+  // known image MIME type on success.
+  if (contentType !== 'image/jpeg' && contentType !== 'image/png' && contentType !== 'image/webp') {
+    throw toPaymentError({
+      response: {
+        status: 400,
+        data: { code: 'invalid_receipt' },
+      },
+    });
+  }
+
+  let blob: Blob;
+  try {
+    blob = await response.blob();
+  } catch (err) {
+    throw toPaymentError(err);
+  }
+
+  if (blob.size === 0) {
+    throw toPaymentError({
+      response: {
+        status: 500,
+        data: { code: 'receipt_unavailable' },
+      },
+    });
+  }
+
+  return { blob, contentType };
 }

@@ -17,6 +17,15 @@ export const ALLOWED_RECEIPT_MIME_TYPES: readonly string[] = [
 // share the exact strings.
 export const PAYMENT_REQUEST_PATH = '/api/fast-english/payment-requests';
 export const CURRENT_REQUEST_PATH = '/api/fast-english/payment-requests/current';
+// Secure owner-only receipt download. The path parameter is the
+// payment_request record id. The route requires `fep_users` auth
+// and an ownership check; cross-user access is rejected.
+export const RECEIPT_DOWNLOAD_PATH_PREFIX = '/api/fast-english/payment-requests/';
+export const RECEIPT_DOWNLOAD_PATH_SUFFIX = '/receipt';
+
+export function receiptDownloadPath(recordId: string): string {
+  return `${RECEIPT_DOWNLOAD_PATH_PREFIX}${encodeURIComponent(recordId)}${RECEIPT_DOWNLOAD_PATH_SUFFIX}`;
+}
 
 // Collection names. Used by the PB SDK to load plans and the active
 // destination through the standard record-CRUD list endpoint. The

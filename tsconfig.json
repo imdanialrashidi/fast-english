@@ -16,7 +16,7 @@
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "useDefineForClassFields": true,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
   "include": [
     "app/src/**/*",

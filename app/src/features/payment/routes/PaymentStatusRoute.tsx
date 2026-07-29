@@ -39,6 +39,18 @@ export function PaymentStatusRoute() {
         const res = await loadCurrentRequest();
         if (cancelled) return;
         setState({ kind: 'ready', response: res });
+        // Expose the latest request id for end-to-end tests. The
+        // window attribute is set only when Vite's `import.meta.env.DEV`
+        // is true (development builds), so production bundles never
+        // include this assignment.
+        if (import.meta.env.DEV && res.kind === 'request') {
+          try {
+            const w = window as unknown as { __fepLastRequestId?: string };
+            w.__fepLastRequestId = res.request.id;
+          } catch {
+            // SSR / no window — ignore.
+          }
+        }
       } catch (e) {
         if (cancelled) return;
         setState({ kind: 'error', error: toPaymentError(e) });

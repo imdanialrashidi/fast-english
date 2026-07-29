@@ -19,6 +19,7 @@ const PERSIAN_MESSAGES: Record<string, string> = {
   // Receipt
   invalid_receipt: 'رسید انتخاب‌شده معتبر نیست. فرمت یا حجم آن را بررسی کنید.',
   receipt_too_large: 'حجم رسید نباید بیشتر از ۵ مگابایت باشد.',
+  receipt_unavailable: 'رسید شما در دسترس نیست. دوباره تلاش کنید.',
   // Plan / destination
   invalid_plan: 'طرح انتخاب‌شده در دسترس نیست.',
   payment_destination_unavailable: 'مقصد پرداخت فعال نیست. با پشتیبانی تماس بگیرید.',
@@ -94,6 +95,13 @@ function chooseCode(extracted: ExtractedErr, network: boolean): string {
     if (extracted.code === 'invalid_plan') return 'invalid_plan';
     if (extracted.code === 'payment_destination_unavailable') {
       return 'payment_destination_unavailable';
+    }
+    if (extracted.code === 'not_found' || extracted.code === 'invalid_request') {
+      // Receipt-preview route returns 404 not_found for both
+      // missing records and cross-user access. Map to a generic
+      // "receipt unavailable" so the UI can show a stable message
+      // without leaking the distinction.
+      return 'receipt_unavailable';
     }
     return 'invalid_plan';
   }

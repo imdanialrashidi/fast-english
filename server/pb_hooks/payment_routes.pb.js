@@ -40,6 +40,32 @@
 //       > { kind: "none" }.
 //     - Sanitized payload. Never exposes internal_note, reviewed_by,
 //       raw user relation, or permanent receipt URLs / tokens.
+//
+//   GET  /api/fast-english/payment-requests/{requestId}/receipt
+//     - Auth required (fep_users).
+//     - Path parameter: requestId (the payment_request record id).
+//     - Authorization model:
+//         * Owner only — record.user MUST equal the auth record's id.
+//         * Suspended accounts are denied.
+//         * If the request is missing, 404 (generic). Cross-user
+//           access returns 404 (not 403) to avoid leaking the
+//           existence of someone else's record.
+//         * If the receipt_file field is empty, 404.
+//     - Serves the binary file directly with the correct
+//       Content-Type (derived from the file's signature on disk:
+//       jpeg/png/webp) and the following safety headers:
+//         * X-Content-Type-Options: nosniff
+//         * Cache-Control: no-store
+//         * safe inline Content-Disposition with a sanitized filename
+//     - No filesystem paths, no permanent URLs, no file tokens, no
+//       review fields, no raw error messages, no logs of file data
+//       or paths are exposed to the client or written to the logger.
+//     - Why a dedicated route? The standard PB file-download endpoint
+//       requires a short-lived token (getToken + getURL) and the
+//       `payment_requests` viewRule is null. Opening viewRule broadly
+//       would expose operator-only fields (internal_note, reviewed_by,
+//       reviewed_at, subscription). This route is the narrowest
+//       surface that satisfies the P1-S1 owner-preview requirement.
 
 try {
   $app.logger().info("payment_routes: hook file loaded (final)");
@@ -739,6 +765,383 @@ routerAdd(
       try {
         $app.logger().error(
           "payment_routes: GET top-level error: " +
+            String(topErr && topErr.message ? topErr.message : topErr)
+        );
+      } catch (_) {}
+      return e.json(500, {
+        code: "unexpected_error",
+        message: "Internal error.",
+      });
+    }
+  },
+  $apis.requireAuth("fep_users")
+);
+
+// ---------------------------------------------------------------------
+// GET /api/fast-english/payment-requests/{requestId}/receipt
+// ---------------------------------------------------------------------
+//
+// This route is the ONLY surface that lets a student view their own
+// protected receipt. The PB record-CRUD viewRule on `payment_requests`
+// is `null`, so the default download endpoint is unavailable. Opening
+// viewRule broadly (e.g. `viewRule = "user = @request.auth.id"`) would
+// leak operator-only fields (internal_note, reviewed_by, etc.) to the
+// client through the standard record serializer. This route keeps the
+// record surface locked down and serves the binary file directly
+// after an explicit owner check.
+
+routerAdd(
+  "GET",
+  "/api/fast-english/payment-requests/{requestId}/receipt",
+  function (e) {
+    var REQUESTS_COLLECTION = "payment_requests";
+    var RECEIPT_FIELD = "receipt_file";
+    var MAX_RECEIPT_BYTES = 5 * 1024 * 1024; // 5 MB; mirrors the upload cap
+
+    // --- Inline signature detection (mirrors upload route) ---
+    function detectImageKind(bytes) {
+      if (!bytes || bytes.length < 12) return "";
+      if (
+        bytes[0] === 0xff &&
+        bytes[1] === 0xd8 &&
+        bytes[2] === 0xff
+      ) {
+        return "jpeg";
+      }
+      if (
+        bytes[0] === 0x89 &&
+        bytes[1] === 0x50 &&
+        bytes[2] === 0x4e &&
+        bytes[3] === 0x47 &&
+        bytes[4] === 0x0d &&
+        bytes[5] === 0x0a &&
+        bytes[6] === 0x1a &&
+        bytes[7] === 0x0a
+      ) {
+        return "png";
+      }
+      if (
+        bytes[0] === 0x52 &&
+        bytes[1] === 0x49 &&
+        bytes[2] === 0x46 &&
+        bytes[3] === 0x46 &&
+        bytes[8] === 0x57 &&
+        bytes[9] === 0x45 &&
+        bytes[10] === 0x42 &&
+        bytes[11] === 0x50
+      ) {
+        return "webp";
+      }
+      return "";
+    }
+
+    function kindToMime(kind) {
+      if (kind === "jpeg") return "image/jpeg";
+      if (kind === "png") return "image/png";
+      if (kind === "webp") return "image/webp";
+      return "";
+    }
+
+    function kindToTokenExt(kind) {
+      if (kind === "jpeg") return "jpg";
+      if (kind === "png") return "png";
+      if (kind === "webp") return "webp";
+      return "bin";
+    }
+
+    // Sanitize the Content-Disposition filename. PB has already
+    // generated a randomized ASCII-only token for the stored name,
+    // but a defense-in-depth pass keeps a future bug from
+    // accidentally shipping CRLF, control chars, or quote-escapes
+    // into the header.
+    function asciiSafeName(s) {
+      var out = "";
+      for (var i = 0; i < s.length; i++) {
+        var c = s.charAt(i);
+        var code = s.charCodeAt(i);
+        if (
+          (code >= 0x30 && code <= 0x39) ||
+          (code >= 0x41 && code <= 0x5a) ||
+          (code >= 0x61 && code <= 0x7a) ||
+          c === "." ||
+          c === "_" ||
+          c === "-"
+        ) {
+          out += c;
+        } else {
+          out += "_";
+        }
+      }
+      if (out.length > 80) out = out.substring(0, 80);
+      return out || "receipt";
+    }
+
+    function setSafeHeaders(header, fileName, mime, kind) {
+      try {
+        header.set("Content-Type", mime);
+        header.set("X-Content-Type-Options", "nosniff");
+        header.set("Cache-Control", "no-store");
+        header.set("Pragma", "no-cache");
+        // Derive the disposition filename extension from the detected
+        // image kind (not from storedName), ensuring the filename
+        // extension always matches the served Content-Type.
+        var ext = kindToTokenExt(kind);
+        var dispoName = "receipt." + ext;
+        var safe = asciiSafeName(dispoName);
+        header.set(
+          "Content-Disposition",
+          "inline; filename=\"" + safe + "\"; filename*=UTF-8''" + encodeURIComponent(dispoName)
+        );
+      } catch (_) {
+        // Best-effort; PB will still ship its defaults.
+      }
+    }
+
+    try {
+      // 1. Authenticated identity (requireAuth already gates this, but
+      //    we re-check defensively).
+      if (!e || !e.auth) {
+        return e.json(401, {
+          code: "unauthorized",
+          message: "Authentication required.",
+        });
+      }
+
+      // 2. Path parameter: the request id. The ServeMux wildcard
+      //    name is "requestId".
+      var requestId = "";
+      try {
+        if (e.request && e.request.pathValue) {
+          requestId = String(e.request.pathValue("requestId") || "");
+        }
+      } catch (_) {
+        requestId = "";
+      }
+      if (!requestId) {
+        return e.json(400, {
+          code: "invalid_request",
+          message: "Missing requestId.",
+        });
+      }
+
+      // 3. Suspended account gate (before record load, mirrors the
+      //    upload route). Checking early prevents a suspended caller
+      //    from distinguishing existing ids from non-existing ids.
+      var accountStatus = "";
+      try {
+        accountStatus = String(e.auth.get("account_status") || "");
+      } catch (_) {
+        accountStatus = "";
+      }
+      if (accountStatus === "suspended") {
+        return e.json(403, {
+          code: "account_suspended",
+          message: "Account is suspended.",
+        });
+      }
+
+      // 4. Load the record. Any failure here (not found, id malformed)
+      //    collapses to a generic 404 so we do not leak existence.
+      //    (The suspended check runs before this step so a suspended
+      //    caller cannot probe record existence.)
+      var rec = null;
+      try {
+        rec = $app.findRecordById(REQUESTS_COLLECTION, requestId);
+      } catch (loadErr) {
+        rec = null;
+        try {
+        } catch (_) {}
+      }
+      try {
+      } catch (lgErr) {
+      }
+      if (!rec) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+
+      // 5. Owner-only check. We compare by id (the canonical record
+      //    identifier). Cross-user access returns 404 (not 403) to
+      //    avoid leaking the existence of someone else's record.
+      var ownerId = "";
+      try {
+        ownerId = String(rec.get("user") || "");
+      } catch (_) {
+        ownerId = "";
+      }
+      if (!ownerId || ownerId !== String(e.auth.id || "")) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+
+      // 6. Receipt file must exist. receipt_file is a single FileField
+      //    and PB serializes it as a string filename.
+      var storedName = "";
+      try {
+        storedName = String(rec.get(RECEIPT_FIELD) || "");
+      } catch (_) {
+        storedName = "";
+      }
+      if (!storedName) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+
+      // 7. Resolve the absolute file path. PB stores files under
+      //    `<dataDir>/storage/<collectionId>/<recordId>/<filename>`.
+      //    baseFilesPath() returns the relative "collection/record"
+      //    portion (e.g. "pbc_xxx/<recordId>"), so we join with
+      //    `<dataDir>/storage` to get the real on-disk path.
+      var dataDir = "";
+      try {
+        dataDir = String($app.dataDir() || "");
+      } catch (_) {
+        dataDir = "";
+      }
+      var basePath = "";
+      try {
+        basePath = String(rec.baseFilesPath() || "");
+      } catch (_) {
+        basePath = "";
+      }
+      try {
+      } catch (_) {}
+      if (!dataDir || !basePath) {
+        return e.json(500, {
+          code: "unexpected_error",
+          message: "Internal error.",
+        });
+      }
+      var absPath = "";
+      try {
+        absPath = $filepath.join(dataDir, "storage", basePath, storedName);
+      } catch (_) {
+        absPath = "";
+      }
+      try {
+      } catch (_) {}
+      if (!absPath) {
+        return e.json(500, {
+          code: "unexpected_error",
+          message: "Internal error.",
+        });
+      }
+
+      // 8. Containment check: the resolved file MUST be under the
+      //    record's base storage path. PB sets storedName to a 16-char
+      //    random token, so a traversal is unlikely, but a path
+      //    prefix check is cheap and makes the safety argument
+      //    explicit. We compare against <dataDir>/<basePath>.
+      var baseNormalized = "";
+      try {
+        baseNormalized = $filepath.clean($filepath.join(dataDir, "storage", basePath));
+      } catch (_) {}
+      var absNormalized = absPath;
+      try {
+        absNormalized = $filepath.clean(absPath);
+      } catch (_) {}
+      var prefixOk = false;
+      try {
+        var baseWithSep = baseNormalized;
+        var lastCh = baseWithSep.charAt(baseWithSep.length - 1);
+        if (lastCh !== "/" && lastCh !== "\\") {
+          baseWithSep = baseWithSep + "/";
+        }
+        prefixOk = absNormalized.indexOf(baseWithSep) === 0;
+      } catch (_) {
+        prefixOk = false;
+      }
+      try {
+      } catch (_) {}
+      if (!prefixOk) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+
+      // 9. Read the file. Cap at the same 5 MB upload limit so a
+      //    tampered or out-of-bounds file cannot exhaust memory.
+      var raw = null;
+      try {
+        raw = $os.readFile(absNormalized);
+      } catch (readErr) {
+        raw = null;
+        try {
+        } catch (_) {}
+      }
+      try {
+      } catch (_) {}
+      if (!raw) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+      var bytes = null;
+      if (typeof raw === "string") {
+        var arr = [];
+        for (var si = 0; si < raw.length; si++) {
+          arr.push(raw.charCodeAt(si) & 0xff);
+        }
+        bytes = arr;
+      } else if (Array.isArray(raw)) {
+        bytes = raw;
+      } else {
+        bytes = null;
+      }
+      if (!bytes || bytes.length === 0) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+      if (bytes.length > MAX_RECEIPT_BYTES) {
+        return e.json(413, {
+          code: "receipt_too_large",
+          message: "Receipt exceeds the 5 MB limit.",
+        });
+      }
+
+      // 10. Verify the byte signature matches an allowed image kind.
+      //     The upload route wrote the bytes as JPEG/PNG/WebP only;
+      //     we re-derive the MIME from the actual file content so
+      //     a corrupted or swapped file cannot be used to bypass
+      //     Content-Type sniffing.
+      var kind = detectImageKind(bytes);
+      var mime = kindToMime(kind);
+      try {
+      } catch (_) {}
+      if (!mime) {
+        return e.json(404, {
+          code: "not_found",
+          message: "Not found.",
+        });
+      }
+
+      // 11. Ship the binary response. We set headers FIRST, then
+      //     write the body so the response writer flushes with the
+      //     correct Content-Type. We never call e.json() here —
+      //     the route is binary-only.
+      var header = e.response.header();
+      setSafeHeaders(header, storedName, mime, kind);
+      try {
+        e.response.write(bytes);
+      } catch (_) {
+        // A failed write is almost always a closed connection; the
+        // route is idempotent.
+      }
+      return e;
+    } catch (topErr) {
+      try {
+        $app.logger().error(
+          "payment_routes: RECEIPT top-level error: " +
             String(topErr && topErr.message ? topErr.message : topErr)
         );
       } catch (_) {}

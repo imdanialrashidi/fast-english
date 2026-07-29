@@ -1,12 +1,22 @@
 // app/src/features/payment/useReceiptPreview.ts
-// React hook that fetches a short-lived authorized receipt URL for the
-// currently-authenticated user. The token is request-scoped and is
-// never stored outside React state or any persistent client storage.
+// React hook that fetches the owner's protected receipt via the
+// dedicated authenticated route and converts the binary response
+// to a short-lived Blob URL.
+//
+// Security model:
+//   - The route requires an authenticated `fep_users` session and
+//     matches the caller's id against `payment_request.user`. It
+//     serves ONLY the bytes for the request's `receipt_file`.
+//   - The client never stores a file token in any persistent
+//     storage. The only client-side artifact is a `blob:` URL that
+//     is revoked on unmount, replacement, and retry.
+//   - Errors are surfaced through the standard PaymentError model
+//     so the UI can show a stable Persian message.
 
 import { useEffect, useState } from 'react';
-import { getPocketBase } from '../../lib/pocketbase';
+import { fetchReceiptBlob } from './api';
 import { toPaymentError } from './errors';
-import { PaymentError } from './types';
+import type { PaymentError } from './types';
 
 export type ReceiptPreviewStatus =
   | { kind: 'idle' }
@@ -17,7 +27,13 @@ export type ReceiptPreviewStatus =
 interface Args {
   /** PB record id of the owning payment_request. Required to start. */
   recordId: string | null;
-  /** Randomized storage filename returned by the backend. */
+  /**
+   * Reserved for future API parity. The current secure route does
+   * not require a stored filename; the server resolves the actual
+   * on-disk path from the authenticated record. The argument is
+   * kept so the call site does not have to change when the secure
+   * route is the only surface in use.
+   */
   fileName: string | null;
   /** Skip fetching entirely (e.g. tab not open). */
   enabled: boolean;
@@ -29,20 +45,22 @@ interface InternalState {
 }
 
 /**
- * Authorize and render the owner's protected receipt. We never accept
- * an arbitrary recordId from raw UI input; the caller must pass the
- * sanitized id from the trusted current-request response.
+ * Authorize and render the owner's protected receipt. We never
+ * accept an arbitrary recordId from raw UI input; the caller must
+ * pass the sanitized id from the trusted current-request response.
  *
  * Lifecycle:
- *  - When enabled flips on with a valid recordId+fileName, request a
- *    fresh file token from PB and build a short-lived URL.
- *  - The token is held only in the React state and the URL string
- *    (revoked on unmount or replacement).
- *  - If the token returns 401/403 we surface a generic "access
- *    denied" Persian error and offer no retry shortcut that would
- *    loop on the same token.
+ *  - When enabled flips on with a valid recordId, request the
+ *    bytes from the secure route and build a Blob URL.
+ *  - The previous Blob URL is revoked on every transition so we
+ *    never leak two URLs for the same record.
+ *  - On unmount, the current URL is revoked.
  */
-export function useReceiptPreview({ recordId, fileName, enabled }: Args): ReceiptPreviewStatus {
+export function useReceiptPreview({
+  recordId,
+  fileName: _fileName,
+  enabled,
+}: Args): ReceiptPreviewStatus {
   const [state, setState] = useState<InternalState>({
     objectUrl: null,
     status: { kind: 'idle' },
@@ -50,7 +68,7 @@ export function useReceiptPreview({ recordId, fileName, enabled }: Args): Receip
 
   useEffect(() => {
     let cancelled = false;
-    if (!enabled || !recordId || !fileName) {
+    if (!enabled || !recordId) {
       return () => {
         cancelled = true;
       };
@@ -59,59 +77,31 @@ export function useReceiptPreview({ recordId, fileName, enabled }: Args): Receip
       revokeIfAny(s.objectUrl);
       return { objectUrl: null, status: { kind: 'loading' } };
     });
-    const pb = getPocketBase();
     (async () => {
       try {
-        const token = await pb.files.getToken();
-        if (cancelled) return;
-        // Build the URL with the token as a query string. PB SDK
-        // handles encoding.
-        const url = pb.files.getURL(
-          { collectionId: '', collectionName: 'payment_requests', id: recordId },
-          fileName,
-          { token, query: {} },
-        );
+        const { blob } = await fetchReceiptBlob(recordId);
         if (cancelled) {
-          // We're not going to use the URL — no need to verify the
-          // image, but the token was already issued. We do not need
-          // to revoke it explicitly: PB tokens expire server-side.
+          // The caller no longer wants this URL; we created one
+          // synchronously below, so we must revoke it before
+          // returning. Build the URL here just to revoke.
+          // (createObjectURL must be called from a live
+          // window context — it is — so this is safe.)
+          const temp = URL.createObjectURL(blob);
+          URL.revokeObjectURL(temp);
           return;
         }
-        // Probe the URL with a HEAD-style fetch (range 0-0) to make
-        // sure the token is good. The native <img> element will
-        // retry on its own; doing the probe here means a stale token
-        // is detected before we hand the URL to the <img>.
-        try {
-          const probe = await fetch(url, { method: 'GET', credentials: 'same-origin' });
-          if (cancelled) return;
-          if (!probe.ok) {
-            setState({
-              objectUrl: null,
-              status: {
-                kind: 'error',
-                error: new PaymentError(
-                  'دسترسی به رسید امکان‌پذیر نیست. دوباره تلاش کنید.',
-                  'unauthorized',
-                  probe.status,
-                ),
-              },
-            });
-            return;
-          }
-        } catch {
-          // Network blip — fall back to the URL anyway. The <img>
-          // will render a broken-image icon if it can't be reached.
+        const url = URL.createObjectURL(blob);
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
         }
-        if (cancelled) return;
         setState({
           objectUrl: url,
           status: {
             kind: 'ready',
             url,
             revoke: () => {
-              // PB URLs are server-driven; revoking a "blob:" URL is
-              // not applicable. We expose a revoke so the component
-              // can call it on unmount if it cached the URL.
+              URL.revokeObjectURL(url);
             },
           },
         });
@@ -130,12 +120,17 @@ export function useReceiptPreview({ recordId, fileName, enabled }: Args): Receip
         return s;
       });
     };
-  }, [enabled, recordId, fileName]);
+  }, [enabled, recordId]);
 
   return state.status;
 }
 
-function revokeIfAny(_url: string | null) {
-  // PB protected file URLs are not blob: URLs; they live on the
-  // server and expire by token. Nothing to revoke on the client.
+function revokeIfAny(url: string | null) {
+  if (url) {
+    try {
+      URL.revokeObjectURL(url);
+    } catch {
+      // ignore: revocation failures are not user-visible
+    }
+  }
 }

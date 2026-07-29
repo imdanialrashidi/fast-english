@@ -1,10 +1,12 @@
 // app/src/features/payment/components/ReceiptPreview.tsx
-// Render the protected owner receipt using a short-lived token. The
-// hook handles the network/token side; this component only chooses
-// the right visual for each state.
+// Render the protected owner receipt via the secure custom route.
+// The hook (useReceiptPreview) handles the network/blob side; this
+// component only chooses the right visual for each state.
 
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
 import { useReceiptPreview } from '../useReceiptPreview';
 
 interface Props {
@@ -17,11 +19,11 @@ interface Props {
 }
 
 export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true }: Props) {
-  const status = useReceiptPreview({
-    recordId,
-    fileName,
-    enabled: show && Boolean(recordId) && Boolean(fileName),
-  });
+  // Bump a counter to force the hook to re-issue the fetch.
+  const [retryToken, setRetryToken] = useState(0);
+  // We mount/unmount the hook via a key prop on the inner wrapper so
+  // the effect re-runs after a retry click. This is the simplest
+  // way to "re-run" a useEffect that depends on stable inputs.
 
   if (!show) {
     return (
@@ -41,6 +43,49 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
     );
   }
 
+  if (!recordId) {
+    return (
+      <Box
+        sx={{
+          p: 2,
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: 2,
+          backgroundColor: 'background.default',
+        }}
+      >
+        <Typography variant="body2" color="text.secondary">
+          رسیدی برای نمایش وجود ندارد.
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <PreviewBody
+      key={`${recordId}:${retryToken}`}
+      recordId={recordId}
+      fileName={fileName}
+      showOpenAction={showOpenAction}
+      onRetry={() => setRetryToken((n) => n + 1)}
+    />
+  );
+}
+
+interface PreviewBodyProps {
+  recordId: string;
+  fileName: string | null;
+  showOpenAction: boolean;
+  onRetry: () => void;
+}
+
+function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBodyProps) {
+  const status = useReceiptPreview({
+    recordId,
+    fileName,
+    enabled: true,
+  });
+
   if (status.kind === 'loading' || status.kind === 'idle') {
     return (
       <Stack
@@ -57,6 +102,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
         }}
         role="status"
         aria-live="polite"
+        data-testid="receipt-preview-loading"
       >
         <CircularProgress size={28} />
         <Typography variant="body2" color="text.secondary">
@@ -70,6 +116,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
     return (
       <Box
         role="alert"
+        data-testid="receipt-preview-error"
         sx={{
           p: 2,
           border: 1,
@@ -78,20 +125,32 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
           backgroundColor: 'background.default',
         }}
       >
-        <Stack spacing={1}>
+        <Stack spacing={1.5}>
           <Typography variant="body2" color="error.main">
             {status.error.message}
           </Typography>
           <Typography variant="caption" color="text.secondary">
             لینک رسید محافظت‌شده است. اگر پیام تکرار شد، صفحه را تازه‌سازی کنید.
           </Typography>
+          <Box>
+            <Button
+              onClick={onRetry}
+              startIcon={<RefreshRoundedIcon />}
+              size="small"
+              variant="outlined"
+              sx={{ minHeight: 44 }}
+              data-testid="receipt-preview-retry"
+            >
+              تلاش دوباره
+            </Button>
+          </Box>
         </Stack>
       </Box>
     );
   }
 
   return (
-    <Stack spacing={1.5}>
+    <Stack spacing={1.5} data-testid="receipt-preview-ready">
       <Box
         sx={{
           border: 1,
@@ -126,6 +185,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
             startIcon={<DownloadRoundedIcon />}
             size="small"
             sx={{ minHeight: 44 }}
+            data-testid="receipt-preview-open"
           >
             باز کردن در تب جدید
           </Button>

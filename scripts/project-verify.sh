@@ -4,6 +4,20 @@
 #
 # Does not install or modify dependencies. Does not auto-format.
 # Fails on the first real failure. Preserves readable command output.
+#
+# Steps:
+#   1. Strict typecheck
+#   2. Biome lint/format check (no auto-fix)
+#   3. Unit / contract tests (Vitest)
+#   4. Auth smoke (real PB; P0-S3 contract)
+#   5. Payment smoke (real PB; P1-S1 23/23 contract)
+#   6. Payment-preview smoke (real PB; P1-S1D 12/12 contract)
+#   7. Build both surfaces deterministically
+#   8. Topology output verification
+#
+# Playwright E2E is run separately via `pnpm test:e2e` so that
+# review-time runs of `scripts/verify.sh` stay fast and offline.
+# The E2E suite is documented in the final P1-S1D report.
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -23,11 +37,20 @@ run npx biome check .
 # 3. Test command (passWithNoTests is acceptable for topology-only slices).
 run npx vitest run --passWithNoTests
 
-# 4. Build both surfaces deterministically.
+# 4. Auth smoke against disposable PB.
+run bash scripts/smoke-auth.sh node scripts/smoke-auth.mjs
+
+# 5. Payment smoke against disposable PB (23/23).
+run bash scripts/smoke-payment.sh node scripts/smoke-payment.mjs
+
+# 6. Payment-preview smoke against disposable PB (12/12).
+run bash scripts/smoke-payment.sh node scripts/smoke-payment-preview.mjs
+
+# 7. Build both surfaces deterministically.
 run npx vite build --config vite.app.config.ts
 run npx vite build --config vite.landing.config.ts
 
-# 5. Topology output verification.
+# 8. Topology output verification.
 printf '\n=== topology verification ===\n'
 
 test -f dist-landing/index.html || { echo 'missing dist-landing/index.html' >&2; exit 1; }

@@ -4,7 +4,7 @@
 // a live PB instance.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CURRENT_REQUEST_PATH, PAYMENT_REQUEST_PATH } from './constants';
+import { CURRENT_REQUEST_PATH, PAYMENT_REQUEST_PATH, receiptDownloadPath } from './constants';
 
 interface PbMockShape {
   send: ReturnType<typeof vi.fn>;
@@ -16,6 +16,8 @@ interface PbMockShape {
     getToken: ReturnType<typeof vi.fn>;
     getURL: ReturnType<typeof vi.fn>;
   };
+  buildURL: ReturnType<typeof vi.fn>;
+  authStore: { token: string };
 }
 
 const pbMock: PbMockShape = {
@@ -28,6 +30,8 @@ const pbMock: PbMockShape = {
     getToken: vi.fn(),
     getURL: vi.fn(),
   },
+  buildURL: vi.fn(),
+  authStore: { token: 'test-auth-token' },
 };
 
 vi.mock('../../lib/pocketbase', () => ({
@@ -56,10 +60,13 @@ function makeFile(name = 'r.jpg', type = 'image/jpeg', size = 1024): File {
 
 import {
   createPaymentRequest,
+  fetchReceiptBlob,
   loadActiveDestination,
   loadActivePlans,
   loadCurrentRequest,
 } from './api';
+
+let fetchSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
   pbMock.send.mockReset();
@@ -69,6 +76,10 @@ beforeEach(() => {
   collectionMocks.payment_destination.getList.mockReset();
   pbMock.files.getToken.mockReset();
   pbMock.files.getURL.mockReset();
+  pbMock.buildURL.mockReset();
+  pbMock.buildURL.mockImplementation((path: string) => `http://test.local${path}`);
+  pbMock.authStore.token = 'test-auth-token';
+  fetchSpy = vi.spyOn(globalThis, 'fetch');
 });
 
 afterEach(() => {
@@ -307,3 +318,186 @@ function minimalRequest() {
     updated: null,
   };
 }
+
+describe('fetchReceiptBlob', () => {
+  const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46]);
+  const pngBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const webpBytes = new Uint8Array([
+    0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+  ]);
+
+  function mockFetchOk(body: Blob): void {
+    fetchSpy.mockResolvedValueOnce(
+      new Response(body, {
+        status: 200,
+        headers: { 'Content-Type': body.type },
+      }),
+    );
+  }
+
+  function mockFetchStatus(status: number, body: unknown = {}): void {
+    fetchSpy.mockResolvedValueOnce(
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+  }
+
+  it('uses native fetch (not pb.send) for the binary receipt', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1');
+    // pb.send must NOT be called
+    expect(pbMock.send).not.toHaveBeenCalled();
+    // native fetch must be called once
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('builds the URL through pb.buildURL', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1');
+    expect(pbMock.buildURL).toHaveBeenCalledWith(receiptDownloadPath('r1'));
+  });
+
+  it('sends the auth token in the Authorization header', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1');
+    const call = fetchSpy.mock.calls[0];
+    if (!call) throw new Error('expected a fetch call');
+    const [, opts] = call;
+    expect(opts?.headers).toMatchObject({ Authorization: 'test-auth-token' });
+  });
+
+  it('does not put the token in the URL', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1');
+    const call = fetchSpy.mock.calls[0];
+    if (!call) throw new Error('expected a fetch call');
+    const [url] = call;
+    expect(url).not.toContain('token');
+    expect(url).not.toContain('Authorization');
+    expect(url).not.toContain('auth');
+  });
+
+  it('sets cache: no-store on the fetch', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1');
+    const call = fetchSpy.mock.calls[0];
+    if (!call) throw new Error('expected a fetch call');
+    const [, opts] = call;
+    expect(opts).toMatchObject({ cache: 'no-store' });
+  });
+
+  it('sets Accept header to the allowed image MIME types', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1');
+    const call = fetchSpy.mock.calls[0];
+    if (!call) throw new Error('expected a fetch call');
+    const [, opts] = call;
+    expect(opts?.headers).toMatchObject({ Accept: 'image/jpeg, image/png, image/webp' });
+  });
+
+  it('returns a Blob for a JPEG response', async () => {
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    const { blob, contentType } = await fetchReceiptBlob('r1');
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBe(jpegBytes.length);
+    expect(contentType).toBe('image/jpeg');
+  });
+
+  it('returns a Blob for a PNG response', async () => {
+    mockFetchOk(new Blob([pngBytes], { type: 'image/png' }));
+    const { blob, contentType } = await fetchReceiptBlob('r1');
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBe(pngBytes.length);
+    expect(contentType).toBe('image/png');
+  });
+
+  it('returns a Blob for a WebP response', async () => {
+    mockFetchOk(new Blob([webpBytes], { type: 'image/webp' }));
+    const { blob, contentType } = await fetchReceiptBlob('r1');
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.size).toBe(webpBytes.length);
+    expect(contentType).toBe('image/webp');
+  });
+
+  it('rejects an unexpected application/json Content-Type', async () => {
+    // A JSON body with 200 is still invalid — Content-Type check runs
+    // before Blob read.
+    fetchSpy.mockResolvedValueOnce(
+      new Response(JSON.stringify({}), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'invalid_receipt' });
+  });
+
+  it('rejects an empty Blob', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      new Response(new Blob([], { type: 'image/jpeg' }), {
+        status: 200,
+        headers: { 'Content-Type': 'image/jpeg' },
+      }),
+    );
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'receipt_unavailable' });
+  });
+
+  it('maps a 401 to unauthorized', async () => {
+    mockFetchStatus(401);
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'unauthorized' });
+  });
+
+  it('maps a 403 to account_not_eligible', async () => {
+    mockFetchStatus(403, { code: 'account_not_eligible' });
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'account_not_eligible' });
+  });
+
+  it('maps a 404 to receipt_unavailable', async () => {
+    mockFetchStatus(404, { code: 'not_found' });
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'receipt_unavailable' });
+  });
+
+  it('maps a 413 to receipt_too_large', async () => {
+    mockFetchStatus(413, { code: 'receipt_too_large' });
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'receipt_too_large' });
+  });
+
+  it('maps a 429 to rate_limited', async () => {
+    mockFetchStatus(429, { code: 'rate_limited' });
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'rate_limited' });
+  });
+
+  it('maps a network error to unavailable', async () => {
+    fetchSpy.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'unavailable' });
+  });
+
+  it('maps an AbortError safely (caller-driven cancel → unexpected)', async () => {
+    // The error mapper rejects AbortError as a network error and
+    // falls through to the generic 'unexpected' code, which is safe
+    // (no information leak) because the hook suppresses the error
+    // on unmount via the `cancelled` gate.
+    const abortError = new DOMException('Aborted', 'AbortError');
+    fetchSpy.mockRejectedValueOnce(abortError);
+    await expect(fetchReceiptBlob('r1')).rejects.toMatchObject({ code: 'unexpected' });
+  });
+
+  it('preserves AbortSignal by forwarding to native fetch', async () => {
+    const controller = new AbortController();
+    mockFetchOk(new Blob([jpegBytes], { type: 'image/jpeg' }));
+    await fetchReceiptBlob('r1', controller.signal);
+    const call = fetchSpy.mock.calls[0];
+    if (!call) throw new Error('expected a fetch call');
+    const [, opts] = call;
+    expect(opts?.signal).toBe(controller.signal);
+  });
+
+  it('encodes non-trivial record ids so the URL is safe', () => {
+    // receiptDownloadPath is exported as a pure helper. We assert
+    // the id is percent-encoded so a malicious or malformed id
+    // cannot escape the path segment.
+    const p = receiptDownloadPath('a/b c');
+    expect(p).toBe('/api/fast-english/payment-requests/a%2Fb%20c/receipt');
+  });
+});
