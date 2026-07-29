@@ -1,6 +1,7 @@
 // app/src/app/App.tsx
 import { Box } from '@mui/material';
 import { Navigate, Route, Routes, useLocation } from 'react-router';
+import { PaymentRoute, PaymentStatusRoute } from '../features/payment';
 import { AuthProvider, decideRoute, type RouteKind, useAuth } from '../lib/auth';
 import { AccountRoute } from './routes/AccountRoute';
 import { DashboardRoute } from './routes/DashboardRoute';
@@ -9,7 +10,6 @@ import { LessonDemoRoute } from './routes/LessonDemoRoute';
 import { LessonsRoute } from './routes/LessonsRoute';
 import { LoginRoute } from './routes/LoginRoute';
 import { OperatorRoute } from './routes/OperatorRoute';
-import { PaymentRoute, PaymentStatusRoute } from './routes/PaymentRoute';
 import { PlacementRoute } from './routes/PlacementRoute';
 import { SignupRoute } from './routes/SignupRoute';
 import { AppShell } from './shell/AppShell';

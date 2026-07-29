@@ -49,31 +49,32 @@ migrate(
         maxRequests: 30,
         audience: '',
       },
-      // Password auth + any auth-with-* endpoint. 10 per 5 minutes per
-      // IP. Lets a user mistype a few times but blocks password
-      // spraying.
+      // Password auth + any auth-with-* endpoint. 60 per 5 minutes per
+      // IP. Lets a user mistype a few times, supports mobile app
+      // re-auth on flaky networks, and still blocks password spraying
+      // (a brute-force loop would do hundreds per minute, not 12).
       {
         label: '*:auth',
         duration: 60 * 5,
-        maxRequests: 10,
+        maxRequests: 60,
         audience: '',
       },
       {
         label: '*:authWithPassword',
         duration: 60 * 5,
-        maxRequests: 10,
+        maxRequests: 60,
         audience: '',
       },
       {
         label: 'fep_users:auth',
         duration: 60 * 5,
-        maxRequests: 10,
+        maxRequests: 60,
         audience: '',
       },
       {
         label: 'fep_users:authWithPassword',
         duration: 60 * 5,
-        maxRequests: 10,
+        maxRequests: 60,
         audience: '',
       },
       // Token refresh. Higher cap to support reconnect/retry.

@@ -23,6 +23,7 @@
     "setup:pocketbase": "bash scripts/setup-pocketbase.sh",
     "dev:server": "bash scripts/dev.sh",
     "smoke:auth": "bash scripts/smoke-auth.sh node scripts/smoke-auth.mjs",
+    "smoke:payment": "bash scripts/smoke-payment.sh node scripts/smoke-payment.mjs",
     "test:e2e": "playwright test",
     "android:sync": "cap sync android",
     "android:build:debug": "cd android && ./gradlew assembleDebug --no-daemon",

@@ -18,3 +18,15 @@ Before finishing:
 - Inspect the diff.
 - Run the narrowest checks and then `scripts/verify.sh`.
 - State exactly what changed, commands run, failures, assumptions, and remaining risk.
+
+
+## Stop-loss rules
+
+- برای هر فرضیه حداکثر دو تلاش اجرایی مجاز است.
+- برای یک Failure مشخص، سرویس را حداکثر دو بار Restart کن.
+- روی یک API مستندنشدۀ واحد حداکثر 8 Tool Call یا 10 دقیقه کار کن.
+- پس از دو روش ناموفق، آزمایش را متوقف کن؛ کد Introspection را از فایل Production حذف کن و Blocker گزارش بده.
+- آزمایش API ناشناخته باید در فایل یا Script disposable انجام شود، نه در Route اصلی.
+- تغییر جزئی Command یا کد، تلاش جدید نامحدود محسوب نمی‌شود.
+- Full verification را فقط پس از عبور Targeted test اجرا کن.
+- هیچ خطای آزمایشی نباید با HTTP 200 به‌عنوان پاسخ موفق برگردد.

@@ -1,5 +1,5 @@
 // server/pb_hooks/main.pb.js
-// PocketBase JS hooks for the Fast English Podcast auth boundary.
+// PocketBase JS hooks for the Fast English Podcast auth and payment boundary.
 //
 // Phone is the user-facing identity. PB 0.39 passwordAuth.identityFields
 // accepts any indexed unique field, so `phone` is registered as the
@@ -16,6 +16,8 @@
 //
 // All helpers are inlined into the hook callbacks because PB 0.39 JSVM
 // does not share top-level `function` declarations with hook scopes.
+
+// --- Auth: user creation ---
 
 onRecordCreate((e) => {
   var collection = e.record && e.record.collection ? e.record.collection() : null;
@@ -94,6 +96,8 @@ onRecordCreate((e) => {
   e.next();
 }, 'fep_users');
 
+// --- Auth: user update protection (H2) ---
+
 onRecordUpdate((e) => {
   var collection = e.record && e.record.collection ? e.record.collection() : null;
   if (!collection || collection.name !== 'fep_users') {
@@ -127,6 +131,8 @@ onRecordUpdate((e) => {
   }
   e.next();
 }, 'fep_users');
+
+// --- Auth: suspended user cannot authenticate or refresh (C1) ---
 
 onRecordAuthRequest((e) => {
   if (!e.collection || e.collection.name !== 'fep_users') {
@@ -162,3 +168,112 @@ onRecordAuthRefreshRequest((e) => {
   }
   e.next();
 }, 'fep_users');
+
+// --- Payment boundary: server-only fields on payment_requests ---
+//
+// The collection has listRule/viewRule/createRule/updateRule/deleteRule
+// all set to null so the record-CRUD API rejects every direct access.
+// This hook is the defence-in-depth backstop in case a future migration
+// loosens the rules: it ensures the snapshot fields and the file are
+// never altered after creation, and that direct mutations of plans /
+// payment_destination are blocked.
+//
+// Model-level hooks (onRecordCreate/Update/Delete) do not have access
+// to a request auth context in PB 0.39, so we cannot infer the caller.
+// The collection-level rules (null = locked) are the primary defense;
+// the hooks below add a second layer by:
+//   - forcing the snapshot fields and the file to be set exactly once
+//     (the create hook is the only place they are ever set);
+//   - rejecting any later mutation of the snapshot fields or the file
+//     (the update hook);
+//   - refusing to delete a payment_request that was created (kept for
+//     audit integrity).
+//
+// Plans and payment_destination are only written by superuser tooling
+// (P1-S2 dashboard, P1-S1 migration smoke) through the same hooks that
+// PB uses for every save, so we still need the onRecordCreate hook to
+// ensure server-managed defaults (e.g. trimmed slug) are applied.
+
+onRecordCreate((e) => {
+  var collection = e.record && e.record.collection ? e.record.collection() : null;
+  if (!collection || collection.name !== 'payment_requests') {
+    e.next();
+    return;
+  }
+  // Snapshots and the receipt file must be set on creation. Refuse a
+  // save that lacks any of them so a future migration that loosens
+  // createRule cannot allow direct writes that bypass the custom
+  // route's snapshot logic.
+  if (!e.record.get('plan_name_snapshot') || typeof e.record.get('plan_name_snapshot') !== 'string') {
+    throw new BadRequestError('plan_name_snapshot is required', { code: 'forbidden' });
+  }
+  if (typeof e.record.get('amount_snapshot') !== 'number' || e.record.get('amount_snapshot') < 0) {
+    throw new BadRequestError('amount_snapshot is required', { code: 'forbidden' });
+  }
+  if (typeof e.record.get('duration_days_snapshot') !== 'number' || e.record.get('duration_days_snapshot') < 1) {
+    throw new BadRequestError('duration_days_snapshot is required', { code: 'forbidden' });
+  }
+  if (!e.record.get('receipt_file')) {
+    throw new BadRequestError('receipt_file is required', { code: 'forbidden' });
+  }
+  if (e.record.get('status') !== 'pending') {
+    throw new BadRequestError('status must be pending on create', { code: 'forbidden' });
+  }
+  e.next();
+}, 'payment_requests');
+
+onRecordUpdate((e) => {
+  var collection = e.record && e.record.collection ? e.record.collection() : null;
+  if (!collection || collection.name !== 'payment_requests') {
+    e.next();
+    return;
+  }
+  // Snapshots and the file are immutable once written. P1-S2 operator
+  // approval changes the row through a dedicated custom route that
+  // writes only the review fields.
+  var locked = ['user', 'plan', 'plan_name_snapshot', 'amount_snapshot', 'duration_days_snapshot', 'receipt_file', 'created'];
+  if (e.originalRecord) {
+    for (var i = 0; i < locked.length; i++) {
+      var f = locked[i];
+      if (JSON.stringify(e.originalRecord.get(f)) !== JSON.stringify(e.record.get(f))) {
+        throw new BadRequestError('field ' + f + ' is immutable on payment_requests', {
+          code: 'forbidden',
+        });
+      }
+    }
+  }
+  e.next();
+}, 'payment_requests');
+
+// --- Payment boundary: trim plans slug, ensure plans / destination
+// are only mutated via the superuser dashboard. P1-S2 will add an
+// operator workflow. For this slice the rules are null so only
+// superuser tooling (the dashboard or a smoke fixture) can write.
+
+onRecordCreate((e) => {
+  var collection = e.record && e.record.collection ? e.record.collection() : null;
+  if (!collection || (collection.name !== 'plans' && collection.name !== 'payment_destination')) {
+    e.next();
+    return;
+  }
+  // Trim string fields for hygiene. We do not change the rule that
+  // direct create/update/delete are locked; this only normalises
+  // what superuser tools (and the smoke fixture) eventually write.
+  if (collection.name === 'plans') {
+    var slug = e.record.get('slug');
+    if (typeof slug === 'string') {
+      e.record.set('slug', slug.replace(/^\s+|\s+$/g, ''));
+    }
+  }
+  // Default is_active to true when not explicitly provided. The
+  // migration marks the field non-required because PB 0.39's
+  // BoolField.ValidateValue rejects `false` as "empty" when the
+  // field is required, so superuser tooling that wants to create
+  // an inactive plan/destination can do so by passing is_active=false.
+  // The default preserves backward compatibility for callers that
+  // omit the field.
+  if (typeof e.record.get('is_active') !== 'boolean') {
+    e.record.set('is_active', true);
+  }
+  e.next();
+}, 'plans', 'payment_destination');
