@@ -88,7 +88,7 @@ describe('api.fetchReceiptBlob contract', () => {
     // fetchReceiptBlob must not call pb.send:
     const fetchFnMatch = apiSource.match(/export async function fetchReceiptBlob[\s\S]*?^}/m);
     expect(fetchFnMatch).not.toBeNull();
-    expect(fetchFnMatch![0]).not.toMatch(/pb\.send/);
+    expect(fetchFnMatch?.[0]).not.toMatch(/pb\.send/);
   });
 
   it('maps thrown errors through toPaymentError', () => {

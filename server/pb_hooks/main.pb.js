@@ -245,6 +245,43 @@ onRecordUpdate((e) => {
   e.next();
 }, 'payment_requests');
 
+// --- Subscriptions: all fields are immutable after creation.
+// The collection has createRule/updateRule/deleteRule = null so
+// direct CRUD is blocked at the API layer. These hooks are the
+// defense-in-depth backstop.
+
+onRecordCreate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'subscriptions') { e.next(); return; }
+  // All required fields must be set by the operator approve route.
+  if (!e.record.get('user') || !e.record.get('payment_request') ||
+      !e.record.get('plan_name_snapshot') || typeof e.record.get('amount_snapshot') !== 'number' ||
+      typeof e.record.get('duration_days_snapshot') !== 'number' ||
+      !e.record.get('starts_at') || !e.record.get('expires_at') ||
+      !e.record.get('approved_by') || !e.record.get('approved_at')) {
+    throw new BadRequestError('subscription: required fields missing', { code: 'forbidden' });
+  }
+  e.next();
+}, 'subscriptions');
+
+onRecordUpdate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'subscriptions') { e.next(); return; }
+  // All subscription fields are immutable after creation.
+  var allFields = ['user', 'payment_request', 'plan', 'plan_name_snapshot',
+    'amount_snapshot', 'duration_days_snapshot', 'starts_at', 'expires_at',
+    'status', 'approved_by', 'approved_at'];
+  if (e.originalRecord) {
+    for (var i = 0; i < allFields.length; i++) {
+      var f = allFields[i];
+      if (JSON.stringify(e.originalRecord.get(f)) !== JSON.stringify(e.record.get(f))) {
+        throw new BadRequestError('field ' + f + ' is immutable on subscriptions', { code: 'forbidden' });
+      }
+    }
+  }
+  e.next();
+}, 'subscriptions');
+
 // --- Payment boundary: trim plans slug, ensure plans / destination
 // are only mutated via the superuser dashboard. P1-S2 will add an
 // operator workflow. For this slice the rules are null so only
@@ -277,3 +314,30 @@ onRecordCreate((e) => {
   }
   e.next();
 }, 'plans', 'payment_destination');
+
+// --- Placement: question content is immutable after creation ---
+// Only `is_active` may be toggled. All other fields are locked on update.
+// The collection rules (null) are the primary defense; hooks are a backstop.
+
+onRecordUpdate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'placement_questions') { e.next(); return; }
+  if (!e.originalRecord) { e.next(); return; }
+  var immutableFields = ['question_key', 'version', 'position', 'prompt', 'options', 'options_text', 'correct_option_id'];
+  for (var i = 0; i < immutableFields.length; i++) {
+    var f = immutableFields[i];
+    if (JSON.stringify(e.originalRecord.get(f)) !== JSON.stringify(e.record.get(f))) {
+      throw new BadRequestError('field ' + f + ' is immutable on placement_questions', { code: 'forbidden' });
+    }
+  }
+  e.next();
+}, 'placement_questions');
+
+// --- Placement: attempts are protected by collection rules ---
+// The collection's listRule/viewRule/createRule/updateRule/deleteRule
+// are all set to null, so direct API access is blocked.
+// Custom routes use $app.save() and runInTransaction, which are not
+// affected by API rules. Model-level hooks are intentionally absent
+// because PB 0.39 model hooks fire for ALL saves including those from
+// custom routes, and a blanket rejection would break the placement
+// routes. The collection-level null rules are the authoritative defense.

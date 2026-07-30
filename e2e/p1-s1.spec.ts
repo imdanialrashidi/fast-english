@@ -273,7 +273,7 @@ test.describe('P1-S1 student payment flow', () => {
     // Use a fresh BrowserContext to remove cookies, then call the
     // route from inside the page (so the SDK auth state is empty
     // but the request is a real browser fetch with no cookies).
-    const unauthContext = await context.browser()!.newContext();
+    const unauthContext = await context.browser()?.newContext();
     const unauthPage = await unauthContext.newPage();
     await unauthPage.goto('/login');
     const unauthStatus = await unauthPage.evaluate(async (id) => {
@@ -291,7 +291,7 @@ test.describe('P1-S1 student payment flow', () => {
     // Authorization header on every request. The cross-page fetch
     // must therefore go through the SDK — not a raw `fetch` —
     // because the cookie is not set during PB's password auth.
-    const crossContext = await context.browser()!.newContext();
+    const crossContext = await context.browser()?.newContext();
     const crossPage = await crossContext.newPage();
     const crossPhone = uniquePhone();
     await signupAndLogin(crossPage, 'E2E مزاحم', crossPhone, 'Test1234!');
@@ -301,7 +301,7 @@ test.describe('P1-S1 student payment flow', () => {
     // signupAndLogin is the same one the receipt path uses.
     const crossStatus = await crossPage.evaluate(async (id) => {
       // @ts-expect-error - the SDK module is bundled into the app
-      const mod = await import(
+      const _mod = await import(
         '/assets/' +
           Array.from(document.querySelectorAll('script[type=module]'))
             .map((s) => s.getAttribute('src') || '')

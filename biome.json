@@ -10,6 +10,7 @@
       "!.vite",
       "!coverage",
       "!server/pb_data",
+      "!server/pb_data.bak",
       "!server/pocketbase",
       "!server/pb_hooks",
       "!server/pb_migrations",

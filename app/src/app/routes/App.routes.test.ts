@@ -19,7 +19,7 @@ const expectedRoutes = [
   '/lessons',
   '/lessons/demo',
   '/account',
-  '/operator',
+  '/operator/*',
 ];
 
 describe('app routes', () => {

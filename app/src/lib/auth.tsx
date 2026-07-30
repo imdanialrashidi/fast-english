@@ -222,10 +222,15 @@ export function decideRoute(
       return { kind: 'allow' };
     case 'guest-only':
       if (isAuthenticated) {
-        return {
-          kind: 'redirect',
-          to: user?.account_status === 'active' ? '/dashboard' : '/payment',
-        };
+        // Route active users based on placement completion state
+        if (user?.account_status === 'active') {
+          if (user?.placement_completed && user?.selected_level) {
+            return { kind: 'redirect', to: '/dashboard' };
+          }
+          // Placement not completed — might be no attempt, in progress, or submitted without selection
+          return { kind: 'redirect', to: '/placement' };
+        }
+        return { kind: 'redirect', to: '/payment' };
       }
       return { kind: 'allow' };
     case 'pending-only':
@@ -243,7 +248,10 @@ export function decideRoute(
       };
     case 'active-only':
       if (!isAuthenticated) return { kind: 'redirect', to: '/login' };
-      if (user?.account_status === 'active') return { kind: 'allow' };
+      if (user?.account_status === 'active') {
+        // Allow access — the page itself will handle placement state
+        return { kind: 'allow' };
+      }
       return {
         kind: 'redirect',
         to:
@@ -253,7 +261,7 @@ export function decideRoute(
       };
     case 'operator-only':
       if (!isAuthenticated) return { kind: 'redirect', to: '/login' };
-      if (user?.role === 'operator' || user?.role === 'content_manager') {
+      if (user?.role === 'operator') {
         return { kind: 'allow' };
       }
       return { kind: 'deny' };

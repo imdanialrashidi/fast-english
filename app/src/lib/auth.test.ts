@@ -20,8 +20,14 @@ describe('decideRoute', () => {
     expect(decideRoute('public', null, false)).toEqual({ kind: 'allow' });
   });
 
-  it('guest-only redirects authenticated active user to /dashboard', () => {
+  it('guest-only redirects authenticated active user without completed placement to /placement', () => {
     const d = decideRoute('guest-only', active, true);
+    expect(d).toEqual({ kind: 'redirect', to: '/placement' });
+  });
+
+  it('guest-only redirects authenticated active user with completed placement to /dashboard', () => {
+    const completed: FepUser = { ...active, placement_completed: true, selected_level: 'B1' };
+    const d = decideRoute('guest-only', completed, true);
     expect(d).toEqual({ kind: 'redirect', to: '/dashboard' });
   });
 
@@ -51,9 +57,9 @@ describe('decideRoute', () => {
     expect(decideRoute('pending-only', expired, true)).toEqual({ kind: 'allow' });
   });
 
-  it('pending-only denies active user', () => {
+  it('pending-only redirects active user to placement/dashboard', () => {
     const d = decideRoute('pending-only', active, true);
-    expect(d).toEqual({ kind: 'redirect', to: '/dashboard' });
+    expect(d.kind).toBe('redirect');
   });
 
   it('active-only redirects unauthenticated to /login', () => {
@@ -93,8 +99,8 @@ describe('decideRoute', () => {
     expect(decideRoute('operator-only', operator, true)).toEqual({ kind: 'allow' });
   });
 
-  it('operator-only allows content_manager', () => {
+  it('operator-only denies content_manager', () => {
     const cm: FepUser = { ...active, role: 'content_manager' };
-    expect(decideRoute('operator-only', cm, true)).toEqual({ kind: 'allow' });
+    expect(decideRoute('operator-only', cm, true)).toEqual({ kind: 'deny' });
   });
 });

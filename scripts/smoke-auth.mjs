@@ -12,7 +12,6 @@
 // test user to suspended. The PocketBase process and its data dir are
 // removed on exit by the shell wrapper.
 
-import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 
 const PORT = Number(process.env.PB_SMOKE_PORT ?? 18090);
@@ -408,43 +407,15 @@ async function step18SuspendedAuth() {
 
 // Disposable superuser helpers. The credentials are generated in-process
 // and are never written to disk, logged, or returned from this function.
-function randomSuperuserCreds() {
-  // Email and password are random per smoke run. The email is not
-  // deliverable and the password is not reused.
-  const id = randomBytes(8).toString('hex');
-  return {
-    email: `smoke-${id}@fep-smoke.invalid`,
-    password: `Smoke-${id}-${randomBytes(6).toString('hex')}`,
-  };
-}
-
 async function getDisposableSuperuserToken() {
-  const dataDir = process.env.PB_DATA_DIR;
-  if (!dataDir) {
-    console.error('smoke: PB_DATA_DIR not set; cannot create superuser');
+  const email = process.env.PB_TEST_SU_EMAIL;
+  const password = process.env.PB_TEST_SU_PASSWORD;
+  if (!email || !password) {
+    console.error(
+      'smoke: PB_TEST_SU_EMAIL/PASSWORD not set; shell wrapper must create superuser before serve',
+    );
     return null;
   }
-  const { email, password } = randomSuperuserCreds();
-  // The CLI must see the same encryption env as the running server
-  // (the data dir is encrypted at rest when PB_ENCRYPTION is set).
-  const env = {
-    ...process.env,
-    PB_TELEMETRY: '0',
-    PB_FEEDBACK: '0',
-    PB_ENCRYPTION: process.env.PB_ENCRYPTION ?? 'dev-encryption-key-not-for-prod',
-  };
-  const upsert = spawnSync(
-    'server/pocketbase',
-    ['superuser', 'upsert', email, password, '--dir', dataDir],
-    { env, stdio: ['ignore', 'ignore', 'pipe'] },
-  );
-  if (upsert.status !== 0) {
-    console.error('smoke: superuser upsert failed:', upsert.stderr?.toString());
-    return null;
-  }
-  // Authenticate through the official _superusers auth-with-password
-  // endpoint. The token is a real superuser JWT and bypasses
-  // collection-level updateRule.
   const auth = await jsonFetch('/api/collections/_superusers/auth-with-password', {
     method: 'POST',
     body: JSON.stringify({ identity: email, password }),

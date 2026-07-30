@@ -20,7 +20,6 @@
 //   11. response excludes operator-only fields (no JSON leakage)
 //   12. no process/temp data leakage
 
-import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 
 const PORT = Number(process.env.PB_SMOKE_PAY_PORT ?? 18091);
@@ -195,33 +194,13 @@ async function loginByPhone(canonical) {
   return r.body.token;
 }
 
-function randomSuperuserCreds() {
-  const id = randomBytes(8).toString('hex');
-  return {
-    email: `smoke-pp-${id}@fep-smoke.invalid`,
-    password: `Smoke-${id}-${randomBytes(6).toString('hex')}`,
-  };
-}
-
 async function getSuperuserToken() {
-  const dataDir = process.env.PB_DATA_DIR;
-  if (!dataDir) {
-    throw new Error('PB_DATA_DIR not set; cannot create superuser');
-  }
-  const { email, password } = randomSuperuserCreds();
-  const env = {
-    ...process.env,
-    PB_TELEMETRY: '0',
-    PB_FEEDBACK: '0',
-    PB_ENCRYPTION: process.env.PB_ENCRYPTION ?? 'dev-encryption-key-not-for-prod',
-  };
-  const upsert = spawnSync(
-    'server/pocketbase',
-    ['superuser', 'upsert', email, password, '--dir', dataDir],
-    { env, stdio: ['ignore', 'ignore', 'pipe'] },
-  );
-  if (upsert.status !== 0) {
-    throw new Error(`superuser upsert failed: ${upsert.stderr?.toString()}`);
+  const email = process.env.PB_TEST_SU_EMAIL;
+  const password = process.env.PB_TEST_SU_PASSWORD;
+  if (!email || !password) {
+    throw new Error(
+      'PB_TEST_SU_EMAIL/PASSWORD not set; shell wrapper must create superuser before serve',
+    );
   }
   const auth = await jsonFetch('/api/collections/_superusers/auth-with-password', {
     method: 'POST',
@@ -425,7 +404,7 @@ async function scenario8Suspended({ planId, suToken }) {
   // and refreshes); e.auth on this request is re-loaded from the
   // DB, so the suspended check fires.
   const r2 = await getReceipt(token, requestId);
-  let allOk = check(r2.status === 403, `suspended user gets 403 (got ${r2.status})`);
+  const allOk = check(r2.status === 403, `suspended user gets 403 (got ${r2.status})`);
   // Restore.
   await jsonFetch(`/api/collections/fep_users/records/${u.id}`, {
     method: 'PATCH',

@@ -4,7 +4,7 @@
 // data dir to test-results/pb-data-dir.txt so the test spec can
 // use it for fixture creation and operator-only operations.
 
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -19,6 +19,16 @@ export default async function globalSetup() {
   // the user must run `pnpm setup:pocketbase` first.
   const dataDir = `/tmp/pb-e2e-${Date.now()}`;
   mkdirSync(dataDir, { recursive: true });
+
+  // Create a disposable test superuser so PB does not open the browser installer.
+  const suEmail = 'pbtest@fep-smoke.invalid';
+  const suPassword = `pbtest-e2e-${Date.now()}`;
+  spawnSync('server/pocketbase', ['superuser', 'upsert', suEmail, suPassword, '--dir', dataDir], {
+    stdio: 'ignore',
+  });
+  // Export credentials for test specs to use without calling superuser upsert while PB runs.
+  writeFileSync('test-results/pb-su-email.txt', suEmail);
+  writeFileSync('test-results/pb-su-password.txt', suPassword);
   const env = {
     ...process.env,
     PB_TELEMETRY: '0',

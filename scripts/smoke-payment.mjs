@@ -33,7 +33,6 @@
 //   23. rate limit returns a real HTTP 429
 //   24. no leftover process / temp data
 
-import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 
 const PORT = Number(process.env.PB_SMOKE_PAY_PORT ?? 18091);
@@ -67,7 +66,7 @@ async function runScenario(label, fn, args) {
   try {
     await fn(args);
   } catch (err) {
-    console.error(`✗ scenario ${label} threw: ${err && err.stack ? err.stack : err}`);
+    console.error(`✗ scenario ${label} threw: ${err?.stack ? err.stack : err}`);
     exitCode = 1;
   } finally {
     const failed = exitCode !== beforeExit;
@@ -233,33 +232,13 @@ async function loginByPhone(canonical) {
 
 // ---- Plan and destination fixture management (superuser tool). ----
 
-function randomSuperuserCreds() {
-  const id = randomBytes(8).toString('hex');
-  return {
-    email: `smoke-pay-${id}@fep-smoke.invalid`,
-    password: `Smoke-${id}-${randomBytes(6).toString('hex')}`,
-  };
-}
-
 async function getSuperuserToken() {
-  const dataDir = process.env.PB_DATA_DIR;
-  if (!dataDir) {
-    throw new Error('PB_DATA_DIR not set; cannot create superuser');
-  }
-  const { email, password } = randomSuperuserCreds();
-  const env = {
-    ...process.env,
-    PB_TELEMETRY: '0',
-    PB_FEEDBACK: '0',
-    PB_ENCRYPTION: process.env.PB_ENCRYPTION ?? 'dev-encryption-key-not-for-prod',
-  };
-  const upsert = spawnSync(
-    'server/pocketbase',
-    ['superuser', 'upsert', email, password, '--dir', dataDir],
-    { env, stdio: ['ignore', 'ignore', 'pipe'] },
-  );
-  if (upsert.status !== 0) {
-    throw new Error(`superuser upsert failed: ${upsert.stderr?.toString()}`);
+  const email = process.env.PB_TEST_SU_EMAIL;
+  const password = process.env.PB_TEST_SU_PASSWORD;
+  if (!email || !password) {
+    throw new Error(
+      'PB_TEST_SU_EMAIL/PASSWORD not set; shell wrapper must create superuser before serve',
+    );
   }
   const auth = await jsonFetch('/api/collections/_superusers/auth-with-password', {
     method: 'POST',
@@ -375,7 +354,7 @@ async function fetchDestination(suToken, destId) {
   return r.body;
 }
 
-async function setPlanActive(suToken, planId, isActive) {
+async function _setPlanActive(suToken, planId, isActive) {
   // PATCH on a PB record requires all required fields. We re-fetch the
   // current record and overlay the change so we never accidentally
   // reset a value.

@@ -12,8 +12,13 @@
 #   4. Auth smoke (real PB; P0-S3 contract)
 #   5. Payment smoke (real PB; P1-S1 23/23 contract)
 #   6. Payment-preview smoke (real PB; P1-S1D 12/12 contract)
-#   7. Build both surfaces deterministically
-#   8. Topology output verification
+#   7. Placement smoke (Phase 2)
+#   8. Placement-levels smoke (Phase 2)
+#   9. Operator smoke (Phase 2)
+#  10. Multi-tab race smoke (Phase 2 closure; atomic answer save proof)
+#  11. Snapshot capacity smoke (Phase 2 closure; max-content proof)
+#  12. Build both surfaces deterministically
+#  13. Topology output verification
 #
 # Playwright E2E is run separately via `pnpm test:e2e` so that
 # review-time runs of `scripts/verify.sh` stay fast and offline.
@@ -46,11 +51,26 @@ run bash scripts/smoke-payment.sh node scripts/smoke-payment.mjs
 # 6. Payment-preview smoke against disposable PB (12/12).
 run bash scripts/smoke-payment.sh node scripts/smoke-payment-preview.mjs
 
-# 7. Build both surfaces deterministically.
+# 7. Placement smoke (Phase 2; 40+ assertions).
+run bash scripts/smoke-placement.sh node scripts/smoke-placement.mjs
+
+# 8. Placement-levels smoke (Phase 2; level selection + dashboard).
+run bash scripts/smoke-placement.sh node scripts/smoke-placement-levels.mjs
+
+# 9. Operator smoke (Phase 2; operator approval + management).
+run bash scripts/smoke-payment.sh node scripts/smoke-operator.mjs
+
+# 10. Multi-tab race smoke (Phase 2 closure; atomic answer save proof).
+run bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs
+
+# 11. Snapshot capacity smoke (Phase 2 closure; max-content proof).
+run bash scripts/smoke-placement.sh node scripts/smoke-placement-capacity.mjs
+
+# 12. Build both surfaces deterministically.
 run npx vite build --config vite.app.config.ts
 run npx vite build --config vite.landing.config.ts
 
-# 8. Topology output verification.
+# 13. Topology output verification.
 printf '\n=== topology verification ===\n'
 
 test -f dist-landing/index.html || { echo 'missing dist-landing/index.html' >&2; exit 1; }

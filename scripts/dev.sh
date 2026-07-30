@@ -15,6 +15,10 @@ fi
 DATA_DIR="$(mktemp -d -t pb-dev-XXXXXX)"
 PORT="${PB_PORT:-8090}"
 HTTP="http://127.0.0.1:${PORT}"
+
+# Create a disposable test superuser so PB does not open the browser installer.
+source "$REPO_ROOT/scripts/pb-test-helper.sh"
+pb_create_superuser "$DATA_DIR"
 # Dev-only CORS allowlist. Includes:
 #   - Vite dev server on localhost / 127.0.0.1
 #   - Capacitor's default https://localhost (debug APK bundled assets)

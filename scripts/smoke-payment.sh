@@ -16,6 +16,10 @@ DATA_DIR="$(mktemp -d -t pb-smoke-pay-XXXXXX)"
 PORT="${PB_SMOKE_PAY_PORT:-18091}"
 HTTP="http://127.0.0.1:${PORT}"
 
+# Create a disposable test superuser so PB does not open the browser installer.
+source "$REPO_ROOT/scripts/pb-test-helper.sh"
+pb_create_superuser "$DATA_DIR"
+
 PID=""
 
 cleanup() {

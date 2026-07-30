@@ -1,16 +1,16 @@
 // app/src/app/App.tsx
 import { Box } from '@mui/material';
 import { Navigate, Route, Routes, useLocation } from 'react-router';
+import { DashboardRoute } from '../features/dashboard';
 import { PaymentRoute, PaymentStatusRoute } from '../features/payment';
+import { LevelResultRoute, PlacementRoute } from '../features/placement';
 import { AuthProvider, decideRoute, type RouteKind, useAuth } from '../lib/auth';
 import { AccountRoute } from './routes/AccountRoute';
-import { DashboardRoute } from './routes/DashboardRoute';
 import { EntryRoute } from './routes/EntryRoute';
 import { LessonDemoRoute } from './routes/LessonDemoRoute';
 import { LessonsRoute } from './routes/LessonsRoute';
 import { LoginRoute } from './routes/LoginRoute';
 import { OperatorRoute } from './routes/OperatorRoute';
-import { PlacementRoute } from './routes/PlacementRoute';
 import { SignupRoute } from './routes/SignupRoute';
 import { AppShell } from './shell/AppShell';
 import { PageContainer } from './shell/PageContainer';
@@ -126,6 +126,14 @@ function ThemedApp() {
               }
             />
             <Route
+              path="/placement/result"
+              element={
+                <Guard kind="active-only">
+                  <LevelResultRoute />
+                </Guard>
+              }
+            />
+            <Route
               path="/lessons"
               element={
                 <Guard kind="active-only">
@@ -158,7 +166,7 @@ function ThemedApp() {
               }
             />
             <Route
-              path="/operator"
+              path="/operator/*"
               element={
                 <Guard kind="operator-only">
                   <OperatorRoute />
