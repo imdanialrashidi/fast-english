@@ -7,8 +7,8 @@
 //
 // Run: node scripts/smoke-placement-capacity.mjs
 
-import { randomBytes } from 'node:crypto';
 import { ok } from 'node:assert';
+import { randomBytes } from 'node:crypto';
 
 const PB_URL = process.env.PB_SMOKE_URL || '';
 if (!PB_URL) {

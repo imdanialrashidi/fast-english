@@ -57,11 +57,11 @@ export function DashboardRoute() {
                 <Box>
                   <Typography
                     component={RouterLink}
-                    to="/lessons/demo"
+                    to="/lessons"
                     variant="h3"
                     sx={{ color: 'text.primary', textDecoration: 'none', display: 'block' }}
                   >
-                    یک روز کاری معمولی
+                    مشاهدهٔ درس‌های من
                   </Typography>
                   <Typography
                     lang="en"
@@ -92,12 +92,12 @@ export function DashboardRoute() {
                 <Box>
                   <Button
                     component={RouterLink}
-                    to="/lessons/demo"
+                    to="/lessons"
                     variant="contained"
                     size="large"
                     endIcon={<ArrowForwardRoundedIcon sx={{ transform: 'scaleX(-1)' }} />}
                   >
-                    مشاهدهٔ این درس
+                    مشاهدهٔ درس‌ها
                   </Button>
                 </Box>
               </Stack>

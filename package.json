@@ -30,6 +30,8 @@
     "smoke:placement-levels": "bash scripts/smoke-placement.sh node scripts/smoke-placement-levels.mjs",
     "smoke:placement-race": "bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs",
     "smoke:placement-capacity": "bash scripts/smoke-placement.sh node scripts/smoke-placement-capacity.mjs",
+    "smoke:lessons": "bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs",
+    "smoke:progress": "bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs",
     "test:e2e": "playwright test",
     "android:sync": "cap sync android",
     "android:build:debug": "cd android && ./gradlew assembleDebug --no-daemon",

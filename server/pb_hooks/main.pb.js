@@ -341,3 +341,164 @@ onRecordUpdate((e) => {
 // because PB 0.39 model hooks fire for ALL saves including those from
 // custom routes, and a blanket rejection would break the placement
 // routes. The collection-level null rules are the authoritative defense.
+
+// --- P3-S1: Publishing invariants for topics ---
+//
+// Auto-set published_at / archived_at when status transitions.
+// The collection-level rules (null) already block direct API access;
+// this hook normalises dates when superuser dashboard saves a record.
+
+onRecordCreate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'topics') { e.next(); return; }
+  var status = e.record.get('status');
+  if (status === 'published' && !e.record.get('published_at')) {
+    e.record.set('published_at', new Date().toISOString());
+  }
+  if (status === 'archived' && !e.record.get('archived_at')) {
+    e.record.set('archived_at', new Date().toISOString());
+  }
+  e.next();
+}, 'topics');
+
+onRecordUpdate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'topics') { e.next(); return; }
+  var originalStatus = e.originalRecord ? e.originalRecord.get('status') : null;
+  var newStatus = e.record.get('status');
+  if (newStatus !== originalStatus) {
+    if (newStatus === 'published' && !e.record.get('published_at')) {
+      e.record.set('published_at', new Date().toISOString());
+    }
+    if (newStatus === 'archived' && !e.record.get('archived_at')) {
+      e.record.set('archived_at', new Date().toISOString());
+    }
+  }
+  e.next();
+}, 'topics');
+
+// --- P3-S1: Publishing invariants for lessons ---
+//
+// Enforce:
+//   - Published lesson requires a published Topic.
+//   - Published lesson requires title, body, level, audio, and a valid
+//     audio_duration_seconds (server-authoritative duration denominator).
+//   - published_at is server-controlled.
+//   - Archived lessons are not accessible (enforced by viewRule).
+//   - Draft lessons are not accessible (enforced by viewRule).
+//   - Invalid CEFR levels are rejected (enforced by SelectField).
+//   - Topic/level uniqueness cannot be bypassed (enforced by unique index).
+//   - Public sample must also be published.
+//   - Audio replacement/removal cannot leave a Published lesson invalid.
+
+onRecordCreate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'lessons') { e.next(); return; }
+  var status = e.record.get('status');
+  var isSample = e.record.get('is_public_sample');
+
+  // Public sample must be published
+  if (isSample && status !== 'published') {
+    throw new BadRequestError('Public sample must be published.', { code: 'invalid_lesson' });
+  }
+
+  // Auto-set timestamps
+  if (status === 'published' && !e.record.get('published_at')) {
+    e.record.set('published_at', new Date().toISOString());
+  }
+  if (status === 'archived' && !e.record.get('archived_at')) {
+    e.record.set('archived_at', new Date().toISOString());
+  }
+
+  // Published lesson validation (inlined because PB 0.39 JSVM does not
+  // share top-level function declarations with hook scopes).
+  if (status === 'published') {
+    var pubTopicId = e.record.get('topic');
+    var pubTopic = null;
+    try { if (pubTopicId) { pubTopic = $app.findRecordById('topics', String(typeof pubTopicId === 'object' && pubTopicId ? pubTopicId.id || '' : pubTopicId)); } } catch (_) {}
+    if (!pubTopic || pubTopic.get('status') !== 'published') {
+      throw new BadRequestError('Published lesson requires a published Topic.', { code: 'invalid_lesson' });
+    }
+    var pTitle = e.record.get('title');
+    if (!pTitle || String(pTitle).trim() === '') {
+      throw new BadRequestError('Published lesson requires a title.', { code: 'invalid_lesson' });
+    }
+    var pBody = e.record.get('body');
+    if (!pBody || String(pBody).trim() === '') {
+      throw new BadRequestError('Published lesson requires body text.', { code: 'invalid_lesson' });
+    }
+    var pLevel = e.record.get('level');
+    if (!pLevel) {
+      throw new BadRequestError('Published lesson requires a level.', { code: 'invalid_lesson' });
+    }
+    var pAudio = e.record.get('audio');
+    if (!pAudio) {
+      throw new BadRequestError('Published lesson requires audio.', { code: 'invalid_lesson' });
+    }
+    var pDur = Number(e.record.get('audio_duration_seconds') || 0);
+    if (!isNaN(pDur) && isFinite(pDur) && pDur > 0 && pDur <= 86400) {
+      // valid
+    } else {
+      throw new BadRequestError('Published lesson requires a valid audio_duration_seconds (1–86400).', { code: 'invalid_lesson' });
+    }
+  }
+
+  e.next();
+}, 'lessons');
+
+onRecordUpdate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'lessons') { e.next(); return; }
+  var status = e.record.get('status');
+  var isSample = e.record.get('is_public_sample');
+
+  // Public sample must be published
+  if (isSample && status !== 'published') {
+    throw new BadRequestError('Public sample must be published.', { code: 'invalid_lesson' });
+  }
+
+  // Auto-set timestamps
+  var originalStatus = e.originalRecord ? e.originalRecord.get('status') : null;
+  if (status !== originalStatus) {
+    if (status === 'published' && !e.record.get('published_at')) {
+      e.record.set('published_at', new Date().toISOString());
+    }
+    if (status === 'archived' && !e.record.get('archived_at')) {
+      e.record.set('archived_at', new Date().toISOString());
+    }
+  }
+
+  // Published lesson validation (inlined)
+  if (status === 'published') {
+    var pubTopicId2 = e.record.get('topic');
+    var pubTopic2 = null;
+    try { if (pubTopicId2) { pubTopic2 = $app.findRecordById('topics', String(typeof pubTopicId2 === 'object' && pubTopicId2 ? pubTopicId2.id || '' : pubTopicId2)); } } catch (_) {}
+    if (!pubTopic2 || pubTopic2.get('status') !== 'published') {
+      throw new BadRequestError('Published lesson requires a published Topic.', { code: 'invalid_lesson' });
+    }
+    var pTitle2 = e.record.get('title');
+    if (!pTitle2 || String(pTitle2).trim() === '') {
+      throw new BadRequestError('Published lesson requires a title.', { code: 'invalid_lesson' });
+    }
+    var pBody2 = e.record.get('body');
+    if (!pBody2 || String(pBody2).trim() === '') {
+      throw new BadRequestError('Published lesson requires body text.', { code: 'invalid_lesson' });
+    }
+    var pLevel2 = e.record.get('level');
+    if (!pLevel2) {
+      throw new BadRequestError('Published lesson requires a level.', { code: 'invalid_lesson' });
+    }
+    var pAudio2 = e.record.get('audio');
+    if (!pAudio2) {
+      throw new BadRequestError('Published lesson requires audio.', { code: 'invalid_lesson' });
+    }
+    var pDur2 = Number(e.record.get('audio_duration_seconds') || 0);
+    if (!isNaN(pDur2) && isFinite(pDur2) && pDur2 > 0 && pDur2 <= 86400) {
+      // valid
+    } else {
+      throw new BadRequestError('Published lesson requires a valid audio_duration_seconds (1–86400).', { code: 'invalid_lesson' });
+    }
+  }
+
+  e.next();
+}, 'lessons');

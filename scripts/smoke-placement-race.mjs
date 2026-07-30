@@ -13,8 +13,8 @@
 //
 // Run: bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs
 
-import { randomBytes } from 'node:crypto';
 import { ok } from 'node:assert';
+import { randomBytes } from 'node:crypto';
 
 const PB_URL = process.env.PB_SMOKE_URL || '';
 if (!PB_URL) {
@@ -332,7 +332,7 @@ ok(
 );
 let answeredCount = 0;
 for (const k in finalAns) {
-  if (finalAns.hasOwnProperty(k)) answeredCount++;
+  if (Object.hasOwn(finalAns, k)) answeredCount++;
 }
 ok(answeredCount >= 19, `expected at least 19 unique answered, got ${answeredCount}`);
 console.log(`${answeredCount} unique questions answered`);

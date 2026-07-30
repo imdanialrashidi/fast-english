@@ -560,6 +560,99 @@ routerAdd(
         }
       }
 
+      // P3-S2: Count real lessons and progress for this level
+      var LESSONS_C = "lessons";
+      var TOPICS_C = "topics";
+      var PROGRESS_C = "lesson_progress";
+      var publishedCount = 0;
+      var startedCount = 0;
+      var completedCount = 0;
+      var continueKind = "no_lessons";
+      var continueLessonId = "";
+
+      try {
+        var lHits = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "", 0, 0, { lvl: selLvl });
+        if (lHits && lHits.length > 0) {
+          for (var li = 0; li < lHits.length; li++) {
+            var ls = lHits[li];
+            if (!ls) continue;
+            var tId2 = "";
+            try { tId2 = String(ls.get("topic") || ""); } catch (_) {}
+            if (tId2) {
+              try { var tR = $app.findRecordById(TOPICS_C, tId2); if (tR && tR.get("status") === "published") publishedCount++; } catch (_) {}
+            }
+          }
+        }
+
+        // Load progress for this user
+        var pHits = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "", 0, 0, { uid: uid });
+        if (pHits && pHits.length > 0) {
+          for (var pi = 0; pi < pHits.length; pi++) {
+            var pr = pHits[pi];
+            if (!pr) continue;
+            if (Boolean(pr.get("completed"))) completedCount++;
+            if (Number(pr.get("furthest_seconds") || 0) > 0) startedCount++;
+          }
+        }
+
+        // Determine Continue Learning state — find most recent incomplete
+        var progByLsn = {};
+        if (pHits && pHits.length > 0) {
+          for (var pi2 = 0; pi2 < pHits.length; pi2++) {
+            var pr2 = pHits[pi2];
+            if (!pr2) continue;
+            progByLsn[String(pr2.get("lesson") || "")] = pr2;
+          }
+        }
+
+        // Published lesson IDs
+        var pubIds = [];
+        var pubMap = {};
+        if (lHits && lHits.length > 0) {
+          for (var li2 = 0; li2 < lHits.length; li2++) {
+            var ls2 = lHits[li2];
+            if (!ls2) continue;
+            var lid2 = String(ls2.id || "");
+            var tId3 = "";
+            try { tId3 = String(ls2.get("topic") || ""); } catch (_) {}
+            if (tId3) {
+              try { var tR2 = $app.findRecordById(TOPICS_C, tId3); if (tR2 && tR2.get("status") === "published") { pubIds.push(lid2); pubMap[lid2] = ls2; } } catch (_) {}
+            }
+          }
+        }
+
+        // Most recent incomplete lesson
+        if (pHits && pHits.length > 0) {
+          var sorted = []; for (var si = 0; si < pHits.length; si++) sorted.push(pHits[si]);
+          sorted.sort(function(a,b) { return String(b.get("last_played_at") || "").localeCompare(String(a.get("last_played_at") || "")); });
+          for (var si2 = 0; si2 < sorted.length; si2++) {
+            var sr = sorted[si2];
+            if (!sr) continue;
+            var srLid = String(sr.get("lesson") || "");
+            if (pubMap[srLid] && !Boolean(sr.get("completed"))) {
+              continueKind = "incomplete";
+              continueLessonId = srLid;
+              break;
+            }
+          }
+        }
+        if (!continueLessonId) {
+          // First uncompleted lesson
+          for (var ui = 0; ui < pubIds.length; ui++) {
+            var pid = pubIds[ui];
+            var pRec = progByLsn[pid];
+            if (!pRec || !Boolean(pRec.get("completed"))) {
+              continueKind = pubIds.length > 0 ? "unstarted" : "no_lessons";
+              continueLessonId = pid;
+              break;
+            }
+          }
+        }
+        if (!continueLessonId && pubIds.length > 0) {
+          continueKind = "all_completed";
+        }
+      } catch (_) {}
+
       return e.json(200, {
         student: {
           name: name,
@@ -579,10 +672,18 @@ routerAdd(
           remainingDays: remainingDays,
         },
         lessons: {
-          kind: "not_implemented",
+          publishedCount: publishedCount,
         },
         progress: {
-          kind: "unavailable_until_phase_3",
+          kind: "available",
+          startedLessonCount: startedCount,
+          completedLessonCount: completedCount,
+          publishedLessonCount: publishedCount,
+          completionPercent: publishedCount > 0 ? Math.round((completedCount / publishedCount) * 100) : 0,
+        },
+        continueLearning: {
+          kind: continueKind,
+          lessonId: continueLessonId,
         },
       });
 

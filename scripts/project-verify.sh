@@ -66,11 +66,17 @@ run bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs
 # 11. Snapshot capacity smoke (Phase 2 closure; max-content proof).
 run bash scripts/smoke-placement.sh node scripts/smoke-placement-capacity.mjs
 
-# 12. Build both surfaces deterministically.
+# 12. Lessons smoke (P3-S1; 25+ assertions for topics, publishing, entitlement, protected audio).
+run bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
+
+# 13. Progress smoke (P3-S2; 30+ assertions for progress persistence, entitlement, concurrency).
+run bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs
+
+# 14. Build both surfaces deterministically.
 run npx vite build --config vite.app.config.ts
 run npx vite build --config vite.landing.config.ts
 
-# 13. Topology output verification.
+# 15. Topology output verification.
 printf '\n=== topology verification ===\n'
 
 test -f dist-landing/index.html || { echo 'missing dist-landing/index.html' >&2; exit 1; }

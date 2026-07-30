@@ -2,13 +2,12 @@
 import { Box } from '@mui/material';
 import { Navigate, Route, Routes, useLocation } from 'react-router';
 import { DashboardRoute } from '../features/dashboard';
+import { LessonDetailRoute, LessonsRoute, SampleRoute } from '../features/lessons';
 import { PaymentRoute, PaymentStatusRoute } from '../features/payment';
 import { LevelResultRoute, PlacementRoute } from '../features/placement';
 import { AuthProvider, decideRoute, type RouteKind, useAuth } from '../lib/auth';
 import { AccountRoute } from './routes/AccountRoute';
 import { EntryRoute } from './routes/EntryRoute';
-import { LessonDemoRoute } from './routes/LessonDemoRoute';
-import { LessonsRoute } from './routes/LessonsRoute';
 import { LoginRoute } from './routes/LoginRoute';
 import { OperatorRoute } from './routes/OperatorRoute';
 import { SignupRoute } from './routes/SignupRoute';
@@ -145,7 +144,7 @@ function ThemedApp() {
               path="/lessons/:id"
               element={
                 <Guard kind="active-only">
-                  <LessonDemoRoute />
+                  <LessonDetailRoute />
                 </Guard>
               }
             />
@@ -153,7 +152,7 @@ function ThemedApp() {
               path="/lessons/demo"
               element={
                 <Guard kind="active-only">
-                  <LessonDemoRoute />
+                  <LessonDetailRoute />
                 </Guard>
               }
             />
@@ -175,6 +174,7 @@ function ThemedApp() {
             />
           </Route>
 
+          <Route path="/sample" element={<SampleRoute />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>

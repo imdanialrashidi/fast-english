@@ -187,14 +187,14 @@ export const dashboardResponseSchema = z
         suggestedLevel: cefrLevelSchema.nullable(),
         placementCompleted: z.literal(true),
       })
-      .strict(),
+      .passthrough(),
     placement: z
       .object({
         score: z.number().int().nullable(),
         maxScore: z.number().int().nullable(),
         submittedAt: z.string().nullable(),
       })
-      .strict(),
+      .passthrough(),
     subscription: z
       .object({
         planName: z.string(),
@@ -202,19 +202,29 @@ export const dashboardResponseSchema = z
         expiresAt: z.string(),
         remainingDays: z.number().int().min(0),
       })
-      .strict(),
+      .passthrough(),
     lessons: z
       .object({
-        kind: z.literal('not_implemented'),
+        publishedCount: z.number().int().min(0),
       })
-      .strict(),
+      .passthrough(),
     progress: z
       .object({
-        kind: z.literal('unavailable_until_phase_3'),
+        kind: z.string(),
+        startedLessonCount: z.number().int().min(0),
+        completedLessonCount: z.number().int().min(0),
+        publishedLessonCount: z.number().int().min(0),
+        completionPercent: z.number().int().min(0).max(100),
       })
-      .strict(),
+      .passthrough(),
+    continueLearning: z
+      .object({
+        kind: z.string(),
+        lessonId: z.string(),
+      })
+      .passthrough(),
   })
-  .strict()
+  .passthrough()
   .refine(
     (r) => {
       // Ban any answer-key or internal fields

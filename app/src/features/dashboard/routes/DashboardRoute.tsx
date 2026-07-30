@@ -1,8 +1,19 @@
 // app/src/features/dashboard/routes/DashboardRoute.tsx
-// P2-S2 — Active Student Dashboard.
+// P3-S2 — Active Student Dashboard with real progress data.
 
-import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
-import { Box, Button, Card, CardContent, Chip, Stack, Typography } from '@mui/material';
+import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
+import PlayCircleRoundedIcon from '@mui/icons-material/PlayCircleRounded';
+import {
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  Chip,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { PageContainer } from '../../../app/shell/PageContainer';
@@ -13,14 +24,11 @@ import * as placementApi from '../../placement/api';
 import {
   CEFR_LEVEL_LABELS,
   DASHBOARD_ACCOUNT,
-  DASHBOARD_LESSONS_SHELL,
-  DASHBOARD_LESSONS_SOON,
   DASHBOARD_LOADING,
   DASHBOARD_LOGOUT,
   DASHBOARD_NO_ENTITLEMENT,
   DASHBOARD_PLACEMENT_SUMMARY,
   DASHBOARD_PROGRESS,
-  DASHBOARD_PROGRESS_PLACEHOLDER,
   DASHBOARD_SUBSCRIPTION,
   DASHBOARD_SUPPORT,
   DASHBOARD_UNAVAILABLE,
@@ -148,7 +156,11 @@ export function DashboardRoute() {
   // Ready — render dashboard
   if (!dashboard || !user) return null;
 
-  const { student, placement, subscription } = dashboard;
+  const { student, placement, subscription, progress: prog, continueLearning, lessons } = dashboard;
+  const hasContinueLesson =
+    continueLearning?.lessonId &&
+    continueLearning.kind !== 'no_lessons' &&
+    continueLearning.kind !== 'all_completed';
 
   return (
     <PageContainer>
@@ -159,6 +171,27 @@ export function DashboardRoute() {
       />
 
       <Stack spacing={2}>
+        {/* Continue Learning Card */}
+        {hasContinueLesson && (
+          <Card variant="outlined" sx={{ borderColor: 'primary.main', borderWidth: 2 }}>
+            <CardActionArea onClick={() => navigate(`/lessons/${continueLearning.lessonId}`)}>
+              <CardContent>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 1 }}>
+                  <PlayCircleRoundedIcon color="primary" />
+                  <Typography variant="h6" color="primary.main" sx={{ fontWeight: 700 }}>
+                    ادامه یادگیری
+                  </Typography>
+                </Stack>
+                <Typography variant="body2" color="text.secondary">
+                  {continueLearning.kind === 'incomplete'
+                    ? 'درس ناقص را ادامه دهید'
+                    : 'درس جدید را شروع کنید'}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        )}
+
         {/* Selected Level Card */}
         <Card variant="outlined">
           <CardContent>
@@ -194,23 +227,67 @@ export function DashboardRoute() {
           </CardContent>
         </Card>
 
-        {/* Lessons Shell (honest placeholder) */}
+        {/* Lessons Overview */}
         <Card variant="outlined">
           <CardContent>
             <Stack spacing={1}>
               <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                <SchoolRoundedIcon color="action" />
-                <Typography variant="h6">{DASHBOARD_LESSONS_SHELL}</Typography>
-                <Chip
-                  label={DASHBOARD_LESSONS_SOON}
-                  size="small"
-                  color="default"
-                  variant="outlined"
-                />
+                <AutoStoriesRoundedIcon color="action" />
+                <Typography variant="h6">دروس آموزشی</Typography>
               </Stack>
-              <Typography variant="body2" color="text.secondary">
-                {DASHBOARD_PROGRESS_PLACEHOLDER}
-              </Typography>
+              <Stack direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                    {lessons.publishedCount}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    درس منتشر شده
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                    {prog.startedLessonCount}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    شروع شده
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: 'success.main' }}>
+                    {prog.completedLessonCount}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    کامل شده
+                  </Typography>
+                </Box>
+              </Stack>
+              {prog.publishedLessonCount > 0 && (
+                <Box sx={{ mt: 1 }}>
+                  <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      پیشرفت
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {prog.completionPercent}%
+                    </Typography>
+                  </Stack>
+                  <LinearProgress
+                    variant="determinate"
+                    value={prog.completionPercent}
+                    sx={{ borderRadius: 1, height: 6 }}
+                  />
+                </Box>
+              )}
+              <Box>
+                <Button
+                  size="small"
+                  variant="text"
+                  onClick={() => navigate('/lessons')}
+                  startIcon={<AutoStoriesRoundedIcon />}
+                >
+                  مشاهده درس‌ها
+                </Button>
+              </Box>
             </Stack>
           </CardContent>
         </Card>
@@ -264,15 +341,25 @@ export function DashboardRoute() {
           </CardContent>
         </Card>
 
-        {/* Progress (honest placeholder) */}
+        {/* Progress Summary */}
         <Card variant="outlined">
           <CardContent>
             <Typography variant="h6" sx={{ mb: 1 }}>
               {DASHBOARD_PROGRESS}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {DASHBOARD_PROGRESS_PLACEHOLDER}
-            </Typography>
+            <Stack spacing={0.5}>
+              {prog.startedLessonCount > 0 ? (
+                <>
+                  <Typography variant="body2">شروع شده: {prog.startedLessonCount} درس</Typography>
+                  <Typography variant="body2">کامل شده: {prog.completedLessonCount} درس</Typography>
+                  <Typography variant="body2">پیشرفت کلی: {prog.completionPercent}%</Typography>
+                </>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  هنوز درسی را شروع نکرده‌اید.
+                </Typography>
+              )}
+            </Stack>
           </CardContent>
         </Card>
 

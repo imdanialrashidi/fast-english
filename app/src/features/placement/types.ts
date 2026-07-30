@@ -134,9 +134,17 @@ export interface DashboardResponse {
     remainingDays: number;
   };
   lessons: {
-    kind: 'not_implemented';
+    publishedCount: number;
   };
   progress: {
-    kind: 'unavailable_until_phase_3';
+    kind: string;
+    startedLessonCount: number;
+    completedLessonCount: number;
+    publishedLessonCount: number;
+    completionPercent: number;
+  };
+  continueLearning: {
+    kind: string;
+    lessonId: string;
   };
 }
