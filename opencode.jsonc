@@ -15,16 +15,6 @@
   "formatter": true,
   "lsp": true,
 
-  // Native image attachments are sent directly to vision-capable models.
-  "attachment": {
-    "image": {
-      "auto_resize": true,
-      "max_width": 2000,
-      "max_height": 2000,
-      "max_base64_bytes": 5242880
-    }
-  },
-
   // Keep long autonomous debugging sessions useful without retaining every
   // historical tool result forever.
   "compaction": {
@@ -353,7 +343,8 @@
       "description": "Autonomous primary implementation and debugging agent. Inspects the repository, runs real local services, reproduces failures, implements the bounded task, verifies it end to end, and continues until completion or a true hard blocker.",
       "mode": "primary",
       "model": "{env:OC_MAIN_MODEL}",
-      "temperature": 0.1,
+      "variant": "{env:OC_MAIN_VARIANT}",
+      "reasoningEffort": "{env:OC_MAIN_REASONING_EFFORT}",
       "prompt": "{file:.opencode/prompts/build.md}",
 
       // Intentionally no steps limit: long debugging sessions must not be
@@ -388,7 +379,8 @@
       "description": "Architecture, planning and risk agent. Reads code and current dependency documentation, but cannot change application code or run mutating shell workflows.",
       "mode": "primary",
       "model": "{env:OC_ARCH_MODEL}",
-      "temperature": 0.1,
+      "variant": "{env:OC_ARCH_VARIANT}",
+      "reasoningEffort": "{env:OC_ARCH_REASONING_EFFORT}",
       "prompt": "{file:.opencode/prompts/plan.md}",
 
       "tools": {
@@ -452,46 +444,6 @@
       }
     },
 
-    "vision": {
-      "description": "Native multimodal inspection agent for images, screenshots, mockups, diagrams, visual regressions, responsive layouts, RTL/LTR and accessibility. Switch to it with Tab whenever direct visual understanding is required.",
-      "mode": "primary",
-      "model": "{env:OC_VISION_MODEL}",
-      "variant": "{env:OC_VISION_VARIANT}",
-      "options": {
-        "reasoningEffort": "{env:OC_VISION_REASONING_EFFORT}",
-        "textVerbosity": "low",
-        "reasoningSummary": "auto"
-      },
-      "color": "info",
-      "steps": 32,
-      "prompt": "{file:.opencode/prompts/vision.md}",
-
-      "tools": {
-        "context7_*": false,
-        "playwright_*": true,
-        "playwright_browser_run_code_unsafe": false
-      },
-
-      "permission": {
-        "question": "deny",
-        "edit": "deny",
-        "task": "deny",
-        "skill": "deny",
-
-        "context7_*": "deny",
-        "playwright_*": "allow",
-        "playwright_browser_run_code_unsafe": "deny",
-
-        "bash": {
-          "*": "deny",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow"
-        }
-      }
-    },
-
     "general": { "disable": true },
     "explore": { "disable": true },
     "scout": { "disable": true },
@@ -500,7 +452,8 @@
       "description": "Bounded subagent for mechanical, low-risk repository work delegated by the primary agent.",
       "mode": "subagent",
       "model": "{env:OC_FAST_MODEL}",
-      "temperature": 0.1,
+      "variant": "{env:OC_FAST_VARIANT}",
+      "reasoningEffort": "{env:OC_FAST_REASONING_EFFORT}",
       "prompt": "{file:.opencode/prompts/fast.md}",
 
       "tools": {
