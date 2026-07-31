@@ -572,40 +572,9 @@ routerAdd(
 
       try {
         var lHits = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "", 0, 0, { lvl: selLvl });
-        if (lHits && lHits.length > 0) {
-          for (var li = 0; li < lHits.length; li++) {
-            var ls = lHits[li];
-            if (!ls) continue;
-            var tId2 = "";
-            try { tId2 = String(ls.get("topic") || ""); } catch (_) {}
-            if (tId2) {
-              try { var tR = $app.findRecordById(TOPICS_C, tId2); if (tR && tR.get("status") === "published") publishedCount++; } catch (_) {}
-            }
-          }
-        }
 
-        // Load progress for this user
-        var pHits = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "", 0, 0, { uid: uid });
-        if (pHits && pHits.length > 0) {
-          for (var pi = 0; pi < pHits.length; pi++) {
-            var pr = pHits[pi];
-            if (!pr) continue;
-            if (Boolean(pr.get("completed"))) completedCount++;
-            if (Number(pr.get("furthest_seconds") || 0) > 0) startedCount++;
-          }
-        }
-
-        // Determine Continue Learning state — find most recent incomplete
-        var progByLsn = {};
-        if (pHits && pHits.length > 0) {
-          for (var pi2 = 0; pi2 < pHits.length; pi2++) {
-            var pr2 = pHits[pi2];
-            if (!pr2) continue;
-            progByLsn[String(pr2.get("lesson") || "")] = pr2;
-          }
-        }
-
-        // Published lesson IDs
+        // Published lesson IDs at the current selected level (topic must also be
+        // published). Built once and reused for counts and Continue Learning.
         var pubIds = [];
         var pubMap = {};
         if (lHits && lHits.length > 0) {
@@ -616,8 +585,39 @@ routerAdd(
             var tId3 = "";
             try { tId3 = String(ls2.get("topic") || ""); } catch (_) {}
             if (tId3) {
-              try { var tR2 = $app.findRecordById(TOPICS_C, tId3); if (tR2 && tR2.get("status") === "published") { pubIds.push(lid2); pubMap[lid2] = ls2; } } catch (_) {}
+              try {
+                var tR2 = $app.findRecordById(TOPICS_C, tId3);
+                if (tR2 && tR2.get("status") === "published") {
+                  pubIds.push(lid2);
+                  pubMap[lid2] = ls2;
+                  publishedCount++;
+                }
+              } catch (_) {}
             }
+          }
+        }
+
+        // Progress counts are restricted to lessons currently published at the
+        // selected level, so changing level or archiving content cannot inflate
+        // started/completed counts or the completion percentage.
+        var pHits = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "", 0, 0, { uid: uid });
+        if (pHits && pHits.length > 0) {
+          for (var pi = 0; pi < pHits.length; pi++) {
+            var pr = pHits[pi];
+            if (!pr) continue;
+            if (!pubMap[String(pr.get("lesson") || "")]) continue;
+            if (Boolean(pr.get("completed"))) completedCount++;
+            if (Number(pr.get("furthest_seconds") || 0) > 0) startedCount++;
+          }
+        }
+
+        // Progress keyed by lesson for Continue Learning
+        var progByLsn = {};
+        if (pHits && pHits.length > 0) {
+          for (var pi2 = 0; pi2 < pHits.length; pi2++) {
+            var pr2 = pHits[pi2];
+            if (!pr2) continue;
+            progByLsn[String(pr2.get("lesson") || "")] = pr2;
           }
         }
 

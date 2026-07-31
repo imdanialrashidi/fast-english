@@ -5,25 +5,26 @@
 //   - Play/pause
 //   - Current time / total duration
 //   - Seek slider (keyboard accessible)
-//   - Skip backward 15s / forward 15s
+//   - Skip backward 10s / forward 10s
 //   - Playback speed (0.75×, 1×, 1.25×, 1.5×, 2×)
 //   - Volume / mute
 //   - Loading/buffering state
 //   - Error state with retry
 //   - Completed indicator
+//   - Resume from a saved position (initialPosition)
 //   - All controls keyboard accessible
 //   - Accessible slider labels
 
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
+import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import { Box, Button, Chip, IconButton, Slider, Stack, Tooltip, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
-import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
-import Forward30RoundedIcon from '@mui/icons-material/Forward30Rounded';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 export interface AudioPlayerProps {
   /** The audio source URL (from the protected audio proxy) */
@@ -42,6 +43,11 @@ export interface AudioPlayerProps {
   showCompleted?: boolean;
   /** Whether to auto-load metadata (don't auto-play) */
   preload?: 'none' | 'metadata' | 'auto';
+  /**
+   * Position (seconds) to seek to after metadata loads, e.g. a saved resume
+   * position. Applied once per value change; never auto-plays.
+   */
+  initialPosition?: number;
   /** Callback to refresh the audio source (e.g., get a new file token) */
   onRetry?: () => void;
 }
@@ -63,6 +69,7 @@ export function AudioPlayer({
   completed,
   showCompleted,
   preload = 'metadata',
+  initialPosition,
   onRetry,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -76,6 +83,7 @@ export function AudioPlayer({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isSeeking, setIsSeeking] = useState(false);
   const seekValueRef = useRef(0);
+  const pendingSeekRef = useRef<number | null>(null);
 
   // Reset state when source changes
   useEffect(() => {
@@ -90,12 +98,35 @@ export function AudioPlayer({
     setIsSeeking(false);
   }, [src]);
 
+  // Apply the resume position. Setting currentTime before metadata is loaded is
+  // legal and queued by the browser; the loadedmetadata handler re-applies it
+  // as a fallback for engines that ignore the early seek.
+  useEffect(() => {
+    if (initialPosition === undefined || initialPosition === null) {
+      pendingSeekRef.current = null;
+      return;
+    }
+    const audio = audioRef.current;
+    const target = Math.max(0, initialPosition);
+    if (audio) {
+      audio.currentTime = target;
+      setCurrentTime(target);
+    }
+    pendingSeekRef.current = target;
+  }, [initialPosition]);
+
   // --- Audio event handlers ---
   const handleLoadedMetadata = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
     setDuration(audio.duration || 0);
     setIsLoading(false);
+    if (pendingSeekRef.current !== null && Number.isFinite(audio.duration) && audio.duration > 0) {
+      const target = Math.min(pendingSeekRef.current, Math.max(0, audio.duration - 0.25));
+      audio.currentTime = target;
+      setCurrentTime(target);
+      pendingSeekRef.current = null;
+    }
   }, []);
 
   const handleTimeUpdate = useCallback(() => {
@@ -196,7 +227,7 @@ export function AudioPlayer({
   const skipBackward = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const newTime = Math.max(0, audio.currentTime - 15);
+    const newTime = Math.max(0, audio.currentTime - 10);
     audio.currentTime = newTime;
     setCurrentTime(newTime);
     onSeek?.(newTime);
@@ -206,7 +237,7 @@ export function AudioPlayer({
   const skipForward = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const newTime = Math.min(audio.duration || duration, audio.currentTime + 15);
+    const newTime = Math.min(audio.duration || duration, audio.currentTime + 10);
     audio.currentTime = newTime;
     setCurrentTime(newTime);
     onSeek?.(newTime);
@@ -386,10 +417,10 @@ export function AudioPlayer({
 
         {/* Control buttons */}
         <Stack direction="row" sx={{ justifyContent: 'center', alignItems: 'center', gap: 0.5 }}>
-          {/* Skip backward 15s */}
-          <Tooltip title="۱۵ ثانیه قبل">
+          {/* Skip backward 10s */}
+          <Tooltip title="۱۰ ثانیه قبل">
             <IconButton
-              aria-label="۱۵ ثانیه به عقب"
+              aria-label="۱۰ ثانیه به عقب"
               onClick={skipBackward}
               size="small"
               disabled={hasError}
@@ -421,15 +452,15 @@ export function AudioPlayer({
             {isPlaying ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
           </IconButton>
 
-          {/* Skip forward 15s */}
-          <Tooltip title="۱۵ ثانیه بعد">
+          {/* Skip forward 10s */}
+          <Tooltip title="۱۰ ثانیه بعد">
             <IconButton
-              aria-label="۱۵ ثانیه به جلو"
+              aria-label="۱۰ ثانیه به جلو"
               onClick={skipForward}
               size="small"
               disabled={hasError}
             >
-              <Forward30RoundedIcon />
+              <Forward10RoundedIcon />
             </IconButton>
           </Tooltip>
         </Stack>

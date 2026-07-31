@@ -47,6 +47,10 @@ let total = 0,
   passed = 0,
   failed = 0;
 
+// aScenario is fire-and-forget; track the promises so the summary can await
+// every scenario and failures always affect the exit code.
+const pendingScenarios = [];
+
 function scenario(name, fn) {
   total++;
   const start = Date.now();
@@ -58,23 +62,27 @@ function scenario(name, fn) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label} (${Date.now() - start}ms)`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message || String(err)}`);
   }
 }
 
-async function aScenario(name, fnPromise) {
+function aScenario(name, fnPromise) {
   total++;
   const start = Date.now();
   const label = `  ${String(total).padStart(2, '0')}. ${name}`;
-  try {
-    await fnPromise();
-    passed++;
-    console.log(`PASS ${label} (${Date.now() - start}ms)`);
-  } catch (err) {
-    failed++;
-    console.log(`FAIL ${label} (${Date.now() - start}ms)`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
-  }
+  const p = (async () => {
+    try {
+      await fnPromise();
+      passed++;
+      console.log(`PASS ${label} (${Date.now() - start}ms)`);
+    } catch (err) {
+      failed++;
+      console.log(`FAIL ${label} (${Date.now() - start}ms)`);
+      console.log(`       ${err?.message || String(err)}`);
+    }
+  })();
+  pendingScenarios.push(p);
+  return p;
 }
 
 function assert(cond, msg) {
@@ -230,8 +238,9 @@ async function makeLesson(su, topicId, overrides = {}) {
   var patch = { status: overrides.status || 'published' };
   if (overrides.is_public_sample) patch.is_public_sample = true;
   // Set server-authoritative duration for published lessons
+  var dur = 0;
   if ((overrides.status || 'published') === 'published') {
-    var dur = Number(overrides.audio_duration_seconds || 0);
+    dur = Number(overrides.audio_duration_seconds || 0);
     if (!(dur > 0)) dur = Number(overrides.estimated_minutes || 10) * 60;
     if (!(dur > 0)) dur = 600;
     patch.audio_duration_seconds = dur;
@@ -506,7 +515,7 @@ async function main() {
     status: 'published',
     sort_order: 5,
   });
-  const lesson2 = await makeLesson(su, topic2.id, { level: 'B1', title: 'Second B1' });
+  await makeLesson(su, topic2.id, { level: 'B1', title: 'Second B1' });
 
   // ==================================================================
   // Create the golden student (B1)
@@ -673,17 +682,20 @@ async function main() {
   });
   const revA = saveA.body?.revision;
 
-  // Both try to write with revision A (but only one will succeed)
-  const concur1 = await jf(`/api/fast-english/lessons/${dupId}/progress`, {
-    method: 'PUT',
-    headers: { authorization: `Bearer ${sToken}` },
-    body: JSON.stringify({ positionSeconds: 200, expectedRevision: revA }),
-  });
-  const concur2 = await jf(`/api/fast-english/lessons/${dupId}/progress`, {
-    method: 'PUT',
-    headers: { authorization: `Bearer ${sToken}` },
-    body: JSON.stringify({ positionSeconds: 300, expectedRevision: revA }),
-  });
+  // Both fire with revision A simultaneously (Promise.all — the requests must
+  // actually overlap so the in-transaction revision guard is exercised).
+  const [concur1, concur2] = await Promise.all([
+    jf(`/api/fast-english/lessons/${dupId}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${sToken}` },
+      body: JSON.stringify({ positionSeconds: 200, expectedRevision: revA }),
+    }),
+    jf(`/api/fast-english/lessons/${dupId}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${sToken}` },
+      body: JSON.stringify({ positionSeconds: 300, expectedRevision: revA }),
+    }),
+  ]);
 
   const firstOk = concur1.status === 200 ? concur1 : concur2;
   const secondStatus = concur1.status === 200 ? concur2.status : concur1.status;
@@ -706,6 +718,54 @@ async function main() {
   });
   aScenario('loser retry succeeds (200)', async () => {
     await assertHttp(loserRetry, 200, 'loser retry');
+  });
+
+  // ==================================================================
+  // 12b. First-save race: two clients start the same lesson together
+  // ==================================================================
+  const raceTopic = await makeTopic(su, {
+    slug: `t-race-${randId()}`,
+    status: 'published',
+    sort_order: 21,
+  });
+  const lessonRace = await makeLesson(su, raceTopic.id, { level: 'B1', title: 'Race test' });
+  const raceId = lessonRace.id;
+
+  const [race1, race2] = await Promise.all([
+    jf(`/api/fast-english/lessons/${raceId}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${sToken}` },
+      body: JSON.stringify({ positionSeconds: 80, expectedRevision: 0 }),
+    }),
+    jf(`/api/fast-english/lessons/${raceId}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${sToken}` },
+      body: JSON.stringify({ positionSeconds: 90, expectedRevision: 0 }),
+    }),
+  ]);
+
+  aScenario('first-save race: exactly one 200', () => {
+    const statuses = [race1.status, race2.status];
+    assert(
+      statuses.filter((s) => s === 200).length === 1,
+      `expected exactly one 200, got ${JSON.stringify(statuses)}`,
+    );
+  });
+  aScenario('first-save race: loser gets a safe 409', () => {
+    const statuses = [race1.status, race2.status];
+    const loser = statuses.find((s) => s !== 200);
+    assert(loser === 409, `expected 409 conflict, got ${JSON.stringify(statuses)}`);
+  });
+  aScenario('first-save race: single progress record (revision 1)', async () => {
+    const read = await jf(`/api/fast-english/lessons/${raceId}/progress`, {
+      headers: { authorization: `Bearer ${sToken}` },
+    });
+    assert(read.status === 200, `read=${read.status}`);
+    assert(read.body?.revision === 1, `revision=${read.body?.revision}`);
+    assert(
+      read.body?.positionSeconds === 80 || read.body?.positionSeconds === 90,
+      `pos=${read.body?.positionSeconds}`,
+    );
   });
 
   // ==================================================================
@@ -1083,6 +1143,9 @@ async function main() {
   // ==================================================================
   // Summary
   // ==================================================================
+  // Ensure every registered scenario has completed so failures are counted
+  // and reflected in the exit code.
+  await Promise.all(pendingScenarios);
   const skipped = total - passed - failed;
   console.log(`\nResults: ${passed}/${total} passed, ${failed} failed, ${skipped} skipped`);
   if (failed > 0) {

@@ -12,8 +12,8 @@ import { StatePanel } from '../../../app/shell/StatePanel';
 import type { CefrLevel } from '../../../app/theme/tokens';
 import { AudioPlayer } from '../../player';
 import * as progressApi from '../../progress/api';
-import { useProgressSave } from '../../progress/useProgressSave';
 import type { LessonProgressResponse } from '../../progress/types';
+import { useProgressSave } from '../../progress/useProgressSave';
 import * as api from '../api';
 import type { LessonDetailResponse } from '../types';
 
@@ -36,6 +36,8 @@ export function LessonDetailRoute() {
   } | null>(null);
   const [progress, setProgress] = useState<LessonProgressResponse | null>(null);
   const [completed, setCompleted] = useState(false);
+  // Position the player should seek to when the user chooses to resume.
+  const [resumePosition, setResumePosition] = useState<number | undefined>(undefined);
 
   const { handleTimeUpdate, handleSeek, handleEnded } = useProgressSave({
     lessonId: id,
@@ -71,6 +73,7 @@ export function LessonDetailRoute() {
     setAudioUrl(null);
     setCompleted(false);
     setProgress(null);
+    setResumePosition(undefined);
     try {
       const data = await api.getLessonDetail(id);
       setLesson(data);
@@ -130,13 +133,18 @@ export function LessonDetailRoute() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Resume from saved position
+  // Resume from saved position — the player seeks to the saved position once
+  // the user confirms (the audio element may not have loaded metadata yet).
   const handleResume = useCallback(() => {
+    if (progress) {
+      setResumePosition(progress.positionSeconds);
+    }
     setPhase('ready');
-  }, []);
+  }, [progress]);
 
   // Start from beginning
   const handleStartFromBeginning = useCallback(() => {
+    setResumePosition(0);
     setPhase('ready');
   }, []);
 
@@ -286,6 +294,7 @@ export function LessonDetailRoute() {
               onSeek={onPlayerSeek}
               completed={completed}
               showCompleted
+              initialPosition={resumePosition}
               onRetry={handleRetry}
             />
           </CardContent>

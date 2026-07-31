@@ -117,6 +117,7 @@ export function SampleRoute() {
               aria-label="پخش صوت نمونه درس"
             >
               <source src={audioUrl} type={lesson.audio.contentType} />
+              <track kind="captions" />
               مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
             </audio>
           </CardContent>

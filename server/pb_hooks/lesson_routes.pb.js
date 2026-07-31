@@ -90,8 +90,10 @@ routerAdd(
           }
         } catch (_) {}
       }
+      // Server-authoritative duration. Published lessons always carry
+      // audio_duration_seconds (enforced by the publish hook); never fall back
+      // to estimated_minutes so client-visible metadata stays authoritative.
       var authoritativeDuration = Number(rec.get("audio_duration_seconds") || 0);
-      if (!(authoritativeDuration > 0)) authoritativeDuration = Number(rec.get("estimated_minutes") || 0) * 60;
 
       return {
         id: String(rec.id || ""),
@@ -402,8 +404,8 @@ routerAdd(
       try { e.response.header().set("Cache-Control", "private, no-store"); } catch (_) {}
       try { e.response.header().set("Pragma", "no-cache"); } catch (_) {}
 
+      // Server-authoritative duration (publish hook enforces it is set).
       var authoritativeDuration = Number(lesson.get("audio_duration_seconds") || 0);
-      if (!(authoritativeDuration > 0)) authoritativeDuration = Number(lesson.get("estimated_minutes") || 0) * 60;
 
       return e.json(200, {
         id: String(lesson.id || ""),
@@ -526,8 +528,8 @@ routerAdd(
 
       try { e.response.header().set("Cache-Control", "public, max-age=3600"); } catch (_) {}
 
+      // Server-authoritative duration (publish hook enforces it is set).
       var sampleDuration = Number(sample.get("audio_duration_seconds") || 0);
-      if (!(sampleDuration > 0)) sampleDuration = Number(sample.get("estimated_minutes") || 0) * 60;
 
       return e.json(200, {
         kind: "sample",

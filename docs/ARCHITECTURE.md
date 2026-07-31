@@ -45,6 +45,7 @@ Durable constraints only. Not a diary.
 - Receipt: one image, JPEG/PNG/WebP, ≤5MB, signature/MIME/extension match; protected field, randomized name, no public URL, no URL in logs.
 - Correct placement answers never sent to client; grading server-side only.
 - Premium body/audio denied to pending/rejected/expired/suspended even via direct API.
+- Premium audio is streamed through the lesson audio proxy with a short-lived PB file token passed as a query parameter (an `<audio>` element cannot send custom headers). The proxy re-validates live entitlement on every request, so a leaked token grants nothing beyond the owner's current entitlement; it is never stored in the app.
 - Operator endpoints verify operator role server-side; UI guard is not authz.
 - PWA SW never caches `/api/` or private/premium data.
 - No secrets in source/bundles/logs/fixtures; `server/pb_data/` never committed.
@@ -70,5 +71,5 @@ Durable constraints only. Not a diary.
 - Configuration/secrets: `.env` git-ignored; `.env.example` documents names only; no secrets in client bundle.
 - Migrations: `pb_migrations/*.js` committed; `server/VERSION` pins PocketBase binary.
 - Backup/restore: daily `sqlite3 .backup` (or PB export) + off-VPS copy; restore tested before production acceptance.
-- Logging: non-sensitive logs; no receipt URLs/PII in logs; log rotation.
+- Logging: non-sensitive logs; no receipt URLs/PII in logs; log rotation. Caddy access logs must strip the `token` query param (e.g. custom log format without the query string) so audio file tokens never persist in logs.
 - Rollback: migrations have `down`; deploy via Caddy reload; APK rollback = previous versioned APK.

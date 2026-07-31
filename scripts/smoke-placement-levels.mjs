@@ -427,8 +427,33 @@ async function main() {
   check(dash1.status === 200, `status 200 got ${dash1.status}`);
   check(dash1.body.student.selectedLevel === 'C2', 'selectedLevel C2');
   check(dash1.body.student.suggestedLevel === 'C2', 'suggestedLevel C2');
-  check(dash1.body.lessons.kind === 'not_implemented', 'lessons not_implemented');
-  check(dash1.body.progress.kind === 'unavailable_until_phase_3', 'progress unavailable');
+  // P3-S2: dashboard reports real lesson/progress data (no Phase 2 placeholders).
+  // This script never creates lessons, so all counts must be zero.
+  check(
+    dash1.body.lessons.publishedCount === 0,
+    `lessons publishedCount = ${dash1.body.lessons.publishedCount}`,
+  );
+  check(dash1.body.progress.kind === 'available', `progress kind = ${dash1.body.progress.kind}`);
+  check(
+    dash1.body.progress.startedLessonCount === 0,
+    `started = ${dash1.body.progress.startedLessonCount}`,
+  );
+  check(
+    dash1.body.progress.completedLessonCount === 0,
+    `completed = ${dash1.body.progress.completedLessonCount}`,
+  );
+  check(
+    dash1.body.progress.publishedLessonCount === 0,
+    `published = ${dash1.body.progress.publishedLessonCount}`,
+  );
+  check(
+    dash1.body.progress.completionPercent === 0,
+    `percent = ${dash1.body.progress.completionPercent}`,
+  );
+  check(
+    dash1.body.continueLearning.kind === 'no_lessons',
+    `continue kind = ${dash1.body.continueLearning.kind}`,
+  );
   // No answer key fields
   check(!dash1.body.correctOptionId, 'no correctOptionId');
   check(!dash1.body.internal_note, 'no internal_note');

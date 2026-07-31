@@ -321,6 +321,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   let su: string;
   let lessonId: string;
   let lesson2Id: string;
+  let lesson3Id: string;
   let studentToken: string;
   let studentUserId: string;
   let studentPhone: string;
@@ -349,6 +350,19 @@ test.describe('P3-S2 Progress and Audio Player', () => {
       title: 'P3S2 Lesson 2',
     });
     lesson2Id = lesson2.id;
+
+    // Fresh lesson reserved for the resume test (must never be touched by
+    // other tests so it starts with no progress).
+    const topic3 = await makeTopic(su, {
+      slug: `t-p3s2-c-${randId()}`,
+      status: 'published',
+      sort_order: 3,
+    });
+    const lesson3 = await makeLesson(su, topic3.id as string, {
+      level: 'B1',
+      title: 'P3S2 Lesson 3 (resume)',
+    });
+    lesson3Id = lesson3.id;
 
     // Create student
     const student = await createFullStudent(su, 'B1');
@@ -593,5 +607,32 @@ test.describe('P3-S2 Progress and Audio Player', () => {
     expect(bodyText).not.toContain('storage/');
     expect(bodyText).not.toContain('"code"');
     expect(bodyText).not.toContain('"message"');
+  });
+
+  // 16. Resume prompt restores the saved position into the player
+  test('16 - resume restores saved position in the player', async ({ page }) => {
+    // Save a position on the fresh lesson
+    const save = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lesson3Id}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${studentToken}` },
+      body: JSON.stringify({ positionSeconds: 150, expectedRevision: 0 }),
+    });
+    expect(save.status).toBe(200);
+
+    await injectToken(page);
+    await page.goto(`/lessons/${lesson3Id}`);
+
+    // Resume prompt appears with the saved position (2:30)
+    const resumeButton = page.getByRole('button', { name: /ادامه از 2:30/ });
+    await expect(resumeButton).toBeVisible({ timeout: 15_000 });
+
+    // Clicking resume must hand the saved position to the player
+    await resumeButton.click();
+    await expect(resumeButton).not.toBeVisible({ timeout: 5_000 });
+
+    // The player's position display shows the resumed time (2:30), not 0:00
+    const player = page.locator('[role="application"][aria-label="پخش‌کنندهٔ صوت"]');
+    await expect(player).toBeAttached({ timeout: 10_000 });
+    await expect(player.getByText('2:30', { exact: true })).toBeVisible({ timeout: 5_000 });
   });
 });

@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { mapPlacementError } from './errors';
 import {
+  dashboardResponseSchema,
   placementQuestionSchema,
   placementResponseSchema,
   saveAnswerRequestSchema,
@@ -200,6 +201,54 @@ describe('placement schemas', () => {
       const result = submitRequestSchema.safeParse({
         expectedRevision: 20,
         score: 15,
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('dashboardResponseSchema', () => {
+    const validDashboard = {
+      student: {
+        name: 'S',
+        selectedLevel: 'B1',
+        suggestedLevel: 'A2',
+        placementCompleted: true,
+      },
+      placement: { score: 14, maxScore: 20, submittedAt: '2026-01-01T00:00:00Z' },
+      subscription: {
+        planName: 'P',
+        startsAt: '2026-01-01T00:00:00Z',
+        expiresAt: '2026-04-01T00:00:00Z',
+        remainingDays: 60,
+      },
+      lessons: { publishedCount: 5 },
+      progress: {
+        kind: 'available',
+        startedLessonCount: 2,
+        completedLessonCount: 1,
+        publishedLessonCount: 5,
+        completionPercent: 20,
+      },
+      continueLearning: { kind: 'incomplete', lessonId: 'l1' },
+    };
+
+    it('accepts a valid dashboard payload', () => {
+      const result = dashboardResponseSchema.safeParse(validDashboard);
+      expect(result.success).toBe(true);
+    });
+
+    it('rejects an extra unknown nested field', () => {
+      const result = dashboardResponseSchema.safeParse({
+        ...validDashboard,
+        progress: { ...validDashboard.progress, internalField: 1 },
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects a banned internal key at the top level', () => {
+      const result = dashboardResponseSchema.safeParse({
+        ...validDashboard,
+        internal_note: 'secret',
       });
       expect(result.success).toBe(false);
     });

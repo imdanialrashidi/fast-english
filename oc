@@ -5,10 +5,15 @@ ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 set -a
 source "$ROOT_DIR/.opencode/models.env"
+
+ATLAS_ENV="$HOME/.config/atlas-vision/env"
+if [[ -f "$ATLAS_ENV" ]]; then
+  source "$ATLAS_ENV"
+fi
+
 set +a
 
 export OPENCODE_EXPERIMENTAL_LSP_TOOL=true
 
 cd "$ROOT_DIR"
-
 exec opencode --auto "$@"

@@ -178,6 +178,8 @@ export const selectLevelResponseSchema = z
   .strict();
 
 // Dashboard response schema
+// Sub-objects are strict: unknown nested fields fail loudly instead of being
+// silently accepted (defense against unexpected/malformed server data).
 export const dashboardResponseSchema = z
   .object({
     student: z
@@ -187,14 +189,14 @@ export const dashboardResponseSchema = z
         suggestedLevel: cefrLevelSchema.nullable(),
         placementCompleted: z.literal(true),
       })
-      .passthrough(),
+      .strict(),
     placement: z
       .object({
         score: z.number().int().nullable(),
         maxScore: z.number().int().nullable(),
         submittedAt: z.string().nullable(),
       })
-      .passthrough(),
+      .strict(),
     subscription: z
       .object({
         planName: z.string(),
@@ -202,12 +204,12 @@ export const dashboardResponseSchema = z
         expiresAt: z.string(),
         remainingDays: z.number().int().min(0),
       })
-      .passthrough(),
+      .strict(),
     lessons: z
       .object({
         publishedCount: z.number().int().min(0),
       })
-      .passthrough(),
+      .strict(),
     progress: z
       .object({
         kind: z.string(),
@@ -216,13 +218,13 @@ export const dashboardResponseSchema = z
         publishedLessonCount: z.number().int().min(0),
         completionPercent: z.number().int().min(0).max(100),
       })
-      .passthrough(),
+      .strict(),
     continueLearning: z
       .object({
         kind: z.string(),
         lessonId: z.string(),
       })
-      .passthrough(),
+      .strict(),
   })
   .passthrough()
   .refine(

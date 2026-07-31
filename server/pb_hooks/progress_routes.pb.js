@@ -418,23 +418,19 @@ routerAdd(
           }
 
           // 4. Obtain authoritative duration
+          // Published lessons always carry audio_duration_seconds (enforced by
+          // the publish hook); no fallback is allowed so the completion
+          // threshold can never be computed from an estimated value.
           var authoritativeDuration = Number(lesson.get("audio_duration_seconds") || 0);
-          if (!(authoritativeDuration > 0)) {
-            authoritativeDuration = Number(lesson.get("estimated_minutes") || 0) * 60;
-          }
           if (!(authoritativeDuration > 0)) {
             throw { httpStatus: 500, code: "unexpected_error", message: "Lesson duration not configured." };
           }
 
           // 5. Validate position against authoritative duration + tolerance
-          // Clamp only minor floating-point overshoot; reject arbitrary large values
+          // Reject values far beyond the duration; clamp minor floating-point
+          // overshoot (within POSITION_TOLERANCE) down to the duration.
           if (positionSeconds > authoritativeDuration + POSITION_TOLERANCE) {
-            // Check if it's a minor overshoot (floating-point) — clamp it
-            if (positionSeconds <= authoritativeDuration + 1.0) {
-              positionSeconds = authoritativeDuration;
-            } else {
-              throw { httpStatus: 400, code: "invalid_position", message: "positionSeconds exceeds lesson duration (" + authoritativeDuration + "s)." };
-            }
+            throw { httpStatus: 400, code: "invalid_position", message: "positionSeconds exceeds lesson duration (" + authoritativeDuration + "s)." };
           }
           if (positionSeconds > authoritativeDuration) {
             positionSeconds = authoritativeDuration;

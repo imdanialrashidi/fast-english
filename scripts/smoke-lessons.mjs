@@ -872,11 +872,31 @@ async function main() {
   // ==================================================================
   // 8. Token-after-entitlement-loss
   // ==================================================================
-  // This is inherently covered by the proxy route which checks live
-  // subscription at each request. The expired/future/no-sub tests above
-  // prove that access is denied when subscription changes.
-  aScenario('token-after-loss handled by proxy route', async () =>
-    assert(true, 'covered by expired+future+no-sub tests'),
+  // An OLD file token issued while the student was entitled must fail once the
+  // subscription expires — the proxy re-checks entitlement live on every
+  // request and never trusts the token alone.
+  const oldTokenSt = await makeFullStudent(su, 'B1');
+  const ftRes = await jf('/api/files/token', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${oldTokenSt.token}` },
+  });
+  const oldFileToken = ftRes.body?.token || '';
+  scenario('file token obtained while entitled', () => assert(!!oldFileToken, 'no file token'));
+
+  const okAudio = await fetch(`${fullUrl}?token=${encodeURIComponent(oldFileToken)}`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  aScenario('old file token works while entitled (200)', async () =>
+    assert(okAudio.status === 200, `status=${okAudio.status}`),
+  );
+
+  await expireUserSubscription(su, oldTokenSt.userId);
+
+  const lostAudio = await fetch(`${fullUrl}?token=${encodeURIComponent(oldFileToken)}`, {
+    signal: AbortSignal.timeout(10_000),
+  });
+  aScenario('old file token denied after entitlement loss (403)', async () =>
+    assert(lostAudio.status === 403, `status=${lostAudio.status}`),
   );
 
   // ==================================================================
