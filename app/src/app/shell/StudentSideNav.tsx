@@ -35,16 +35,16 @@ export function StudentSideNav() {
   return (
     <Drawer
       variant="permanent"
-      anchor="right"
+      // Emotion's RTL transform mirrors physical Drawer anchors. `left`
+      // therefore places this rail on the physical right edge of the RTL UI.
+      anchor="left"
       dir="rtl"
       sx={{
         display: { xs: 'none', md: 'block' },
         '& .MuiDrawer-paper': {
           width: SIDENAV_WIDTH,
           boxSizing: 'border-box',
-          borderInlineStart: 'none',
-          borderLeft: '1px solid',
-          borderRight: 'none',
+          borderInlineEnd: '1px solid',
           borderColor: 'divider',
           backgroundColor: 'background.paper',
         },
@@ -91,7 +91,7 @@ export function StudentSideNav() {
         </List>
         <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
           <Typography variant="caption" color="text.secondary">
-            نسخهٔ نمایشی — احراز هویت فعال نیست
+            یادگیری، پرداخت و پشتیبانی در همین برنامه
           </Typography>
         </Box>
       </Stack>

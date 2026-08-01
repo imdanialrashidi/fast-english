@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+// Production signing material is supplied through ignored local
+// configuration or environment variables — never committed, never the
+// debug key. See the Signing-key safety gate in docs/PLAN.md (P4-S2).
+def signingKeystorePath = System.getenv('FEP_ANDROID_KEYSTORE_PATH')
+def signingKeyAlias = System.getenv('FEP_ANDROID_KEY_ALIAS')
+def signingKeystorePassword = System.getenv('FEP_ANDROID_KEYSTORE_PASSWORD')
+def signingKeyPassword = System.getenv('FEP_ANDROID_KEY_PASSWORD')
+def hasSigningMaterial = signingKeystorePath && signingKeyAlias && signingKeystorePassword && signingKeyPassword
+
 android {
     namespace = "com.fastenglishpodcast.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +16,11 @@ android {
         applicationId "com.fastenglishpodcast.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        // Version policy (P4-S2): versionName is user-facing; versionCode
+        // must strictly increase for every Android update. Future APKs must
+        // keep the same applicationId and signing certificate.
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,11 +28,35 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (hasSigningMaterial) {
+                storeFile file(signingKeystorePath)
+                storePassword signingKeystorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (hasSigningMaterial) {
+                signingConfig signingConfigs.release
+            }
         }
+    }
+}
+
+// Fail safely: a Release build without approved signing material must
+// never silently fall back to the debug key or produce an unsigned APK.
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(':app:assembleRelease') && !hasSigningMaterial) {
+        throw new GradleException(
+            'Production signing material: REQUIRED — set FEP_ANDROID_KEYSTORE_PATH, ' +
+            'FEP_ANDROID_KEY_ALIAS, FEP_ANDROID_KEYSTORE_PASSWORD and FEP_ANDROID_KEY_PASSWORD ' +
+            'before building a Release APK. Never sign the distributable APK with the debug key.')
     }
 }
 

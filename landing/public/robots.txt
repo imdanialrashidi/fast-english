@@ -1,0 +1,10 @@
+# fastenglishpodcast.com — crawl guidance for search engines.
+#
+# robots.txt only manages crawl traffic; it must NEVER be relied on to
+# protect private data. All user data (accounts, receipts, placement
+# answers, progress) lives on app.fastenglishpodcast.com behind
+# server-side authentication and is not publicly accessible.
+User-agent: *
+Allow: /
+
+Sitemap: https://fastenglishpodcast.com/sitemap.xml

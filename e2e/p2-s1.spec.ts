@@ -84,7 +84,7 @@ async function seedFixtures(suToken: string): Promise<void> {
         is_active: true,
       }),
     });
-    if (!r.ok) throw new Error(`Seed Q${i} failed: ${r.status}`);
+    if (!r.ok && r.status !== 400) throw new Error(`Seed Q${i} failed: ${r.status}`);
   }
   const qc = await jsonFetch(`${PB_URL}/api/collections/placement_questions/records`, {
     headers: { authorization: `Bearer ${suToken}` },

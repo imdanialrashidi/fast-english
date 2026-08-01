@@ -6,6 +6,12 @@
 // - Browser production: same-origin (`https://app.fastenglishpodcast.com`).
 // - Android debug: explicit `VITE_ANDROID_API_ORIGIN` via `adb reverse`.
 // - Android release: hard-coded production origin.
+//
+// IMPORTANT: `import.meta.env.*` values must be read through a DIRECT
+// static property chain (`import.meta.env.PROD`). Assigning `import.meta.env`
+// to a local variable or using optional/dynamic access (`env?.PROD`,
+// `env?.[key]`) is NOT replaced at build time and evaluates to `undefined`
+// in the browser.
 
 export type ResolvedOrigin = {
   origin: string;
@@ -29,16 +35,11 @@ function isNativeRuntime(): boolean {
   return false;
 }
 
-// Read Vite-injected env at build time. The `import.meta.env` typings are
-// provided by `vite/client` which is already imported by the app entry.
-function readEnv(key: string): string | undefined {
-  const meta = import.meta as unknown as { env?: Record<string, unknown> };
-  const v = meta.env?.[key];
-  return typeof v === 'string' ? v : undefined;
-}
-
+// Direct static access (see the module note): Vite/rolldown replace
+// `import.meta.env.PROD` with a literal at build time.
 function isProductionBuild(): boolean {
-  return readEnv('PROD') === 'true';
+  const prod = import.meta.env.PROD as boolean | string;
+  return prod === true || prod === 'true';
 }
 
 function isLoopbackHost(hostname: string): boolean {
@@ -65,7 +66,7 @@ export function resolveApiOrigin(): ResolvedOrigin {
 
   if (isNative) {
     // Native debug build: explicit env override.
-    const envOrigin = readEnv('VITE_ANDROID_API_ORIGIN');
+    const envOrigin = import.meta.env.VITE_ANDROID_API_ORIGIN as string | undefined;
     if (!envOrigin || envOrigin.length === 0) {
       throw new Error(
         'VITE_ANDROID_API_ORIGIN is required for native debug builds (e.g. http://localhost:8090 with adb reverse).',

@@ -20,8 +20,12 @@ export function PageHeader({
         mb: 3,
       }}
     >
-      <Box>
-        <Typography component="h1" variant="h2" sx={{ mb: subtitle ? 0.5 : 0 }}>
+      <Box sx={{ minWidth: 0, maxWidth: '100%' }}>
+        <Typography
+          component="h1"
+          variant="h2"
+          sx={{ mb: subtitle ? 0.5 : 0, overflowWrap: 'anywhere' }}
+        >
           {title}
         </Typography>
         {subtitle ? (

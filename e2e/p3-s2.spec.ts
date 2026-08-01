@@ -2,13 +2,24 @@
 // P3-S2 end-to-end: progress persistence, audio player controls, resume,
 // completion, lesson card progress, dashboard progress, and continue learning.
 // Uses real PocketBase and real App builds.
-// No screenshots required.
+// Responsive visual evidence is written outside the repository.
 
 import { randomBytes } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
+const VISUAL_QA_DIR = '/tmp/opencode/product-app-visual-polish/lessons-audio';
+
+const VISUAL_VIEWPORTS = [
+  { name: '360x800', width: 360, height: 800 },
+  { name: '375x812', width: 375, height: 812 },
+  { name: '390x844', width: 390, height: 844 },
+  { name: '430x932', width: 430, height: 932 },
+  { name: '768x1024', width: 768, height: 1024 },
+  { name: '1024x768', width: 1024, height: 768 },
+  { name: '1440x900', width: 1440, height: 900 },
+] as const;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -413,7 +424,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
     await page.goto(`/lessons/${lessonId}`);
     await page.waitForTimeout(3000);
     // Check that the audio player area is attached (audio element may be hidden)
-    const player = page.locator('[role="application"][aria-label="پخش‌کنندهٔ صوت"]');
+    const player = page.locator('[role="group"][aria-label="پخش‌کنندهٔ صوت"]');
     await expect(player).toBeAttached({ timeout: 15_000 });
   });
 
@@ -631,8 +642,55 @@ test.describe('P3-S2 Progress and Audio Player', () => {
     await expect(resumeButton).not.toBeVisible({ timeout: 5_000 });
 
     // The player's position display shows the resumed time (2:30), not 0:00
-    const player = page.locator('[role="application"][aria-label="پخش‌کنندهٔ صوت"]');
+    const player = page.locator('[role="group"][aria-label="پخش‌کنندهٔ صوت"]');
     await expect(player).toBeAttached({ timeout: 10_000 });
     await expect(player.getByText('2:30', { exact: true })).toBeVisible({ timeout: 5_000 });
   });
+
+  for (const viewport of VISUAL_VIEWPORTS) {
+    test(`[${viewport.name}] lesson list and audio player are reachable`, async ({ page }) => {
+      mkdirSync(`${VISUAL_QA_DIR}/${viewport.name}`, { recursive: true });
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await injectToken(page);
+
+      await page.goto('/lessons');
+      await expect(page.getByRole('heading', { name: 'P3S2 Lesson 1' })).toBeVisible({
+        timeout: 15_000,
+      });
+      await expect(page.locator('body')).not.toContainText('ورود');
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+      await page.screenshot({
+        path: `${VISUAL_QA_DIR}/${viewport.name}/lesson-list.png`,
+        fullPage: true,
+      });
+
+      await page.goto(`/lessons/${lessonId}`);
+      const player = page.locator('[role="group"][aria-label="پخش‌کنندهٔ صوت"]');
+      await expect(player).toBeVisible({ timeout: 15_000 });
+      await expect(player.getByRole('slider', { name: 'موقعیت پخش' })).toBeVisible();
+      await expect(player.getByRole('button', { name: 'پخش', exact: true })).toBeVisible();
+      await expect(player.getByRole('button', { name: 'سرعت پخش 1 برابر' })).toBeVisible();
+      const speedButtons = player.getByRole('button', { name: /سرعت پخش/ });
+      await expect(speedButtons).toHaveCount(5);
+      const speedSizes = await speedButtons.evaluateAll((elements) =>
+        elements.map((element) => {
+          const rect = element.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        }),
+      );
+      for (const size of speedSizes) {
+        expect(size.width).toBeGreaterThanOrEqual(44);
+        expect(size.height).toBeGreaterThanOrEqual(44);
+      }
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+      await page.screenshot({
+        path: `${VISUAL_QA_DIR}/${viewport.name}/lesson-detail-audio.png`,
+        fullPage: true,
+      });
+    });
+  }
 });

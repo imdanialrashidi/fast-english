@@ -71,7 +71,7 @@ export function ApproveDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth aria-busy={submitting}>
       <DialogTitle>تأیید درخواست پرداخت</DialogTitle>
       <DialogContent>
         {result ? (

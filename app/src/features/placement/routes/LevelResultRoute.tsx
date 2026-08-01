@@ -324,14 +324,20 @@ export function LevelResultRoute() {
         <Stack spacing={1} sx={{ mb: 3 }}>
           {CEFR_LEVELS.map((level) => {
             const isSuggested = level === ctx.suggestedLevel;
-            const isSelected = level === ('selectedLevel' in ctx ? ctx.selectedLevel : null);
+            const isSelected =
+              level === ('selectedLevel' in ctx ? ctx.selectedLevel : null) ||
+              level === pendingLevel;
             return (
               <Card
                 key={level}
                 variant={isSelected ? 'elevation' : 'outlined'}
                 sx={{
-                  borderColor: isSuggested ? 'primary.main' : undefined,
-                  borderWidth: isSuggested ? 2 : 1,
+                  borderColor: isSelected
+                    ? 'success.main'
+                    : isSuggested
+                      ? 'primary.main'
+                      : undefined,
+                  borderWidth: isSelected || isSuggested ? 2 : 1,
                   bgcolor: isSelected ? 'action.selected' : undefined,
                 }}
               >
@@ -353,11 +359,23 @@ export function LevelResultRoute() {
                           {CEFR_LEVEL_LABELS[level]}
                         </Typography>
                       </Box>
-                      {isSuggested && (
-                        <Typography variant="caption" color="primary" sx={{ fontWeight: 500 }}>
-                          {LEVEL_SUGGESTED_LABEL}
-                        </Typography>
-                      )}
+                      <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+                        {isSelected && <CheckCircleRoundedIcon color="success" fontSize="small" />}
+                        {isSelected ? (
+                          <Typography
+                            variant="caption"
+                            color="success.main"
+                            sx={{ fontWeight: 600 }}
+                          >
+                            {LEVEL_SELECTED_LABEL}
+                          </Typography>
+                        ) : null}
+                        {isSuggested && !isSelected ? (
+                          <Typography variant="caption" color="primary" sx={{ fontWeight: 500 }}>
+                            {LEVEL_SUGGESTED_LABEL}
+                          </Typography>
+                        ) : null}
+                      </Stack>
                     </Stack>
                   </CardContent>
                 </CardActionArea>
@@ -384,9 +402,9 @@ export function LevelResultRoute() {
         <DialogTitle>{LEVEL_CONFIRM_TITLE}</DialogTitle>
         <DialogContent>
           <Typography>{LEVEL_CONFIRM_DESC.replace('{level}', pendingLevel || '')}</Typography>
-          {ctx.suggestedLevel && pendingLevel !== ctx.suggestedLevel && (
+          {ctx.suggestedLevel && pendingLevel && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {LEVEL_SUGGESTED_LABEL}: {ctx.suggestedLevel}
+              {LEVEL_SUGGESTED_LABEL}: {ctx.suggestedLevel} — {LEVEL_SELECTED_LABEL}: {pendingLevel}
             </Typography>
           )}
         </DialogContent>

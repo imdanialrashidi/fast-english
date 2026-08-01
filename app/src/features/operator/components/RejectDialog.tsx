@@ -60,7 +60,7 @@ export function RejectDialog({ open, onClose, requestId, onSuccess }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth aria-busy={submitting}>
       <DialogTitle>رد درخواست پرداخت</DialogTitle>
       <DialogContent>
         {result ? (

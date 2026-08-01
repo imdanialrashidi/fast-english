@@ -25,12 +25,16 @@ export function AppShell() {
         <Box
           component="main"
           id="main-content"
+          tabIndex={-1}
           sx={{
             flex: 1,
             minWidth: 0,
-            // Side nav is on the right in RTL; leave that gutter on md+.
-            // The AppBar already offsets by 248px so the content aligns
-            // with the header's right edge.
+            // MUI's permanent Drawer paper is fixed by design. Reserve its
+            // physical rail in the student main column so it cannot cover
+            // content or actions at tablet widths. Operator routes have no
+            // rail and therefore keep the full viewport width.
+            boxSizing: 'border-box',
+            paddingInlineStart: !isOperator ? { md: '248px' } : undefined,
           }}
         >
           <Outlet />

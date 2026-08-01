@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Public canonical landing URLs only. Authenticated App routes are never listed. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://fastenglishpodcast.com/</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/about</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/how-it-works</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/install</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/collaboration</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/contact</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/privacy</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/terms</loc>
+  </url>
+  <url>
+    <loc>https://fastenglishpodcast.com/sample</loc>
+  </url>
+</urlset>

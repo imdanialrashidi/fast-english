@@ -1,4 +1,6 @@
+import { ApkButton } from '../components/ApkButton';
 import { BrandMark } from '../components/BrandMark';
+import { webAppUrl } from '../lib/siteConfig';
 
 export function Hero() {
   return (
@@ -29,13 +31,16 @@ export function Hero() {
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <a
-                href="#install"
+                href={webAppUrl}
+                rel="noopener noreferrer"
+                target="_blank"
                 className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
               >
                 ورود به وب‌اپ
               </a>
+              <ApkButton />
               <a
-                href="#sample"
+                href="/sample"
                 className="inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text hover:bg-brand-surface min-h-12"
               >
                 دیدن نمونه درس

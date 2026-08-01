@@ -113,7 +113,11 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
           <Stack
             direction="row"
             spacing={2}
-            sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+            sx={{
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              justifyContent: 'space-between',
+            }}
           >
             <Typography component="h2" variant="h4">
               رسید پرداخت
@@ -132,7 +136,8 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
             // file input everywhere else.
             onChange={handleFile}
             disabled={disabled}
-            aria-label="انتخاب تصویر رسید"
+            aria-hidden="true"
+            tabIndex={-1}
             style={{
               position: 'absolute',
               width: 1,

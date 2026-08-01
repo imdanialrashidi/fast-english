@@ -8,15 +8,7 @@ export function AppHeader() {
   const isOperator = location.pathname.startsWith('/operator');
 
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        // Side nav occupies the right edge on tablet/desktop in RTL.
-        // The app bar spans the remaining content column.
-        mr: { md: '248px' },
-        width: { md: 'calc(100% - 248px)' },
-      }}
-    >
+    <AppBar position="sticky">
       <Toolbar sx={{ minHeight: { xs: 56, md: 64 }, gap: 1.5 }}>
         {isOperator ? null : (
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>

@@ -5,6 +5,7 @@
       "**",
       "!dist-app",
       "!dist-landing",
+      "!dist-landing-apk",
       "!node_modules",
       "!**/node_modules",
       "!.vite",

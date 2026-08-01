@@ -464,7 +464,8 @@ async function main() {
     status: 'published',
     sort_order: 2,
   });
-  const dl = await makeLesson(su, dt.id, { level: 'B1' });
+  // Draft topic (the lesson is created but never published).
+  await makeLesson(su, dt.id, { level: 'B1' });
   await jf(`/api/collections/topics/records/${dt.id}`, {
     method: 'PATCH',
     headers: { authorization: `Bearer ${su}` },

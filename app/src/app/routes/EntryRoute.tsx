@@ -44,7 +44,7 @@ export function EntryRoute() {
               </Stack>
 
               <Typography variant="caption" color="text.secondary" sx={{ pt: 1 }}>
-                این یک نمایش بصری است — احراز هویت، پرداخت و اشتراک در نسخه‌های بعدی فعال می‌شوند.
+                ورود، پرداخت و فعال‌سازی اشتراک از داخل همین برنامه انجام می‌شود.
               </Typography>
             </Stack>
           </CardContent>

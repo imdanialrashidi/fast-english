@@ -7,7 +7,6 @@ import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
-const _APP_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim().replace(/:\d+/, ':18102');
 
 const ANSWER_KEYS = [
   'correctOptionId',
@@ -278,7 +277,7 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
 
   test('accept suggested level and see dashboard', async ({ page }) => {
     // Login
-    await page.goto(`http://127.0.0.1:18102/login`);
+    await page.goto('/login');
     await page.waitForLoadState('networkidle');
     await page.getByLabel('شمارهٔ موبایل').fill(student1.phone);
     await page.locator('input[name="password"]').fill('Test1234!');
@@ -288,7 +287,7 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     await page.waitForURL('**/placement', { timeout: 10000 });
 
     // Go to result page
-    await page.goto(`http://127.0.0.1:18102/placement/result`);
+    await page.goto('/placement/result');
     await page.waitForLoadState('networkidle');
 
     // Should show the level selection page
@@ -317,7 +316,7 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     });
 
     // Login and go to dashboard
-    await page.goto(`http://127.0.0.1:18102/login`);
+    await page.goto('/login');
     await page.waitForLoadState('networkidle');
     await page.getByLabel('شمارهٔ موبایل').fill(student.phone);
     await page.locator('input[name="password"]').fill('Test1234!');
@@ -328,9 +327,8 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     await expect(page.getByText(/خوش آمدید/i)).toBeVisible();
     await expect(page.getByText('B1').first()).toBeVisible();
     await expect(page.getByText(/سطح پیشنهادی/i).first()).toBeVisible();
-    await expect(page.getByText(/به‌زودی/i).first()).toBeVisible();
-    await expect(page.getByText(/پس از انتشار درس‌ها/i).first()).toBeVisible();
-    await expect(page.getByText(/روزهای باقی‌مانده/i).first()).toBeVisible();
+    await expect(page.getByText(/دروس آموزشی/i)).toBeVisible();
+    await expect(page.getByText(/روزهای باقی‌مانده/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /خروج/i })).toBeVisible();
   });
 

@@ -4,7 +4,9 @@
 import {
   Box,
   Button,
+  ButtonBase,
   Card,
+  CardActionArea,
   Checkbox,
   CircularProgress,
   Dialog,
@@ -375,21 +377,24 @@ export function PlacementRoute() {
           {questions.map((q, idx) => {
             const isAnswered = !!answers[q.id];
             return (
-              <Card
-                key={q.id}
-                variant="outlined"
-                sx={{ p: 2, cursor: 'pointer', opacity: isAnswered ? 1 : 0.6 }}
-                onClick={() => {
-                  setCurrentIndex(idx);
-                  setPhase('question');
-                }}
-              >
-                <Typography variant="body2" color="text.secondary">
-                  سؤال {q.position}
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 0.5 }}>
-                  {isAnswered ? 'پاسخ داده شد' : 'پاسخ داده نشده'}
-                </Typography>
+              <Card key={q.id} variant="outlined" sx={{ opacity: isAnswered ? 1 : 0.6 }}>
+                <CardActionArea
+                  component="button"
+                  type="button"
+                  onClick={() => {
+                    setCurrentIndex(idx);
+                    setPhase('question');
+                  }}
+                  aria-label={`رفتن به سؤال ${q.position}`}
+                  sx={{ display: 'block', width: '100%', p: 2, textAlign: 'start' }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    سؤال {q.position}
+                  </Typography>
+                  <Typography variant="body1" sx={{ mt: 0.5 }}>
+                    {isAnswered ? 'پاسخ داده شد' : 'پاسخ داده نشده'}
+                  </Typography>
+                </CardActionArea>
               </Card>
             );
           })}
@@ -502,11 +507,15 @@ export function PlacementRoute() {
                 }}
               >
                 {questions.map((q, idx) => (
-                  <Box
+                  <ButtonBase
                     key={q.id}
+                    component="button"
+                    type="button"
+                    aria-label={`رفتن به سؤال ${q.position}`}
+                    aria-current={currentIndex === idx ? 'step' : undefined}
                     sx={{
-                      width: 24,
-                      height: 24,
+                      width: 44,
+                      height: 44,
                       borderRadius: '50%',
                       bgcolor: answers[q.id] ? 'primary.main' : 'grey.300',
                       cursor: 'pointer',
@@ -521,7 +530,7 @@ export function PlacementRoute() {
                     onClick={() => setCurrentIndex(idx)}
                   >
                     {q.position}
-                  </Box>
+                  </ButtonBase>
                 ))}
               </Box>
             )}

@@ -8,6 +8,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import {
   Box,
   Button,
+  ButtonBase,
   Card,
   CardContent,
   Chip,
@@ -162,7 +163,10 @@ export function OperatorDetailRoute() {
       <PageContainer maxWidth="md">
         <StatePanel variant="error" title="خطا" description={error ?? 'درخواست یافت نشد.'} />
         <Box sx={{ textAlign: 'center', mt: 2 }}>
-          <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
+          <Button
+            startIcon={<ArrowBackIcon sx={{ transform: 'scaleX(-1)' }} />}
+            onClick={handleBack}
+          >
             بازگشت به صف
           </Button>
         </Box>
@@ -174,7 +178,7 @@ export function OperatorDetailRoute() {
     <PageContainer maxWidth="md">
       <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 2 }}>
         <IconButton onClick={handleBack} aria-label="بازگشت">
-          <ArrowBackIcon />
+          <ArrowBackIcon sx={{ transform: 'scaleX(-1)' }} />
         </IconButton>
         <PageHeader
           title={`درخواست ${detail.student?.name ?? ''}`}
@@ -260,20 +264,26 @@ export function OperatorDetailRoute() {
                 </Stack>
               )}
               {receiptUrl && (
-                <Box
-                  component="img"
-                  src={receiptUrl}
-                  alt="رسید پرداخت"
+                <ButtonBase
+                  component="button"
+                  type="button"
                   onClick={() => setReceiptZoomOpen(true)}
+                  aria-label="بزرگ‌نمایی رسید پرداخت"
                   sx={{
+                    display: 'block',
                     maxWidth: '100%',
-                    maxHeight: 200,
                     borderRadius: 1,
-                    cursor: 'pointer',
-                    border: '1px solid',
-                    borderColor: 'divider',
+                    '& img': {
+                      display: 'block',
+                      maxWidth: '100%',
+                      maxHeight: 200,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    },
                   }}
-                />
+                >
+                  <Box component="img" src={receiptUrl} alt="رسید پرداخت" />
+                </ButtonBase>
               )}
             </CardContent>
           </Card>

@@ -3,9 +3,9 @@
 export function BrandMark({ size = 36 }: { size?: number }) {
   return (
     <a
-      href="#main-content"
+      href="/"
       className="inline-flex items-center gap-3 text-brand-text no-underline"
-      aria-label="فست انگلیش پادکست"
+      aria-label="فست انگلیش پادکست — صفحهٔ اصلی"
     >
       <span
         aria-hidden

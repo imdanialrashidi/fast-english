@@ -1,49 +1,47 @@
 import { useState } from 'react';
 import { BrandMark } from '../components/BrandMark';
+import { webAppUrl } from '../lib/siteConfig';
+
+const NAV_LINKS = [
+  { href: '/', label: 'خانه' },
+  { href: '/how-it-works', label: 'چگونه کار می‌کند' },
+  { href: '/install', label: 'نصب' },
+  { href: '/sample', label: 'نمونه درس' },
+  { href: '/about', label: 'درباره' },
+  { href: '/collaboration', label: 'همکاری' },
+  { href: '/contact', label: 'تماس' },
+];
 
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 bg-white/85 backdrop-blur border-b border-brand-divider">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <BrandMark />
         <nav aria-label="ناوبری اصلی" className="hidden md:flex items-center gap-1">
-          <a
-            href="#levels"
-            className="px-3 py-2 rounded-lg text-sm font-medium text-brand-text hover:bg-brand-surface"
-          >
-            سطوح
-          </a>
-          <a
-            href="#sample"
-            className="px-3 py-2 rounded-lg text-sm font-medium text-brand-text hover:bg-brand-surface"
-          >
-            نمونه درس
-          </a>
-          <a
-            href="#how"
-            className="px-3 py-2 rounded-lg text-sm font-medium text-brand-text hover:bg-brand-surface"
-          >
-            چگونه کار می‌کند
-          </a>
-          <a
-            href="#install"
-            className="px-3 py-2 rounded-lg text-sm font-medium text-brand-text hover:bg-brand-surface"
-          >
-            نصب
-          </a>
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-brand-text hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+            >
+              {link.label}
+            </a>
+          ))}
         </nav>
         <div className="flex items-center gap-2">
           <a
-            href="#install"
-            className="hidden sm:inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-dark"
+            href={webAppUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+            className="hidden sm:inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary min-h-11"
           >
             ورود به وب‌اپ
           </a>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-brand-text hover:bg-brand-surface"
+            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-brand-text hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary min-h-11 min-w-11"
             aria-label="باز/بستن منو"
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -84,32 +82,19 @@ export function Header() {
           className="md:hidden border-t border-brand-divider bg-white"
         >
           <div className="mx-auto max-w-6xl px-4 py-2 flex flex-col">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="rounded-lg px-3 py-3 text-sm font-medium hover:bg-brand-surface"
+              >
+                {link.label}
+              </a>
+            ))}
             <a
-              href="#levels"
-              className="px-3 py-3 rounded-lg text-sm font-medium hover:bg-brand-surface"
-            >
-              سطوح
-            </a>
-            <a
-              href="#sample"
-              className="px-3 py-3 rounded-lg text-sm font-medium hover:bg-brand-surface"
-            >
-              نمونه درس
-            </a>
-            <a
-              href="#how"
-              className="px-3 py-3 rounded-lg text-sm font-medium hover:bg-brand-surface"
-            >
-              چگونه کار می‌کند
-            </a>
-            <a
-              href="#install"
-              className="px-3 py-3 rounded-lg text-sm font-medium hover:bg-brand-surface"
-            >
-              نصب
-            </a>
-            <a
-              href="#install"
+              href={webAppUrl}
+              rel="noopener noreferrer"
+              target="_blank"
               className="mt-1 mb-2 inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark"
             >
               ورود به وب‌اپ

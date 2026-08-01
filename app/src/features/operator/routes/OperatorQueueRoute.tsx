@@ -254,7 +254,10 @@ export function OperatorQueueRoute() {
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') openDetail(item.id);
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openDetail(item.id);
+                  }
                 }}
               >
                 <CardContent sx={{ '&:last-child': { pb: 2 } }}>

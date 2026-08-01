@@ -72,6 +72,12 @@ export function SampleLesson() {
             <p className="mt-4 text-xs text-brand-muted">
               محتوای واقعی پس از فعال‌سازی اشتراک در اپلیکیشن در دسترس قرار می‌گیرد.
             </p>
+            <a
+              href="/sample"
+              className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
+            >
+              مشاهدهٔ صفحهٔ نمونهٔ درس
+            </a>
           </aside>
         </div>
       </div>

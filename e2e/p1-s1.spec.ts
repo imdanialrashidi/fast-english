@@ -29,11 +29,12 @@
 
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
+const VISUAL_QA_DIR = '/tmp/opencode/product-app-visual-polish/auth-payment';
 
 // ---- Disposable superuser + plan + destination ----
 
@@ -253,7 +254,7 @@ test.describe('P1-S1 student payment flow', () => {
     const receiptRequestPromise = page.waitForRequest(
       (req) => req.url().includes('/payment-requests/') && req.url().includes('/receipt'),
     );
-    await showReceipt.dispatchEvent('click');
+    await showReceipt.click();
     await expect(page.getByTestId('receipt-preview-ready')).toBeVisible({ timeout: 15_000 });
     const previewSrc = await page
       .locator('[data-testid="receipt-preview-ready"] img')
@@ -460,6 +461,7 @@ test.describe('P1-S1 responsive QA', () => {
     ['390x844', 390, 844],
     ['430x932', 430, 932],
     ['768x1024', 768, 1024],
+    ['1024x768', 1024, 768],
     ['1440x900', 1440, 900],
   ]) {
     test(`${name} renders without overflow and with RTL`, async ({ page }) => {
@@ -472,6 +474,8 @@ test.describe('P1-S1 responsive QA', () => {
       //  - dialog button (when opened)
       await page.goto('/login');
       await page.getByRole('button', { name: 'ورود' }).waitFor();
+      mkdirSync(`${VISUAL_QA_DIR}/auth/${name}`, { recursive: true });
+      await page.screenshot({ path: `${VISUAL_QA_DIR}/auth/${name}/login.png`, fullPage: true });
 
       // 1. No horizontal scroll.
       const overflow = await page.evaluate(() => ({
@@ -528,6 +532,7 @@ test.describe('P1-S1 responsive QA', () => {
     ['390x844', 390, 844],
     ['430x932', 430, 932],
     ['768x1024', 768, 1024],
+    ['1024x768', 1024, 768],
     ['1440x900', 1440, 900],
   ]) {
     test(`receipt preview at ${name} renders within the preview frame`, async ({ page }) => {
@@ -545,14 +550,21 @@ test.describe('P1-S1 responsive QA', () => {
       await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
         timeout: 15_000,
       });
-      // The "show receipt" button can sit behind the right-side
-      // drawer on tablet/desktop viewports. We dispatch the
-      // click event directly to the underlying button so the
-      // persistent drawer does not intercept the gesture.
+      mkdirSync(`${VISUAL_QA_DIR}/payment/${name}`, { recursive: true });
+      await page.screenshot({
+        path: `${VISUAL_QA_DIR}/payment/${name}/payment-status-pending.png`,
+        fullPage: true,
+      });
+      // The shared shell reserves the responsive rail, so this is a
+      // real user click at every QA viewport.
       const showReceipt = page.getByRole('button', { name: /نمایش رسید/ });
       await showReceipt.waitFor({ state: 'visible' });
-      await showReceipt.dispatchEvent('click');
+      await showReceipt.click();
       await expect(page.getByTestId('receipt-preview-ready')).toBeVisible({ timeout: 15_000 });
+      await page.screenshot({
+        path: `${VISUAL_QA_DIR}/payment/${name}/receipt-preview.png`,
+        fullPage: true,
+      });
 
       // The preview img must be at most the viewport width.
       const preview = page.locator('[data-testid="receipt-preview-ready"] img');

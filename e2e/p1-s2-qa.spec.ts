@@ -2,7 +2,7 @@
 // P1-S2 operator responsive QA evidence.
 //
 // Captures screenshots of the Operator Queue and Operator Detail
-// pages at 6 required viewports. Screenshots are written to a
+// pages at 7 required viewports. Screenshots are written to a
 // per-run output directory so they never enter the repo or
 // the test-results bundle. The spec also runs a battery of
 // structural assertions for every viewport: no horizontal
@@ -31,7 +31,8 @@ import { expect, test } from '@playwright/test';
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
 
-const SCREENSHOTS_DIR = process.env.OPERATOR_QA_OUT ?? '/tmp/opencode/phase-1-operator-qa';
+const SCREENSHOTS_DIR =
+  process.env.OPERATOR_QA_OUT ?? '/tmp/opencode/product-app-visual-polish/operator';
 
 const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
   { name: '360x800', width: 360, height: 800 },
@@ -39,6 +40,7 @@ const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
   { name: '390x844', width: 390, height: 844 },
   { name: '430x932', width: 430, height: 932 },
   { name: '768x1024', width: 768, height: 1024 },
+  { name: '1024x768', width: 1024, height: 768 },
   { name: '1440x900', width: 1440, height: 900 },
 ];
 
@@ -752,12 +754,7 @@ test.describe('P1-S2 operator responsive QA', () => {
       // The page should show the approved status chip
       await expect(page.getByText('تأیید شده').first()).toBeVisible();
       // Approve/Reject buttons must NOT be visible (pending-only)
-      const approveVisible = await page
-        .getByRole('button', { name: /تأیید/ })
-        .first()
-        .isVisible()
-        .catch(() => false);
-      expect(approveVisible, `[${vp.name}] no Approve button on approved state`).toBe(false);
+      await expect(page.getByRole('button', { name: /تأیید/ })).toHaveCount(0);
 
       const layout = await probeLayout(page);
       expect(

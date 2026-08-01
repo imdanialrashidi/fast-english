@@ -68,6 +68,29 @@ export default async function globalSetup() {
       if (r.status === 200) {
         // PB is up. Make the URL visible to the test spec.
         writeFileSync('test-results/pb-url.txt', PB_URL);
+
+        // Visual E2E suites intentionally open many fresh browser sessions.
+        // Disable only the disposable instance's IP limiter so auth refresh
+        // throttling cannot turn a later viewport into a false visual failure.
+        // Backend rate-limit behavior remains covered by the smoke suites.
+        const auth = await fetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ identity: suEmail, password: suPassword }),
+        });
+        if (!auth.ok) throw new Error(`global-setup: superuser auth failed (${auth.status})`);
+        const authBody = (await auth.json()) as { token?: string };
+        if (!authBody.token) throw new Error('global-setup: superuser token missing');
+        const settings = await fetch(`${PB_URL}/api/settings`, {
+          method: 'PATCH',
+          headers: {
+            authorization: authBody.token,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({ rateLimits: { enabled: false } }),
+        });
+        if (!settings.ok)
+          throw new Error(`global-setup: rate-limit setup failed (${settings.status})`);
         return;
       }
     } catch {

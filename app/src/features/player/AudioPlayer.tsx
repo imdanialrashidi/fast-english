@@ -25,6 +25,7 @@ import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import { Box, Button, Chip, IconButton, Slider, Stack, Tooltip, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { setAudioBusy } from '../../pwa/activity';
 
 export interface AudioPlayerProps {
   /** The audio source URL (from the protected audio proxy) */
@@ -96,6 +97,7 @@ export function AudioPlayer({
     setVolume(1);
     setPlaybackRate(1);
     setIsSeeking(false);
+    setAudioBusy(false);
   }, [src]);
 
   // Apply the resume position. Setting currentTime before metadata is loaded is
@@ -142,10 +144,12 @@ export function AudioPlayer({
 
   const handlePlay = useCallback(() => {
     setIsPlaying(true);
+    setAudioBusy(true);
   }, []);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
+    setAudioBusy(false);
     const audio = audioRef.current;
     if (audio) {
       const pos = audio.currentTime;
@@ -158,6 +162,7 @@ export function AudioPlayer({
 
   const handleEnded = useCallback(() => {
     setIsPlaying(false);
+    setAudioBusy(false);
     const audio = audioRef.current;
     if (audio) {
       const pos = audio.currentTime;
@@ -173,6 +178,7 @@ export function AudioPlayer({
     setIsLoading(false);
     setHasError(true);
     setIsPlaying(false);
+    setAudioBusy(false);
   }, []);
 
   const handleWaiting = useCallback(() => {
@@ -310,7 +316,7 @@ export function AudioPlayer({
 
   return (
     <Box
-      role="application"
+      role="group"
       aria-label="پخش‌کنندهٔ صوت"
       sx={{
         p: 2,
@@ -335,7 +341,7 @@ export function AudioPlayer({
         onCanPlay={handleCanPlay}
         onLoadedData={handleLoadedData}
       >
-        <track kind="captions" />
+        <track kind="captions" src="data:text/vtt,WEBVTT%0A%0A" srcLang="en" label="English" />
       </audio>
 
       {/* Completed indicator */}
@@ -488,6 +494,8 @@ export function AudioPlayer({
                 sx={{
                   cursor: 'pointer',
                   fontWeight: playbackRate === speed ? 600 : 400,
+                  minHeight: 44,
+                  minWidth: 44,
                 }}
               />
             ))}
@@ -515,7 +523,7 @@ export function AudioPlayer({
               step={0.05}
               onChange={handleVolumeChange}
               size="small"
-              sx={{ width: 80 }}
+              sx={{ width: { xs: 96, sm: 120 }, minWidth: 96 }}
             />
           </Stack>
         </Stack>

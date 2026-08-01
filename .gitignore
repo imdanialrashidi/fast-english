@@ -5,6 +5,17 @@
 *.pem
 *.key
 
+# Android signing material and release artifacts (P4-S2 signing-key gate).
+# Production keystores, passwords and signing properties must never be
+# committed; passwords come from the environment or an ignored local file.
+releases/
+*.jks
+*.keystore
+keystore.properties
+keystore.properties.*
+*.storepass
+*.keypass
+
 # Confidential project/client material
 docs/private/**
 !docs/private/.gitkeep
@@ -26,6 +37,7 @@ target/
 .vite/
 dist-app/
 dist-landing/
+dist-landing-apk/
 playwright-report/
 test-results/
 *.log

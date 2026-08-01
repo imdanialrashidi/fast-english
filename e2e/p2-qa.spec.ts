@@ -1,11 +1,11 @@
 // e2e/p2-qa.spec.ts
-// P2 responsive visual QA: authenticated screenshots at 6 viewports across
+// P2 responsive visual QA: authenticated screenshots at 7 viewports across
 // P2-S1 (placement flow) and P2-S2 (level selection + dashboard) states.
 //
 // Uses localStorage auth injection (PocketBase JS SDK LocalAuthStore key
 // "pocketbase_auth") to authenticate the browser session. All mandatory
 // state assertions use Playwright expect() with bounded timeouts.
-// No .catch(() => false) patterns. An anti-false-positive guard fails when
+// Optional branches use explicit count/visibility checks. An anti-false-positive guard fails when
 // a Login page is displayed instead of the expected Product state.
 //
 // Run: pnpm exec playwright test e2e/p2-qa.spec.ts
@@ -17,7 +17,7 @@ import { expect, test } from '@playwright/test';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const APP_URL = PB_URL.replace(/:\d+/, ':18102');
-const QA_ROOT = '/tmp/opencode';
+const QA_ROOT = '/tmp/opencode/product-app-visual-polish';
 const P2S1_DIR = `${QA_ROOT}/p2-s1-placement-qa-fixed`;
 const P2S2_DIR = `${QA_ROOT}/p2-s2-dashboard-qa-fixed`;
 
@@ -27,6 +27,7 @@ const VIEWPORTS: { w: number; h: number; name: string }[] = [
   { w: 390, h: 844, name: '390x844' },
   { w: 430, h: 932, name: '430x932' },
   { w: 768, h: 1024, name: '768x1024' },
+  { w: 1024, h: 768, name: '1024x768' },
   { w: 1440, h: 900, name: '1440x900' },
 ];
 
@@ -215,14 +216,11 @@ async function createActiveStudent(
     throw new Error(`payment request failed: ${reqR.status} ${txt.slice(0, 200)}`);
   }
 
-  const listR = await jsonFetch(`${PB_URL}/api/collections/payment_requests/records`, {
-    headers: { authorization: suToken },
-  });
-  const items = (listR.body as { items?: { id: string; status: string }[] }).items || [];
-  const pendingReq = items.find((r: { id: string; status: string }) => r.status === 'pending');
-  if (!pendingReq) throw new Error('no pending request');
+  const requestBody = (await reqR.json()) as { request?: { id?: string }; id?: string };
+  const requestId = requestBody.request?.id ?? requestBody.id;
+  if (!requestId) throw new Error('payment request response did not include an id');
   const approveR = await jsonFetch(
-    `${PB_URL}/api/fast-english/operator/payment-requests/${pendingReq.id}/approve`,
+    `${PB_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
     { method: 'POST', headers: { authorization: opToken } },
   );
   if (approveR.status !== 200)
@@ -243,16 +241,10 @@ async function assertNotLogin(page: import('@playwright/test').Page): Promise<vo
 // ===== P2-S1 =====
 test.describe('P2-S1 responsive placement QA', () => {
   let suToken: string;
-  let userToken: string;
-  let loginRecord: Record<string, unknown>;
 
   test.beforeAll(async () => {
     suToken = await getSuperuserToken();
     await seedFixtures(suToken);
-    const opToken = await getOperatorToken(suToken);
-    const student = await createActiveStudent(suToken, opToken);
-    userToken = student.token;
-    loginRecord = student.record;
   });
 
   for (const vp of VIEWPORTS) {
@@ -260,12 +252,18 @@ test.describe('P2-S1 responsive placement QA', () => {
       mkdirSync(`${P2S1_DIR}/${vp.name}`, { recursive: true });
       await page.setViewportSize({ width: vp.w, height: vp.h });
 
+      // Each viewport gets a fresh attempt. Reusing a submitted attempt would
+      // legitimately land on the result screen and make the screenshot gate
+      // depend on test order rather than the viewport under inspection.
+      const opToken = await getOperatorToken(suToken);
+      const student = await createActiveStudent(suToken, opToken);
+
       // Inject auth into localStorage before any page JS loads
       await page.addInitScript(
         (authData: { token: string; record: Record<string, unknown> }) => {
           localStorage.setItem('pocketbase_auth', JSON.stringify(authData));
         },
-        { token: userToken, record: loginRecord },
+        { token: student.token, record: student.record },
       );
 
       await page.goto(`${APP_URL}/placement`, { waitUntil: 'networkidle' });
@@ -276,7 +274,7 @@ test.describe('P2-S1 responsive placement QA', () => {
 
       // Close sidebar drawer if visible (tablet sizes)
       const sidebarClose = page.getByRole('button', { name: /بستن/i }).first();
-      if (await sidebarClose.isVisible({ timeout: 500 }).catch(() => false)) {
+      if ((await sidebarClose.count()) > 0 && (await sidebarClose.isVisible())) {
         await sidebarClose.click();
         await page.waitForTimeout(300);
       }
@@ -285,7 +283,7 @@ test.describe('P2-S1 responsive placement QA', () => {
       // First visible element is Question 1's prompt.
       // If the page shows an error or loading state instead, fail immediately.
       const loadingOrError = page.locator('text=/در حال بارگذاری|خطا|آزمون در دسترس/');
-      if (await loadingOrError.isVisible({ timeout: 3000 }).catch(() => false)) {
+      if ((await loadingOrError.count()) > 0 && (await loadingOrError.isVisible())) {
         // Take a debug screenshot and fail with context
         await page.screenshot({ path: `${P2S1_DIR}/${vp.name}/00-load-error.png` });
         throw new Error(
@@ -300,6 +298,18 @@ test.describe('P2-S1 responsive placement QA', () => {
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
       ).toBe(true);
+
+      const nextButton = page.getByRole('button', { name: 'بعدی' }).first();
+      await expect(nextButton).toBeVisible({ timeout: 3000 });
+      const nextReachable = await nextButton.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const target = document.elementFromPoint(
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2,
+        );
+        return target === element || element.contains(target);
+      });
+      expect(nextReachable, `[${vp.name}] next action is not covered by navigation`).toBe(true);
 
       // Select an option
       const firstCheckbox = page.locator('input[type="checkbox"]').first();
@@ -317,18 +327,17 @@ test.describe('P2-S1 responsive placement QA', () => {
       async function answerAndAdvance() {
         const cb = page.locator('input[type="checkbox"]').first();
         await expect(cb).toBeVisible({ timeout: 3000 });
-        await cb.click({ force: true });
+        await cb.click();
         // Wait for save to complete
         await page.waitForTimeout(800);
         const nextBtn = page.getByRole('button', { name: /بعدی/i }).first();
         const reviewBtn = page.getByRole('button', { name: /مرور/i }).first();
-        const nextVisible = await nextBtn.isVisible().catch(() => false);
+        const nextVisible = await nextBtn.isVisible();
         if (nextVisible) {
-          // On tablet sizes, the sidebar drawer may overlap buttons
-          await nextBtn.click({ force: true });
+          await nextBtn.click();
         } else {
           await expect(reviewBtn).toBeVisible({ timeout: 2000 });
-          await reviewBtn.click({ force: true });
+          await reviewBtn.click();
         }
         await page.waitForTimeout(500);
       }
@@ -529,7 +538,8 @@ test.describe('P2-S2 responsive dashboard QA', () => {
       // 4. Dashboard
       await expect(page.getByText(/خوش آمدید/i).first()).toBeVisible({ timeout: 5000 });
       await expect(page.getByText(/C2/i).first()).toBeVisible({ timeout: 3000 });
-      await expect(page.getByText(/به‌زودی/i).first()).toBeVisible({ timeout: 3000 });
+      await expect(page.getByText(/دروس آموزشی/i).first()).toBeVisible({ timeout: 3000 });
+      await expect(page.getByText(/روزهای باقی‌مانده/i).first()).toBeVisible({ timeout: 3000 });
       await page.screenshot({ path: `${P2S2_DIR}/${vp.name}/04-dashboard.png`, fullPage: true });
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),

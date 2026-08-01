@@ -206,12 +206,20 @@ export function LessonsRoute() {
                               flexDirection: 'row',
                               alignItems: 'center',
                               justifyContent: 'space-between',
+                              flexWrap: 'wrap',
                             }}
                           >
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            <Typography
+                              variant="h6"
+                              sx={{ fontWeight: 600, minWidth: 0, overflowWrap: 'anywhere' }}
+                            >
                               {lesson.title}
                             </Typography>
-                            <Stack direction="row" spacing={0.5}>
+                            <Stack
+                              direction="row"
+                              spacing={0.5}
+                              sx={{ flexWrap: 'wrap', minWidth: 0 }}
+                            >
                               {isCompleted && (
                                 <Chip
                                   icon={<CheckCircleRoundedIcon />}

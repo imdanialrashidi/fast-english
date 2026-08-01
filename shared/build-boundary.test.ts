@@ -12,16 +12,25 @@ const appFiles = [
   'src/app/shell/AppShell.tsx',
 ];
 const landingFiles = [
-  'src/main.tsx',
-  'src/Landing.tsx',
+  'src/mount.tsx',
+  'src/entry-home.tsx',
+  'src/entry-about.tsx',
+  'src/entry-install.tsx',
+  'src/pages/HomePage.tsx',
+  'src/pages/PrivacyPage.tsx',
+  'src/layouts/SiteLayout.tsx',
   'src/sections/Header.tsx',
   'src/sections/Hero.tsx',
   'src/sections/CefrSection.tsx',
   'src/sections/SampleLesson.tsx',
   'src/sections/HowItWorks.tsx',
-  'src/sections/CtaSection.tsx',
+  'src/sections/InstallSection.tsx',
+  'src/sections/FaqSection.tsx',
   'src/sections/Footer.tsx',
   'src/components/BrandMark.tsx',
+  'src/components/ApkButton.tsx',
+  'src/lib/siteConfig.ts',
+  'src/content/siteContent.ts',
 ];
 
 describe('build boundary isolation', () => {
