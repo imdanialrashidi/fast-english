@@ -1,0 +1,243 @@
+# Fast English Podcast — Production Caddyfile (Caddy v2.10.x)
+#
+# Served domains:
+#   fastenglishpodcast.com            static Landing (multi-page) + /releases/ (APK)
+#   www.fastenglishpodcast.com        permanent redirect to the canonical root
+#   app.fastenglishpodcast.com        Product App/PWA + /api/* -> PocketBase 127.0.0.1:8090
+#   admin.fastenglishpodcast.com      Operator interface (same SPA) + /api/* -> PocketBase
+#
+# Layout on the server (see docs/DEPLOYMENT.md):
+#   /opt/fast-english/current/landing   static landing (atomic symlink)
+#   /opt/fast-english/current/app       product app (atomic symlink)
+#   /opt/fast-english/shared/releases   persistent APK + release metadata (immutable files)
+#   /opt/fast-english/shared/logs/      access logs (rotated, bounded)
+#
+# Security invariants implemented here:
+#   - PocketBase listens ONLY on 127.0.0.1:8090 (systemd unit); Caddy is the only
+#     public entry point. /api/* failures are never routed to the SPA.
+#   - PocketBase superuser Dashboard (_/_) is NOT exposed on any public domain
+#     (404 on app and admin). Superuser access happens over an SSH tunnel only.
+#   - Audio file tokens travel as the `token` query parameter; the access-log
+#     format filters `request>uri` with the official query filter and replaces
+#     token values with [REDACTED] (see docs/OPERATIONS.md, log-redaction test).
+#     `log_credentials` is NOT enabled: Authorization/Cookie stay redacted by
+#     Caddy defaults.
+#   - Request bodies are bounded (6MB on /api/*; largest accepted upload is a
+#     5MB receipt + ~1MB documented margin for multipart overhead).
+#   - No CSP is deployed: it must be tested against the complete App/PWA/audio/
+#     landing flows before shipping (documented as a follow-up).
+#
+# Validate: caddy validate --config Caddyfile  |  caddy fmt --overwrite Caddyfile
+# Reload:   systemctl reload caddy
+{
+	# ACME account contact. CHANGE-ME: replace with the responsible operator
+	# address before going live (Let's Encrypt expiry notices).
+	# email ops@example.com
+
+	# Admin API off on the public listener; manage config via file reload.
+	admin off
+}
+
+# ---------------------------------------------------------------------------
+# Landing (canonical root domain)
+# ---------------------------------------------------------------------------
+fastenglishpodcast.com {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	log {
+		output file /opt/fast-english/shared/logs/access-landing.log {
+			roll_size 10MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format filter {
+			wrap json
+			fields {
+				request>uri query {
+					replace token "[REDACTED]"
+				}
+			}
+		}
+	}
+
+	# Public APK + release metadata. Immutable, versioned filenames; the
+	# directory itself is never browsable (no `browse`). Caddy's built-in
+	# MIME table serves .apk as application/vnd.android.package-archive
+	# (verified against the deployed Caddy version).
+	# handle_path strips the /releases prefix so file_server serves the
+	# files directly from the shared releases directory.
+	handle_path /releases/* {
+		root * /opt/fast-english/shared/releases
+		file_server
+		@apk path /releases/*.apk
+		header @apk Cache-Control "public, max-age=31536000, immutable"
+		@meta path /releases/release-metadata.json /releases/RELEASE-NOTES.md
+		header @meta Cache-Control "public, max-age=3600"
+	}
+
+	handle {
+		root * /opt/fast-english/current/landing
+		# Static multi-page landing: canonical URLs are extensionless
+		# (sitemap lists /about, /install, ...), files are about.html etc.
+		# Serve the file, otherwise the .html twin, otherwise 404 (no SPA fallback).
+		try_files {path} {path}.html
+		file_server
+
+		# Vite fingerprints every emitted asset; safe to cache forever.
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		# HTML (root and every canonical page) must not be cached long.
+		@html path / *.html /about /how-it-works /install /collaboration /contact /privacy /terms /sample
+		header @html Cache-Control "no-cache"
+		# SEO files change rarely; short public cache.
+		@seo path /robots.txt /sitemap.xml /favicon.svg /og-image.png
+		header @seo Cache-Control "public, max-age=3600"
+	}
+}
+
+# ---------------------------------------------------------------------------
+# www -> canonical root
+# ---------------------------------------------------------------------------
+www.fastenglishpodcast.com {
+	# 308 (not 301) so the redirect is not permanently cached by browsers and
+	# remains reversible.
+	redir https://fastenglishpodcast.com{uri} 308
+}
+
+# ---------------------------------------------------------------------------
+# Product App / PWA + PocketBase APIs
+# ---------------------------------------------------------------------------
+app.fastenglishpodcast.com {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	log {
+		output file /opt/fast-english/shared/logs/access-app.log {
+			roll_size 10MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format filter {
+			wrap json
+			fields {
+				request>uri query {
+					replace token "[REDACTED]"
+				}
+			}
+		}
+	}
+
+	# PocketBase APIs (including /api/fast-english/* custom routes, realtime,
+	# file URLs). Bounded request body: 5MB receipt + 1MB documented margin.
+	# API failures terminate here — they are never sent to the SPA fallback.
+	handle /api/* {
+		request_body {
+			max_size 6MB
+		}
+		reverse_proxy 127.0.0.1:8090 {
+			transport http {
+				read_timeout 360s
+			}
+		}
+	}
+
+	# PocketBase superuser Dashboard must never be public.
+	handle /_/* {
+		respond 404
+	}
+
+	# Product App with SPA fallback.
+	handle {
+		root * /opt/fast-english/current/app
+		try_files {path} /index.html
+		file_server
+
+		# Hashed assets are content-addressed; immutable caching is safe.
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		# PWA-critical files must always revalidate (never long-cached).
+		@nocache path /index.html /sw.js /manifest.webmanifest
+		header @nocache Cache-Control "no-cache, no-store, must-revalidate"
+		# Versioned PWA icons referenced from the manifest.
+		@icons path /pwa-*.png
+		header @icons Cache-Control "public, max-age=3600"
+	}
+}
+
+# ---------------------------------------------------------------------------
+# Operator interface + PocketBase APIs
+# ---------------------------------------------------------------------------
+admin.fastenglishpodcast.com {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	log {
+		output file /opt/fast-english/shared/logs/access-admin.log {
+			roll_size 10MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format filter {
+			wrap json
+			fields {
+				request>uri query {
+					replace token "[REDACTED]"
+				}
+			}
+		}
+	}
+
+	# Operator entry point. 308 keeps the redirect uncached and reversible.
+	redir / /operator 308
+
+	handle /api/* {
+		request_body {
+			max_size 6MB
+		}
+		reverse_proxy 127.0.0.1:8090 {
+			transport http {
+				read_timeout 360s
+			}
+		}
+	}
+
+	# PocketBase superuser Dashboard must never be public.
+	handle /_/* {
+		respond 404
+	}
+
+	handle {
+		root * /opt/fast-english/current/app
+		try_files {path} /index.html
+		file_server
+
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		@nocache path /index.html /sw.js /manifest.webmanifest
+		header @nocache Cache-Control "no-cache, no-store, must-revalidate"
+		@icons path /pwa-*.png
+		header @icons Cache-Control "public, max-age=3600"
+	}
+}

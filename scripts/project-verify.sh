@@ -164,4 +164,10 @@ fi
 #     Without signing material no APK can exist; the gate then skips.
 run bash scripts/verify-release-apk.sh --if-present
 
+# 22. P4-S3 — deployment redaction proofs: sentinel credentials never leak
+#     from install.sh (superuser password) or configure.sh (S3/SMTP/superuser).
+printf '\n=== deploy redaction proofs (P4-S3) ===\n'
+run bash deploy/test-install-redaction.sh
+run bash deploy/test-configure-redaction.sh
+
 printf '\nAll project verification checks passed.\n'

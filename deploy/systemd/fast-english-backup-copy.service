@@ -1,0 +1,15 @@
+# Fast English Podcast — copy PocketBase's automatic backups from
+# pb_data/backups (live data dir) to shared/backups (kept separate from the
+# live pb_data, per the backup policy) and enforce the 14-backup retention.
+#
+# Triggered by fast-english-backup-copy.timer at 02:40 UTC, after
+# PocketBase's own daily 02:30 UTC backup cron.
+[Unit]
+Description=Fast English Podcast — copy automatic PocketBase backups off pb_data
+After=fast-english-pocketbase.service
+
+[Service]
+Type=oneshot
+User=fastenglish
+Group=fastenglish
+ExecStart=/opt/fast-english/shared/scripts/fep-backup-copy.sh

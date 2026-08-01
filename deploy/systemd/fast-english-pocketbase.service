@@ -1,0 +1,99 @@
+# Fast English Podcast — PocketBase production service (systemd).
+#
+# Hardening rationale (all verified against the server's systemd version):
+#   * dedicated non-root User/Group `fastenglish`
+#   * PocketBase bound ONLY to 127.0.0.1:8090 (Caddy is the public entry point)
+#   * migrations + hooks loaded from the CURRENT release via the atomic
+#     `current` symlink (immutable releases; pb_data lives outside releases)
+#   * Protectsystem=strict + ReadWritePaths => write access ONLY to pb_data
+#     (SQLite, storage uploads, local backups inside pb_data/backups)
+#   * NoNewPrivileges, PrivateTmp, capability drop, address-family and proc
+#     restrictions; UMask=0077 so uploaded files are not world-readable
+#   * bounded restart (RestartSec=5s + StartLimitBurst) and clean stop
+#     (TimeoutStopSec=30s)
+#   * journald keeps stdout/stderr bounded; no unbounded log files
+#
+# Secrets: /opt/fast-english/shared/secrets/pocketbase.env (root:root 600).
+# EnvironmentFile is optional — the unit also runs with defaults when the
+# file is absent (settings encryption via PB_ENCRYPTION_KEY is active only
+# when the variable is set; without it settings are stored unencrypted).
+#
+# Verify: systemd-analyze verify fast-english-pocketbase.service
+#
+# NOTE: `--origins` restricts CORS to the two public HTTPS origins plus
+# https://localhost. The app and admin UIs call the API same-origin, and the
+# superuser Dashboard is only ever reached over an SSH tunnel (origin
+# http://127.0.0.1:8090, same-origin with the API), so no CORS is needed for
+# them. `https://localhost` is the WebView origin of the release APK:
+# Capacitor serves bundled assets from https://localhost on Android (same
+# origin used by scripts/dev.sh for the debug APK), and the APK calls
+# https://app.fastenglishpodcast.com cross-origin, so CORS must allow it.
+# Only the installed APK can execute JS with that origin, and the app's API
+# auth uses an Authorization bearer token (never cookies), so this does not
+# open the API up to arbitrary web pages.
+#
+# `--encryptionEnv` stores app settings (incl. any SMTP/S3 credentials)
+# encrypted in pb_data when PB_ENCRYPTION_KEY (32 chars) is set; without the
+# env var PocketBase 0.39.9 starts with settings unencrypted (verified).
+#
+# The `current` symlink is flipped atomically by deploy/deploy.sh, which then
+# restarts this unit so the new release's hooks/migrations take effect.
+
+[Unit]
+Description=Fast English Podcast — PocketBase (production)
+Documentation=https://pocketbase.io/docs/going-to-production/
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=10min
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=fastenglish
+Group=fastenglish
+WorkingDirectory=/opt/fast-english
+EnvironmentFile=/opt/fast-english/shared/secrets/pocketbase.env
+
+ExecStart=/opt/fast-english/bin/pocketbase serve \
+    --http=127.0.0.1:8090 \
+    --dir=/opt/fast-english/shared/pb_data \
+    --migrationsDir=/opt/fast-english/current/server/pb_migrations \
+    --hooksDir=/opt/fast-english/current/server/pb_hooks \
+    --hooksWatch=false \
+    --encryptionEnv=PB_ENCRYPTION_KEY \
+    --origins=https://app.fastenglishpodcast.com,https://admin.fastenglishpodcast.com,https://localhost
+
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+
+LimitNOFILE=65536
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+# Write access ONLY to the PocketBase data directory (DB, storage, backups).
+# The release tree, the binary and the secrets file remain read-only.
+ReadWritePaths=/opt/fast-english/shared/pb_data
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

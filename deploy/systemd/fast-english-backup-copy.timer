@@ -1,0 +1,10 @@
+[Unit]
+Description=Fast English Podcast — daily backup copy (02:40 UTC)
+
+[Timer]
+OnCalendar=*-*-* 02:40:00
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target
