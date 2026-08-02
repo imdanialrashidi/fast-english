@@ -47,5 +47,8 @@ jobs:
       - name: Install dependencies
         run: bash scripts/ci-install.sh
 
+      - name: Provision PocketBase test binary
+        run: bash scripts/setup-pocketbase.sh
+
       - name: Verify
         run: bash scripts/verify.sh

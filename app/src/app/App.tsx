@@ -7,6 +7,7 @@ import { PaymentRoute, PaymentStatusRoute } from '../features/payment';
 import { LevelResultRoute, PlacementRoute } from '../features/placement';
 import { AuthProvider, decideRoute, type RouteKind, useAuth } from '../lib/auth';
 import { AccountRoute } from './routes/AccountRoute';
+import { CatalogRoute } from './routes/CatalogRoute';
 import { EntryRoute } from './routes/EntryRoute';
 import { LoginRoute } from './routes/LoginRoute';
 import { OperatorRoute } from './routes/OperatorRoute';
@@ -14,6 +15,12 @@ import { SignupRoute } from './routes/SignupRoute';
 import { AppShell } from './shell/AppShell';
 import { PageContainer } from './shell/PageContainer';
 import { StatePanel } from './shell/StatePanel';
+
+// Development-only component catalog. Registered in dev builds and when the
+// e2e build explicitly enables it (VITE_CATALOG=1); never part of the
+// production navigation (no link anywhere) and absent from production builds
+// without the flag.
+const catalogEnabled = import.meta.env.DEV || import.meta.env.VITE_CATALOG === '1';
 
 function Guard({ kind, children }: { kind: RouteKind; children: React.ReactNode }) {
   const { user, isAuthenticated, isInitializing } = useAuth();
@@ -55,9 +62,9 @@ function ThemedApp() {
             insetInlineStart: 8,
             top: 8,
             padding: '8px 12px',
-            background: '#0B1220',
-            color: '#fff',
-            borderRadius: 8,
+            background: 'var(--mui-palette-inverseSurface)',
+            color: 'var(--mui-palette-inverseOnSurface)',
+            borderRadius: '10px',
             textDecoration: 'none',
             transform: 'translateY(-200%)',
             zIndex: 9999,
@@ -175,6 +182,7 @@ function ThemedApp() {
           </Route>
 
           <Route path="/sample" element={<SampleRoute />} />
+          {catalogEnabled ? <Route path="/dev/catalog" element={<CatalogRoute />} /> : null}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>

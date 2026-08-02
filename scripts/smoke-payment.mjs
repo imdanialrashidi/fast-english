@@ -435,13 +435,7 @@ async function scenario2InactivePlan({ sharedToken, inactivePlanId }) {
   check(r.body?.code === 'invalid_plan', `inactive plan code = invalid_plan (got ${r.body?.code})`);
 }
 
-async function scenario3MissingDestination({
-  suToken,
-  planId,
-  destinationId,
-  sharedToken,
-  inactiveDestinationId,
-}) {
+async function scenario3MissingDestination({ suToken, planId, destinationId, sharedToken }) {
   // The setup creates an inactive destination up-front. To prove the
   // route returns 404 with code payment_destination_unavailable when
   // no active destination exists, we temporarily PATCH the active
@@ -530,7 +524,7 @@ async function scenario6Oversized({ planId, sharedToken }) {
   check(r.status === 413, `oversized receipt returns 413 (got ${r.status}, code=${body?.code})`);
 }
 
-async function scenario7Jpeg({ planId, suToken }) {
+async function scenario7Jpeg({ planId }) {
   const user = await signupUser('جی پگ');
   const token = user.token;
   const r = await postPaymentRequest({
@@ -674,7 +668,7 @@ async function scenario12ExtSignatureMismatch({ planId }) {
   );
 }
 
-async function scenario13ClientSnapshotsIgnored({ planId, suToken }) {
+async function scenario13ClientSnapshotsIgnored({ planId }) {
   // The custom route ignores client-supplied user/status/amount/duration/
   // plan_name_snapshot, but the PocketBase record-CRUD endpoint is
   // locked (createRule=null on payment_requests) so the client cannot
@@ -844,7 +838,7 @@ async function scenario18DirectCreateBlocked({ sharedToken }) {
   check(r.status >= 400, `direct create blocked (status=${r.status})`);
 }
 
-async function scenario19UpdateDeleteBlocked({ planId, suToken }) {
+async function scenario19UpdateDeleteBlocked({ planId }) {
   // Create one pending request and try to PATCH/DELETE it through the
   // standard CRUD endpoint with the user token. updateRule and
   // deleteRule are null on payment_requests.

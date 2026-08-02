@@ -105,8 +105,8 @@ test('manifest values are correct', async ({ page }) => {
   expect(manifest.scope).toBe('/');
   expect(manifest.display).toBe('standalone');
   expect(manifest.orientation).toBe('any');
-  expect(manifest.theme_color).toBe('#0B1220');
-  expect(manifest.background_color).toBe('#F6F8FC');
+  expect(manifest.theme_color).toBe('#e9f1f4');
+  expect(manifest.background_color).toBe('#f5f9fa');
   expect(manifest.lang).toBe('fa');
   expect(manifest.dir).toBe('rtl');
   expect(manifest.id).toBe('/');
@@ -375,4 +375,29 @@ test('App shell renders on first visit with no uncaught errors', async ({ page }
     page.getByRole('heading', { name: 'انگلیسی را دقیقاً در سطح خودت یاد بگیر' }),
   ).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('public sample requests are absolute URLs on the app origin', async ({ page }) => {
+  // Native-build origin guard: the lesson feature must resolve every
+  // `/api/...` path against the SDK origin. On Android release there is
+  // no shared browser origin, so a root-relative request would hit the
+  // Capacitor WebView origin and fail. This test pins the invariant in a
+  // real browser: the public sample request must target the app origin.
+  // (The DOM-level <source src> form is asserted in p3-s1.spec.ts where a
+  // published sample lesson with audio exists; here the JSON request fires
+  // regardless of whether a sample is published.)
+  const sampleRequestUrls: string[] = [];
+  page.on('request', (req) => {
+    if (req.url().includes('/api/fast-english/public/sample')) {
+      sampleRequestUrls.push(req.url());
+    }
+  });
+
+  await page.goto('/sample');
+  await expect.poll(() => sampleRequestUrls.length).toBeGreaterThan(0);
+
+  for (const url of sampleRequestUrls) {
+    expect(url.startsWith('http')).toBe(true);
+    expect(new URL(url).origin).toBe(new URL(APP_URL).origin);
+  }
 });

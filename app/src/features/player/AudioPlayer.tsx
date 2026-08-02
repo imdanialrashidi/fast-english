@@ -301,7 +301,7 @@ export function AudioPlayer({
           p: 2,
           textAlign: 'center',
           bgcolor: 'action.hover',
-          borderRadius: 1,
+          borderRadius: '16px',
         }}
       >
         <Typography variant="body2" color="text.secondary">
@@ -321,7 +321,7 @@ export function AudioPlayer({
       sx={{
         p: 2,
         bgcolor: 'background.paper',
-        borderRadius: 1,
+        borderRadius: '16px',
         border: 1,
         borderColor: 'divider',
       }}
@@ -408,15 +408,15 @@ export function AudioPlayer({
           />
         </Box>
 
-        {/* Time display */}
+        {/* Time display — audioTime variant: tabular numerals, LTR-isolated */}
         <Stack
           direction="row"
           sx={{ justifyContent: 'space-between', alignItems: 'center', px: 0.5 }}
         >
-          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+          <Typography variant="audioTime" color="text.secondary">
             {formatTime(displayTime)}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+          <Typography variant="audioTime" color="text.secondary">
             {formatTime(effectiveDuration)}
           </Typography>
         </Stack>

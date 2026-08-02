@@ -471,8 +471,13 @@ test.describe('P3-S1 Lessons E2E', () => {
     const audio = page.locator('audio[preload="metadata"]');
     await expect(audio).toBeVisible({ timeout: 10_000 });
 
-    // Audio src should be inside <source> element, pointing to public sample proxy
+    // Audio src should be an absolute URL on the app origin, pointing to
+    // the public sample proxy. Root-relative src would break on Android
+    // release (Capacitor WebView has no shared browser origin), so the
+    // client must resolve `/api` paths before handing them to <source>.
     const src = await audio.locator('source').getAttribute('src');
+    expect(src).toMatch(/^https?:\/\//);
+    expect(new URL(src as string).origin).toBe(new URL(page.url()).origin);
     expect(src).toContain('/api/fast-english/public/sample/audio');
   });
 

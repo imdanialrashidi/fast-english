@@ -8,7 +8,7 @@ import { LevelBadge } from '../../../app/shell/LevelBadge';
 import { PageContainer } from '../../../app/shell/PageContainer';
 import { PageHeader } from '../../../app/shell/PageHeader';
 import { StatePanel } from '../../../app/shell/StatePanel';
-import type { CefrLevel } from '../../../app/theme/tokens';
+import type { CefrLevel } from '../../../app/theme/tokens/cefr';
 import * as api from '../api';
 import type { AudioDescriptor } from '../types';
 
@@ -38,8 +38,10 @@ export function SampleRoute() {
       }
       setLesson(data.lesson);
       setPhase('ready');
-      // Audio URL from server response (no token needed for public sample)
-      setAudioUrl(data.lesson.audio.url);
+      // Audio URL from server response (no token needed for public sample).
+      // The server sends a root-relative path; resolve it against the SDK
+      // origin so native builds do not resolve against the WebView origin.
+      setAudioUrl(api.resolveMediaUrl(data.lesson.audio.url));
     } catch {
       setPhase('error');
     }
@@ -97,7 +99,7 @@ export function SampleRoute() {
               size="small"
               label={lesson.topic.title}
               variant="outlined"
-              sx={{ borderRadius: 1 }}
+              sx={{ borderRadius: '16px' }}
             />
             <Typography variant="caption" color="text.secondary">
               {lesson.estimatedMinutes} دقیقه

@@ -1,6 +1,6 @@
 import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router';
-import { BrandMark } from '../shell/BrandMark';
+import { Brand } from '../brand/Brand';
 import { PageContainer } from '../shell/PageContainer';
 
 // App entry route: the first screen an unauthenticated visitor sees after
@@ -12,7 +12,7 @@ export function EntryRoute() {
         <Card>
           <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
             <Stack spacing={3}>
-              <BrandMark size={48} />
+              <Brand variant="full" size="md" />
               <Stack spacing={1.5}>
                 <Typography component="h1" variant="h1">
                   انگلیسی را دقیقاً در سطح خودت یاد بگیر

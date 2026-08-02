@@ -8,9 +8,9 @@
   src: url("./assets/fonts/Vazirmatn-VF.woff2") format("woff2-variations");
 }
 
-:root {
-  color-scheme: light;
-}
+/* `color-scheme` is owned by the theme (Light/Dark/System): the pre-paint
+   init script in index.html sets it before first paint and MUI's generated
+   CSS keeps it in sync with the active scheme. Nothing here may pin it. */
 
 html,
 body {

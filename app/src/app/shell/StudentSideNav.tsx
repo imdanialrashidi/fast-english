@@ -14,9 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
-import { BrandMark } from './BrandMark';
+import { Brand } from '../brand/Brand';
+import { layout } from '../theme/tokens/spacing';
 
-const SIDENAV_WIDTH = 248;
+const SIDENAV_WIDTH = layout.desktopNavigationWidth;
 
 const items = [
   { label: 'خانه', value: '/dashboard', icon: <HomeRoundedIcon /> },
@@ -52,7 +53,7 @@ export function StudentSideNav() {
     >
       <Stack sx={{ height: '100%' }} role="navigation" aria-label="ناوبری اصلی">
         <Box sx={{ p: 3, pb: 2 }}>
-          <BrandMark size={36} />
+          <Brand variant="compact" size="sm" />
         </Box>
         <List sx={{ px: 1.5, flex: 1 }} aria-label="ناوبری اصلی">
           {items.map((item) => {
@@ -64,18 +65,19 @@ export function StudentSideNav() {
                   onClick={() => navigate(item.value)}
                   aria-current={selected ? 'page' : undefined}
                   sx={{
-                    borderRadius: 2,
                     minHeight: 44,
+                    color: selected ? 'onSecondaryContainer' : 'onSurfaceVariant',
                     '&.Mui-selected': {
-                      backgroundColor: 'rgba(37, 99, 235, 0.08)',
-                      color: 'primary.main',
+                      backgroundColor: 'secondaryContainer',
+                      color: 'onSecondaryContainer',
+                      '&:hover': { backgroundColor: 'secondaryContainer' },
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 36,
-                      color: selected ? 'primary.main' : 'text.secondary',
+                      color: selected ? 'onSecondaryContainer' : 'onSurfaceVariant',
                     }}
                   >
                     {item.icon}

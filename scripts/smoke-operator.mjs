@@ -924,6 +924,149 @@ async function main() {
     check(detail.body?.student?.accountStatus === 'active', 'approved student stays active');
   });
 
+  await runScenario('45b-reject-with-valid-subscription', async () => {
+    // 003: renewal overlap — student has two approved subscriptions
+    // (first-inserted row future-dated, second valid) plus a pending request.
+    // Rejecting the pending request must NOT flip the student to
+    // payment_rejected while a valid subscription exists. A fresh operator is
+    // used so its rate-limit window does not interfere with the other suites.
+    const su = await getSuperuserToken();
+    const op2 = await makeOperator();
+    const st = await signupUser('Overlap Student');
+    const r1 = await createPaymentRequest(st.token, planId);
+    const req1Id = r1.body?.request?.id;
+    check(req1Id !== undefined, 'first request id exists');
+    const app1 = await approveAs(op2.token, req1Id);
+    check(app1.status === 200, `first approve succeeds (got ${app1.status})`);
+    // The payment-request create route only admits pending_payment /
+    // payment_rejected accounts; reset the state as the reject flow would.
+    await jsonFetch(`/api/collections/fep_users/records/${st.id}`, {
+      method: 'PATCH',
+      headers: { authorization: su, 'content-type': 'application/json' },
+      body: JSON.stringify({ account_status: 'payment_rejected' }),
+    });
+    const r2 = await createPaymentRequest(st.token, planId);
+    const req2Id = r2.body?.request?.id;
+    check(req2Id !== undefined, 'second (renewal) request id exists');
+    const app2 = await approveAs(op2.token, req2Id);
+    check(app2.status === 200, `renewal approve succeeds (got ${app2.status})`);
+
+    const subs = await jsonFetch(
+      `/api/collections/subscriptions/records?filter=(user='${st.id}')&perPage=50`,
+      { headers: { authorization: su } },
+    );
+    const items = subs.body?.items || [];
+    items.sort((a, b) => String(a.created).localeCompare(String(b.created)));
+    check(items.length === 2, `two subscription rows exist (got ${items.length})`);
+    if (items.length === 2) {
+      const first = items[0];
+      const second = items[1];
+      const nowMs = Date.now();
+      // First-inserted row -> future window; second-inserted row -> valid
+      await jsonFetch(`/api/collections/subscriptions/records/${first.id}`, {
+        method: 'PATCH',
+        headers: { authorization: su, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          starts_at: new Date(nowMs + 2 * 86400000).toISOString(),
+          expires_at: new Date(nowMs + 180 * 86400000).toISOString(),
+        }),
+      });
+      await jsonFetch(`/api/collections/subscriptions/records/${second.id}`, {
+        method: 'PATCH',
+        headers: { authorization: su, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          starts_at: new Date(nowMs - 60000).toISOString(),
+          expires_at: new Date(nowMs + 30 * 86400000).toISOString(),
+        }),
+      });
+
+      // The pending request can only be created while the account is in a
+      // pre-approval state; restore 'active' before rejecting so the
+      // account-classification behavior is what is being tested.
+      await jsonFetch(`/api/collections/fep_users/records/${st.id}`, {
+        method: 'PATCH',
+        headers: { authorization: su, 'content-type': 'application/json' },
+        body: JSON.stringify({ account_status: 'payment_rejected' }),
+      });
+      const r3 = await createPaymentRequest(st.token, planId);
+      const req3Id = r3.body?.request?.id;
+      check(req3Id !== undefined, 'third (pending) request id exists');
+      await jsonFetch(`/api/collections/fep_users/records/${st.id}`, {
+        method: 'PATCH',
+        headers: { authorization: su, 'content-type': 'application/json' },
+        body: JSON.stringify({ account_status: 'active' }),
+      });
+      const rej = await rejectAs(op2.token, req3Id, {
+        public_rejection_reason: 'Renewal overlap test rejection.',
+      });
+      check(rej.status === 200, `reject succeeds (got ${rej.status})`);
+      const detail = await detailAs(op2.token, req3Id);
+      check(
+        detail.body?.student?.accountStatus === 'active',
+        `student stays active despite rejection (got ${detail.body?.student?.accountStatus})`,
+      );
+    }
+  });
+
+  await runScenario('45c-detail-max-expiry-selection', async () => {
+    // 003: operator detail must report the valid row with the greatest
+    // expires_at. Make BOTH rows valid (first-inserted expires in ~15d,
+    // second in ~30d) and assert the detail picks the later one.
+    const su = await getSuperuserToken();
+    const st = await signupUser('Max Expiry Student');
+    const op3 = await makeOperator();
+    const r1 = await createPaymentRequest(st.token, planId);
+    const req1Id = r1.body?.request?.id;
+    await approveAs(op3.token, req1Id);
+    // Reset account state so the renewal request can be created
+    await jsonFetch(`/api/collections/fep_users/records/${st.id}`, {
+      method: 'PATCH',
+      headers: { authorization: su, 'content-type': 'application/json' },
+      body: JSON.stringify({ account_status: 'payment_rejected' }),
+    });
+    const r2 = await createPaymentRequest(st.token, planId);
+    const req2Id = r2.body?.request?.id;
+    await approveAs(op3.token, req2Id);
+
+    const subs = await jsonFetch(
+      `/api/collections/subscriptions/records?filter=(user='${st.id}')&perPage=50`,
+      { headers: { authorization: su } },
+    );
+    const items = subs.body?.items || [];
+    items.sort((a, b) => String(a.created).localeCompare(String(b.created)));
+    check(items.length === 2, `two subscription rows exist (got ${items.length})`);
+    if (items.length === 2) {
+      const first = items[0];
+      const second = items[1];
+      const nowMs = Date.now();
+      const firstExpiry = new Date(nowMs + 15 * 86400000).toISOString();
+      const secondExpiry = new Date(nowMs + 30 * 86400000).toISOString();
+      await jsonFetch(`/api/collections/subscriptions/records/${first.id}`, {
+        method: 'PATCH',
+        headers: { authorization: su, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          starts_at: new Date(nowMs - 60000).toISOString(),
+          expires_at: firstExpiry,
+        }),
+      });
+      await jsonFetch(`/api/collections/subscriptions/records/${second.id}`, {
+        method: 'PATCH',
+        headers: { authorization: su, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          starts_at: new Date(nowMs - 60000).toISOString(),
+          expires_at: secondExpiry,
+        }),
+      });
+      const detail = await detailAs(op3.token, req2Id);
+      const gotMs = new Date(detail.body?.currentActiveSubscription?.expiresAt).getTime();
+      const wantMs = new Date(secondExpiry).getTime();
+      check(
+        !Number.isNaN(gotMs) && !Number.isNaN(wantMs) && Math.abs(gotMs - wantMs) < 60000,
+        `detail shows max-expiry valid row (got ${detail.body?.currentActiveSubscription?.expiresAt}, want ${secondExpiry})`,
+      );
+    }
+  });
+
   await runScenario('46-rejected-permits-new-request', async () => {
     // Student7 (rejected) should be able to create a new pending request
     const cr = await createPaymentRequest(student7.token, planId);

@@ -1,34 +1,112 @@
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import { AppBar, Box, IconButton, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
-import { Link as RouterLink, useLocation } from 'react-router';
-import { BrandMark } from './BrandMark';
+import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import {
+  AppBar,
+  Box,
+  IconButton,
+  Stack,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useScrollTrigger,
+} from '@mui/material';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router';
+import { Brand } from '../brand/Brand';
+import { ThemeSwitch } from '../theme/ThemeSwitch';
+import { duration, easing } from '../theme/tokens';
 
+const isDetailPath = (pathname: string): boolean =>
+  pathname.startsWith('/lessons/') && pathname !== '/lessons';
+
+/**
+ * Shared Top App Bar foundation.
+ *
+ * - Semantic foregrounds only (`onSurface`/`onSurfaceVariant`); no raw
+ *   black or white icon colors.
+ * - Icons: 44px minimum touch target (theme MuiIconButton default).
+ * - RTL-correct Back icon: in RTL, "back" points right (ArrowForward).
+ * - Title truncates instead of colliding with actions.
+ * - Safe-area top padding on notched devices.
+ * - Sticky and in-flow: never covers content.
+ * - Scroll elevation is a documented state (`data-scrolled`) driven by
+ *   MUI's ScrollTrigger; the shadow comes from the elevation tokens.
+ */
 export function AppHeader() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isOperator = location.pathname.startsWith('/operator');
+  const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 8 });
+  const showBack = !isOperator && isDetailPath(location.pathname);
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/lessons');
+    }
+  };
 
   return (
-    <AppBar position="sticky">
-      <Toolbar sx={{ minHeight: { xs: 56, md: 64 }, gap: 1.5 }}>
-        {isOperator ? null : (
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <BrandMark size={32} />
-          </Box>
-        )}
+    <AppBar
+      position="sticky"
+      data-scrolled={scrolled ? 'true' : 'false'}
+      sx={{
+        // Notched devices: extend the bar into the status bar area.
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        transition: `box-shadow ${duration.durationFast}ms ${easing.easingStandard}`,
+        ...(scrolled ? { boxShadow: 'var(--mui-elevation-sticky)' } : { boxShadow: 'none' }),
+      }}
+    >
+      <Toolbar sx={{ gap: 1 }}>
+        {showBack ? (
+          <IconButton
+            onClick={handleBack}
+            aria-label="بازگشت"
+            data-testid="app-header-back"
+            sx={{ color: 'onSurface', display: { xs: 'inline-flex', md: 'none' } }}
+          >
+            <ArrowForwardRoundedIcon />
+          </IconButton>
+        ) : null}
+
+        <Box sx={{ display: { xs: 'none', md: 'block' }, flexShrink: 0 }}>
+          {isOperator ? null : (
+            <RouterLink
+              to="/dashboard"
+              aria-label="فست انگلیش — داشبورد"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <Brand variant="compact" size="sm" />
+            </RouterLink>
+          )}
+        </Box>
+
         {isOperator ? (
-          <Typography component="h1" variant="h6" sx={{ fontWeight: 700 }}>
+          <Typography
+            component="h1"
+            variant="titleMedium"
+            sx={{
+              fontWeight: 700,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
             پنل اپراتور
           </Typography>
         ) : (
           <Typography
             component={RouterLink}
             to="/dashboard"
-            variant="h6"
+            variant="titleMedium"
             sx={{
               fontWeight: 700,
-              color: 'inherit',
+              color: 'onSurface',
               textDecoration: 'none',
               display: { xs: 'block', md: 'none' },
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
             }}
           >
             فست انگلیش
@@ -37,20 +115,20 @@ export function AppHeader() {
 
         <Box sx={{ flex: 1 }} />
 
-        <Stack spacing={0.5} sx={{ flexDirection: 'row', alignItems: 'center' }}>
-          {isOperator ? null : (
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', flexShrink: 0 }}>
+          {!isOperator && (
             <Tooltip title="پنل اپراتور">
               <IconButton
                 component={RouterLink}
                 to="/operator"
-                size="medium"
                 aria-label="پنل اپراتور"
-                sx={{ color: 'inherit' }}
+                sx={{ color: 'onSurface' }}
               >
-                <MenuRoundedIcon />
+                <AdminPanelSettingsRoundedIcon />
               </IconButton>
             </Tooltip>
           )}
+          <ThemeSwitch />
         </Stack>
       </Toolbar>
     </AppBar>

@@ -81,7 +81,7 @@ export function DashboardRoute() {
                     <LinearProgress
                       variant="determinate"
                       value={progressPct}
-                      sx={{ height: 6, borderRadius: 3 }}
+                      sx={{ height: 6, borderRadius: '999px' }}
                       aria-label="پیشرفت دوره (پیش‌نمایش)"
                     />
                   </Box>

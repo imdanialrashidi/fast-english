@@ -23,7 +23,12 @@ export function LessonDemoRoute() {
             sx={{ flexDirection: 'row', alignItems: 'center', pt: 0.5, gap: 1.5, flexWrap: 'wrap' }}
           >
             <LevelBadge level={lesson.level} size="sm" />
-            <Chip size="small" label={lesson.topic} variant="outlined" sx={{ borderRadius: 1 }} />
+            <Chip
+              size="small"
+              label={lesson.topic}
+              variant="outlined"
+              sx={{ borderRadius: '999px' }}
+            />
             <Typography variant="caption" color="text.secondary">
               {lesson.durationMin} دقیقه
             </Typography>

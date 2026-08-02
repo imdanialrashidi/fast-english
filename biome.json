@@ -18,7 +18,9 @@
       "!android",
       "!build",
       "!playwright-report",
-      "!test-results"
+      "!test-results",
+      "!app/src/assets/brand",
+      "!fast_english_logo_assets"
     ]
   },
   "formatter": {

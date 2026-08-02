@@ -1,12 +1,19 @@
 import { Box, Card, CardContent, Stack, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
-export type StateVariant = 'loading' | 'empty' | 'error' | 'permission' | 'offline' | 'unavailable';
+export type StateVariant =
+  | 'loading'
+  | 'empty'
+  | 'error'
+  | 'permission'
+  | 'offline'
+  | 'unavailable'
+  | 'success';
 
 interface StateMeta {
   title: string;
   icon: string;
-  iconColor: 'text' | 'error' | 'warning' | 'primary';
+  iconColor: 'text' | 'error' | 'warning' | 'primary' | 'success';
 }
 
 const labels: Record<StateVariant, StateMeta> = {
@@ -16,6 +23,7 @@ const labels: Record<StateVariant, StateMeta> = {
   permission: { title: 'دسترسی ندارید', icon: '🔒', iconColor: 'warning' },
   offline: { title: 'اتصال برقرار نیست', icon: '⌁', iconColor: 'warning' },
   unavailable: { title: 'این بخش هنوز آماده نیست', icon: '◐', iconColor: 'text' },
+  success: { title: 'انجام شد', icon: '✓', iconColor: 'success' },
 };
 
 // Reusable, accessible state presentation. Always combines an icon and text

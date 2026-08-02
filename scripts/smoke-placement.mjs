@@ -188,6 +188,115 @@ async function createActiveStudent(suToken) {
   return { token: refreshRes.body?.token || token, userId, phone: canonicalPhone };
 }
 
+// ---------------------------------------------------------------------------
+// 003 — Renewal overlap helpers. The second subscription is created through
+// the real approve flow, then only its dates are PATCHed so the FIRST-inserted
+// row is future-dated and the SECOND-inserted row is currently valid (worst
+// case for the old arbitrary-first-row reads).
+// ---------------------------------------------------------------------------
+async function userSubsSorted(suToken, userId) {
+  const r = await jsonFetch(
+    `/api/collections/subscriptions/records?filter=(user='${userId}')&perPage=50`,
+    { headers: { authorization: suToken } },
+  );
+  const items = r.body?.items || [];
+  items.sort((a, b) => String(a.created).localeCompare(String(b.created)));
+  return items;
+}
+
+async function patchSubDates(suToken, subId, dates) {
+  const r = await jsonFetch(`/api/collections/subscriptions/records/${subId}`, {
+    method: 'PATCH',
+    headers: { authorization: suToken },
+    body: JSON.stringify(dates),
+  });
+  if (r.status !== 200)
+    throw new Error(`patch sub ${subId}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+}
+
+async function renewOverlapUser(suToken, userId, token) {
+  // The payment-request create route only admits pending_payment /
+  // payment_rejected accounts, so the fixture temporarily resets the
+  // account state (as the reject flow does) before the second request;
+  // the real approve flow then re-activates the student.
+  await jsonFetch(`/api/collections/fep_users/records/${userId}`, {
+    method: 'PATCH',
+    headers: { authorization: suToken },
+    body: JSON.stringify({ account_status: 'payment_rejected' }),
+  });
+  // Second subscription via the real approve flow
+  const opToken = await getOperatorToken(suToken);
+  const planRes = await jsonFetch('/api/collections/plans/records', {
+    method: 'POST',
+    headers: { authorization: suToken },
+    body: JSON.stringify({
+      name: 'P2',
+      slug: `p2-${randomId()}`,
+      duration_days: 90,
+      price_toman: 100000,
+      is_active: true,
+    }),
+  });
+  const planId = planRes.body?.id;
+  if (!planId) throw new Error(`Plan2 failed: ${JSON.stringify(planRes.body)}`);
+
+  const pngBytes = Buffer.from([
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+    0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+    0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
+  ]);
+  const boundary = `----FormBoundary${randomId()}`;
+  const headerStr = `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="test.png"\r\nContent-Type: image/png\r\n\r\n`;
+  const footerStr = `\r\n--${boundary}--\r\n`;
+  const fullBody = Buffer.concat([Buffer.from(headerStr), pngBytes, Buffer.from(footerStr)]);
+  const prRes = await fetch(`${URL}/api/fast-english/payment-requests`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: fullBody,
+  });
+  const prText = await prRes.text();
+  let prBody;
+  try {
+    prBody = JSON.parse(prText);
+  } catch {
+    prBody = { _raw: prText };
+  }
+  if (prRes.status !== 201)
+    throw new Error(`PR2 failed: ${prRes.status} ${JSON.stringify(prBody)}`);
+  const prId = prBody?.request?.id;
+  if (!prId) throw new Error(`No PR2 ID: ${JSON.stringify(prBody)}`);
+
+  const approveRes = await jsonFetch(
+    `/api/fast-english/operator/payment-requests/${prId}/approve`,
+    {
+      method: 'POST',
+      headers: { authorization: opToken },
+      body: JSON.stringify({}),
+    },
+  );
+  if (approveRes.status !== 200)
+    throw new Error(`Approve2 failed: ${approveRes.status} ${JSON.stringify(approveRes.body)}`);
+
+  const subs = await userSubsSorted(suToken, userId);
+  if (!subs || subs.length < 2) throw new Error(`expected 2 subscriptions, got ${subs?.length}`);
+  const first = subs[0];
+  const second = subs[1];
+  const nowMs = Date.now();
+  await patchSubDates(suToken, first.id, {
+    starts_at: new Date(nowMs + 2 * 86400000).toISOString(),
+    expires_at: new Date(nowMs + 180 * 86400000).toISOString(),
+  });
+  await patchSubDates(suToken, second.id, {
+    starts_at: new Date(nowMs - 60000).toISOString(),
+    expires_at: new Date(nowMs + 90 * 86400000).toISOString(),
+  });
+  return { first, second };
+}
+
 async function seedQuestions(suToken) {
   const prompts = [
     'She ___ to school.',
@@ -530,6 +639,62 @@ async function main() {
     headers: { authorization: activeToken },
   });
   check(r24.status === 403, `S24: attempt list (${r24.status})`);
+
+  // ==================================================================
+  // 003 — Renewal overlap: attempts/start must stay 200 with two active
+  // subscription rows (first-inserted future-dated, second valid).
+  // ==================================================================
+  const ov = await createActiveStudent(suToken);
+  const ovSubs = await renewOverlapUser(suToken, ov.userId, ov.token);
+  const s47 = await jsonFetch('/api/fast-english/placement/attempts/start', {
+    method: 'POST',
+    headers: { authorization: ov.token },
+  });
+  check(
+    s47.status === 200 || s47.status === 201,
+    `S47: overlap start stays 200/201 (${s47.status})`,
+  );
+
+  // Transition: expire the valid row; the other row's start time has arrived
+  await patchSubDates(suToken, ovSubs.second.id, {
+    expires_at: new Date(Date.now() - 86400000).toISOString(),
+  });
+  await patchSubDates(suToken, ovSubs.first.id, {
+    starts_at: new Date(Date.now() - 60000).toISOString(),
+  });
+  const s48 = await jsonFetch('/api/fast-english/placement/attempts/start', {
+    method: 'POST',
+    headers: { authorization: ov.token },
+  });
+  check(
+    s48.status === 200 || s48.status === 201,
+    `S48: transition start stays 200/201 (${s48.status})`,
+  );
+
+  // All rows expired -> denied
+  await patchSubDates(suToken, ovSubs.first.id, {
+    expires_at: new Date(Date.now() - 86400000).toISOString(),
+  });
+  const s49 = await jsonFetch('/api/fast-english/placement/attempts/start', {
+    method: 'POST',
+    headers: { authorization: ov.token },
+  });
+  check(s49.status === 403, `S49: all-expired start denied (${s49.status})`);
+
+  // Only a future row exists -> denied (existing behavior preserved)
+  const futOv = await createActiveStudent(suToken);
+  const futSubs = await userSubsSorted(suToken, futOv.userId);
+  if (futSubs.length > 0) {
+    await patchSubDates(suToken, futSubs[0].id, {
+      starts_at: new Date(Date.now() + 86400000).toISOString(),
+      expires_at: new Date(Date.now() + 31 * 86400000).toISOString(),
+    });
+  }
+  const s50 = await jsonFetch('/api/fast-english/placement/attempts/start', {
+    method: 'POST',
+    headers: { authorization: futOv.token },
+  });
+  check(s50.status === 403, `S50: only-future start denied (${s50.status})`);
 
   const fail = total - passed;
   console.log(`\n=== Results: ${passed}/${total} passed, ${fail} failed ===\n`);

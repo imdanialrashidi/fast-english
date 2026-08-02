@@ -19,7 +19,7 @@ export function LessonsRoute() {
               p: 2,
               border: 1,
               borderColor: 'divider',
-              borderRadius: 2,
+              borderRadius: '16px',
               backgroundColor: 'background.paper',
             }}
           >

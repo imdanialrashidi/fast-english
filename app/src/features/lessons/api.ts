@@ -10,6 +10,27 @@ function pb() {
   return getPocketBase();
 }
 
+/**
+ * Resolve a root-relative `/api/...` path to an absolute URL through the
+ * SDK origin. On native (Capacitor) builds the WebView origin
+ * (`https://localhost`) is not the API origin, so every network sink in
+ * this module must resolve paths before use. Only call with paths that
+ * start with `/api/` — never pass arbitrary external URLs through it.
+ */
+function resolveApiUrl(path: string): string {
+  return pb().buildURL(path);
+}
+
+/**
+ * Resolve a server-returned public media path (e.g.
+ * `/api/fast-english/public/sample/audio`) to an absolute URL for
+ * `<audio>`/`<source>` elements. Public media only — never attaches a
+ * file token; use `buildProtectedAudioUrl` for premium audio.
+ */
+export function resolveMediaUrl(path: string): string {
+  return resolveApiUrl(path);
+}
+
 export async function getLessonList(page = 1, perPage = 50): Promise<LessonListResponse> {
   const raw = await pb().send<Record<string, unknown>>(
     `${API_BASE}/lessons?page=${page}&perPage=${perPage}`,
@@ -26,10 +47,16 @@ export async function getLessonDetail(lessonId: string): Promise<LessonDetailRes
 }
 
 export async function getPublicSample(): Promise<PublicSampleResponse> {
-  const raw = await fetch(`${API_BASE}/public/sample`, {
+  const raw = await fetch(resolveApiUrl(`${API_BASE}/public/sample`), {
     method: 'GET',
     headers: { accept: 'application/json' },
   });
+  // Minimal guard: non-2xx (e.g. 5xx from the proxy) must not be parsed
+  // as a valid sample; it falls through the existing catch → error phase.
+  // `sample_unavailable` arrives with HTTP 200 and keeps its path.
+  if (!raw.ok) {
+    throw new Error(`public sample request failed: ${raw.status}`);
+  }
   return (await raw.json()) as PublicSampleResponse;
 }
 
@@ -37,10 +64,16 @@ export async function getPublicSample(): Promise<PublicSampleResponse> {
  * Build a premium audio URL for an <audio> element.
  * Obtains a short-lived PB file token and appends it as a query param.
  * The premium audio proxy route validates the file token and checks
- * entitlement at request time.
+ * entitlement at request time. The server-relative path is resolved
+ * against the SDK origin first (native builds have no shared browser
+ * origin), and the token is appended via URLSearchParams so reserved
+ * characters are encoded and an existing query string is preserved.
+ * The URL/token are never logged.
  */
 export async function buildProtectedAudioUrl(audioUrl: string): Promise<string> {
   const pbClient = pb();
   const fileToken = await pbClient.files.getToken();
-  return `${audioUrl}?token=${fileToken}`;
+  const url = new URL(resolveApiUrl(audioUrl));
+  url.searchParams.set('token', fileToken);
+  return url.toString();
 }

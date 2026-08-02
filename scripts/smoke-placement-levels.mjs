@@ -334,6 +334,133 @@ async function fetchDashboard(token) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// 003 — Renewal overlap helpers. The second subscription is created through
+// the real approve flow, then only its dates are PATCHed so the FIRST-inserted
+// row is future-dated and the SECOND-inserted row is currently valid (worst
+// case for the old arbitrary-first-row reads).
+// ---------------------------------------------------------------------------
+async function userSubsSorted(suToken, userId) {
+  const r = await jsonFetch(
+    `/api/collections/subscriptions/records?filter=(user='${userId}')&perPage=50`,
+    { headers: { authorization: suToken } },
+  );
+  const items = r.body?.items || [];
+  items.sort((a, b) => String(a.created).localeCompare(String(b.created)));
+  return items;
+}
+
+async function patchSubDates(suToken, subId, dates) {
+  const r = await jsonFetch(`/api/collections/subscriptions/records/${subId}`, {
+    method: 'PATCH',
+    headers: { authorization: suToken },
+    body: JSON.stringify(dates),
+  });
+  if (r.status !== 200)
+    throw new Error(`patch sub ${subId}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+}
+
+async function renewOverlapUser(suToken, userId, token) {
+  // The payment-request create route only admits pending_payment /
+  // payment_rejected accounts, so the fixture temporarily resets the
+  // account state (as the reject flow does) before the second request;
+  // the real approve flow then re-activates the student.
+  await jsonFetch(`/api/collections/fep_users/records/${userId}`, {
+    method: 'PATCH',
+    headers: { authorization: suToken },
+    body: JSON.stringify({ account_status: 'payment_rejected' }),
+  });
+  // Second subscription via the real approve flow
+  const opToken = await getOperatorToken(suToken);
+  const planRes = await jsonFetch('/api/collections/plans/records', {
+    method: 'POST',
+    headers: { authorization: suToken },
+    body: JSON.stringify({
+      name: 'P2',
+      slug: `p2-${randomBytes(4).toString('hex')}`,
+      duration_days: 90,
+      price_toman: 100000,
+      is_active: true,
+    }),
+  });
+  if (planRes.status !== 200)
+    throw new Error(`Plan2 create failed: ${JSON.stringify(planRes.body)}`);
+
+  const receipt = new Uint8Array([
+    0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
+  ]);
+  const formData = new FormData();
+  formData.append('plan_id', planRes.body.id);
+  formData.append('receipt_file', new Blob([receipt], { type: 'image/jpeg' }), 'receipt.jpg');
+  let payReq = await fetchWithTimeout(
+    `${API_URL}/api/fast-english/payment-requests`,
+    { method: 'POST', headers: { authorization: token }, body: formData },
+    15000,
+  );
+  let payBody = null;
+  try {
+    payBody = await payReq.json();
+  } catch {
+    payBody = {};
+  }
+  if (payReq.status === 429) {
+    await new Promise((r) => setTimeout(r, 2000));
+    payReq = await fetchWithTimeout(
+      `${API_URL}/api/fast-english/payment-requests`,
+      { method: 'POST', headers: { authorization: token }, body: formData },
+      15000,
+    );
+    try {
+      payBody = await payReq.json();
+    } catch {
+      payBody = {};
+    }
+  }
+  if (payReq.status !== 201)
+    throw new Error(`Payment request 2 failed: ${JSON.stringify(payBody)}`);
+  const requestId = payBody.request?.id || payBody.id;
+  if (!requestId) throw new Error(`No request ID 2: ${JSON.stringify(payBody)}`);
+
+  let approve = await fetchWithTimeout(
+    `${API_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
+    {
+      method: 'POST',
+      headers: { authorization: opToken, 'content-type': 'application/json' },
+      body: '{}',
+    },
+    10000,
+  );
+  if (approve.status === 429) {
+    await new Promise((r) => setTimeout(r, 2000));
+    approve = await fetchWithTimeout(
+      `${API_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
+      {
+        method: 'POST',
+        headers: { authorization: opToken, 'content-type': 'application/json' },
+        body: '{}',
+      },
+      10000,
+    );
+  }
+  if (approve.status !== 200) throw new Error(`Approve2 failed: ${approve.status}`);
+
+  const subs = await userSubsSorted(suToken, userId);
+  if (!subs || subs.length < 2) throw new Error(`expected 2 subscriptions, got ${subs?.length}`);
+  const first = subs[0];
+  const second = subs[1];
+  const nowMs = Date.now();
+  // First-inserted row -> future window; second-inserted row -> valid window
+  await patchSubDates(suToken, first.id, {
+    starts_at: new Date(nowMs + 2 * 86400000).toISOString(),
+    expires_at: new Date(nowMs + 180 * 86400000).toISOString(),
+  });
+  await patchSubDates(suToken, second.id, {
+    starts_at: new Date(nowMs - 60000).toISOString(),
+    expires_at: new Date(nowMs + 90 * 86400000).toISOString(),
+  });
+  return { first, second };
+}
+
 // ============================================================
 // Test scenarios
 // ============================================================
@@ -905,6 +1032,78 @@ async function main() {
   check(
     dashConc.body.student.suggestedLevel === 'C2',
     `dash suggested ${dashConc.body.student.suggestedLevel}`,
+  );
+  pass();
+
+  // ============================================================
+  // 003 — Renewal overlap: level-context + dashboard stay 200 with
+  // two active rows (first-inserted future-dated, second valid).
+  // ============================================================
+
+  // S33: Overlap — access maintained; dashboard shows the valid row
+  start('S33-renewal-overlap');
+  const s33 = await rateLimitedCreateStudent();
+  await submitAllCorrect(s33.token);
+  await selectLevel(s33.token, 'A1');
+  const ovSubs = await renewOverlapUser(suToken, s33.uid, s33.token);
+  const ctx33 = await fetchLevelContext(s33.token);
+  check(ctx33.status === 200, `overlap level-context: status ${ctx33.status}`);
+  const dash33 = await fetchDashboard(s33.token);
+  check(dash33.status === 200, `overlap dashboard: status ${dash33.status}`);
+  check(
+    dash33.body?.subscription?.remainingDays > 0 && dash33.body?.subscription?.remainingDays <= 100,
+    `dashboard remainingDays = ${dash33.body?.subscription?.remainingDays} (valid row, ~90)`,
+  );
+  check(!!dash33.body?.subscription?.planName, 'dashboard planName shown');
+  pass();
+
+  // S34: Transition — expire the valid row; the other row's start time
+  // has arrived — access maintained
+  start('S34-renewal-transition');
+  await patchSubDates(suToken, ovSubs.second.id, {
+    expires_at: new Date(Date.now() - 86400000).toISOString(),
+  });
+  await patchSubDates(suToken, ovSubs.first.id, {
+    starts_at: new Date(Date.now() - 60000).toISOString(),
+  });
+  const ctx34 = await fetchLevelContext(s33.token);
+  check(ctx34.status === 200, `transition level-context: status ${ctx34.status}`);
+  const dash34 = await fetchDashboard(s33.token);
+  check(dash34.status === 200, `transition dashboard: status ${dash34.status}`);
+  pass();
+
+  // S35: All rows expired -> denied
+  start('S35-renewal-all-expired');
+  await patchSubDates(suToken, ovSubs.first.id, {
+    expires_at: new Date(Date.now() - 86400000).toISOString(),
+  });
+  const ctx35 = await fetchLevelContext(s33.token);
+  check(ctx35.status === 403, `all-expired level-context: status ${ctx35.status}`);
+  const dash35 = await fetchDashboard(s33.token);
+  check(dash35.status === 403, `all-expired dashboard: status ${dash35.status}`);
+  pass();
+
+  // S36: Two valid rows — dashboard shows the valid row with the greatest
+  // expires_at (not the arbitrary first row)
+  start('S36-dashboard-max-expiry-selection');
+  const s36 = await rateLimitedCreateStudent();
+  await submitAllCorrect(s36.token);
+  await selectLevel(s36.token, 'A1');
+  const meSubs = await renewOverlapUser(suToken, s36.uid, s36.token);
+  // Both rows valid: first-inserted expires in ~5d, second in ~90d
+  await patchSubDates(suToken, meSubs.first.id, {
+    starts_at: new Date(Date.now() - 60000).toISOString(),
+    expires_at: new Date(Date.now() + 5 * 86400000).toISOString(),
+  });
+  await patchSubDates(suToken, meSubs.second.id, {
+    starts_at: new Date(Date.now() - 60000).toISOString(),
+    expires_at: new Date(Date.now() + 90 * 86400000).toISOString(),
+  });
+  const dash36 = await fetchDashboard(s36.token);
+  check(dash36.status === 200, `max-expiry dashboard: status ${dash36.status}`);
+  check(
+    dash36.body?.subscription?.remainingDays >= 85,
+    `dashboard shows max-expiry row (remainingDays=${dash36.body?.subscription?.remainingDays})`,
   );
   pass();
 

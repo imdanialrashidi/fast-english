@@ -7,6 +7,7 @@ import { LevelBadge } from '../shell/LevelBadge';
 import { PageContainer } from '../shell/PageContainer';
 import { PageHeader } from '../shell/PageHeader';
 import { StatePanel } from '../shell/StatePanel';
+import type { CefrLevel } from '../theme/tokens/cefr';
 
 export function AccountRoute() {
   const { user, logout } = useAuth();
@@ -44,7 +45,7 @@ export function AccountRoute() {
               >
                 سطح انتخابی
               </Typography>
-              <LevelBadge level={(user.selected_level ?? 'B1') as 'B1'} />
+              <LevelBadge level={normalizeLevel(user.selected_level)} />
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary">
@@ -81,4 +82,10 @@ export function AccountRoute() {
       </Box>
     </PageContainer>
   );
+}
+
+// PocketBase serializes an unset select field as "" — normalize to a valid
+// CEFR level so an unfinished placement can never crash the account page.
+function normalizeLevel(value: unknown): CefrLevel {
+  return typeof value === 'string' && value.length > 0 ? (value as CefrLevel) : 'B1';
 }

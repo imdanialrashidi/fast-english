@@ -451,6 +451,114 @@ async function futureUserSubscription(su, userId) {
 }
 
 // ---------------------------------------------------------------------------
+// 003 — Renewal overlap helpers (see smoke-lessons.mjs for the rationale).
+// ---------------------------------------------------------------------------
+async function userSubsSorted(su, userId) {
+  const r = await jf(
+    `/api/collections/subscriptions/records?filter=(user='${userId}')&perPage=50`,
+    { headers: { authorization: `Bearer ${su}` } },
+  );
+  const items = r.body?.items || [];
+  items.sort((a, b) => String(a.created).localeCompare(String(b.created)));
+  return items;
+}
+
+async function patchSubDates(su, subId, dates) {
+  const r = await jf(`/api/collections/subscriptions/records/${subId}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify(dates),
+  });
+  if (r.status !== 200)
+    throw new Error(`patch sub ${subId}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+}
+
+async function renewOverlapUser(su, userId, token) {
+  // The payment-request create route only admits pending_payment /
+  // payment_rejected accounts, so the fixture temporarily resets the
+  // account state (as the reject flow does) before the second request;
+  // the real approve flow then re-activates the student.
+  await jf(`/api/collections/fep_users/records/${userId}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({ account_status: 'payment_rejected' }),
+  });
+  // Second subscription via the real approve flow
+  const opToken = await getOp(su);
+  const plan = await jf('/api/collections/plans/records', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({
+      name: 'P2',
+      slug: `p2-${randId()}`,
+      duration_days: 90,
+      price_toman: 100000,
+      is_active: true,
+    }),
+  });
+  const planId = plan.body?.id;
+  if (!planId) throw new Error(`plan2: ${JSON.stringify(plan.body)}`);
+
+  const png = Buffer.from([
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+    0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+    0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
+  ]);
+  const boundary = `--FB${randId()}`;
+  const prBody = Buffer.concat([
+    Buffer.from(
+      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
+    ),
+    png,
+    Buffer.from(`\r\n--${boundary}--\r\n`),
+  ]);
+  const prRes = await fetch(`${URL}/api/fast-english/payment-requests`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: prBody,
+    signal: AbortSignal.timeout(15_000),
+  });
+  const prText = await prRes.text();
+  let prj;
+  try {
+    prj = JSON.parse(prText);
+  } catch {
+    prj = {};
+  }
+  if (prRes.status !== 201) throw new Error(`PR2: ${prRes.status} ${prText.slice(0, 200)}`);
+  const prId = prj?.request?.id;
+  if (!prId) throw new Error(`PR2 no id: ${prText.slice(0, 200)}`);
+
+  const approve = await jf(`/api/fast-english/operator/payment-requests/${prId}/approve`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${opToken}` },
+    body: JSON.stringify({}),
+  });
+  if (approve.status !== 200)
+    throw new Error(`approve2: ${approve.status} ${JSON.stringify(approve.body).slice(0, 200)}`);
+
+  const subs = await userSubsSorted(su, userId);
+  if (!subs || subs.length < 2) throw new Error(`expected 2 subscriptions, got ${subs?.length}`);
+  const first = subs[0];
+  const second = subs[1];
+  const nowMs = Date.now();
+  // First-inserted row -> future window; second-inserted row -> valid window
+  await patchSubDates(su, first.id, {
+    starts_at: new Date(nowMs + 2 * 86400000).toISOString(),
+    expires_at: new Date(nowMs + 180 * 86400000).toISOString(),
+  });
+  await patchSubDates(su, second.id, {
+    starts_at: new Date(nowMs - 60000).toISOString(),
+    expires_at: new Date(nowMs + 90 * 86400000).toISOString(),
+  });
+  return { first, second };
+}
+
+// ---------------------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------------------
 async function main() {
@@ -885,6 +993,110 @@ async function main() {
   });
   aScenario('future-dated denied (403)', async () => {
     await assertHttp(future, 403, 'future');
+  });
+
+  // ==================================================================
+  // 19b. Renewal overlap (003): read/write/summary/continue stay 200
+  // with two active rows (first-inserted future-dated, second valid).
+  // ==================================================================
+  const ovSt = await makeFullStudent(su, 'B1');
+  const ovLogin = await jf('/api/collections/fep_users/auth-with-password', {
+    method: 'POST',
+    body: JSON.stringify({ identity: ovSt.phone, password: 'Test1234!' }),
+  });
+  const ovToken = ovLogin.body?.token || '';
+  const ovSubs = await renewOverlapUser(su, ovSt.userId, ovToken);
+
+  const ovRead = await jf(`/api/fast-english/lessons/${lessonId}/progress`, {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('overlap: progress read stays 200', async () => {
+    await assertHttp(ovRead, 200, 'ovRead');
+  });
+  const ovWrite = await jf(`/api/fast-english/lessons/${lessonId}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${ovToken}` },
+    body: JSON.stringify({ positionSeconds: 30, expectedRevision: 0 }),
+  });
+  aScenario('overlap: progress write stays 200', async () => {
+    await assertHttp(ovWrite, 200, 'ovWrite');
+  });
+  const ovSum = await jf('/api/fast-english/progress/summary', {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('overlap: summary stays 200', async () => {
+    await assertHttp(ovSum, 200, 'ovSum');
+  });
+  const ovCont = await jf('/api/fast-english/progress/continue', {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('overlap: continue stays 200', async () => {
+    await assertHttp(ovCont, 200, 'ovCont');
+  });
+
+  // Transition: expire the valid row; the other row's start time has arrived
+  await patchSubDates(su, ovSubs.second.id, {
+    expires_at: new Date(Date.now() - 86400000).toISOString(),
+  });
+  await patchSubDates(su, ovSubs.first.id, {
+    starts_at: new Date(Date.now() - 60000).toISOString(),
+  });
+  const trRead = await jf(`/api/fast-english/lessons/${lessonId}/progress`, {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('transition: progress read stays 200', async () => {
+    await assertHttp(trRead, 200, 'trRead');
+  });
+  const trWrite = await jf(`/api/fast-english/lessons/${lessonId}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${ovToken}` },
+    body: JSON.stringify({ positionSeconds: 45, expectedRevision: 1 }),
+  });
+  aScenario('transition: progress write stays 200', async () => {
+    await assertHttp(trWrite, 200, 'trWrite');
+  });
+  const trSum = await jf('/api/fast-english/progress/summary', {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('transition: summary stays 200', async () => {
+    await assertHttp(trSum, 200, 'trSum');
+  });
+  const trCont = await jf('/api/fast-english/progress/continue', {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('transition: continue stays 200', async () => {
+    await assertHttp(trCont, 200, 'trCont');
+  });
+
+  // All rows expired -> denied again
+  await patchSubDates(su, ovSubs.first.id, {
+    expires_at: new Date(Date.now() - 86400000).toISOString(),
+  });
+  const alRead = await jf(`/api/fast-english/lessons/${lessonId}/progress`, {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('all expired: progress read denied (403)', async () => {
+    await assertHttp(alRead, 403, 'alRead');
+  });
+  const alWrite = await jf(`/api/fast-english/lessons/${lessonId}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${ovToken}` },
+    body: JSON.stringify({ positionSeconds: 50, expectedRevision: 2 }),
+  });
+  aScenario('all expired: progress write denied (403)', async () => {
+    await assertHttp(alWrite, 403, 'alWrite');
+  });
+  const alSum = await jf('/api/fast-english/progress/summary', {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('all expired: summary denied (403)', async () => {
+    await assertHttp(alSum, 403, 'alSum');
+  });
+  const alCont = await jf('/api/fast-english/progress/continue', {
+    headers: { authorization: `Bearer ${ovToken}` },
+  });
+  aScenario('all expired: continue denied (403)', async () => {
+    await assertHttp(alCont, 403, 'alCont');
   });
 
   // 20. Suspended denied

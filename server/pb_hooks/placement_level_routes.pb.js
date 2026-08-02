@@ -101,15 +101,15 @@ routerAdd(
       var nowMs = Date.now();
       var hasSub = false;
       try {
-        var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-        if (sub) {
-          var expStr = String(sub.get("expires_at") || "");
-          var startStr = String(sub.get("starts_at") || "");
-          if (expStr && startStr) {
-            var expMs = new Date(expStr).getTime();
-            var startMs = new Date(startStr).getTime();
-            if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasSub = true; }
-          }
+        var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+        for (var si = 0; si < subs.length; si++) {
+          var s = subs[si];
+          var expStr = String(s.get("expires_at") || "");
+          var startStr = String(s.get("starts_at") || "");
+          if (!expStr || !startStr) continue;
+          var expMs = new Date(expStr).getTime();
+          var startMs = new Date(startStr).getTime();
+          if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasSub = true; break; }
         }
       } catch (_) {}
       if (!hasSub) { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
@@ -330,15 +330,15 @@ routerAdd(
       var nowMs = Date.now();
       var hasSub = false;
       try {
-        var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-        if (sub) {
-          var expStr = String(sub.get("expires_at") || "");
-          var startStr = String(sub.get("starts_at") || "");
-          if (expStr && startStr) {
-            var expMs = new Date(expStr).getTime();
-            var startMs = new Date(startStr).getTime();
-            if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasSub = true; }
-          }
+        var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+        for (var si = 0; si < subs.length; si++) {
+          var s = subs[si];
+          var expStr = String(s.get("expires_at") || "");
+          var startStr = String(s.get("starts_at") || "");
+          if (!expStr || !startStr) continue;
+          var expMs = new Date(expStr).getTime();
+          var startMs = new Date(startStr).getTime();
+          if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasSub = true; break; }
         }
       } catch (_) {}
       if (!hasSub) { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
@@ -498,19 +498,25 @@ routerAdd(
       if (acct === "suspended") { return e.json(403, { code: "account_suspended", message: "Account is suspended." }); }
       if (acct !== "active") { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
 
-      // Active subscription
+      // Active subscription — scan all rows; grant when ANY row covers now,
+      // and display the valid row with the greatest expires_at.
       var nowMs = Date.now();
       var subRecord = null;
       var hasSub = false;
       try {
-        subRecord = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-        if (subRecord) {
-          var expStr = String(subRecord.get("expires_at") || "");
-          var startStr = String(subRecord.get("starts_at") || "");
-          if (expStr && startStr) {
-            var expMs = new Date(expStr).getTime();
-            var startMs = new Date(startStr).getTime();
-            if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasSub = true; }
+        var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+        var bestExpMs = -1;
+        for (var si = 0; si < subs.length; si++) {
+          var s = subs[si];
+          var expStr = String(s.get("expires_at") || "");
+          var startStr = String(s.get("starts_at") || "");
+          if (!expStr || !startStr) continue;
+          var expMs = new Date(expStr).getTime();
+          var startMs = new Date(startStr).getTime();
+          if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs && expMs > bestExpMs) {
+            bestExpMs = expMs;
+            subRecord = s;
+            hasSub = true;
           }
         }
       } catch (_) {}

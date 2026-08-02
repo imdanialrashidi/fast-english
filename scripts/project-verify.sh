@@ -33,6 +33,11 @@ run() {
   "$@"
 }
 
+test -x server/pocketbase || {
+  echo 'server/pocketbase missing — run scripts/setup-pocketbase.sh first' >&2
+  exit 1
+}
+
 # 1. Strict typecheck across both surfaces and Vite configs.
 run npx tsc --noEmit
 
@@ -165,9 +170,12 @@ fi
 run bash scripts/verify-release-apk.sh --if-present
 
 # 22. P4-S3 — deployment redaction proofs: sentinel credentials never leak
-#     from install.sh (superuser password) or configure.sh (S3/SMTP/superuser).
+#     from install.sh (superuser password) or configure.sh (S3/SMTP/superuser),
+#     and no credential or token ever appears in a process argument
+#     (configure.sh / backup.sh).
 printf '\n=== deploy redaction proofs (P4-S3) ===\n'
 run bash deploy/test-install-redaction.sh
 run bash deploy/test-configure-redaction.sh
+run bash deploy/test-process-args-redaction.sh
 
 printf '\nAll project verification checks passed.\n'

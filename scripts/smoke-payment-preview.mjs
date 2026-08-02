@@ -354,7 +354,7 @@ async function scenario6MissingRequest() {
   console.log(`${ok ? 'PASS' : 'FAIL'} scenario 6-missing-request`);
 }
 
-async function scenario7MissingReceipt({ suToken }) {
+async function scenario7MissingReceipt() {
   // The onRecordCreate hook on payment_requests rejects any save
   // that lacks receipt_file, so we cannot create a real no-receipt
   // record through the API. The route's own "missing receipt"

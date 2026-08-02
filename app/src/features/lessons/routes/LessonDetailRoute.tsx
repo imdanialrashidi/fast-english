@@ -9,7 +9,8 @@ import { LevelBadge } from '../../../app/shell/LevelBadge';
 import { PageContainer } from '../../../app/shell/PageContainer';
 import { PageHeader } from '../../../app/shell/PageHeader';
 import { StatePanel } from '../../../app/shell/StatePanel';
-import type { CefrLevel } from '../../../app/theme/tokens';
+import type { CefrLevel } from '../../../app/theme/tokens/cefr';
+import { layout } from '../../../app/theme/tokens/spacing';
 import { AudioPlayer } from '../../player';
 import * as progressApi from '../../progress/api';
 import type { LessonProgressResponse } from '../../progress/types';
@@ -42,6 +43,11 @@ export function LessonDetailRoute() {
   const { handleTimeUpdate, handleSeek, handleEnded } = useProgressSave({
     lessonId: id,
     enabled: !!id && !!audioUrl && !audioError,
+    // Feed the already-loaded progress into the hook so the first save uses
+    // the authoritative revision (no guaranteed 409 for returning users).
+    // `progress` is also updated by onSaved/onStaleRevision, which keeps the
+    // refs in sync with every acknowledged write.
+    initialProgress: progress ?? undefined,
     onSaved: (p) => {
       setProgress(p);
       setCompleted(p.completed);
@@ -245,7 +251,7 @@ export function LessonDetailRoute() {
               size="small"
               label={lesson.topic.title}
               variant="outlined"
-              sx={{ borderRadius: 1 }}
+              sx={{ borderRadius: '16px' }}
             />
             <Typography variant="caption" color="text.secondary">
               {lesson.estimatedMinutes} دقیقه
@@ -332,7 +338,7 @@ export function LessonDetailRoute() {
         lang="en"
         dir="ltr"
         sx={{
-          maxWidth: '38rem',
+          maxWidth: layout.readingMaxWidth,
           mx: 'auto',
         }}
       >

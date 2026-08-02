@@ -52,8 +52,10 @@ export default defineConfig({
       // the disposable PB started in the global setup. `--host
       // 127.0.0.1` makes the preview server bind explicitly to
       // the IPv4 loopback so the playwright webServer probe can
-      // hit it from the same host.
-      command: `vite build --config vite.app.config.ts && VITE_API_TARGET=${PB_URL} node_modules/.bin/vite preview --config vite.app.config.ts --port ${APP_PORT} --host 127.0.0.1 --strictPort`,
+      // hit it from the same host. VITE_CATALOG=1 enables the
+      // dev-only component catalog route (/dev/catalog) used by
+      // the Visual Slice 1 quality gates.
+      command: `VITE_CATALOG=1 vite build --config vite.app.config.ts && VITE_API_TARGET=${PB_URL} node_modules/.bin/vite preview --config vite.app.config.ts --port ${APP_PORT} --host 127.0.0.1 --strictPort`,
       url: APP_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

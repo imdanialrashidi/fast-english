@@ -243,13 +243,15 @@ routerAdd(
       var createdMs = new Date(createdStr).getTime();
       var requestAgeSeconds = !isNaN(createdMs) ? Math.floor((nowMs - createdMs) / 1000) : 0;
 
-      // Subscription context
+      // Subscription context — currentActiveSubscription is the valid row
+      // with the greatest expires_at (deterministic, not the first match).
       var currentActiveSub = null;
       var latestSub = null;
       try {
         var subs = $app.findRecordsByFilter(SUBS_COLLECTION, "user = {:uid}", "", 0, 0, { uid: userId });
         if (subs && subs.length > 0) {
           latestSub = subs[0];
+          var bestExpMs = -1;
           for (var si = 0; si < subs.length; si++) {
             var s = subs[si];
             var sStatus = String(s.get("status") || "");
@@ -258,14 +260,14 @@ routerAdd(
               var expMs = new Date(expStr).getTime();
               var startStr = String(s.get("starts_at") || "");
               var startMs = new Date(startStr).getTime();
-              if (!isNaN(expMs) && expMs > nowMs && !isNaN(startMs) && startMs <= nowMs) {
+              if (!isNaN(expMs) && expMs > nowMs && !isNaN(startMs) && startMs <= nowMs && expMs > bestExpMs) {
+                bestExpMs = expMs;
                 currentActiveSub = {
                   id: String(s.id || ""), startsAt: startStr,
                   expiresAt: expStr, status: sStatus,
                   planName: String(s.get("plan_name_snapshot") || ""),
                   durationDays: Number(s.get("duration_days_snapshot") || 0),
                 };
-                break;
               }
             }
           }
@@ -712,18 +714,18 @@ routerAdd(
           rec.set("subscription", null);
           txApp.save(rec);
 
-          // Determine student account status
+          // Determine student account status — scan ALL active rows; only
+          // downgrade to payment_rejected when no row currently covers now.
           var hasActiveSub = false;
           try {
-            var activeSubs = txApp.findRecordsByFilter(SUBS_COLLECTION, "user = {:uid} && status = 'active'", "", 1, 0, { uid: studentId });
-            if (activeSubs && activeSubs.length > 0) {
-              var expStr = String(activeSubs[0].get("expires_at") || "");
-              var startStr = String(activeSubs[0].get("starts_at") || "");
-              if (expStr) {
-                var expMs = new Date(expStr).getTime();
-                var startMs = new Date(startStr).getTime();
-                if (!isNaN(expMs) && expMs > Date.now() && !isNaN(startMs) && startMs <= Date.now()) hasActiveSub = true;
-              }
+            var activeSubs = txApp.findRecordsByFilter(SUBS_COLLECTION, "user = {:uid} && status = 'active'", "", 0, 0, { uid: studentId });
+            for (var si = 0; si < activeSubs.length; si++) {
+              var expStr = String(activeSubs[si].get("expires_at") || "");
+              var startStr = String(activeSubs[si].get("starts_at") || "");
+              if (!expStr || !startStr) continue;
+              var expMs = new Date(expStr).getTime();
+              var startMs = new Date(startStr).getTime();
+              if (!isNaN(expMs) && expMs > Date.now() && !isNaN(startMs) && startMs <= Date.now()) { hasActiveSub = true; break; }
             }
           } catch (_) {}
 

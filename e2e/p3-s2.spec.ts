@@ -331,8 +331,8 @@ async function createFullStudent(su: string, level = 'B1') {
 test.describe('P3-S2 Progress and Audio Player', () => {
   let su: string;
   let lessonId: string;
-  let lesson2Id: string;
   let lesson3Id: string;
+  let lesson4Id: string;
   let studentToken: string;
   let studentUserId: string;
   let studentPhone: string;
@@ -356,11 +356,11 @@ test.describe('P3-S2 Progress and Audio Player', () => {
       status: 'published',
       sort_order: 2,
     });
-    const lesson2 = await makeLesson(su, topic2.id as string, {
+    // Second published lesson (kept for queue/DB state; id never read).
+    await makeLesson(su, topic2.id as string, {
       level: 'B1',
       title: 'P3S2 Lesson 2',
     });
-    lesson2Id = lesson2.id;
 
     // Fresh lesson reserved for the resume test (must never be touched by
     // other tests so it starts with no progress).
@@ -374,6 +374,19 @@ test.describe('P3-S2 Progress and Audio Player', () => {
       title: 'P3S2 Lesson 3 (resume)',
     });
     lesson3Id = lesson3.id;
+
+    // Fresh lesson reserved for the stalled-save scenario (must never be
+    // touched by other tests so it starts with no progress).
+    const topic4 = await makeTopic(su, {
+      slug: `t-p3s2-d-${randId()}`,
+      status: 'published',
+      sort_order: 4,
+    });
+    const lesson4 = await makeLesson(su, topic4.id as string, {
+      level: 'B1',
+      title: 'P3S2 Lesson 4 (stall)',
+    });
+    lesson4Id = lesson4.id;
 
     // Create student
     const student = await createFullStudent(su, 'B1');
@@ -429,7 +442,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 4. Saved progress is restored (via API check)
-  test('4 - progress API returns saved position', async ({ page }) => {
+  test('4 - progress API returns saved position', async () => {
     // Save some progress first
     const save = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       method: 'PUT',
@@ -448,7 +461,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 5. Play/pause works via API
-  test('5 - progress save on pause', async ({ page }) => {
+  test('5 - progress save on pause', async () => {
     // Save a position
     const save = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       method: 'PUT',
@@ -467,7 +480,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 6. Seek updates position
-  test('6 - seek updates position via API', async ({ page }) => {
+  test('6 - seek updates position via API', async () => {
     // Save a new position (simulating seek)
     const line = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       headers: { authorization: `Bearer ${studentToken}` },
@@ -484,7 +497,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 7. Playback speed change (test via API — player has speed controls)
-  test('7 - progress saves work at different speeds', async ({ page }) => {
+  test('7 - progress saves work at different speeds', async () => {
     const line = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       headers: { authorization: `Bearer ${studentToken}` },
     });
@@ -499,7 +512,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 8. Progress is saved through the real API
-  test('8 - progress is saved through real API', async ({ page }) => {
+  test('8 - progress is saved through real API', async () => {
     const read = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       headers: { authorization: `Bearer ${studentToken}` },
     });
@@ -508,7 +521,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 9. Refresh restores position
-  test('9 - refresh restores position', async ({ page }) => {
+  test('9 - refresh restores position', async () => {
     const read = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       headers: { authorization: `Bearer ${studentToken}` },
     });
@@ -645,6 +658,61 @@ test.describe('P3-S2 Progress and Audio Player', () => {
     const player = page.locator('[role="group"][aria-label="پخش‌کنندهٔ صوت"]');
     await expect(player).toBeAttached({ timeout: 10_000 });
     await expect(player.getByText('2:30', { exact: true })).toBeVisible({ timeout: 5_000 });
+  });
+
+  // 17. Newest position wins when the first save is stalled in flight
+  test('17 - newest position wins when the first save is stalled', async ({ page }) => {
+    await injectToken(page);
+    await page.goto(`/lessons/${lesson4Id}`);
+    const player = page.locator('[role="group"][aria-label="پخش‌کنندهٔ صوت"]');
+    await expect(player).toBeVisible({ timeout: 15_000 });
+    const slider = player.getByRole('slider', { name: 'موقعیت پخش' });
+    await expect(slider).toBeVisible({ timeout: 15_000 });
+
+    // Stall the first PUT to the progress endpoint so a newer seek can be
+    // queued while the first write is still in flight.
+    let putCount = 0;
+    let release: () => void = () => {};
+    const stalled = new Promise<void>((resolvePromise) => {
+      release = resolvePromise;
+    });
+    await page.route(`**/api/fast-english/lessons/${lesson4Id}/progress`, async (route) => {
+      if (route.request().method() === 'PUT') {
+        putCount += 1;
+        if (putCount === 1) {
+          await stalled;
+        }
+      }
+      await route.continue();
+    });
+
+    // The app is RTL, so ArrowLeft increases the seek position. Seek to 0.6s
+    // (6 x 0.1s steps) — the first position that passes the 0.5s
+    // meaningful-seek gate on a fresh lesson.
+    await slider.focus();
+    for (let i = 0; i < 6; i += 1) {
+      await page.keyboard.press('ArrowLeft');
+    }
+    // Wait for the debounced first PUT to reach the stall.
+    await expect.poll(() => putCount, { timeout: 15_000 }).toBe(1);
+
+    // While the first write is still stalled, seek to a newer position (0.7s).
+    await page.keyboard.press('ArrowLeft');
+
+    // Release the stall: the first write succeeds and the queued (newest)
+    // position must be drained right after with the returned revision.
+    release();
+    await expect
+      .poll(
+        async () => {
+          const r = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lesson4Id}/progress`, {
+            headers: { authorization: `Bearer ${studentToken}` },
+          });
+          return (r.body as Record<string, unknown>).positionSeconds as number;
+        },
+        { timeout: 15_000 },
+      )
+      .toBeCloseTo(0.7, 1);
   });
 
   for (const viewport of VISUAL_VIEWPORTS) {

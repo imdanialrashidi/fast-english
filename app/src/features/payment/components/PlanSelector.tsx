@@ -5,6 +5,7 @@
 
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import { Box, Card, CardActionArea, CardContent, Chip, Stack, Typography } from '@mui/material';
+import { duration, easing } from '../../../app/theme/tokens';
 import { formatDurationDays, formatToman } from '../formatters';
 import type { Plan } from '../types';
 
@@ -32,7 +33,7 @@ export function PlanSelector({
             sx={{
               borderColor: isSelected ? 'primary.main' : 'divider',
               borderWidth: isSelected ? 2 : 1,
-              transition: 'border-color 120ms ease',
+              transition: `border-color ${duration.durationFast}ms ${easing.easingStandard}`,
             }}
           >
             <CardActionArea

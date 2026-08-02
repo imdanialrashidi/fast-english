@@ -336,7 +336,7 @@ export function PlacementRoute() {
         <LinearProgress
           variant="determinate"
           value={phase === 'review' ? 100 : (answered / TOTAL_QUESTIONS) * 100}
-          sx={{ height: 8, borderRadius: 4 }}
+          sx={{ height: 8, borderRadius: '999px' }}
         />
         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
           {phase === 'review'

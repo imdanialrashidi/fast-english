@@ -32,7 +32,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
           p: 2,
           border: 1,
           borderColor: 'divider',
-          borderRadius: 2,
+          borderRadius: '16px',
           backgroundColor: 'background.default',
         }}
       >
@@ -50,7 +50,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
           p: 2,
           border: 1,
           borderColor: 'divider',
-          borderRadius: 2,
+          borderRadius: '16px',
           backgroundColor: 'background.default',
         }}
       >
@@ -95,7 +95,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
           minHeight: 200,
           border: 1,
           borderColor: 'divider',
-          borderRadius: 2,
+          borderRadius: '16px',
           backgroundColor: 'background.default',
           alignItems: 'center',
           justifyContent: 'center',
@@ -121,7 +121,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
           p: 2,
           border: 1,
           borderColor: 'error.light',
-          borderRadius: 2,
+          borderRadius: '16px',
           backgroundColor: 'background.default',
         }}
       >
@@ -155,7 +155,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
         sx={{
           border: 1,
           borderColor: 'divider',
-          borderRadius: 2,
+          borderRadius: '16px',
           backgroundColor: 'background.default',
           overflow: 'hidden',
           maxHeight: 360,

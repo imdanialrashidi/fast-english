@@ -1,5 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import { Outlet, useLocation } from 'react-router';
+import { layout } from '../theme/tokens/spacing';
 import { AppHeader } from './AppHeader';
 import { StudentBottomNav } from './StudentBottomNav';
 import { StudentSideNav } from './StudentSideNav';
@@ -34,7 +35,9 @@ export function AppShell() {
             // content or actions at tablet widths. Operator routes have no
             // rail and therefore keep the full viewport width.
             boxSizing: 'border-box',
-            paddingInlineStart: !isOperator ? { md: '248px' } : undefined,
+            paddingInlineStart: !isOperator
+              ? { md: `${layout.desktopNavigationWidth}px` }
+              : undefined,
           }}
         >
           <Outlet />

@@ -37,10 +37,12 @@ const pwaManifest = {
   display: 'standalone' as const,
   // Compatible with phones and tablets in any orientation.
   orientation: 'any' as const,
-  // Theme tokens from app/src/app/theme/tokens.ts (kept as literals so the
-  // app build stays fully isolated): midnight chrome + default background.
-  theme_color: '#0B1220',
-  background_color: '#F6F8FC',
+  // Theme tokens from app/src/app/theme/tokens (kept as literals so the
+  // app build stays fully isolated): light-mode AppBar surface + page
+  // background. The dynamic <meta name="theme-color"> follows the active
+  // scheme at runtime (theme/ThemeHost.tsx); the manifest is static.
+  theme_color: '#e9f1f4',
+  background_color: '#f5f9fa',
   icons: [
     { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
     { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },

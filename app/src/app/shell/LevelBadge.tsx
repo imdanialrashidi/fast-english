@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
-import type { CefrLevel } from '../theme/tokens';
-import { cefr } from '../theme/tokens';
+import type { CefrLevel } from '../theme/tokens/cefr';
+import { cefr } from '../theme/tokens/cefr';
 
 // CEFR level badge that combines color, label text, and a level name so the
 // level is never communicated by color alone.
@@ -41,7 +41,7 @@ export function LevelBadge({
           color: palette.fg,
           px: padX,
           py: padY,
-          borderRadius: 1,
+          borderRadius: '10px',
           fontWeight: 700,
           fontSize: size === 'sm' ? '0.75rem' : '0.8125rem',
           lineHeight: 1.4,

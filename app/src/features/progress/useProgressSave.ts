@@ -15,6 +15,13 @@
 //   - Serialize writes within one tab
 //   - Handle HTTP 409 by reloading authoritative progress
 //   - Never show "saved" before Backend acknowledgement
+//
+// Queue invariants (the hook is the only client writer of lesson_progress):
+//   1. Latest position wins — a queued payload always supersedes an older one.
+//   2. Every write uses the current authoritative revision.
+//   3. Clearing a timer (flush/unmount/beforeunload) never discards a payload:
+//      the debounce timer only schedules a drain of `pendingRef`, which is the
+//      single source of truth for the newest un-sent position.
 
 import { useCallback, useEffect, useRef } from 'react';
 import * as progressApi from './api';
@@ -24,22 +31,93 @@ interface UseProgressSaveOptions {
   lessonId: string | undefined;
   /** Whether saving is enabled (e.g., user is entitled) */
   enabled: boolean;
+  /**
+   * Authoritative progress already loaded by the caller (e.g. the lesson
+   * route's own fetch). Seeds `revisionRef`/`lastSavedRef` so the first
+   * write does not 409 against an existing record.
+   */
+  initialProgress?: LessonProgressResponse;
   /** Called when a save succeeds with the new authoritative progress */
   onSaved?: (progress: LessonProgressResponse) => void;
   /** Called when a 409 occurs — the hook will auto-reload */
   onStaleRevision?: (authoritativeProgress: LessonProgressResponse) => void;
 }
 
-interface PendingSave {
+export interface PendingSave {
   positionSeconds: number;
   expectedRevision: number;
   /** Timestamp when this save was queued */
   queuedAt: number;
 }
 
+// ---------------------------------------------------------------------------
+// Pure queue-transition helpers. Exported for deterministic unit tests
+// (this repo has no DOM/testing-library renderer). The hook below is a thin
+// adapter that applies these transitions to its refs.
+// ---------------------------------------------------------------------------
+
+/** Latest payload wins: a queued save always supersedes any older one. */
+export function queueLatest(positionSeconds: number, expectedRevision: number): PendingSave {
+  return { positionSeconds, expectedRevision, queuedAt: Date.now() };
+}
+
+/**
+ * Next write after an in-flight write succeeds: drain the queued payload with
+ * the revision the server just returned (never the revision the queued payload
+ * was captured with — it may predate the in-flight write).
+ */
+export function drainAfterSuccess(
+  pending: PendingSave | null,
+  resultRevision: number,
+): { position: number; revision: number } | null {
+  if (!pending) return null;
+  return { position: pending.positionSeconds, revision: resultRevision };
+}
+
+/**
+ * Retry after a 409 + authoritative reload: prefer the newest pending position
+ * over the position that just failed.
+ */
+export function retryAfterConflict(
+  pending: PendingSave | null,
+  failedPosition: number,
+  freshRevision: number,
+): { position: number; revision: number } {
+  return { position: pending ? pending.positionSeconds : failedPosition, revision: freshRevision };
+}
+
+/** True when the write duplicates the last acknowledged write (< 0.5s at the same revision). */
+export function shouldSkipDuplicateWrite(
+  lastSaved: { position: number; revision: number } | null,
+  position: number,
+  revision: number,
+): boolean {
+  return (
+    lastSaved !== null &&
+    Math.abs(lastSaved.position - position) < 0.5 &&
+    lastSaved.revision === revision
+  );
+}
+
+/** Authoritative snapshot of a progress record: the revision to write with next. */
+export function snapshotFromProgress(progress: LessonProgressResponse): {
+  revision: number;
+  lastSaved: { position: number; revision: number };
+} {
+  return {
+    revision: progress.revision,
+    lastSaved: { position: progress.positionSeconds, revision: progress.revision },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Hook
+// ---------------------------------------------------------------------------
+
 export function useProgressSave({
   lessonId,
   enabled,
+  initialProgress,
   onSaved,
   onStaleRevision,
 }: UseProgressSaveOptions) {
@@ -50,13 +128,37 @@ export function useProgressSave({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTimeUpdateRef = useRef(0);
 
-  // Load initial progress
+  // Reset all save state when switching lessons (a fresh lesson starts clean).
+  // Declared before the initialization effect so the reset always wins on a
+  // lesson change and the init effect then applies the new lesson's progress.
+  useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    pendingRef.current = null;
+    revisionRef.current = 0;
+    lastSavedRef.current = null;
+    lastTimeUpdateRef.current = 0;
+  }, [lessonId]);
+
+  // Seed the revision state from authoritative progress once it is known, so
+  // the first save of a returning user sends the loaded revision instead of 0.
+  useEffect(() => {
+    if (!initialProgress || initialProgress.lessonId !== lessonId) return;
+    const snap = snapshotFromProgress(initialProgress);
+    revisionRef.current = snap.revision;
+    lastSavedRef.current = snap.lastSaved;
+  }, [initialProgress, lessonId]);
+
+  // Load initial progress (manual alternative to `initialProgress`)
   const loadProgress = useCallback(async () => {
     if (!lessonId || !enabled) return null;
     try {
       const progress = await progressApi.getLessonProgress(lessonId);
-      revisionRef.current = progress.revision;
-      lastSavedRef.current = { position: progress.positionSeconds, revision: progress.revision };
+      const snap = snapshotFromProgress(progress);
+      revisionRef.current = snap.revision;
+      lastSavedRef.current = snap.lastSaved;
       return progress;
     } catch {
       return null;
@@ -68,12 +170,8 @@ export function useProgressSave({
     async (position: number, revision: number): Promise<boolean> => {
       if (!lessonId || !enabled) return false;
       if (writeInFlightRef.current) {
-        // Queue this save for later
-        pendingRef.current = {
-          positionSeconds: position,
-          expectedRevision: revision,
-          queuedAt: Date.now(),
-        };
+        // Queue this save for later (latest payload wins)
+        pendingRef.current = queueLatest(position, revision);
         return false;
       }
 
@@ -83,31 +181,34 @@ export function useProgressSave({
           positionSeconds: position,
           expectedRevision: revision,
         });
-        revisionRef.current = result.revision;
-        lastSavedRef.current = { position: result.positionSeconds, revision: result.revision };
+        const snap = snapshotFromProgress(result);
+        revisionRef.current = snap.revision;
+        lastSavedRef.current = snap.lastSaved;
         onSaved?.(result);
         writeInFlightRef.current = false;
 
-        // Process any queued save
-        const queued = pendingRef.current;
+        // Drain the newest queued payload with the returned revision.
+        const next = drainAfterSuccess(pendingRef.current, result.revision);
         pendingRef.current = null;
-        if (queued && queued.expectedRevision === revision) {
-          // Use the new revision for the queued save
-          void performSave(queued.positionSeconds, result.revision);
+        if (next) {
+          void performSave(next.position, next.revision);
         }
         return true;
       } catch (err: unknown) {
         writeInFlightRef.current = false;
         const errObj = err as { status?: number; data?: { code?: string } };
         if (errObj?.status === 409) {
-          // Stale revision — reload and retry
+          // Stale revision — reload authoritative progress and retry the
+          // newest pending position (falling back to the failed one).
           try {
             const fresh = await progressApi.getLessonProgress(lessonId);
-            revisionRef.current = fresh.revision;
-            lastSavedRef.current = { position: fresh.positionSeconds, revision: fresh.revision };
+            const snap = snapshotFromProgress(fresh);
+            revisionRef.current = snap.revision;
+            lastSavedRef.current = snap.lastSaved;
             onStaleRevision?.(fresh);
-            // Retry with the new revision
-            void performSave(position, fresh.revision);
+            const next = retryAfterConflict(pendingRef.current, position, fresh.revision);
+            pendingRef.current = null;
+            void performSave(next.position, next.revision);
           } catch {
             // Reload failed — nothing more we can do
           }
@@ -118,32 +219,39 @@ export function useProgressSave({
     [lessonId, enabled, onSaved, onStaleRevision],
   );
 
-  // Queue a save (debounces)
+  // Send the newest queued payload (if any) immediately. Used by the debounce
+  // timer, `flush`, and `handleEnded` — the payload survives in `pendingRef`
+  // regardless of any timer being cleared, so nothing is ever dropped.
+  const drainPending = useCallback(() => {
+    const pending = pendingRef.current;
+    if (!pending) return;
+    pendingRef.current = null;
+    void performSave(pending.positionSeconds, pending.expectedRevision);
+  }, [performSave]);
+
+  // Queue a save (debounced). The timer only schedules a drain of `pendingRef`;
+  // the payload is stored now so clearing the timer never loses the position.
   const queueSave = useCallback(
     (position: number, revision?: number) => {
       if (!lessonId || !enabled) return;
       const rev = revision ?? revisionRef.current;
 
       // Skip if identical to last saved
-      if (
-        lastSavedRef.current &&
-        Math.abs(lastSavedRef.current.position - position) < 0.5 &&
-        lastSavedRef.current.revision === rev
-      ) {
-        return;
-      }
+      if (shouldSkipDuplicateWrite(lastSavedRef.current, position, rev)) return;
 
-      // Debounce — flush pending timer
+      // Latest payload wins
+      pendingRef.current = queueLatest(position, rev);
+
+      // Debounce — flush pending timer, then drain the queue later
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-
       timerRef.current = setTimeout(() => {
         timerRef.current = null;
-        void performSave(position, rev);
+        drainPending();
       }, 2000); // 2-second debounce
     },
-    [lessonId, enabled, performSave],
+    [lessonId, enabled, drainPending],
   );
 
   // Flush any pending save immediately
@@ -152,12 +260,8 @@ export function useProgressSave({
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
-    if (pendingRef.current) {
-      const p = pendingRef.current;
-      pendingRef.current = null;
-      void performSave(p.positionSeconds, p.expectedRevision);
-    }
-  }, [performSave]);
+    drainPending();
+  }, [drainPending]);
 
   // Handle time updates from the player
   const handleTimeUpdate = useCallback(
@@ -178,11 +282,13 @@ export function useProgressSave({
   const handlePause = useCallback(
     (positionSeconds: number, _durSeconds: number) => {
       if (!enabled || !lessonId) return;
-      // Save immediately on pause
+      // Save immediately on pause — the pause position is the newest, so it
+      // supersedes anything still queued (pendingRef/timer).
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
+      pendingRef.current = null;
       void performSave(positionSeconds, revisionRef.current);
     },
     [enabled, lessonId, performSave],
@@ -217,28 +323,19 @@ export function useProgressSave({
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      // Can't await — but sync save isn't possible. Just flush what we can.
-      // The pending ref will be lost on unload, but the last saved position
-      // is already on the server from the last successful write.
+      // Clearing the timer never loses the payload: it lives in pendingRef,
+      // which the unmount flush below drains. The write itself still cannot
+      // be awaited during unload (documented limitation); the last
+      // acknowledged position is already on the server.
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      // Flush on unmount
+      // Flush on unmount (also runs on lesson change, against the old lesson)
       flush();
     };
   }, [enabled, lessonId, flush]);
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, []);
 
   return {
     loadProgress,

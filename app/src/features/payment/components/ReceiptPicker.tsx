@@ -170,7 +170,7 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
                 p: 1.5,
                 border: 1,
                 borderColor: 'divider',
-                borderRadius: 2,
+                borderRadius: '16px',
                 backgroundColor: 'background.default',
               }}
             >
@@ -209,7 +209,7 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
               {preview ? (
                 <Box
                   sx={{
-                    borderRadius: 2,
+                    borderRadius: '16px',
                     overflow: 'hidden',
                     backgroundColor: 'background.paper',
                     border: 1,

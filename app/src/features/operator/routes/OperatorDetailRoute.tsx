@@ -272,7 +272,7 @@ export function OperatorDetailRoute() {
                   sx={{
                     display: 'block',
                     maxWidth: '100%',
-                    borderRadius: 1,
+                    borderRadius: '12px',
                     '& img': {
                       display: 'block',
                       maxWidth: '100%',

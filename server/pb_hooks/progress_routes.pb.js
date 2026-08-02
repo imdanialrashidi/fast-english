@@ -87,16 +87,17 @@ routerAdd(
                 var nowMs = Date.now();
                 var hasSub = false;
                 try {
-                  var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-                  if (sub) {
-                    var expStr = String(sub.get("expires_at") || "");
-                    var startStr = String(sub.get("starts_at") || "");
-                    if (expStr && startStr) {
-                      var expMs = new Date(expStr).getTime();
-                      var startMs = new Date(startStr).getTime();
-                      if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
-                        hasSub = true;
-                      }
+                  var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+                  for (var si = 0; si < subs.length; si++) {
+                    var s = subs[si];
+                    var expStr = String(s.get("expires_at") || "");
+                    var startStr = String(s.get("starts_at") || "");
+                    if (!expStr || !startStr) continue;
+                    var expMs = new Date(expStr).getTime();
+                    var startMs = new Date(startStr).getTime();
+                    if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
+                      hasSub = true;
+                      break;
                     }
                   }
                 } catch (_) {}
@@ -368,16 +369,17 @@ routerAdd(
           var nowMs = Date.now();
           var hasSub = false;
           try {
-            var sub = txApp.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-            if (sub) {
-              var expStr = String(sub.get("expires_at") || "");
-              var startStr = String(sub.get("starts_at") || "");
-              if (expStr && startStr) {
-                var expMs = new Date(expStr).getTime();
-                var startMs = new Date(startStr).getTime();
-                if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
-                  hasSub = true;
-                }
+            var subs = txApp.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+            for (var si = 0; si < subs.length; si++) {
+              var s = subs[si];
+              var expStr = String(s.get("expires_at") || "");
+              var startStr = String(s.get("starts_at") || "");
+              if (!expStr || !startStr) continue;
+              var expMs = new Date(expStr).getTime();
+              var startMs = new Date(startStr).getTime();
+              if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
+                hasSub = true;
+                break;
               }
             }
           } catch (_) {}
@@ -666,16 +668,17 @@ routerAdd(
                 var nowMs = Date.now();
                 var hasSub = false;
                 try {
-                  var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-                  if (sub) {
-                    var expStr = String(sub.get("expires_at") || "");
-                    var startStr = String(sub.get("starts_at") || "");
-                    if (expStr && startStr) {
-                      var expMs = new Date(expStr).getTime();
-                      var startMs = new Date(startStr).getTime();
-                      if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
-                        hasSub = true;
-                      }
+                  var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+                  for (var si = 0; si < subs.length; si++) {
+                    var s = subs[si];
+                    var expStr = String(s.get("expires_at") || "");
+                    var startStr = String(s.get("starts_at") || "");
+                    if (!expStr || !startStr) continue;
+                    var expMs = new Date(expStr).getTime();
+                    var startMs = new Date(startStr).getTime();
+                    if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
+                      hasSub = true;
+                      break;
                     }
                   }
                 } catch (_) {}
@@ -849,16 +852,17 @@ routerAdd(
                 var nowMs = Date.now();
                 var hasSub = false;
                 try {
-                  var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: uid });
-                  if (sub) {
-                    var expStr = String(sub.get("expires_at") || "");
-                    var startStr = String(sub.get("starts_at") || "");
-                    if (expStr && startStr) {
-                      var expMs = new Date(expStr).getTime();
-                      var startMs = new Date(startStr).getTime();
-                      if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
-                        hasSub = true;
-                      }
+                  var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+                  for (var si = 0; si < subs.length; si++) {
+                    var s = subs[si];
+                    var expStr = String(s.get("expires_at") || "");
+                    var startStr = String(s.get("starts_at") || "");
+                    if (!expStr || !startStr) continue;
+                    var expMs = new Date(expStr).getTime();
+                    var startMs = new Date(startStr).getTime();
+                    if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
+                      hasSub = true;
+                      break;
                     }
                   }
                 } catch (_) {}

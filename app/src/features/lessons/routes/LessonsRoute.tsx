@@ -273,7 +273,7 @@ export function LessonsRoute() {
                                 <LinearProgress
                                   variant="determinate"
                                   value={percent}
-                                  sx={{ borderRadius: 1, height: 4 }}
+                                  sx={{ borderRadius: '999px', height: 4 }}
                                 />
                               </Box>
                             )}

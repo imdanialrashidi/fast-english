@@ -53,15 +53,15 @@ routerAdd(
       var hasValid = false;
       try {
         var userIdStr = String(ev.auth.id || "");
-        var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: userIdStr });
-        if (sub) {
-          var expStr = String(sub.get("expires_at") || "");
-          var startStr = String(sub.get("starts_at") || "");
-          if (expStr && startStr) {
-            var expMs = new Date(expStr).getTime();
-            var startMs = new Date(startStr).getTime();
-            if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; }
-          }
+        var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: userIdStr });
+        for (var si = 0; si < subs.length; si++) {
+          var s = subs[si];
+          var expStr = String(s.get("expires_at") || "");
+          var startStr = String(s.get("starts_at") || "");
+          if (!expStr || !startStr) continue;
+          var expMs = new Date(expStr).getTime();
+          var startMs = new Date(startStr).getTime();
+          if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; break; }
         }
       } catch (_) {}
       if (!hasValid) { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
@@ -308,7 +308,7 @@ routerAdd(
       if (acct !== "active") { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       var nowMs = Date.now();
       var hasValid = false;
-      try { var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: String(ev.auth.id || "") }); if (sub) { var expStr = String(sub.get("expires_at") || ""); var startStr = String(sub.get("starts_at") || ""); if (expStr && startStr) { var expMs = new Date(expStr).getTime(); var startMs = new Date(startStr).getTime(); if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; } } } } catch (_) {}
+      try { var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: String(ev.auth.id || "") }); for (var si = 0; si < subs.length; si++) { var s = subs[si]; var expStr = String(s.get("expires_at") || ""); var startStr = String(s.get("starts_at") || ""); if (!expStr || !startStr) continue; var expMs = new Date(expStr).getTime(); var startMs = new Date(startStr).getTime(); if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; break; } } } catch (_) {}
       if (!hasValid) { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       return null;
     }
@@ -505,7 +505,7 @@ routerAdd(
       if (acct !== "active") { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       var nowMs = Date.now();
       var hasValid = false;
-      try { var sub = $app.findFirstRecordByFilter(SUBS_C, "user = {:uid} && status = 'active'", { uid: String(ev.auth.id || "") }); if (sub) { var expStr = String(sub.get("expires_at") || ""); var startStr = String(sub.get("starts_at") || ""); if (expStr && startStr) { var expMs = new Date(expStr).getTime(); var startMs = new Date(startStr).getTime(); if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; } } } } catch (_) {}
+      try { var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: String(ev.auth.id || "") }); for (var si = 0; si < subs.length; si++) { var s = subs[si]; var expStr = String(s.get("expires_at") || ""); var startStr = String(s.get("starts_at") || ""); if (!expStr || !startStr) continue; var expMs = new Date(expStr).getTime(); var startMs = new Date(startStr).getTime(); if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; break; } } } catch (_) {}
       if (!hasValid) { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       return null;
     }

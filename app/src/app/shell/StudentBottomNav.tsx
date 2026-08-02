@@ -28,6 +28,7 @@ export function StudentBottomNav() {
   return (
     <Paper
       elevation={0}
+      data-testid="student-bottom-nav"
       sx={{
         position: 'fixed',
         insetInlineStart: 0,

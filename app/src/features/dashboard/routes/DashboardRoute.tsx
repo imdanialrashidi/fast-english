@@ -274,7 +274,7 @@ export function DashboardRoute() {
                   <LinearProgress
                     variant="determinate"
                     value={prog.completionPercent}
-                    sx={{ borderRadius: 1, height: 6 }}
+                    sx={{ borderRadius: '999px', height: 6 }}
                   />
                 </Box>
               )}

@@ -3,10 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0B1220" />
+    <!-- Documented browser metadata (approved raw-hex exception):
+         the initial chrome color for the light scheme; ThemeHost syncs this
+         meta tag dynamically to the active scheme (see theme/ThemeHost.tsx). -->
+    <meta name="theme-color" content="#e9f1f4" />
     <meta name="app-marker" content="app-surface" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <title>Fast English Podcast</title>
+    <!-- Pre-paint color-scheme initialization (Visual Slice 1).
+         Mirrors MUI v9 Material's InitColorSchemeScript exactly (storage
+         keys `mui-mode` / `mui-color-scheme-*`, attribute
+         `data-color-scheme`, default `system`) so the first paint already
+         uses the persisted/OS scheme and no wrong Light flash can occur
+         before the app bundle loads. -->
+    <script>
+      (() => {
+        let colorScheme = '';
+        let mode = 'system';
+        let dark = 'dark';
+        let light = 'light';
+        let darkMatches = false;
+        try {
+          mode = localStorage.getItem('mui-mode') || 'system';
+          dark = localStorage.getItem('mui-color-scheme-dark') || 'dark';
+          light = localStorage.getItem('mui-color-scheme-light') || 'light';
+          darkMatches = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (mode === 'system') {
+            colorScheme = darkMatches ? dark : light;
+          } else if (mode === 'light') {
+            colorScheme = light;
+          } else if (mode === 'dark') {
+            colorScheme = dark;
+          }
+          if (colorScheme) {
+            document.documentElement.setAttribute('data-color-scheme', colorScheme);
+            document.documentElement.style.colorScheme = colorScheme;
+          }
+        } catch {
+          // The init script must never block first paint.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root" data-surface="app"></div>

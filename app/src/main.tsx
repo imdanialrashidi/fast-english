@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import { App } from './app/App';
 import { createRtlCache } from './app/theme/rtl';
+import { ThemeHost } from './app/theme/ThemeHost';
 import { appTheme } from './app/theme/theme';
 import { PwaManager } from './pwa/PwaManager';
 import { isNativeRuntime, unregisterStaleServiceWorkers } from './pwa/register';
@@ -35,6 +36,7 @@ createRoot(container).render(
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={appTheme}>
         <CssBaseline />
+        <ThemeHost />
         <BrowserRouter>
           <App />
           {!nativeRuntime && <PwaManager />}

@@ -2,7 +2,7 @@
 // Clearly marked and intentionally simple. These are NOT real product data
 // and must not be wired into future API contracts.
 
-import type { CefrLevel } from '../app/theme/tokens';
+import type { CefrLevel } from '../app/theme/tokens/cefr';
 
 export interface PreviewLesson {
   readonly id: string;
