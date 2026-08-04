@@ -334,7 +334,24 @@
       "gh pr create*": "deny",
       "gh pr merge*": "deny",
       "gh issue create*": "deny",
-      "gh repo delete*": "deny"
+      "gh repo delete*": "deny",
+
+      // Playwright lanes (last matching rule wins): deny raw CI-style
+      // commands and bare full-suite runs first, then allow the
+      // controlled package scripts and --list.
+      "CI=1 *playwright*": "deny",
+      "pnpm exec playwright test*": "deny",
+      "npx playwright test*": "deny",
+      "playwright test*": "deny",
+      "pnpm test:e2e*": "deny",
+      "pnpm test:e2e:fast*": "allow",
+      "pnpm test:e2e:smoke*": "allow",
+      "pnpm test:e2e:failed*": "allow",
+      "pnpm test:e2e:list*": "allow",
+      "pnpm test:e2e:full*": "allow",
+      "pnpm exec playwright test --list*": "allow",
+      "npx playwright test --list*": "allow",
+      "playwright test --list*": "allow"
     }
   },
 

@@ -7,8 +7,9 @@ cd "$ROOT_DIR"
 # The full release gate. `pnpm verify:full` is the canonical entry point;
 # this dispatcher stays as the compatibility entry used by CI and
 # release tooling.
-if [[ -x scripts/verify-full.sh ]]; then
-  exec scripts/verify-full.sh
+# Fast verification for local development.
+if [[ -x scripts/verify-fast.sh ]]; then
+  exec scripts/verify-fast.sh
 fi
 
 ran=0

@@ -1,5 +1,6 @@
 import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import {
   AppBar,
   Box,
@@ -11,6 +12,7 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router';
+import { useAuth } from '../../lib/auth';
 import { Brand } from '../brand/Brand';
 import { ThemeSwitch } from '../theme/ThemeSwitch';
 import { duration, easing } from '../theme/tokens';
@@ -34,6 +36,7 @@ const isDetailPath = (pathname: string): boolean =>
 export function AppHeader() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const isOperator = location.pathname.startsWith('/operator');
   const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 8 });
   const showBack = !isOperator && isDetailPath(location.pathname);
@@ -44,6 +47,11 @@ export function AppHeader() {
     } else {
       navigate('/lessons');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -70,7 +78,9 @@ export function AppHeader() {
         ) : null}
 
         <Box sx={{ display: { xs: 'none', md: 'block' }, flexShrink: 0 }}>
-          {isOperator ? null : (
+          {isOperator ? (
+            <Brand variant="compact" size="sm" />
+          ) : (
             <RouterLink
               to="/dashboard"
               aria-label="فست انگلیش — داشبورد"
@@ -82,8 +92,11 @@ export function AppHeader() {
         </Box>
 
         {isOperator ? (
+          // Not a heading: the operator workspace owns the page's primary
+          // heading (queue or selected request). This label only identifies
+          // the chrome, so screen readers get exactly one h1 per view.
           <Typography
-            component="h1"
+            component="span"
             variant="titleMedium"
             sx={{
               fontWeight: 700,
@@ -125,6 +138,18 @@ export function AppHeader() {
                 sx={{ color: 'onSurface' }}
               >
                 <AdminPanelSettingsRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {isOperator && (
+            <Tooltip title="خروج از پنل اپراتور">
+              <IconButton
+                onClick={handleLogout}
+                aria-label="خروج"
+                data-testid="operator-logout"
+                sx={{ color: 'onSurface' }}
+              >
+                <LogoutRoundedIcon />
               </IconButton>
             </Tooltip>
           )}

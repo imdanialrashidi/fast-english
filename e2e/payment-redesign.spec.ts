@@ -23,38 +23,20 @@
 //  19  keyboard flow (file chooser, dialog trap/restore)
 //  20  zoom dialog fits the viewport
 
-import { spawnSync } from 'node:child_process';
-import { randomBytes } from 'node:crypto';
-import { readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
-
-const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
-const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
+import {
+  ensureOwnedDestination,
+  ensureOwnedPlan,
+  PB_URL,
+  planRadio,
+  superuserAuth,
+} from './fixtures';
 
 // ---- Helpers (same patterns as p1-s1.spec.ts) ----
 
-function randomCreds() {
-  const id = randomBytes(8).toString('hex');
-  return {
-    email: `redesign-${id}@fep-smoke.invalid`,
-    password: `RDS-${id}-${randomBytes(6).toString('hex')}`,
-  };
-}
-
-async function superuserAuth(): Promise<string> {
-  const { email, password } = randomCreds();
-  spawnSync('server/pocketbase', ['superuser', 'upsert', email, password, '--dir', PB_DATA_DIR], {
-    stdio: 'ignore',
-  });
-  const auth = await fetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: email, password }),
-  });
-  const body = (await auth.json()) as { token?: string };
-  if (!body.token) throw new Error('superuser auth failed');
-  return body.token;
-}
+// The suite-owned plan (unique per run) is seeded by the shared
+// helpers; tests select the exact plan by its record ID.
+let sharedPlanId = '';
 
 function uniquePhone(): string {
   const tail = String(Date.now()).slice(-4);
@@ -62,57 +44,14 @@ function uniquePhone(): string {
   return `09${mid}${tail}`.slice(0, 11);
 }
 
-// Idempotent fixture seeding: one active plan + one active
-// destination are created only when missing, so every describe can
-// call this safely against the same disposable PB.
-async function ensureFixtures(): Promise<{ planId: string; planName: string }> {
+// Deterministic fixture seeding: reuse the suite-owned plan and
+// destination (deduplicated by the shared helpers) so every describe
+// can call this safely against the same disposable PB.
+async function ensureFixtures(): Promise<void> {
   const suToken = await superuserAuth();
-  const plans = await fetch(
-    `${PB_URL}/api/collections/plans/records?filter=is_active%3Dtrue&perPage=1`,
-    {
-      headers: { authorization: suToken },
-    },
-  );
-  const plansBody = (await plans.json()) as { items?: Array<{ id: string; name: string }> };
-  if (plansBody.items?.length) {
-    return { planId: plansBody.items[0].id, planName: plansBody.items[0].name };
-  }
-  const planRes = await fetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: suToken },
-    body: JSON.stringify({
-      name: 'E2E Monthly',
-      slug: `redesign-monthly-${randomBytes(3).toString('hex')}`,
-      duration_days: 30,
-      price_toman: 1_234_567,
-      is_active: true,
-      display_order: 0,
-      description: 'Disposable redesign plan',
-    }),
-  });
-  const planBody = (await planRes.json()) as { id?: string };
-  if (!planBody.id) throw new Error('plan create failed');
-
-  const dests = await fetch(
-    `${PB_URL}/api/collections/payment_destination/records?filter=is_active%3Dtrue&perPage=1`,
-    { headers: { authorization: suToken } },
-  );
-  const destsBody = (await dests.json()) as { items?: unknown[] };
-  if (!destsBody.items?.length) {
-    const destRes = await fetch(`${PB_URL}/api/collections/payment_destination/records`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: suToken },
-      body: JSON.stringify({
-        card_number: '0000000000000000',
-        card_holder_name: 'E2E HOLDER',
-        bank_name: 'E2E BANK',
-        instructions: 'انتقال کارت به کارت — مبلغ را دقیقاً به همین کارت واریز کنید.',
-        is_active: true,
-      }),
-    });
-    if (destRes.status !== 200) throw new Error(`destination create failed: ${destRes.status}`);
-  }
-  return { planId: planBody.id, planName: 'E2E Monthly' };
+  const plan = await ensureOwnedPlan(suToken);
+  sharedPlanId = plan.id;
+  await ensureOwnedDestination(suToken);
 }
 
 async function getOperatorToken(): Promise<string> {
@@ -184,7 +123,7 @@ async function signupAndLogin(
 }
 
 async function selectPlanAndReceipt(page: Page, fileName = 'r.jpg'): Promise<void> {
-  await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+  await planRadio(page, sharedPlanId).check();
   await page.locator('input[type="file"]').setInputFiles({
     name: fileName,
     mimeType: 'image/jpeg',
@@ -264,7 +203,7 @@ test.describe('payment redesign — instructions and copy', () => {
     await expect(page.getByText(/به‌صورت دستی توسط اپراتور/)).toBeVisible();
 
     // The amount block is the selected plan's value once chosen.
-    await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+    await planRadio(page, sharedPlanId).check();
     await expect(page.getByTestId('payment-amount')).toContainText('۱٬۲۳۴٬۵۶۷');
 
     // Exactly one H1 on the page.
@@ -276,7 +215,7 @@ test.describe('payment redesign — instructions and copy', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     const phone = uniquePhone();
     await signupAndLogin(page, 'E2E کپی', phone, 'Test1234!');
-    await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+    await planRadio(page, sharedPlanId).check();
 
     // The clipboard must contain exactly the digits shown on screen.
     // The clipboard must contain exactly the digits shown on screen
@@ -318,7 +257,7 @@ test.describe('payment redesign — receipt selection, preview, replace, remove'
   test('4. client validation rejects invalid and oversized files', async ({ page }) => {
     const phone = uniquePhone();
     await signupAndLogin(page, 'E2E خطا', phone, 'Test1234!');
-    await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+    await planRadio(page, sharedPlanId).check();
 
     await page.locator('input[type="file"]').setInputFiles({
       name: 'fake.txt',
@@ -697,7 +636,7 @@ test.describe('payment redesign — viewport geometry', () => {
       expect(journeyBox.right).toBeLessThanOrEqual(width + 1);
 
       // Card number + copy control do not overlap.
-      await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+      await planRadio(page, sharedPlanId).check();
       const [cardBox, copyBox] = await Promise.all([
         page.getByTestId('payment-card-number').evaluate((el) => el.getBoundingClientRect()),
         page.getByTestId('copy-card').evaluate((el) => el.getBoundingClientRect()),
@@ -776,6 +715,9 @@ test.describe('payment redesign — dark mode and keyboard', () => {
     await setDarkMode(page);
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
+    // Wait for the payment surface to render before reading computed
+    // styles (the html attribute applies before React mounts).
+    await expect(page.getByTestId('payment-details-card')).toBeVisible();
 
     const colors = await page.evaluate(() => {
       const body = getComputedStyle(document.body);
@@ -808,7 +750,7 @@ test.describe('payment redesign — dark mode and keyboard', () => {
   }) => {
     const phone = uniquePhone();
     await signupAndLogin(page, 'E2E کیبورد', phone, 'Test1234!');
-    await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+    await planRadio(page, sharedPlanId).check();
 
     // Keyboard activation of the select action opens the native file chooser.
     const select = page.getByTestId('select-receipt');
@@ -816,10 +758,9 @@ test.describe('payment redesign — dark mode and keyboard', () => {
     await expect
       .poll(() => page.evaluate(() => document.activeElement?.getAttribute('data-testid')))
       .toBe('select-receipt');
-    const [chooser] = await Promise.all([
-      page.waitForEvent('filechooser'),
-      page.keyboard.press('Enter'),
-    ]);
+    // press() re-focuses the element at press time, so a re-render
+    // between focus() and the key event cannot drop the activation.
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), select.press('Enter')]);
     await chooser.setFiles({
       name: 'kbd.jpg',
       mimeType: 'image/jpeg',

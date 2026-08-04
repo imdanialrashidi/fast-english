@@ -15,6 +15,27 @@ const APP_URL = `http://127.0.0.1:${APP_PORT}`;
 
 export default async function globalSetup() {
   mkdirSync(resolve('test-results'), { recursive: true });
+
+  // Refuse to start when another PocketBase already owns the fixed
+  // port. A stale instance from a previous run would otherwise make
+  // this run silently reuse the previous run's database (the spawned
+  // process dies on bind, the health check below succeeds against
+  // the stale one, and fixtures accumulate across runs). Fail loudly
+  // instead of polluting.
+  try {
+    const probe = await fetch(`${PB_URL}/api/health`);
+    if (probe.status === 200) {
+      throw new Error(
+        `global-setup: another PocketBase already answers on ${PB_URL}. ` +
+          'This is usually a stale instance from a previous test run. ' +
+          'Kill it first: pkill -x pocketbase',
+      );
+    }
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith('global-setup:')) throw err;
+    // Fetch failed (connection refused): the port is free, proceed.
+  }
+
   // PB is gitignored. The smoke wrapper picks it up; if missing,
   // the user must run `pnpm setup:pocketbase` first.
   const dataDir = `/tmp/pb-e2e-${Date.now()}`;

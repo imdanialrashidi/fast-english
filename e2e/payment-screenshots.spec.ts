@@ -8,39 +8,20 @@
 // submitter cannot interpret visuals; they exist only for later
 // Human review. Deterministic acceptance comes from the other specs.
 
-import { randomBytes } from 'node:crypto';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
-
-const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
-const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
+import {
+  ensureOwnedDestination,
+  ensureOwnedPlan,
+  PB_URL,
+  planRadio,
+  superuserAuth,
+} from './fixtures';
 
 const OUT_ROOT = '/tmp/opencode/fep-payment-redesign';
 const ENV_FLAG = process.env.FEP_SCREENSHOTS === '1';
 
-function randomCreds() {
-  const id = randomBytes(8).toString('hex');
-  return {
-    email: `shot-${id}@fep-smoke.invalid`,
-    password: `SHOT-${id}-${randomBytes(6).toString('hex')}`,
-  };
-}
-
-async function superuserAuth(): Promise<string> {
-  const { email, password } = randomCreds();
-  const { spawnSync } = await import('node:child_process');
-  spawnSync('server/pocketbase', ['superuser', 'upsert', email, password, '--dir', PB_DATA_DIR], {
-    stdio: 'ignore',
-  });
-  const auth = await fetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: email, password }),
-  });
-  const body = (await auth.json()) as { token?: string };
-  if (!body.token) throw new Error('superuser auth failed');
-  return body.token;
-}
+let sharedPlanId = '';
 
 function uniquePhone(): string {
   const tail = String(Date.now()).slice(-4);
@@ -48,49 +29,11 @@ function uniquePhone(): string {
   return `09${mid}${tail}`.slice(0, 11);
 }
 
-async function ensureFixtures(): Promise<string> {
+async function ensureFixtures(): Promise<void> {
   const suToken = await superuserAuth();
-  const plans = await fetch(
-    `${PB_URL}/api/collections/plans/records?filter=is_active%3Dtrue&perPage=1`,
-    {
-      headers: { authorization: suToken },
-    },
-  );
-  const plansBody = (await plans.json()) as { items?: Array<{ id: string }> };
-  if (plansBody.items?.length) return plansBody.items[0].id;
-  const planRes = await fetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: suToken },
-    body: JSON.stringify({
-      name: 'E2E Monthly',
-      slug: `shot-monthly-${randomBytes(3).toString('hex')}`,
-      duration_days: 30,
-      price_toman: 1_234_567,
-      is_active: true,
-      display_order: 0,
-      description: 'Screenshot plan',
-    }),
-  });
-  const planBody = (await planRes.json()) as { id?: string };
-  if (!planBody.id) throw new Error('plan create failed');
-  const dests = await fetch(
-    `${PB_URL}/api/collections/payment_destination/records?filter=is_active%3Dtrue&perPage=1`,
-    { headers: { authorization: suToken } },
-  );
-  const destsBody = (await dests.json()) as { items?: unknown[] };
-  if (!destsBody.items?.length) {
-    await fetch(`${PB_URL}/api/collections/payment_destination/records`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: suToken },
-      body: JSON.stringify({
-        card_number: '0000000000000000',
-        card_holder_name: 'E2E HOLDER',
-        bank_name: 'E2E BANK',
-        is_active: true,
-      }),
-    });
-  }
-  return planBody.id;
+  const plan = await ensureOwnedPlan(suToken);
+  sharedPlanId = plan.id;
+  await ensureOwnedDestination(suToken);
 }
 
 async function getOperatorToken(): Promise<string> {
@@ -186,7 +129,7 @@ for (const layout of LAYOUTS) {
       await expect(page.getByTestId('payment-journey')).toBeVisible({ timeout: 15_000 });
       await page.screenshot({ path: `${dir}/01-payment-instructions.png`, fullPage: true });
 
-      await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+      await planRadio(page, sharedPlanId).check();
       await page.locator('input[type="file"]').setInputFiles({
         name: 'receipt.jpg',
         mimeType: 'image/jpeg',
@@ -256,7 +199,7 @@ for (const layout of LAYOUTS) {
         await pageB.evaluate((m) => localStorage.setItem('mui-mode', m), layout.mode);
         const phoneB = uniquePhone();
         await signupAndLogin(pageB, phoneB);
-        await pageB.getByRole('radio', { name: /E2E Monthly/ }).check();
+        await planRadio(pageB, sharedPlanId).check();
         await pageB.locator('input[type="file"]').setInputFiles({
           name: 'r2.jpg',
           mimeType: 'image/jpeg',

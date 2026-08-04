@@ -14,9 +14,19 @@ import { duration, easing } from '../theme/tokens';
 
 export function RouteTransition({ children }: { children: ReactNode }) {
   const location = useLocation();
+  // The operator workspace is one route surface rendered for both the
+  // queue index and the selected request (`/operator` +
+  // `/operator/payment-requests/:id`). A stable key keeps the workspace —
+  // and therefore the mounted queue pane — alive during selection
+  // navigation, so filter state, scroll position and loaded data survive
+  // without refetching (queue context is not lost on selection). All other
+  // routes keep the pathname key and their entrance animation.
+  const transitionKey = location.pathname.startsWith('/operator')
+    ? 'operator-workspace'
+    : location.pathname;
   return (
     <Box
-      key={location.pathname}
+      key={transitionKey}
       data-testid="route-transition"
       sx={{
         animation: `fep-route-enter ${duration.durationStandard}ms ${easing.easingStandard} both`,

@@ -24,6 +24,7 @@ export async function fetchQueue(
     status?: QueueStatusFilter;
     search?: string;
   } = {},
+  signal?: AbortSignal,
 ): Promise<QueueResponse> {
   const qs = new URLSearchParams();
   if (params.page) qs.set('page', String(params.page));
@@ -35,6 +36,7 @@ export async function fetchQueue(
     `${pbUrl('/api/fast-english/operator/payment-requests')}?${qs.toString()}`,
     {
       headers: { authorization: token },
+      signal,
     },
   );
   if (!res.ok) {
@@ -48,9 +50,14 @@ export async function fetchQueue(
   return res.json();
 }
 
-export async function fetchDetail(token: string, requestId: string): Promise<RequestDetail> {
+export async function fetchDetail(
+  token: string,
+  requestId: string,
+  signal?: AbortSignal,
+): Promise<RequestDetail> {
   const res = await fetch(pbUrl(`/api/fast-english/operator/payment-requests/${requestId}`), {
     headers: { authorization: token },
+    signal,
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -67,6 +74,7 @@ export async function approveRequest(
   token: string,
   requestId: string,
   internalNote?: string,
+  signal?: AbortSignal,
 ): Promise<ApproveResponse> {
   const res = await fetch(
     pbUrl(`/api/fast-english/operator/payment-requests/${requestId}/approve`),
@@ -74,6 +82,7 @@ export async function approveRequest(
       method: 'POST',
       headers: { authorization: token, 'content-type': 'application/json' },
       body: JSON.stringify({ internal_note: internalNote ?? '' }),
+      signal,
     },
   );
   if (!res.ok) {
@@ -92,6 +101,7 @@ export async function rejectRequest(
   requestId: string,
   publicRejectionReason: string,
   internalNote?: string,
+  signal?: AbortSignal,
 ): Promise<RejectResponse> {
   const res = await fetch(
     pbUrl(`/api/fast-english/operator/payment-requests/${requestId}/reject`),
@@ -102,6 +112,7 @@ export async function rejectRequest(
         public_rejection_reason: publicRejectionReason,
         internal_note: internalNote ?? '',
       }),
+      signal,
     },
   );
   if (!res.ok) {
@@ -115,11 +126,16 @@ export async function rejectRequest(
   return res.json();
 }
 
-export async function fetchReceiptBlob(token: string, requestId: string): Promise<Blob> {
+export async function fetchReceiptBlob(
+  token: string,
+  requestId: string,
+  signal?: AbortSignal,
+): Promise<Blob> {
   const res = await fetch(
     pbUrl(`/api/fast-english/operator/payment-requests/${requestId}/receipt`),
     {
       headers: { authorization: token },
+      signal,
     },
   );
   if (!res.ok) {

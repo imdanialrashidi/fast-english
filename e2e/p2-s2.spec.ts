@@ -275,7 +275,9 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     expect(body.suggestedLevel).toBe('C2');
   });
 
-  test('accept suggested level and see dashboard', { tag: '@critical' }, async ({ page }) => {
+  test('accept suggested level and see dashboard', { tag: ['@critical', '@smoke'] }, async ({
+    page,
+  }) => {
     // Login
     await page.goto('/login');
     await page.waitForLoadState('networkidle');

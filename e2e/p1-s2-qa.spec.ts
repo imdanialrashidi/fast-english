@@ -1,14 +1,17 @@
 // e2e/p1-s2-qa.spec.ts
-// P1-S2 operator responsive QA evidence.
+// P1-S2 operator responsive QA evidence (updated for the Operator
+// Workspace redesign).
 //
 // Captures screenshots of the Operator Queue and Operator Detail
-// pages at 7 required viewports. Screenshots are written to a
+// surfaces at the required viewports. Screenshots are written to a
 // per-run output directory so they never enter the repo or
 // the test-results bundle. The spec also runs a battery of
 // structural assertions for every viewport: no horizontal
-// overflow, mobile renders as cards (not a tiny table), no
-// Student Bottom Navigation, all primary controls are at least
-// 44px tall, and the document remains RTL.
+// overflow, the queue renders as one keyboard list (no table), the
+// split workspace appears at md+ (≥768px) while below md the queue
+// and detail are separate surfaces, no Student Bottom Navigation,
+// all primary controls are at least 44px tall, and the document
+// remains RTL.
 //
 // Test data:
 //   - 1 operator user
@@ -401,8 +404,16 @@ test.describe('P1-S2 operator responsive QA', () => {
     );
   }
 
+  // In the split workspace (md+, >=768px) the queue pane also renders
+  // status chips (e.g. «تأیید شده») inside item buttons; scoping decision
+  // assertions to the detail pane keeps them unambiguous. Below md the
+  // detail is the only surface.
+  function detailScope(page: import('@playwright/test').Page, vp: { width: number }) {
+    return vp.width >= 768 ? page.getByTestId('detail-pane') : page;
+  }
+
   for (const vp of VIEWPORTS) {
-    test(`[${vp.name}] queue (pending) renders, no overflow, RTL, cards-vs-table correct`, async ({
+    test(`[${vp.name}] queue (pending) renders, no overflow, RTL, workspace model`, async ({
       page,
     }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
@@ -425,45 +436,35 @@ test.describe('P1-S2 operator responsive QA', () => {
         `[${vp.name}] no element wider than viewport (got ${layout.overflowEls.join(', ')})`,
       ).toHaveLength(0);
 
-      // On mobile (xs), the table container is hidden and the
-      // card stack is shown. On md+ (>=768px) the opposite.
-      // The breakpoint values come from the custom MUI theme
-      // (app/src/app/theme/theme.ts): xs=360, sm=600, md=768, lg=1024, xl=1440.
+      // The queue is one unified keyboard list on every breakpoint —
+      // the old desktop table / mobile card pair is gone.
+      const listItems = await page.getByTestId('operator-queue-list').locator('li').count();
+      expect(
+        listItems,
+        `[${vp.name}] queue renders as a list (got ${listItems})`,
+      ).toBeGreaterThanOrEqual(3);
+      const tables = await page.locator('table').count();
+      expect(tables, `[${vp.name}] no table remains in the queue`).toBe(0);
+
+      // Responsive model, deterministic by width: md+ (>=768px) is the
+      // split workspace (queue pane + detail pane); below md the queue
+      // is the only surface.
       const isMobile = vp.width < 768;
-      const tableContainerDisplay = await page.evaluate(() => {
-        const t = document.querySelector('table');
-        if (!t) return 'no-table';
-        return window.getComputedStyle(t.closest('[class*="MuiTableContainer"]') ?? t).display;
-      });
-      const cardStackDisplay = await page.evaluate(() => {
-        // The mobile card stack is a Stack with display: { xs: 'flex', md: 'none' }.
-        // Find the first MuiCard-root and report its container's display.
-        const card = document.querySelector('.MuiCard-root');
-        if (!card) return 'no-card';
-        // Walk up to find the Stack that holds the cards.
-        let cur: HTMLElement | null = card.parentElement;
-        while (cur) {
-          const tag = cur.tagName.toLowerCase();
-          if (tag === 'div' && cur.className.includes('MuiStack-root')) {
-            return window.getComputedStyle(cur).display;
-          }
-          cur = cur.parentElement;
-        }
-        return 'no-stack';
-      });
       if (isMobile) {
-        expect(tableContainerDisplay, `[${vp.name}] mobile hides table container`).toBe('none');
-        expect(cardStackDisplay, `[${vp.name}] mobile shows card stack`).not.toBe('none');
+        await expect(page.getByTestId('operator-workspace-split')).toHaveCount(0);
+        await expect(page.getByTestId('detail-pane')).toHaveCount(0);
+        await expect(page.getByTestId('operator-queue')).toBeVisible();
       } else {
-        expect(tableContainerDisplay, `[${vp.name}] desktop shows table container`).not.toBe(
-          'none',
-        );
-        expect(cardStackDisplay, `[${vp.name}] desktop hides card stack`).toBe('none');
+        await expect(page.getByTestId('operator-workspace-split')).toBeVisible();
+        await expect(page.getByTestId('queue-pane')).toBeVisible();
+        await expect(page.getByTestId('detail-pane')).toBeVisible();
+        // The unselected detail pane shows the selection placeholder.
+        await expect(page.getByText('درخواستی انتخاب نشده است')).toBeVisible();
       }
 
       // Touch target: the search IconButton is at least 44px tall on every viewport
       // (it's the explicit "search" affordance; the input also accepts Enter)
-      const searchBtn = page.getByRole('button', { name: 'جستجو' });
+      const searchBtn = page.getByRole('button', { name: 'جستجو', exact: true });
       const sb = await searchBtn.evaluate((el) => {
         const r = el.getBoundingClientRect();
         return { w: r.width, h: r.height };
@@ -534,7 +535,7 @@ test.describe('P1-S2 operator responsive QA', () => {
       // because the others were rejected/approved.
       const searchInput = page.getByPlaceholder('جستجو با مرجع بانکی یا شناسه...');
       await searchInput.fill('QA-PEND');
-      await page.getByRole('button', { name: 'جستجو' }).click();
+      await page.getByRole('button', { name: 'جستجو', exact: true }).click();
       await waitForQueueLoaded(page, fx.pendingStudentName);
 
       const layout = await probeLayout(page);
@@ -553,8 +554,11 @@ test.describe('P1-S2 operator responsive QA', () => {
         page.getByText(pendingStudentTitle(fx.pendingStudentName)).first(),
       ).toBeVisible();
       // The Approve + Reject buttons must be visible for pending state
-      const approveBtn = page.getByRole('button', { name: /تأیید/ });
-      const rejectBtn = page.getByRole('button', { name: /^رد$/ });
+      // (scoped to the detail pane — the split queue also renders
+      // status chips whose text contains «تأیید»).
+      const detail = detailScope(page, vp);
+      const approveBtn = detail.getByRole('button', { name: /تأیید/ });
+      const rejectBtn = detail.getByRole('button', { name: /^رد$/ });
       await expect(approveBtn).toBeVisible();
       await expect(rejectBtn).toBeVisible();
       // Both must be at least 44px tall (the spec requires 44 for primary actions)
@@ -578,9 +582,7 @@ test.describe('P1-S2 operator responsive QA', () => {
     test(`[${vp.name}] receipt preview is bounded`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
-      await expect(page.getByRole('button', { name: /نمایش رسید/ })).toBeVisible();
-      await page.getByRole('button', { name: /نمایش رسید/ }).click();
-      // Wait for the receipt <img> to appear
+      // The receipt inspector auto-loads the protected preview.
       const receiptImg = page.locator('img[alt="رسید پرداخت"]').first();
       await expect(receiptImg).toBeVisible({ timeout: 10_000 });
       // Wait for the image to actually load (naturalWidth > 0)
@@ -601,11 +603,11 @@ test.describe('P1-S2 operator responsive QA', () => {
         size.w,
         `[${vp.name}] receipt width <= viewport (got ${size.w} viewport ${vp.width})`,
       ).toBeLessThanOrEqual(vp.width);
-      // The CSS caps max-height at 200 (preview) or 80vh (zoom)
+      // The CSS caps the preview bound at 360 (never a compressed thumbnail)
       expect(
         size.h,
-        `[${vp.name}] receipt height <= 240 (preview bound, got ${size.h})`,
-      ).toBeLessThanOrEqual(240);
+        `[${vp.name}] receipt height <= 360 (preview bound, got ${size.h})`,
+      ).toBeLessThanOrEqual(360);
 
       const layout = await probeLayout(page);
       expect(
@@ -619,7 +621,6 @@ test.describe('P1-S2 operator responsive QA', () => {
     test(`[${vp.name}] receipt zoom dialog renders and is RTL`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
-      await page.getByRole('button', { name: /نمایش رسید/ }).click();
       await expect(page.locator('img[alt="رسید پرداخت"]').first()).toBeVisible();
       // Click the receipt to open the zoom dialog
       await page.locator('img[alt="رسید پرداخت"]').first().click();
@@ -654,7 +655,7 @@ test.describe('P1-S2 operator responsive QA', () => {
     test(`[${vp.name}] approve dialog renders`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
-      await page.getByRole('button', { name: /تأیید/ }).click();
+      await detailScope(page, vp).getByRole('button', { name: /تأیید/ }).click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
       const dialogDir = await dialog.evaluate((el) => {
@@ -747,10 +748,13 @@ test.describe('P1-S2 operator responsive QA', () => {
     test(`[${vp.name}] approved state (read-only)`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.approvedRequestId}`);
-      // The page should show the approved status chip
-      await expect(page.getByText('تأیید شده').first()).toBeVisible();
-      // Approve/Reject buttons must NOT be visible (pending-only)
-      await expect(page.getByRole('button', { name: /تأیید/ })).toHaveCount(0);
+      // The page should show the approved status chip (the hidden queue
+      // pane may also contain a matching chip — filter to visible).
+      await expect(
+        page.getByTestId('status-chip-approved').filter({ visible: true }).first(),
+      ).toBeVisible();
+      // No decision controls exist for a decided request.
+      await expect(page.getByTestId('operator-decision-panel')).toHaveCount(0);
 
       const layout = await probeLayout(page);
       expect(
@@ -765,7 +769,10 @@ test.describe('P1-S2 operator responsive QA', () => {
     test(`[${vp.name}] rejected state (read-only)`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.rejectedRequestId}`);
-      await expect(page.getByText('رد شده').first()).toBeVisible();
+      await expect(
+        page.getByTestId('status-chip-rejected').filter({ visible: true }).first(),
+      ).toBeVisible();
+      await expect(page.getByTestId('operator-decision-panel')).toHaveCount(0);
       // The public rejection reason is rendered below the "دلیل رد (عمومی)"
       // label. We don't assert the exact text because the server-side
       // body parser (operator_routes.pb.js) decodes UTF-8 byte-by-byte,
@@ -790,7 +797,7 @@ test.describe('P1-S2 operator responsive QA', () => {
     test(`[${vp.name}] focus indicator is visible on Approve button`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
-      const approveBtn = page.getByRole('button', { name: /تأیید/ });
+      const approveBtn = detailScope(page, vp).getByRole('button', { name: /تأیید/ });
       // Use keyboard navigation to trigger the :focus-visible
       // pseudo-class. MUI's Button only renders its visible focus
       // ring under focus-visible, not on a plain .focus() call.
@@ -800,12 +807,17 @@ test.describe('P1-S2 operator responsive QA', () => {
       // treat the prior keyboard modality as the source.
       await page.keyboard.press('Tab');
       // After Tab, the next focusable element gets focus-visible.
-      // Press Tab repeatedly until we reach the Approve button.
-      for (let i = 0; i < 20; i++) {
+      // Press Tab repeatedly until we reach the Approve button. The
+      // split workspace adds the queue pane (toolbar + items +
+      // pagination) to the tab order, so the cycle is longer than on
+      // a standalone detail page; the limit covers a full cycle.
+      for (let i = 0; i < 80; i++) {
         const isOnApprove = await page.evaluate(() => {
           const ae = document.activeElement;
           if (!ae) return false;
-          return /تأیید/.test(ae.textContent || '') && (ae as HTMLElement).tagName === 'BUTTON';
+          // Match the exact control (queue item buttons contain the
+          // «تأیید شده» chip text and must not end the loop early).
+          return (ae as HTMLElement).getAttribute?.('data-testid') === 'operator-approve-open';
         });
         if (isOnApprove) break;
         await page.keyboard.press('Tab');

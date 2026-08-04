@@ -27,85 +27,42 @@
 // We avoid mocking: the app talks to a real PB via fetch and
 // the SDK uses its built-in cookie-based auth state.
 
-import { spawnSync } from 'node:child_process';
-import { randomBytes } from 'node:crypto';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
+import {
+  ensureOwnedDestination,
+  ensureOwnedPlan,
+  PB_URL,
+  planRadio,
+  superuserAuth,
+} from './fixtures';
 
-const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
-const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
 const VISUAL_QA_DIR = '/tmp/opencode/product-app-visual-polish/auth-payment';
 
 // ---- Disposable superuser + plan + destination ----
 
-function randomCreds() {
-  const id = randomBytes(8).toString('hex');
-  return {
-    email: `e2e-${id}@fep-smoke.invalid`,
-    password: `E2E-${id}-${randomBytes(6).toString('hex')}`,
-  };
+// The suite-owned plan (unique per run) and destination are seeded
+// through the shared helpers; tests select the exact plan by its
+// record ID.
+let planId = '';
+let planName = '';
+
+function uniquePhone(): string {
+  const tail = String(Date.now()).slice(-4);
+  const mid = String(Math.floor(Math.random() * 10_000_000)).padStart(7, '0');
+  return `09${mid}${tail}`.slice(0, 11);
 }
 
-async function setupFixtures(): Promise<{ planId: string; destinationId: string }> {
-  const { email, password } = randomCreds();
-  spawnSync('server/pocketbase', ['superuser', 'upsert', email, password, '--dir', PB_DATA_DIR], {
-    stdio: 'ignore',
-  });
-  const auth = await fetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: email, password }),
-  });
-  const authBody = (await auth.json()) as { token?: string };
-  if (!authBody.token) throw new Error('superuser auth failed');
-  const suToken = authBody.token;
-
-  const planRes = await fetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: suToken },
-    body: JSON.stringify({
-      name: 'E2E Monthly',
-      slug: `e2e-monthly-${randomBytes(3).toString('hex')}`,
-      duration_days: 30,
-      price_toman: 1_234_567,
-      is_active: true,
-      display_order: 0,
-      description: 'Disposable e2e plan',
-    }),
-  });
-  const planBody = (await planRes.json()) as { id?: string };
-  if (!planBody.id) throw new Error('plan create failed');
-
-  const destRes = await fetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: suToken },
-    body: JSON.stringify({
-      card_number: '0000000000000000',
-      card_holder_name: 'E2E HOLDER',
-      bank_name: 'E2E BANK',
-      is_active: true,
-    }),
-  });
-  const destBody = (await destRes.json()) as { id?: string };
-  if (!destBody.id) throw new Error('destination create failed');
-
-  return { planId: planBody.id, destinationId: destBody.id };
+async function setupFixtures(): Promise<void> {
+  const suToken = await superuserAuth();
+  const plan = await ensureOwnedPlan(suToken);
+  planId = plan.id;
+  planName = plan.name;
+  await ensureOwnedDestination(suToken);
 }
 
 async function setRequestRejectedBySuperuser(requestId: string, reason: string): Promise<void> {
-  const { email, password } = randomCreds();
-  // Re-upsert a fresh superuser (we don't store the original).
-  spawnSync('server/pocketbase', ['superuser', 'upsert', email, password, '--dir', PB_DATA_DIR], {
-    stdio: 'ignore',
-  });
-  const auth = await fetch(`${PB_URL}/api/collections/_superusers/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: email, password }),
-  });
-  const authBody = (await auth.json()) as { token?: string };
-  if (!authBody.token) throw new Error('superuser auth failed');
-  const suToken = authBody.token;
+  const suToken = await superuserAuth();
   const r = await fetch(`${PB_URL}/api/collections/payment_requests/records/${requestId}`, {
     method: 'PATCH',
     headers: { 'content-type': 'application/json', authorization: suToken },
@@ -135,12 +92,6 @@ async function signupAndLogin(
   await form.getByRole('button', { name: 'ساخت حساب' }).click();
   // The signup auto-authenticates and redirects to /payment.
   await page.waitForURL('**/payment', { timeout: 30_000 });
-}
-
-function uniquePhone(): string {
-  const tail = String(Date.now()).slice(-4);
-  const mid = String(Math.floor(Math.random() * 10_000_000)).padStart(7, '0');
-  return `09${mid}${tail}`.slice(0, 11);
 }
 
 // A 1x1 JPEG so the upload route accepts the file. Same signature
@@ -184,19 +135,22 @@ test.describe('P1-S1 student payment flow', () => {
     // -- /payment loads: plans + destination visible --
     await expect(page.getByRole('heading', { name: 'انتخاب طرح' })).toBeVisible();
     await expect(page.getByText('E2E Monthly', { exact: false })).toBeVisible();
-    // Destination card has the bank name.
-    await expect(page.getByText('E2E BANK', { exact: false })).toBeVisible();
+    // Destination card renders the real active destination. The bank
+    // row label only renders when a non-empty bank name exists, so
+    // its visibility proves the backend destination data is shown
+    // (which destination is active is not deterministic in a full
+    // suite run, so the specific name is not asserted).
+    await expect(page.getByTestId('payment-details-card')).toBeVisible();
+    await expect(page.getByText('نام بانک', { exact: true })).toBeVisible();
 
     // -- Plan selection updates the price summary --
     // The plan radio button is rendered as a radiogroup option.
-    // We click the plan card.
-    await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+    // We select the exact owned plan by its record ID.
+    await planRadio(page, planId).check();
     // The price appears in two places (the radio card chip and the
     // bottom-of-form summary); use the unique chip label.
-    await expect(
-      page.getByRole('radio', { name: /E2E Monthly/ }).getByText('۱٬۲۳۴٬۵۶۷'),
-    ).toBeVisible();
-    await expect(page.getByText(/E2E Monthly\s+—\s+۱٬۲۳۴٬۵۶۷ تومان/)).toBeVisible();
+    await expect(planRadio(page, planId).getByText('۱٬۲۳۴٬۵۶۷')).toBeVisible();
+    await expect(page.getByText(`${planName} — ۱٬۲۳۴٬۵۶۷ تومان`)).toBeVisible();
 
     // -- Invalid file shows an error --
     // Create a fake text file (signature will not be a valid image).
@@ -356,10 +310,10 @@ test.describe('P1-S1 student payment flow', () => {
 
     // -- Resubmission creates new request --
     // The "resubmit" CTA goes to /payment.
-    await page.getByRole('button', { name: /ارسال درخواست جدید/ }).click();
+    await page.getByTestId('resubmit-cta').click();
     await page.waitForURL('**/payment', { timeout: 15_000 });
     await expect(page.getByRole('heading', { name: 'انتخاب طرح' })).toBeVisible();
-    await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+    await planRadio(page, planId).check();
     await page.locator('input[type="file"]').setInputFiles({
       name: 'r2.jpg',
       mimeType: 'image/jpeg',
@@ -527,6 +481,11 @@ test.describe('P1-S1 responsive QA', () => {
   // the P1-S1 flow. Probe it at the routine viewport set with a
   // real receipt upload (the 360px extreme is covered by the
   // dedicated mobile viewport test above).
+  test.beforeAll(async () => {
+    // This describe runs standalone on retries (fresh worker), so it
+    // seeds the shared plan itself; the dedupe helpers make this safe.
+    await setupFixtures();
+  });
   for (const [name, width, height] of [
     ['390x844', 390, 844],
     ['768x1024', 768, 1024],
@@ -536,7 +495,7 @@ test.describe('P1-S1 responsive QA', () => {
       await page.setViewportSize({ width, height });
       const phone = uniquePhone();
       await signupAndLogin(page, 'E2E رسید', phone, 'Test1234!');
-      await page.getByRole('radio', { name: /E2E Monthly/ }).check();
+      await planRadio(page, planId).check();
       await page.locator('input[type="file"]').setInputFiles({
         name: 'r.jpg',
         mimeType: 'image/jpeg',
@@ -564,26 +523,86 @@ test.describe('P1-S1 responsive QA', () => {
         fullPage: true,
       });
 
-      // The preview img must be at most the viewport width.
-      const preview = page.locator('[data-testid="receipt-preview-ready"] img');
-      const size = await preview.evaluate((el) => {
-        const r = el.getBoundingClientRect();
-        return { w: r.width, h: r.height };
-      });
-      expect(size.w, `receipt preview width <= viewport at ${name}`).toBeLessThanOrEqual(width);
-      // The preview height is bounded by the CSS (max-height: 360).
+      // The preview frame must stay inside the viewport and the
+      // image must stay inside the frame. Playwright boundingBox()
+      // has no .right/.left helpers, so the right/bottom edges are
+      // computed manually.
+      const frame = page.getByTestId('receipt-preview-ready');
+      await frame.scrollIntoViewIfNeeded();
+      const frameBox = await frame.boundingBox();
+      if (!frameBox) throw new Error(`preview frame not visible at ${name}`);
+      const frameRight = frameBox.x + frameBox.width;
+      const frameBottom = frameBox.y + frameBox.height;
+      expect(frameBox.x, `preview frame left >= 0 at ${name}`).toBeGreaterThanOrEqual(-1);
+      expect(frameBox.y, `preview frame top >= 0 at ${name}`).toBeGreaterThanOrEqual(-1);
+      expect(frameRight, `preview frame inside viewport at ${name}`).toBeLessThanOrEqual(width + 1);
+      expect(frameBottom, `preview frame inside viewport at ${name}`).toBeLessThanOrEqual(
+        height + 1,
+      );
+
+      // The preview img is bounded by the CSS (max-height: 360) and
+      // stays inside the frame.
+      const img = frame.locator('img[alt="رسید پرداخت"]');
+      await expect(img).toBeVisible();
+      const imgBox = await img.boundingBox();
+      if (!imgBox) throw new Error(`preview image not visible at ${name}`);
+      expect(imgBox.x).toBeGreaterThanOrEqual(frameBox.x - 1);
+      expect(imgBox.y).toBeGreaterThanOrEqual(frameBox.y - 1);
+      expect(imgBox.x + imgBox.width).toBeLessThanOrEqual(frameRight + 1);
+      expect(imgBox.y + imgBox.height).toBeLessThanOrEqual(frameBottom + 1);
+      expect(imgBox.width, `preview width <= viewport at ${name}`).toBeLessThanOrEqual(width);
       expect(
-        size.h,
-        `receipt preview height <= 360 at ${name} (got ${size.h})`,
+        imgBox.height,
+        `preview height <= 360 at ${name} (got ${imgBox.height})`,
       ).toBeLessThanOrEqual(361);
 
-      // The "open in new tab" button must be at least 44px tall.
-      const openButton = page.getByTestId('receipt-preview-open');
-      const openSize = await openButton.evaluate((el) => {
-        const r = el.getBoundingClientRect();
-        return { w: r.width, h: r.height };
+      // Aspect ratio is preserved: the fixture is a 1x1 JPEG and the
+      // frame renders it with object-fit: contain (no stretching).
+      const ratio = await img.evaluate((el) => {
+        const n = el as HTMLImageElement;
+        return { natW: n.naturalWidth, natH: n.naturalHeight, fit: getComputedStyle(n).objectFit };
       });
-      expect(openSize.h, `open button height >= 44 at ${name}`).toBeGreaterThanOrEqual(44);
+      expect(ratio.natW).toBe(1);
+      expect(ratio.natH).toBe(1);
+      expect(ratio.fit).toBe('contain');
+
+      // The zoom dialog opens inside the viewport.
+      const openButton = page.getByTestId('receipt-preview-open');
+      await openButton.scrollIntoViewIfNeeded();
+      const openBox = await openButton.boundingBox();
+      if (!openBox) throw new Error(`open button not visible at ${name}`);
+      expect(openBox.height, `open button height >= 44 at ${name}`).toBeGreaterThanOrEqual(44);
+      // The shared bottom navigation is fixed on phone viewports; the
+      // primary action must not sit underneath it. elementsFromPoint
+      // tells us what is actually on top at the button's center.
+      if (width < 768) {
+        const coveredByNav = await openButton.evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          return document
+            .elementsFromPoint(cx, cy)
+            .some((e) => e.closest('[data-testid="student-bottom-nav"]'));
+        });
+        expect(coveredByNav, `open button not covered by bottom nav at ${name}`).toBe(false);
+      }
+      await openButton.click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible({ timeout: 10_000 });
+      const dbox = await dialog.boundingBox();
+      if (!dbox) throw new Error(`dialog not visible at ${name}`);
+      expect(dbox.x).toBeGreaterThanOrEqual(-1);
+      expect(dbox.y).toBeGreaterThanOrEqual(-1);
+      expect(dbox.x + dbox.width).toBeLessThanOrEqual(width + 1);
+      expect(dbox.y + dbox.height).toBeLessThanOrEqual(height + 1);
+      await page.keyboard.press('Escape');
+      await expect(dialog).not.toBeVisible({ timeout: 5_000 });
+
+      // No horizontal overflow anywhere on the page.
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+      );
+      expect(overflow, `no horizontal overflow at ${name}`).toBe(true);
     });
   }
 });

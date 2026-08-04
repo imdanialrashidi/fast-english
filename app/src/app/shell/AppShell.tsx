@@ -17,10 +17,14 @@ export function AppShell() {
 
   // Client-side navigation keeps the scroll position of the previous route;
   // reset to the top so every route starts at its own beginning (the
-  // browser restores positions for full reloads on its own).
+  // browser restores positions for full reloads on its own). The operator
+  // workspace manages its own scroll: it must survive queue→detail
+  // selection so the operator does not lose queue context.
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    if (!isOperator) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname, isOperator]);
 
   return (
     <Stack sx={{ minHeight: '100dvh', backgroundColor: 'background.default' }}>
