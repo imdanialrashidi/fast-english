@@ -1,30 +1,19 @@
 // app/src/features/lessons/routes/LessonsRoute.tsx
-// P3-S2 — Premium lesson list. Shows published lessons grouped by Topic
-// with progress indicators.
+// Visual Slice 2 — premium lesson list grouped by Topic, using the shared
+// LessonCard structure (not_started / in_progress / completed states with
+// real progress from the backend).
 
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import LibraryMusicRoundedIcon from '@mui/icons-material/LibraryMusicRounded';
-import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
-import {
-  Box,
-  Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  Chip,
-  LinearProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { PageContainer } from '../../../app/shell/PageContainer';
 import { PageHeader } from '../../../app/shell/PageHeader';
+import { LessonListSkeleton } from '../../../app/shell/PageSkeletons';
 import { StatePanel } from '../../../app/shell/StatePanel';
 import { useAuth } from '../../../lib/auth';
 import * as progressApi from '../../progress/api';
 import type { LessonProgressResponse } from '../../progress/types';
 import * as api from '../api';
+import { LessonCard, lessonCardState } from '../components/LessonCard';
 import type { LessonListItem } from '../types';
 
 type Phase = 'loading' | 'ready' | 'error' | 'empty' | 'no_entitlement';
@@ -35,8 +24,6 @@ interface LessonWithProgress extends LessonListItem {
 
 export function LessonsRoute() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
   const [phase, setPhase] = useState<Phase>('loading');
   const [lessons, setLessons] = useState<LessonWithProgress[]>([]);
   const [errorInfo, setErrorInfo] = useState<{
@@ -99,7 +86,7 @@ export function LessonsRoute() {
   if (phase === 'loading') {
     return (
       <PageContainer>
-        <StatePanel variant="loading" title="در حال بارگذاری درس‌ها…" />
+        <LessonListSkeleton />
       </PageContainer>
     );
   }
@@ -142,7 +129,12 @@ export function LessonsRoute() {
         <StatePanel
           variant="empty"
           title="درسی یافت نشد"
-          description="برای سطح انتخابی شما هنوز درسی منتشر نشده است."
+          description="برای سطح انتخابی شما هنوز درسی منتشر نشده است. به‌زودی درس‌های جدید اضافه می‌شوند."
+          action={
+            <Button variant="outlined" onClick={loadLessons}>
+              بررسی دوباره
+            </Button>
+          }
         />
       </PageContainer>
     );
@@ -182,106 +174,20 @@ export function LessonsRoute() {
       <Stack spacing={3}>
         {Array.from(topicMap.entries()).map(([topicId, topic]) => (
           <Box key={topicId}>
-            <Typography variant="h6" sx={{ mb: 1.5, fontWeight: 600 }}>
+            <Typography component="h2" variant="titleMedium" sx={{ mb: 1.5 }}>
               {topic.title}
             </Typography>
             <Stack spacing={1.5}>
               {topic.lessons.map((lesson) => {
-                const p = lesson.progress;
-                const isCompleted = p?.completed ?? false;
-                const percent = p?.percent ?? 0;
-                const hasProgress = (p?.furthestSeconds ?? 0) > 0;
-
+                const { status, position, percent } = lessonCardState(lesson.progress);
                 return (
-                  <Card key={lesson.id} variant="outlined">
-                    <CardActionArea
-                      onClick={() => navigate(`/lessons/${lesson.id}`)}
-                      sx={{ height: '100%' }}
-                    >
-                      <CardContent>
-                        <Stack spacing={1}>
-                          <Stack
-                            spacing={1}
-                            sx={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              flexWrap: 'wrap',
-                            }}
-                          >
-                            <Typography
-                              variant="h6"
-                              sx={{ fontWeight: 600, minWidth: 0, overflowWrap: 'anywhere' }}
-                            >
-                              {lesson.title}
-                            </Typography>
-                            <Stack
-                              direction="row"
-                              spacing={0.5}
-                              sx={{ flexWrap: 'wrap', minWidth: 0 }}
-                            >
-                              {isCompleted && (
-                                <Chip
-                                  icon={<CheckCircleRoundedIcon />}
-                                  label="کامل"
-                                  size="small"
-                                  color="success"
-                                  variant="outlined"
-                                />
-                              )}
-                              {hasProgress && !isCompleted && (
-                                <Chip
-                                  icon={<PlayCircleOutlineRoundedIcon />}
-                                  label={`${percent}%`}
-                                  size="small"
-                                  color="primary"
-                                  variant="outlined"
-                                />
-                              )}
-                              {lesson.isPublicSample && (
-                                <Chip
-                                  icon={<LibraryMusicRoundedIcon />}
-                                  label="نمونه"
-                                  size="small"
-                                  color="primary"
-                                  variant="outlined"
-                                />
-                              )}
-                              <Chip
-                                label={lesson.level}
-                                size="small"
-                                variant="outlined"
-                                color="default"
-                              />
-                            </Stack>
-                          </Stack>
-                          <Typography variant="body2" color="text.secondary">
-                            {lesson.summary}
-                          </Typography>
-                          <Stack
-                            direction="row"
-                            sx={{
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Typography variant="caption" color="text.secondary">
-                              {lesson.estimatedMinutes} دقیقه
-                            </Typography>
-                            {hasProgress && !isCompleted && (
-                              <Box sx={{ width: '40%' }}>
-                                <LinearProgress
-                                  variant="determinate"
-                                  value={percent}
-                                  sx={{ borderRadius: '999px', height: 4 }}
-                                />
-                              </Box>
-                            )}
-                          </Stack>
-                        </Stack>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
+                  <LessonCard
+                    key={lesson.id}
+                    lesson={lesson}
+                    status={status}
+                    positionSeconds={position}
+                    percent={percent}
+                  />
                 );
               })}
             </Stack>

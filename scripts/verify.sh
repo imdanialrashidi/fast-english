@@ -4,8 +4,11 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-if [[ -x scripts/project-verify.sh ]]; then
-  exec scripts/project-verify.sh
+# The full release gate. `pnpm verify:full` is the canonical entry point;
+# this dispatcher stays as the compatibility entry used by CI and
+# release tooling.
+if [[ -x scripts/verify-full.sh ]]; then
+  exec scripts/verify-full.sh
 fi
 
 ran=0

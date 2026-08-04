@@ -178,4 +178,13 @@ run bash deploy/test-install-redaction.sh
 run bash deploy/test-configure-redaction.sh
 run bash deploy/test-process-args-redaction.sh
 
+# 23. P4-S3 — Caddy access-log token-redaction proof. Requires a local caddy
+#     binary; the release server runs this drill unconditionally (see
+#     deploy/README.md), CI/local runs include it whenever caddy is present.
+if command -v caddy >/dev/null 2>&1; then
+  run bash deploy/test-log-redaction.sh
+else
+  echo 'caddy binary not found — skipping the access-log redaction drill (release gate runs it)'
+fi
+
 printf '\nAll project verification checks passed.\n'

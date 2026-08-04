@@ -275,7 +275,7 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     expect(body.suggestedLevel).toBe('C2');
   });
 
-  test('accept suggested level and see dashboard', async ({ page }) => {
+  test('accept suggested level and see dashboard', { tag: '@critical' }, async ({ page }) => {
     // Login
     await page.goto('/login');
     await page.waitForLoadState('networkidle');
@@ -327,7 +327,8 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     await expect(page.getByText(/خوش آمدید/i)).toBeVisible();
     await expect(page.getByText('B1').first()).toBeVisible();
     await expect(page.getByText(/سطح پیشنهادی/i).first()).toBeVisible();
-    await expect(page.getByText(/دروس آموزشی/i)).toBeVisible();
+    // Visual Slice 2 renamed the dashboard progress card heading.
+    await expect(page.getByText(/پیشرفت آموزشی/i)).toBeVisible();
     await expect(page.getByText(/روزهای باقی‌مانده/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /خروج/i })).toBeVisible();
   });

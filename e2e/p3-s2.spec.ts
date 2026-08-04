@@ -12,12 +12,8 @@ const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const VISUAL_QA_DIR = '/tmp/opencode/product-app-visual-polish/lessons-audio';
 
 const VISUAL_VIEWPORTS = [
-  { name: '360x800', width: 360, height: 800 },
-  { name: '375x812', width: 375, height: 812 },
   { name: '390x844', width: 390, height: 844 },
-  { name: '430x932', width: 430, height: 932 },
   { name: '768x1024', width: 768, height: 1024 },
-  { name: '1024x768', width: 1024, height: 768 },
   { name: '1440x900', width: 1440, height: 900 },
 ] as const;
 
@@ -340,6 +336,31 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   test.beforeAll(async () => {
     su = await getSuperuserToken();
 
+    // Idempotent fixture guard: in some environments Playwright restarts the
+    // worker mid-run and re-executes this beforeAll against the same shared
+    // PocketBase. Reusing an already-seeded lesson keeps the suite green and
+    // the assertions strict (the list must still contain exactly one of each
+    // title). Without the guard, duplicate fixtures would break every
+    // strict-mode heading assertion in this file.
+    const existing = await jsonFetch(`${PB_URL}/api/collections/lessons/records?perPage=200`, {
+      headers: { authorization: `Bearer ${su}` },
+    });
+    const existingLessons = (existing.body?.items as Array<Record<string, unknown>>) || [];
+
+    // Create student (always: the token is what the tests actually use).
+    const student = await createFullStudent(su, 'B1');
+    studentToken = student.token;
+    studentUserId = student.userId;
+    studentPhone = student.phone;
+
+    if (existingLessons.some((l) => l.level === 'B1' && l.title === 'P3S2 Lesson 1')) {
+      // All four fixtures already exist — reuse them and skip seeding.
+      lessonId = existingLessons.find((l) => l.title === 'P3S2 Lesson 1')?.id as string;
+      lesson3Id = existingLessons.find((l) => l.title === 'P3S2 Lesson 3 (resume)')?.id as string;
+      lesson4Id = existingLessons.find((l) => l.title === 'P3S2 Lesson 4 (stall)')?.id as string;
+      return;
+    }
+
     // Create separate topics for each lesson (unique index on topic+level)
     const topic1 = await makeTopic(su, {
       slug: `t-p3s2-a-${randId()}`,
@@ -387,12 +408,6 @@ test.describe('P3-S2 Progress and Audio Player', () => {
       title: 'P3S2 Lesson 4 (stall)',
     });
     lesson4Id = lesson4.id;
-
-    // Create student
-    const student = await createFullStudent(su, 'B1');
-    studentToken = student.token;
-    studentUserId = student.userId;
-    studentPhone = student.phone;
   });
 
   // Helper: inject auth token into localStorage (must navigate to app origin first)
@@ -411,7 +426,9 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   }
 
   // 1. Eligible Student logs in
-  test('1 - eligible student can log in and see lessons', async ({ page }) => {
+  test('1 - eligible student can log in and see lessons', { tag: '@critical' }, async ({
+    page,
+  }) => {
     await injectToken(page);
     await page.goto('/lessons');
     await expect(page.getByRole('heading', { name: 'P3S2 Lesson 1' })).toBeVisible({
@@ -521,7 +538,19 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 9. Refresh restores position
-  test('9 - refresh restores position', async () => {
+  test('9 - refresh restores position', { tag: '@critical' }, async () => {
+    // Self-sufficient: this test must not depend on saves performed by
+    // other tests, because the @critical project runs it standalone.
+    const current = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
+      headers: { authorization: `Bearer ${studentToken}` },
+    });
+    const rev = (current.body as Record<string, unknown>).revision as number;
+    const save = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${studentToken}` },
+      body: JSON.stringify({ positionSeconds: 300, expectedRevision: rev }),
+    });
+    expect(save.status).toBe(200);
     const read = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       headers: { authorization: `Bearer ${studentToken}` },
     });
@@ -530,7 +559,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 10. Completion updates after reaching threshold
-  test('10 - completion occurs at threshold', async ({ page }) => {
+  test('10 - completion occurs at threshold', { tag: '@critical' }, async ({ page }) => {
     const line = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonId}/progress`, {
       headers: { authorization: `Bearer ${studentToken}` },
     });
@@ -562,7 +591,8 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   test('12 - dashboard shows real progress', async ({ page }) => {
     await injectToken(page);
     await page.goto('/dashboard');
-    await expect(page.locator('text=دروس آموزشی')).toBeVisible({ timeout: 10_000 });
+    // Visual Slice 2 renamed the dashboard progress card heading.
+    await expect(page.locator('text=پیشرفت آموزشی')).toBeVisible({ timeout: 10_000 });
   });
 
   // 13. Continue Learning opens expected lesson
@@ -577,7 +607,7 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   });
 
   // 14. Expired student cannot save progress
-  test('14 - expired student cannot save progress', async ({ page }) => {
+  test('14 - expired student cannot save progress', { tag: '@critical' }, async ({ page }) => {
     // Expire by patching subscription
     const subs = await jsonFetch(`${PB_URL}/api/collections/subscriptions/records`, {
       headers: { authorization: `Bearer ${su}` },

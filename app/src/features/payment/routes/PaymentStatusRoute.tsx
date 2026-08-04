@@ -1,49 +1,56 @@
 // app/src/features/payment/routes/PaymentStatusRoute.tsx
-// Real-time status of the student's current payment request.
-// States: none, pending, rejected, approved, cancelled. Approved is
-// display-only (P1-S2 owns activation).
+// Real-time status workspace of the student's current payment
+// request. States: none, pending, rejected, approved, cancelled —
+// each driven by the real backend payload, never by client-side
+// assumptions. After a successful submission the form is replaced
+// by this workspace, so the user always knows whether the receipt
+// was received and what happens next.
 
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import { Alert, Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { PageContainer } from '../../../app/shell/PageContainer';
 import { PageHeader } from '../../../app/shell/PageHeader';
 import { StatePanel } from '../../../app/shell/StatePanel';
 import { loadCurrentRequest } from '../api';
+import { PaymentApprovedPanel } from '../components/PaymentApprovedPanel';
+import { PaymentErrorPanel } from '../components/PaymentErrorPanel';
+import { PaymentJourney } from '../components/PaymentJourney';
+import { PaymentRejectedPanel } from '../components/PaymentRejectedPanel';
+import { PaymentRequestSummary } from '../components/PaymentRequestSummary';
+import { PaymentStatusTimeline } from '../components/PaymentStatusTimeline';
 import { ReceiptPreview } from '../components/ReceiptPreview';
 import { StatusBadge } from '../components/StatusBadge';
 import { toPaymentError } from '../errors';
-import {
-  formatDurationDays,
-  formatLastFour,
-  formatPersianDateTime,
-  formatToman,
-} from '../formatters';
+import { formatDurationDays, formatToman } from '../formatters';
 import type { CurrentRequestResponse, PaymentError as PaymentErrorModel } from '../types';
 
 type StatusState =
   | { kind: 'loading' }
   | { kind: 'ready'; response: CurrentRequestResponse }
-  | { kind: 'error'; error: PaymentErrorModel };
+  | { kind: 'error'; error: PaymentErrorModel; lastKnownRequestId?: string };
 
 export function PaymentStatusRoute() {
   const navigate = useNavigate();
   const [state, setState] = useState<StatusState>({ kind: 'loading' });
-  const [showPreview, setShowPreview] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  // Kept across refreshes so an error surface can still offer the
+  // last known request id as a support code (future request tracing).
+  const lastRequestIdRef = useRef<string | undefined>(undefined);
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const res = await loadCurrentRequest();
-        if (cancelled) return;
-        setState({ kind: 'ready', response: res });
+  const load = useCallback(async () => {
+    setState((s) => ({ ...s, kind: 'loading' as const }));
+    try {
+      const res = await loadCurrentRequest();
+      if (res.kind === 'request') {
+        lastRequestIdRef.current = res.request.id;
         // Expose the latest request id for end-to-end tests. The
         // window attribute is set only when Vite's `import.meta.env.DEV`
         // is true (development builds), so production bundles never
         // include this assignment.
-        if (import.meta.env.DEV && res.kind === 'request') {
+        if (import.meta.env.DEV) {
           try {
             const w = window as unknown as { __fepLastRequestId?: string };
             w.__fepLastRequestId = res.request.id;
@@ -51,20 +58,24 @@ export function PaymentStatusRoute() {
             // SSR / no window — ignore.
           }
         }
-      } catch (e) {
-        if (cancelled) return;
-        setState({ kind: 'error', error: toPaymentError(e) });
       }
-    };
-    void load();
-    return () => {
-      cancelled = true;
-    };
+      setState({ kind: 'ready', response: res });
+    } catch (e) {
+      setState({
+        kind: 'error',
+        error: toPaymentError(e),
+        lastKnownRequestId: lastRequestIdRef.current,
+      });
+    }
   }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load, refreshKey]);
 
   if (state.kind === 'loading') {
     return (
-      <PageContainer maxWidth="sm">
+      <PageContainer maxWidth="md">
         <PageHeader title="وضعیت پرداخت" />
         <StatePanel variant="loading" title="در حال بارگذاری وضعیت…" />
       </PageContainer>
@@ -73,21 +84,13 @@ export function PaymentStatusRoute() {
 
   if (state.kind === 'error') {
     return (
-      <PageContainer maxWidth="sm">
+      <PageContainer maxWidth="md">
         <PageHeader title="وضعیت پرداخت" />
-        <StatePanel
-          variant="error"
-          title="بارگذاری وضعیت ناموفق بود"
-          description={state.error.message}
-          action={
-            <Button
-              variant="outlined"
-              onClick={() => window.location.reload()}
-              sx={{ minHeight: 44 }}
-            >
-              تلاش دوباره
-            </Button>
-          }
+        <PaymentErrorPanel
+          error={state.error}
+          requestId={state.lastKnownRequestId}
+          retryLabel="تلاش دوباره"
+          onRetry={() => setRefreshKey((n) => n + 1)}
         />
       </PageContainer>
     );
@@ -97,7 +100,7 @@ export function PaymentStatusRoute() {
 
   if (response.kind === 'none') {
     return (
-      <PageContainer maxWidth="sm">
+      <PageContainer maxWidth="md">
         <PageHeader title="وضعیت پرداخت" />
         <StatePanel
           variant="empty"
@@ -119,237 +122,126 @@ export function PaymentStatusRoute() {
   }
 
   const request = response.request;
-  const planSummary = `${formatToman(request.amountToman)} تومان • ${formatDurationDays(request.durationDays)}`;
 
   return (
-    <PageContainer maxWidth="sm">
+    <PageContainer maxWidth="md">
       <PageHeader
         title="وضعیت پرداخت"
         subtitle={`طرح: ${request.planName}`}
         action={<StatusBadge status={request.status} />}
       />
 
-      <Stack spacing={2}>
-        <Card>
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography component="h2" variant="h4">
-                خلاصهٔ درخواست
-              </Typography>
-              <SummaryRow label="نام طرح" value={request.planName} />
-              <SummaryRow label="مبلغ" value={`${formatToman(request.amountToman)} تومان`} />
-              <SummaryRow label="مدت اشتراک" value={formatDurationDays(request.durationDays)} />
-              <SummaryRow label="زمان ثبت" value={formatPersianDateTime(request.created) || '—'} />
-              {request.senderCardLast4 ? (
-                <SummaryRow
-                  label="چهار رقم کارت مبدأ"
-                  value={formatLastFour(request.senderCardLast4) || '—'}
-                />
-              ) : null}
-              {request.bankReference ? (
-                <SummaryRow label="شمارهٔ پیگیری" value={request.bankReference} />
-              ) : null}
-              {request.transferAt ? (
-                <SummaryRow
-                  label="زمان واریز"
-                  value={formatPersianDateTime(request.transferAt) || '—'}
-                />
-              ) : null}
-            </Stack>
-          </CardContent>
-        </Card>
+      <Stack
+        spacing={2.5}
+        aria-live="polite"
+        data-testid="payment-status-workspace"
+        sx={{ width: '100%' }}
+      >
+        <PaymentJourney
+          activeStep={4}
+          completedSteps={request.status === 'cancelled' ? 2 : 4}
+          tone={request.status === 'rejected' ? 'error' : 'default'}
+        />
 
-        {request.status === 'pending' ? (
-          <PendingPanel
-            request={request}
-            planSummary={planSummary}
-            showPreview={showPreview}
-            setShowPreview={setShowPreview}
-          />
-        ) : null}
-        {request.status === 'rejected' ? (
-          <RejectedPanel
-            request={request}
-            showPreview={showPreview}
-            setShowPreview={setShowPreview}
-          />
-        ) : null}
-        {request.status === 'approved' ? <ApprovedPanel /> : null}
-        {request.status === 'cancelled' ? <CancelledPanel /> : null}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="text"
+            size="small"
+            startIcon={<RefreshRoundedIcon />}
+            onClick={() => setRefreshKey((n) => n + 1)}
+            sx={{ minHeight: 44 }}
+            data-testid="refresh-status"
+          >
+            بررسی مجدد وضعیت
+          </Button>
+        </Box>
+
+        {request.status === 'pending' ? <PendingPanel request={request} /> : null}
+        {request.status === 'rejected' ? <PaymentRejectedPanel request={request} /> : null}
+        {request.status === 'approved' ? <PaymentApprovedPanel request={request} /> : null}
+        {request.status === 'cancelled' ? <CancelledPanel request={request} /> : null}
       </Stack>
     </PageContainer>
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <Stack
-      direction="row"
-      spacing={2}
-      sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
-    >
-      <Typography variant="caption" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography
-        variant="body2"
-        sx={{ fontWeight: 500, textAlign: 'end', maxWidth: '60%', wordBreak: 'break-word' }}
-      >
-        {value}
-      </Typography>
-    </Stack>
-  );
-}
+function PendingPanel({ request }: { request: import('../types').PaymentRequest }) {
+  const [showPreview, setShowPreview] = useState(false);
+  const planSummary = `${formatToman(request.amountToman)} تومان • ${formatDurationDays(request.durationDays)}`;
 
-function PendingPanel({
-  request,
-  planSummary,
-  showPreview,
-  setShowPreview,
-}: {
-  request: import('../types').PaymentRequest;
-  planSummary: string;
-  showPreview: boolean;
-  setShowPreview: (v: boolean) => void;
-}) {
   return (
-    <Card>
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography component="h2" variant="h4">
-            در انتظار بررسی اپراتور
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            رسید شما ثبت شد. اپراتور پس از بررسی، وضعیت حساب شما را به «تأیید شده» تغییر می‌دهد و
-            دسترسی به درس‌ها فعال می‌شود.
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            فقط داشتنِ تصویر رسید به‌تنهایی اثبات‌کنندهٔ پرداخت نیست؛ اپراتور پرداخت را با اطلاعات بانکی
-            شما تطبیق می‌دهد.
-          </Typography>
-
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ pt: 1, alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              رسید ثبت‌شده ({planSummary})
+    <>
+      <Card>
+        <CardContent>
+          <Stack spacing={2}>
+            <Typography component="h2" variant="h4">
+              در انتظار بررسی اپراتور
             </Typography>
-            <Button
-              size="small"
-              variant={showPreview ? 'contained' : 'outlined'}
-              onClick={() => setShowPreview(!showPreview)}
-              sx={{ minHeight: 44 }}
-            >
-              {showPreview ? 'پنهان کردن رسید' : 'نمایش رسید'}
-            </Button>
-          </Stack>
-          {showPreview ? (
-            <ReceiptPreview
-              recordId={request.receipt.recordId}
-              fileName={request.receipt.fileName}
-              show
-            />
-          ) : null}
-        </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
-function RejectedPanel({
-  request,
-  showPreview,
-  setShowPreview,
-}: {
-  request: import('../types').PaymentRequest;
-  showPreview: boolean;
-  setShowPreview: (v: boolean) => void;
-}) {
-  const navigate = useNavigate();
-  return (
-    <Card>
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography component="h2" variant="h4">
-            این درخواست قبلی رد شده است
-          </Typography>
-          {request.publicRejectionReason ? (
-            <Alert severity="error" role="alert" data-testid="rejection-reason">
-              <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                دلیل رد:
-              </Typography>
-              <Typography variant="body2">{request.publicRejectionReason}</Typography>
+            <Alert severity="info" role="status" data-testid="pending-alert">
+              رسید شما دریافت شد و هم‌اکنون ثبت شده است. اپراتور آن را به‌صورت دستی بررسی می‌کند؛
+              پرداخت به‌صورت خودکار تأیید نمی‌شود و اشتراک فقط پس از تأیید فعال می‌شود.
             </Alert>
-          ) : null}
-          <Typography variant="body2" color="text.secondary">
-            درخواست ردشده نزد ما بایگانی می‌شود و تغییر نمی‌کند. برای فعال‌سازی حساب، یک رسید جدید
-            ارسال کنید تا یک درخواست تازه ثبت شود.
-          </Typography>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ pt: 1, alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              رسید قبلی (فقط مشاهده)
-            </Typography>
-            <Button
-              size="small"
-              variant={showPreview ? 'contained' : 'outlined'}
-              onClick={() => setShowPreview(!showPreview)}
-              sx={{ minHeight: 44 }}
-            >
-              {showPreview ? 'پنهان کردن رسید' : 'نمایش رسید قبلی'}
-            </Button>
-          </Stack>
-          {showPreview ? (
-            <ReceiptPreview
-              recordId={request.receipt.recordId}
-              fileName={request.receipt.fileName}
-              show
+            <PaymentStatusTimeline
+              status={request.status}
+              created={request.created}
+              updated={request.updated}
             />
-          ) : null}
-          <Box sx={{ pt: 1 }}>
-            <Button
-              variant="contained"
-              onClick={() => navigate('/payment')}
-              endIcon={<ArrowForwardRoundedIcon sx={{ transform: 'scaleX(-1)' }} />}
-              sx={{ minHeight: 48 }}
+            <PaymentRequestSummary request={request} />
+          </Stack>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <Stack spacing={2}>
+            <Typography component="h2" variant="h4">
+              رسید ثبت‌شده
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {planSummary} — اگر رسید را اشتباه ثبت کرده‌اید، منتظر نتیجهٔ بررسی بمانید؛ ارسال تکراری
+              ممکن نیست.
+            </Typography>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                pt: 1,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+              }}
             >
-              ارسال درخواست جدید
-            </Button>
-          </Box>
-        </Stack>
-      </CardContent>
-    </Card>
+              <Typography variant="body2" color="text.secondary">
+                مشاهدهٔ رسید (فقط برای شما)
+              </Typography>
+              <Button
+                size="small"
+                variant={showPreview ? 'contained' : 'outlined'}
+                onClick={() => setShowPreview((v) => !v)}
+                sx={{ minHeight: 44 }}
+              >
+                {showPreview ? 'پنهان کردن رسید' : 'نمایش رسید'}
+              </Button>
+            </Stack>
+            {showPreview ? (
+              <ReceiptPreview
+                recordId={request.receipt.recordId}
+                fileName={request.receipt.fileName}
+                show
+              />
+            ) : null}
+            <Typography variant="caption" color="text.secondary">
+              فقط داشتنِ تصویر رسید به‌تنهایی اثبات‌کنندهٔ پرداخت نیست؛ اپراتور پرداخت را با اطلاعات
+              بانکی تطبیق می‌دهد. نتیجه پس از بررسی در همین صفحه نمایش داده می‌شود.
+            </Typography>
+          </Stack>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
-function ApprovedPanel() {
-  return (
-    <Card>
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography component="h2" variant="h4">
-            پرداخت تأیید شده است
-          </Typography>
-          <Alert severity="success" role="status">
-            پرداخت شما توسط اپراتور تأیید شد. فعال‌سازی کامل حساب (ایجاد اشتراک و فعال شدن دسترسی‌ها)
-            در اسلایس بعدی محصول (P1-S2) انجام می‌شود. در حال حاضر این صفحه فقط نمایشی است.
-          </Alert>
-          <Typography variant="body2" color="text.secondary">
-            هیچ اشتراکی به‌صورت خودکار در این اسلایس ساخته نمی‌شود، حساب شما به‌طور خودکار فعال نمی‌شود،
-            و به درس‌ها یا آزمون تعیین سطح دسترسی پیدا نمی‌کنید.
-          </Typography>
-        </Stack>
-      </CardContent>
-    </Card>
-  );
-}
-
-function CancelledPanel() {
+function CancelledPanel({ request }: { request: import('../types').PaymentRequest }) {
   const navigate = useNavigate();
   return (
     <Card>
@@ -358,6 +250,11 @@ function CancelledPanel() {
           <Typography component="h2" variant="h4">
             این درخواست لغو شده است
           </Typography>
+          <PaymentStatusTimeline
+            status={request.status}
+            created={request.created}
+            updated={request.updated}
+          />
           <Typography variant="body2" color="text.secondary">
             این درخواست توسط اپراتور یا سامانه لغو شده است. برای ادامه، یک رسید جدید ارسال کنید.
           </Typography>

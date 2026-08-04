@@ -161,7 +161,9 @@ test.describe('P1-S2 operator E2E', () => {
     }
   });
 
-  test('operator queue route renders with auth via localStorage', async ({ page }) => {
+  test('operator queue route renders with auth via localStorage', { tag: '@critical' }, async ({
+    page,
+  }) => {
     // Set auth state directly via localStorage to avoid login form issues.
     await page.goto('/');
     await page.evaluate(

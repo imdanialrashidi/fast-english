@@ -13,6 +13,20 @@ function pbError(status: number, body: { code?: string; message?: string }): unk
   };
 }
 
+// The PocketBase JS SDK (0.27) puts the parsed custom-route body
+// DIRECTLY on `response` (and mirrors it on `data`), with the
+// numeric status on the top level: { status, response: body }.
+function sdkError(status: number, body: { code?: string; message?: string }): unknown {
+  return {
+    status,
+    response: body,
+    data: body,
+    cause: { url: 'http://x/api/...', status, data: body },
+    name: `ClientResponseError ${status}`,
+    message: body.message ?? 'Something went wrong.',
+  };
+}
+
 describe('toPaymentError', () => {
   it('maps 401 to unauthorized', () => {
     const e = toPaymentError(pbError(401, {}));
@@ -53,6 +67,36 @@ describe('toPaymentError', () => {
   it('maps 429 to rate_limited', () => {
     const e = toPaymentError(pbError(429, {}));
     expect(e.code).toBe('rate_limited');
+  });
+
+  // SDK-shaped envelopes (custom-route bodies land on `response`
+  // directly). Regression: these previously fell through to
+  // status 500 / "unexpected" because the mapper only read
+  // `response.data`.
+  it('maps SDK 409 pending_request_exists envelope', () => {
+    const e = toPaymentError(sdkError(409, { code: 'pending_request_exists' }));
+    expect(e.code).toBe('pending_request_exists');
+    expect(e.status).toBe(409);
+  });
+
+  it('maps SDK 413 receipt_too_large envelope', () => {
+    const e = toPaymentError(sdkError(413, { code: 'receipt_too_large' }));
+    expect(e.code).toBe('receipt_too_large');
+  });
+
+  it('maps SDK 400 invalid_receipt envelope', () => {
+    const e = toPaymentError(sdkError(400, { code: 'invalid_receipt' }));
+    expect(e.code).toBe('invalid_receipt');
+  });
+
+  it('maps SDK 429 rate_limited envelope', () => {
+    const e = toPaymentError(sdkError(429, { code: 'rate_limited' }));
+    expect(e.code).toBe('rate_limited');
+  });
+
+  it('maps SDK 401 unauthorized envelope', () => {
+    const e = toPaymentError(sdkError(401, {}));
+    expect(e.code).toBe('unauthorized');
   });
 
   it('maps invalid_transfer_details on 400 to invalid_transfer_details', () => {

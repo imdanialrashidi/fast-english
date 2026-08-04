@@ -5,6 +5,14 @@
 // Usage: bash scripts/smoke-placement.sh node scripts/smoke-placement-levels.mjs
 
 import { randomBytes } from 'node:crypto';
+import {
+  createActiveStudent,
+  fetchJson,
+  getOperatorToken,
+  getSuperuserToken,
+  login,
+  nextPhone,
+} from './smoke-common.mjs';
 
 const SMOKE_PORT = Number(process.env.PB_SMOKE_PLACEMENT_PORT ?? 18093);
 const API_URL = `http://127.0.0.1:${SMOKE_PORT}`;
@@ -13,7 +21,8 @@ let exitCode = 0;
 let currentStep = '';
 let currentStart = 0;
 
-const DEFAULT_FETCH_TIMEOUT_MS = 10_000;
+// Bind the shared stateless helpers to this suite's PocketBase URL.
+const jsonFetch = (path, init) => fetchJson(API_URL, path, init);
 
 function start(desc) {
   currentStep = desc;
@@ -40,220 +49,9 @@ function check(cond, msg) {
   return true;
 }
 
-async function fetchWithTimeout(url, init = {}, timeoutMs = DEFAULT_FETCH_TIMEOUT_MS) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(timer));
-}
-
-async function jsonFetch(path, init = {}) {
-  const res = await fetchWithTimeout(`${API_URL}${path}`, {
-    ...init,
-    headers: { 'content-type': 'application/json', ...(init.headers ?? {}) },
-  });
-  const text = await res.text();
-  let body = null;
-  try {
-    body = text ? JSON.parse(text) : null;
-  } catch {
-    body = { _raw: text };
-  }
-  return { status: res.status, body };
-}
-
 // ============================================================
-// Setup helpers
+// Setup helpers (shared fixtures come from ./smoke-common.mjs)
 // ============================================================
-
-let phoneCounter = 0;
-function nextPhone() {
-  const tail = String(phoneCounter++).padStart(2, '0');
-  const rand = randomBytes(4).readUInt32BE(0) % 10_000_000;
-  const mid = String(rand).padStart(7, '0');
-  return `09${mid}${tail}`.slice(0, 11);
-}
-
-async function getSuperuserToken() {
-  const email = process.env.PB_TEST_SU_EMAIL;
-  const password = process.env.PB_TEST_SU_PASSWORD;
-  if (!email || !password) {
-    throw new Error(
-      'PB_TEST_SU_EMAIL/PASSWORD not set; shell wrapper must create superuser before serve',
-    );
-  }
-  const auth = await jsonFetch('/api/collections/_superusers/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: email, password }),
-  });
-  if (auth.status !== 200 || !auth.body?.token)
-    throw new Error(`superuser auth failed: status=${auth.status}`);
-  return auth.body.token;
-}
-
-async function login(phone, password = 'Test1234!') {
-  let r = await jsonFetch('/api/collections/fep_users/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: phone, password }),
-  });
-  if (r.status === 429) {
-    await new Promise((rr) => setTimeout(rr, 2000));
-    r = await jsonFetch('/api/collections/fep_users/auth-with-password', {
-      method: 'POST',
-      body: JSON.stringify({ identity: phone, password }),
-    });
-  }
-  if (r.status !== 200 || !r.body?.token) throw new Error(`login failed: status=${r.status}`);
-  return r.body.token;
-}
-
-async function getOperatorToken(suToken) {
-  const opPhone = nextPhone();
-  const s = await jsonFetch('/api/collections/fep_users/records', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const uid = s.body?.id || '';
-  await jsonFetch(`/api/collections/fep_users/records/${uid}`, {
-    method: 'PATCH',
-    headers: { authorization: suToken },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  let l = await jsonFetch('/api/collections/fep_users/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: s.body?.phone || opPhone, password: 'Test1234!' }),
-  });
-  if (l.status === 429) {
-    await new Promise((rr) => setTimeout(rr, 2000));
-    l = await jsonFetch('/api/collections/fep_users/auth-with-password', {
-      method: 'POST',
-      body: JSON.stringify({ identity: s.body?.phone || opPhone, password: 'Test1234!' }),
-    });
-  }
-  return l.body?.token || '';
-}
-
-async function createActiveStudent() {
-  const suToken = await getSuperuserToken();
-  const opToken = await getOperatorToken(suToken);
-  const phone = nextPhone();
-  const password = 'Test1234!';
-  let signupRes = await jsonFetch('/api/collections/fep_users/records', {
-    method: 'POST',
-    body: JSON.stringify({ name: 'Test Student', phone, password, passwordConfirm: password }),
-  });
-  // Retry on rate limit (429) with backoff
-  if (signupRes.status === 429) {
-    await new Promise((r) => setTimeout(r, 4000));
-    signupRes = await jsonFetch('/api/collections/fep_users/records', {
-      method: 'POST',
-      body: JSON.stringify({ name: 'Test Student', phone, password, passwordConfirm: password }),
-    });
-  }
-  if (!signupRes.body?.id) throw new Error(`Signup failed: ${JSON.stringify(signupRes.body)}`);
-  const userId = signupRes.body.id;
-  const canonicalPhone = signupRes.body.phone;
-  let loginRes = await jsonFetch('/api/collections/fep_users/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: canonicalPhone, password }),
-  });
-  if (loginRes.status === 429) {
-    await new Promise((r) => setTimeout(r, 2000));
-    loginRes = await jsonFetch('/api/collections/fep_users/auth-with-password', {
-      method: 'POST',
-      body: JSON.stringify({ identity: canonicalPhone, password }),
-    });
-  }
-  if (!loginRes.body?.token) throw new Error(`Login failed: ${JSON.stringify(loginRes.body)}`);
-  const token = loginRes.body.token;
-
-  // Create active payment destination
-  await jsonFetch('/api/collections/payment_destination/records', {
-    method: 'POST',
-    headers: { authorization: suToken },
-    body: JSON.stringify({
-      card_number: '0000000000000000',
-      card_holder_name: 'TEST',
-      bank_name: 'TEST',
-      is_active: true,
-    }),
-  });
-
-  // Create plan
-  const planRes = await jsonFetch('/api/collections/plans/records', {
-    method: 'POST',
-    headers: { authorization: suToken },
-    body: JSON.stringify({
-      name: 'Test',
-      slug: `t-${randomBytes(4).toString('hex')}`,
-      duration_days: 90,
-      price_toman: 100000,
-      is_active: true,
-    }),
-  });
-  if (planRes.status !== 200)
-    throw new Error(`Plan create failed: ${JSON.stringify(planRes.body)}`);
-
-  // Submit payment request
-  const receipt = new Uint8Array([
-    0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
-  ]);
-  const formData = new FormData();
-  formData.append('plan_id', planRes.body.id);
-  formData.append('receipt_file', new Blob([receipt], { type: 'image/jpeg' }), 'receipt.jpg');
-  let payReq = await fetchWithTimeout(
-    `${API_URL}/api/fast-english/payment-requests`,
-    {
-      method: 'POST',
-      headers: { authorization: token },
-      body: formData,
-    },
-    15000,
-  );
-  let payBody = await payReq.json();
-  if (payReq.status === 429) {
-    await new Promise((r) => setTimeout(r, 2000));
-    payReq = await fetchWithTimeout(
-      `${API_URL}/api/fast-english/payment-requests`,
-      { method: 'POST', headers: { authorization: token }, body: formData },
-      15000,
-    );
-    payBody = await payReq.json();
-  }
-  if (payReq.status !== 201) throw new Error(`Payment request failed: ${JSON.stringify(payBody)}`);
-  const requestId = payBody.request?.id || payBody.id;
-  if (!requestId) throw new Error(`No request ID in response: ${JSON.stringify(payBody)}`);
-
-  // Approve via operator (not superuser — operator route rejects superuser tokens)
-  let approve = await fetchWithTimeout(
-    `${API_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
-    {
-      method: 'POST',
-      headers: { authorization: opToken, 'content-type': 'application/json' },
-      body: '{}',
-    },
-    10000,
-  );
-  if (approve.status === 429) {
-    await new Promise((r) => setTimeout(r, 2000));
-    approve = await fetchWithTimeout(
-      `${API_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
-      {
-        method: 'POST',
-        headers: { authorization: opToken, 'content-type': 'application/json' },
-        body: '{}',
-      },
-      10000,
-    );
-  }
-  if (approve.status !== 200) throw new Error(`Approve failed: ${approve.status}`);
-
-  return { uid: userId, phone: canonicalPhone, token: await login(canonicalPhone) };
-}
 
 async function seedQuestions(suToken) {
   for (let i = 1; i <= 20; i++) {
@@ -371,7 +169,7 @@ async function renewOverlapUser(suToken, userId, token) {
     body: JSON.stringify({ account_status: 'payment_rejected' }),
   });
   // Second subscription via the real approve flow
-  const opToken = await getOperatorToken(suToken);
+  const opToken = await getOperatorToken(API_URL, suToken);
   const planRes = await jsonFetch('/api/collections/plans/records', {
     method: 'POST',
     headers: { authorization: suToken },
@@ -392,56 +190,31 @@ async function renewOverlapUser(suToken, userId, token) {
   const formData = new FormData();
   formData.append('plan_id', planRes.body.id);
   formData.append('receipt_file', new Blob([receipt], { type: 'image/jpeg' }), 'receipt.jpg');
-  let payReq = await fetchWithTimeout(
-    `${API_URL}/api/fast-english/payment-requests`,
-    { method: 'POST', headers: { authorization: token }, body: formData },
-    15000,
-  );
+  const payReq = await fetch(`${API_URL}/api/fast-english/payment-requests`, {
+    method: 'POST',
+    headers: { authorization: token },
+    body: formData,
+    signal: AbortSignal.timeout(15_000),
+  });
   let payBody = null;
   try {
     payBody = await payReq.json();
   } catch {
     payBody = {};
   }
-  if (payReq.status === 429) {
-    await new Promise((r) => setTimeout(r, 2000));
-    payReq = await fetchWithTimeout(
-      `${API_URL}/api/fast-english/payment-requests`,
-      { method: 'POST', headers: { authorization: token }, body: formData },
-      15000,
-    );
-    try {
-      payBody = await payReq.json();
-    } catch {
-      payBody = {};
-    }
-  }
   if (payReq.status !== 201)
     throw new Error(`Payment request 2 failed: ${JSON.stringify(payBody)}`);
   const requestId = payBody.request?.id || payBody.id;
   if (!requestId) throw new Error(`No request ID 2: ${JSON.stringify(payBody)}`);
 
-  let approve = await fetchWithTimeout(
-    `${API_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
+  const approve = await jsonFetch(
+    `/api/fast-english/operator/payment-requests/${requestId}/approve`,
     {
       method: 'POST',
       headers: { authorization: opToken, 'content-type': 'application/json' },
       body: '{}',
     },
-    10000,
   );
-  if (approve.status === 429) {
-    await new Promise((r) => setTimeout(r, 2000));
-    approve = await fetchWithTimeout(
-      `${API_URL}/api/fast-english/operator/payment-requests/${requestId}/approve`,
-      {
-        method: 'POST',
-        headers: { authorization: opToken, 'content-type': 'application/json' },
-        body: '{}',
-      },
-      10000,
-    );
-  }
   if (approve.status !== 200) throw new Error(`Approve2 failed: ${approve.status}`);
 
   const subs = await userSubsSorted(suToken, userId);
@@ -472,7 +245,7 @@ async function main() {
   // Setup
   let suToken = '';
   try {
-    suToken = await getSuperuserToken();
+    suToken = await getSuperuserToken(API_URL);
   } catch (e) {
     console.error('Setup failed:', e.message);
     process.exit(1);
@@ -504,7 +277,7 @@ async function main() {
 
   // S1: Full flow — submit and verify suggested level
   start('S1-suggested-level-from-submit');
-  const student1 = await createActiveStudent();
+  const student1 = await createActiveStudent(API_URL, suToken);
   const startResp1 = await startAttempt(student1.token);
   const rev1 = await answerAll(
     student1.token,
@@ -639,7 +412,7 @@ async function main() {
 
   // S13: New student — full flow with different level
   start('S13-full-flow-different-level');
-  const student2 = await createActiveStudent();
+  const student2 = await createActiveStudent(API_URL, suToken);
   const startResp2 = await startAttempt(student2.token);
   const rev2 = await answerAll(
     student2.token,
@@ -667,7 +440,7 @@ async function main() {
 
   // S14: Operator denied from selection
   start('S14-operator-denied-selection');
-  const opToken = await getOperatorToken(suToken);
+  const opToken = await getOperatorToken(API_URL, suToken);
   const sel7 = await selectLevel(opToken, 'A1');
   check(sel7.status === 403, `status 403 got ${sel7.status}`);
   pass();
@@ -675,7 +448,7 @@ async function main() {
   // S15: Level context for student with no attempt
   start('S15-no-attempt-level-context');
   // Use createActiveStudent but just don't start the placement
-  const studentNA = await createActiveStudent();
+  const studentNA = await createActiveStudent(API_URL, suToken);
   const ctx5 = await fetchLevelContext(studentNA.token);
   check(ctx5.body.kind === 'placement_required', `kind = ${ctx5.body.kind}`);
   pass();
@@ -693,7 +466,7 @@ async function main() {
     }),
   });
   const ppCanonicalPhone = ppSignup.body?.phone || ppPhone;
-  const ppToken = await login(ppCanonicalPhone);
+  const ppToken = await login(API_URL, ppCanonicalPhone);
   const ctx6 = await fetchLevelContext(ppToken);
   // pending-payment is not 'active' so subscription check fails
   check(ctx6.status === 403, `status 403 got ${ctx6.status}`);
@@ -701,7 +474,7 @@ async function main() {
 
   // S17: Attempt must be submitted for selection
   start('S17-in-progress-attempt-denied-selection');
-  const student3 = await createActiveStudent();
+  const student3 = await createActiveStudent(API_URL, suToken);
   const startResp3 = await startAttempt(student3.token);
   const sel8 = await selectLevel(student3.token, 'A1');
   check(sel8.status === 409, `status 409 got ${sel8.status}`);
@@ -724,7 +497,7 @@ async function main() {
 
   // S19: Rate limiting on selected-level write
   start('S19-rate-limit-selected-level');
-  const student4 = await createActiveStudent();
+  const student4 = await createActiveStudent(API_URL, suToken);
   const sr4 = await startAttempt(student4.token);
   const rv4 = await answerAll(student4.token, sr4.attempt.id, sr4.attempt.revision, sr4.questions);
   await submitAttempt(student4.token, sr4.attempt.id, rv4);
@@ -758,13 +531,12 @@ async function main() {
     body: JSON.stringify({ rateLimits: { enabled: false } }),
   });
 
-  // Use the original createActiveStudent() for gate scenarios too.
-  // Add a small delay between calls.
-  const _origCreateStudent = createActiveStudent;
-  async function rateLimitedCreateStudent() {
-    const u = await _origCreateStudent();
-    await new Promise((r) => setTimeout(r, 2000));
-    return u;
+  // Gate scenarios reuse the shared active-student fixture. PB transport
+  // rate limiting is disabled above and the fixture is stateless, so no
+  // artificial pacing sleeps are needed between students.
+  async function makeActiveStudent() {
+    const s = await createActiveStudent(API_URL, suToken);
+    return { uid: s.userId, phone: s.phone, token: s.token };
   }
 
   async function submitAllCorrect(token) {
@@ -775,7 +547,7 @@ async function main() {
 
   // S21: Expired Subscription cannot select level
   start('S21-expired-subscription-denied');
-  const s21 = await rateLimitedCreateStudent();
+  const s21 = await makeActiveStudent();
   await submitAllCorrect(s21.token);
   const subs21 = await jsonFetch(
     `/api/collections/subscriptions/records?filter=(user='${s21.uid}')&perPage=1`,
@@ -801,7 +573,7 @@ async function main() {
 
   // S22: Future-dated Subscription cannot select level
   start('S22-future-subscription-denied');
-  const s22 = await rateLimitedCreateStudent();
+  const s22 = await makeActiveStudent();
   await submitAllCorrect(s22.token);
   const subs22 = await jsonFetch(
     `/api/collections/subscriptions/records?filter=(user='${s22.uid}')&perPage=1`,
@@ -842,7 +614,7 @@ async function main() {
 
   // S23: Suspended Student cannot select level
   start('S23-suspended-student-denied-level');
-  const s23 = await rateLimitedCreateStudent();
+  const s23 = await makeActiveStudent();
   await submitAllCorrect(s23.token);
   await jsonFetch(`/api/collections/fep_users/records/${s23.uid}`, {
     method: 'PATCH',
@@ -855,7 +627,7 @@ async function main() {
 
   // S24: Expired Subscription cannot access Dashboard
   start('S24-expired-dashboard-denied');
-  const s24 = await rateLimitedCreateStudent();
+  const s24 = await makeActiveStudent();
   await submitAllCorrect(s24.token);
   await selectLevel(s24.token, 'A1');
   const subs24 = await jsonFetch(
@@ -878,7 +650,7 @@ async function main() {
 
   // S25: Future-dated Subscription cannot access Dashboard
   start('S25-future-dashboard-denied');
-  const s25 = await rateLimitedCreateStudent();
+  const s25 = await makeActiveStudent();
   await submitAllCorrect(s25.token);
   await selectLevel(s25.token, 'A1');
   const subs25 = await jsonFetch(
@@ -916,7 +688,7 @@ async function main() {
 
   // S26: Suspended Student cannot access Dashboard
   start('S26-suspended-dashboard-denied');
-  const s26 = await rateLimitedCreateStudent();
+  const s26 = await makeActiveStudent();
   await submitAllCorrect(s26.token);
   await selectLevel(s26.token, 'A1');
   await jsonFetch(`/api/collections/fep_users/records/${s26.uid}`, {
@@ -930,7 +702,7 @@ async function main() {
 
   // S27: Student direct update of suggested_level denied
   start('S27-direct-update-suggested-level-denied');
-  const s27 = await rateLimitedCreateStudent();
+  const s27 = await makeActiveStudent();
   const r27 = await jsonFetch(`/api/collections/fep_users/records/${s27.uid}`, {
     method: 'PATCH',
     headers: { authorization: s27.token, 'content-type': 'application/json' },
@@ -941,7 +713,7 @@ async function main() {
 
   // S28: Student direct update of selected_level denied
   start('S28-direct-update-selected-level-denied');
-  const s28 = await rateLimitedCreateStudent();
+  const s28 = await makeActiveStudent();
   const r28 = await jsonFetch(`/api/collections/fep_users/records/${s28.uid}`, {
     method: 'PATCH',
     headers: { authorization: s28.token, 'content-type': 'application/json' },
@@ -952,7 +724,7 @@ async function main() {
 
   // S29: Student direct update of placement_completed denied
   start('S29-direct-update-placement-completed-denied');
-  const s29 = await rateLimitedCreateStudent();
+  const s29 = await makeActiveStudent();
   const r29 = await jsonFetch(`/api/collections/fep_users/records/${s29.uid}`, {
     method: 'PATCH',
     headers: { authorization: s29.token, 'content-type': 'application/json' },
@@ -963,7 +735,7 @@ async function main() {
 
   // S30: Student direct update of Attempt suggested_level denied
   start('S30-direct-attempt-suggested-level-denied');
-  const s30 = await rateLimitedCreateStudent();
+  const s30 = await makeActiveStudent();
   // Start fresh attempt to get an ID, no need to submit
   const sr30 = await startAttempt(s30.token);
   const r30 = await jsonFetch(`/api/collections/placement_attempts/records/${sr30.attempt.id}`, {
@@ -976,7 +748,7 @@ async function main() {
 
   // S31: Student direct update of Attempt selected_level denied
   start('S31-direct-attempt-selected-level-denied');
-  const s31 = await rateLimitedCreateStudent();
+  const s31 = await makeActiveStudent();
   const sr31 = await startAttempt(s31.token);
   const r31 = await jsonFetch(`/api/collections/placement_attempts/records/${sr31.attempt.id}`, {
     method: 'PATCH',
@@ -992,7 +764,7 @@ async function main() {
 
   // S32: Concurrent selected-level consistency
   start('S32-concurrent-selected-level');
-  const sConc = await rateLimitedCreateStudent();
+  const sConc = await makeActiveStudent();
   await submitAllCorrect(sConc.token);
   const levels = ['A2', 'B1', 'C1'];
   const concResults = await Promise.all(
@@ -1042,7 +814,7 @@ async function main() {
 
   // S33: Overlap — access maintained; dashboard shows the valid row
   start('S33-renewal-overlap');
-  const s33 = await rateLimitedCreateStudent();
+  const s33 = await makeActiveStudent();
   await submitAllCorrect(s33.token);
   await selectLevel(s33.token, 'A1');
   const ovSubs = await renewOverlapUser(suToken, s33.uid, s33.token);
@@ -1086,7 +858,7 @@ async function main() {
   // S36: Two valid rows — dashboard shows the valid row with the greatest
   // expires_at (not the arbitrary first row)
   start('S36-dashboard-max-expiry-selection');
-  const s36 = await rateLimitedCreateStudent();
+  const s36 = await makeActiveStudent();
   await submitAllCorrect(s36.token);
   await selectLevel(s36.token, 'A1');
   const meSubs = await renewOverlapUser(suToken, s36.uid, s36.token);

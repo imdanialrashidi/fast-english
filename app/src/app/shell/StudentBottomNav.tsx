@@ -57,6 +57,7 @@ export function StudentBottomNav() {
             label={item.label}
             icon={item.icon}
             aria-label={item.label}
+            aria-current={current === item.value ? 'page' : undefined}
             sx={{ minWidth: 64, '& .MuiBottomNavigationAction-label': { fontWeight: 500 } }}
           />
         ))}

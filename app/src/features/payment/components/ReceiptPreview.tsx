@@ -2,28 +2,30 @@
 // Render the protected owner receipt via the secure custom route.
 // The hook (useReceiptPreview) handles the network/blob side; this
 // component only chooses the right visual for each state.
+//
+// The rendered image is a local blob: URL (never a protected server
+// URL). Zoom happens in an accessible Dialog; the blob URL is
+// revoked when the component unmounts or retries.
 
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import ZoomInRoundedIcon from '@mui/icons-material/ZoomInRounded';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useReceiptPreview } from '../useReceiptPreview';
+import { ReceiptZoomDialog } from './ReceiptZoomDialog';
 
 interface Props {
   recordId: string | null;
   fileName: string | null;
   /** When false, the hook is idle and no URL is fetched. */
   show: boolean;
-  /** Whether to show the open-in-new-tab/download link. */
+  /** Whether to show the zoom action. */
   showOpenAction?: boolean;
 }
 
 export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true }: Props) {
   // Bump a counter to force the hook to re-issue the fetch.
   const [retryToken, setRetryToken] = useState(0);
-  // We mount/unmount the hook via a key prop on the inner wrapper so
-  // the effect re-runs after a retry click. This is the simplest
-  // way to "re-run" a useEffect that depends on stable inputs.
 
   if (!show) {
     return (
@@ -33,7 +35,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
           border: 1,
           borderColor: 'divider',
           borderRadius: '16px',
-          backgroundColor: 'background.default',
+          backgroundColor: 'var(--mui-palette-surfaceContainerLow)',
         }}
       >
         <Typography variant="body2" color="text.secondary">
@@ -51,7 +53,7 @@ export function ReceiptPreview({ recordId, fileName, show, showOpenAction = true
           border: 1,
           borderColor: 'divider',
           borderRadius: '16px',
-          backgroundColor: 'background.default',
+          backgroundColor: 'var(--mui-palette-surfaceContainerLow)',
         }}
       >
         <Typography variant="body2" color="text.secondary">
@@ -85,6 +87,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
     fileName,
     enabled: true,
   });
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   if (status.kind === 'loading' || status.kind === 'idle') {
     return (
@@ -96,7 +99,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
           border: 1,
           borderColor: 'divider',
           borderRadius: '16px',
-          backgroundColor: 'background.default',
+          backgroundColor: 'var(--mui-palette-surfaceContainerLow)',
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -104,7 +107,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
         aria-live="polite"
         data-testid="receipt-preview-loading"
       >
-        <CircularProgress size={28} />
+        <CircularProgress size={28} aria-label="در حال بارگذاری رسید" />
         <Typography variant="body2" color="text.secondary">
           در حال بارگذاری رسید…
         </Typography>
@@ -122,7 +125,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
           border: 1,
           borderColor: 'error.light',
           borderRadius: '16px',
-          backgroundColor: 'background.default',
+          backgroundColor: 'var(--mui-palette-surfaceContainerLow)',
         }}
       >
         <Stack spacing={1.5}>
@@ -156,7 +159,7 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
           border: 1,
           borderColor: 'divider',
           borderRadius: '16px',
-          backgroundColor: 'background.default',
+          backgroundColor: 'var(--mui-palette-surfaceContainerLow)',
           overflow: 'hidden',
           maxHeight: 360,
           display: 'flex',
@@ -176,21 +179,25 @@ function PreviewBody({ recordId, fileName, showOpenAction, onRetry }: PreviewBod
         />
       </Box>
       {showOpenAction ? (
-        <Stack direction="row" spacing={1}>
+        <Box>
           <Button
-            component="a"
-            href={status.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            startIcon={<DownloadRoundedIcon />}
+            onClick={() => setZoomOpen(true)}
+            startIcon={<ZoomInRoundedIcon />}
             size="small"
             sx={{ minHeight: 44 }}
             data-testid="receipt-preview-open"
           >
-            باز کردن در تب جدید
+            بزرگ‌نمایی رسید
           </Button>
-        </Stack>
+        </Box>
       ) : null}
+      <ReceiptZoomDialog
+        open={zoomOpen}
+        src={status.url}
+        alt="بزرگ‌نمایی رسید پرداخت"
+        fileName={fileName}
+        onClose={() => setZoomOpen(false)}
+      />
     </Stack>
   );
 }

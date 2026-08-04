@@ -17,8 +17,6 @@ import { useLocation, useNavigate } from 'react-router';
 import { Brand } from '../brand/Brand';
 import { layout } from '../theme/tokens/spacing';
 
-const SIDENAV_WIDTH = layout.desktopNavigationWidth;
-
 const items = [
   { label: 'خانه', value: '/dashboard', icon: <HomeRoundedIcon /> },
   { label: 'درس‌ها', value: '/lessons', icon: <MenuBookRoundedIcon /> },
@@ -26,7 +24,10 @@ const items = [
   { label: 'حساب', value: '/account', icon: <PersonRoundedIcon /> },
 ] as const;
 
-// Tablet and desktop navigation: persistent side rail.
+// Tablet and desktop navigation:
+//   - md–lg (tablet): a compact Navigation Rail — icons only, tonal selected
+//     pill, still in-flow so content is never covered;
+//   - lg+ (desktop): the full Side Navigation with brand, labels and footer.
 // Hidden on mobile (replaced by StudentBottomNav).
 export function StudentSideNav() {
   const navigate = useNavigate();
@@ -40,10 +41,11 @@ export function StudentSideNav() {
       // therefore places this rail on the physical right edge of the RTL UI.
       anchor="left"
       dir="rtl"
+      data-testid="student-side-nav"
       sx={{
         display: { xs: 'none', md: 'block' },
         '& .MuiDrawer-paper': {
-          width: SIDENAV_WIDTH,
+          width: { md: layout.navigationRailWidth, lg: layout.desktopNavigationWidth },
           boxSizing: 'border-box',
           borderInlineEnd: '1px solid',
           borderColor: 'divider',
@@ -52,20 +54,23 @@ export function StudentSideNav() {
       }}
     >
       <Stack sx={{ height: '100%' }} role="navigation" aria-label="ناوبری اصلی">
-        <Box sx={{ p: 3, pb: 2 }}>
+        <Box sx={{ p: 2.5, pb: 2, display: { md: 'none', lg: 'flex' } }}>
           <Brand variant="compact" size="sm" />
         </Box>
         <List sx={{ px: 1.5, flex: 1 }} aria-label="ناوبری اصلی">
           {items.map((item) => {
             const selected = current === item.value;
             return (
-              <ListItem key={item.value} disablePadding sx={{ mb: 0.5 }}>
+              <ListItem key={item.value} disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
                 <ListItemButton
                   selected={selected}
                   onClick={() => navigate(item.value)}
+                  aria-label={item.label}
                   aria-current={selected ? 'page' : undefined}
                   sx={{
                     minHeight: 44,
+                    justifyContent: { md: 'center', lg: 'flex-start' },
+                    px: { md: 0, lg: 2 },
                     color: selected ? 'onSecondaryContainer' : 'onSurfaceVariant',
                     '&.Mui-selected': {
                       backgroundColor: 'secondaryContainer',
@@ -77,6 +82,7 @@ export function StudentSideNav() {
                   <ListItemIcon
                     sx={{
                       minWidth: 36,
+                      justifyContent: 'center',
                       color: selected ? 'onSecondaryContainer' : 'onSurfaceVariant',
                     }}
                   >
@@ -84,14 +90,24 @@ export function StudentSideNav() {
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
-                    slotProps={{ primary: { sx: { fontWeight: selected ? 600 : 500 } } }}
+                    sx={{ display: { md: 'none', lg: 'block' } }}
+                    slotProps={{
+                      primary: { sx: { fontWeight: selected ? 600 : 500 } },
+                    }}
                   />
                 </ListItemButton>
               </ListItem>
             );
           })}
         </List>
-        <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+        <Box
+          sx={{
+            p: 2,
+            borderTop: 1,
+            borderColor: 'divider',
+            display: { md: 'none', lg: 'block' },
+          }}
+        >
           <Typography variant="caption" color="text.secondary">
             یادگیری، پرداخت و پشتیبانی در همین برنامه
           </Typography>

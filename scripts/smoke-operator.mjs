@@ -63,6 +63,11 @@
 //     52. no Process or Temp data remains
 
 import { randomBytes } from 'node:crypto';
+import {
+  fetchJson,
+  nextPhone,
+  getSuperuserToken as sharedGetSuperuserToken,
+} from './smoke-common.mjs';
 
 const PORT = Number(process.env.PB_SMOKE_PAY_PORT ?? 18091);
 const URL = `http://127.0.0.1:${PORT}`;
@@ -142,14 +147,6 @@ async function multipart(
   return { status: res.status, body };
 }
 
-let phoneCounter = 0;
-function nextPhone() {
-  const tail = String(phoneCounter++).padStart(2, '0');
-  const rand = randomBytes(4).readUInt32BE(0) % 10_000_000;
-  const mid = String(rand).padStart(7, '0');
-  return `09${mid}${tail}`.slice(0, 11);
-}
-
 const JPEG_BYTES = new Uint8Array([
   0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
   0x00, 0x01, 0x00, 0x00, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08,
@@ -194,20 +191,7 @@ async function signupUser(name) {
 }
 
 async function getSuperuserToken() {
-  const email = process.env.PB_TEST_SU_EMAIL;
-  const password = process.env.PB_TEST_SU_PASSWORD;
-  if (!email || !password) {
-    throw new Error(
-      'PB_TEST_SU_EMAIL/PASSWORD not set; shell wrapper must create superuser before serve',
-    );
-  }
-  const auth = await jsonFetch('/api/collections/_superusers/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: email, password }),
-  });
-  if (auth.status !== 200 || !auth.body?.token)
-    throw new Error(`superuser auth failed: status=${auth.status}`);
-  return auth.body.token;
+  return sharedGetSuperuserToken(URL);
 }
 
 async function setupPlan(suToken) {

@@ -11,6 +11,13 @@
 // Usage: bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
 
 import { randomBytes } from 'node:crypto';
+import {
+  fetchJson,
+  getOperatorToken,
+  getSuperuserToken,
+  nextPhone,
+  randomId,
+} from './smoke-common.mjs';
 
 const PORT = Number(process.env.PB_SMOKE_PLACEMENT_PORT ?? 18093);
 const URL = `http://127.0.0.1:${PORT}`;
@@ -78,32 +85,11 @@ const AUDIO_FIXTURE = (() => {
 })();
 
 // ---------------------------------------------------------------------------
-// Shared helpers
+// Shared helpers (fixtures and HTTP primitives come from ./smoke-common.mjs)
 // ---------------------------------------------------------------------------
-let phoneCounter = 0;
-function nextPhone() {
-  const tail = String(phoneCounter++).padStart(2, '0');
-  const r = randomBytes(4).readUInt32BE(0) % 10_000_000;
-  return `09${String(r).padStart(7, '0')}${tail}`.slice(0, 11);
-}
-function randId() {
-  return randomBytes(6).toString('hex');
-}
 
 async function jf(path, init = {}) {
-  const res = await fetch(`${URL}${path}`, {
-    ...init,
-    headers: { 'content-type': 'application/json', ...(init.headers ?? {}) },
-    signal: AbortSignal.timeout(15_000),
-  });
-  const text = await res.text();
-  let body = null;
-  try {
-    body = text ? JSON.parse(text) : null;
-  } catch {
-    body = { _raw: text };
-  }
-  return { status: res.status, body, headers: res.headers };
+  return fetchJson(URL, path, init);
 }
 
 async function assertCacheHeader(headers, expected) {
@@ -113,40 +99,14 @@ async function assertCacheHeader(headers, expected) {
 }
 
 // ---------------------------------------------------------------------------
-// Superuser / operator tokens
+// Superuser / operator tokens (shared fixtures)
 // ---------------------------------------------------------------------------
 async function getSu() {
-  const e = process.env.PB_TEST_SU_EMAIL,
-    p = process.env.PB_TEST_SU_PASSWORD;
-  const r = await jf('/api/collections/_superusers/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: e, password: p }),
-  });
-  return r.body?.token || '';
+  return getSuperuserToken(URL);
 }
 
 async function getOp(su) {
-  const ph = nextPhone();
-  const s = await jf('/api/collections/fep_users/records', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone: ph,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const uid = s.body?.id || '';
-  await jf(`/api/collections/fep_users/records/${uid}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const l = await jf('/api/collections/fep_users/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: s.body?.phone || ph, password: 'Test1234!' }),
-  });
-  return l.body?.token || '';
+  return getOperatorToken(URL, su);
 }
 
 // ---------------------------------------------------------------------------
@@ -157,8 +117,8 @@ async function makeTopic(su, overrides = {}) {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      title: `T ${randId()}`,
-      slug: `t-${randId()}`,
+      title: `T ${randomId()}`,
+      slug: `t-${randomId()}`,
       description: 'd',
       sort_order: overrides.sort_order ?? 0,
       status: overrides.status || 'published',
@@ -169,7 +129,7 @@ async function makeTopic(su, overrides = {}) {
 }
 
 async function uploadAudio(su, lessonId) {
-  const boundary = `--FB${randId()}`;
+  const boundary = `--FB${randomId()}`;
   const parts = [
     `--${boundary}\r\nContent-Disposition: form-data; name="audio"; filename="t.mp3"\r\nContent-Type: audio/mpeg\r\n\r\n`,
     AUDIO_FIXTURE,
@@ -198,7 +158,7 @@ async function makeLesson(su, topicId, overrides = {}) {
     body: JSON.stringify({
       topic: topicId,
       level: overrides.level || 'B1',
-      title: overrides.title || `L ${randId()}`,
+      title: overrides.title || `L ${randomId()}`,
       summary: overrides.summary || 's',
       body: overrides.body || 'b',
       estimated_minutes: overrides.estimated_minutes ?? 10,
@@ -272,7 +232,7 @@ async function makeFullStudent(su, level = 'B1') {
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
       name: 'P',
-      slug: `p-${randId()}`,
+      slug: `p-${randomId()}`,
       duration_days: 90,
       price_toman: 100000,
       is_active: true,
@@ -288,7 +248,7 @@ async function makeFullStudent(su, level = 'B1') {
     0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
     0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
   ]);
-  const boundary = `--FB${randId()}`;
+  const boundary = `--FB${randomId()}`;
   const prBody = Buffer.concat([
     Buffer.from(
       `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
@@ -470,7 +430,7 @@ async function renewOverlapUser(su, userId, token) {
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
       name: 'P2',
-      slug: `p2-${randId()}`,
+      slug: `p2-${randomId()}`,
       duration_days: 90,
       price_toman: 100000,
       is_active: true,
@@ -485,7 +445,7 @@ async function renewOverlapUser(su, userId, token) {
     0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
     0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
   ]);
-  const boundary = `--FB${randId()}`;
+  const boundary = `--FB${randomId()}`;
   const prBody = Buffer.concat([
     Buffer.from(
       `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
@@ -554,7 +514,7 @@ async function main() {
   // Create base fixtures
   // ==================================================================
   const topic = await makeTopic(su, {
-    slug: `t-main-${randId()}`,
+    slug: `t-main-${randomId()}`,
     status: 'published',
     sort_order: 1,
   });
@@ -574,7 +534,7 @@ async function main() {
 
   // Draft topic
   const dt = await makeTopic(su, {
-    slug: `t-draft-${randId()}`,
+    slug: `t-draft-${randomId()}`,
     status: 'published',
     sort_order: 2,
   });
@@ -588,7 +548,7 @@ async function main() {
 
   // Archived topic
   const at = await makeTopic(su, {
-    slug: `t-arch-${randId()}`,
+    slug: `t-arch-${randomId()}`,
     status: 'published',
     sort_order: 3,
   });
@@ -601,7 +561,7 @@ async function main() {
 
   // A2 lesson for level-mismatch test
   const a2Topic = await makeTopic(su, {
-    slug: `t-a2-${randId()}`,
+    slug: `t-a2-${randomId()}`,
     status: 'published',
     sort_order: 4,
   });
@@ -610,7 +570,7 @@ async function main() {
 
   // Public sample lesson
   const st = await makeTopic(su, {
-    slug: `t-sample-${randId()}`,
+    slug: `t-sample-${randomId()}`,
     status: 'published',
     sort_order: 5,
   });

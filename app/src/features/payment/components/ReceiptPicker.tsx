@@ -1,10 +1,24 @@
 // app/src/features/payment/components/ReceiptPicker.tsx
-// Single-file receipt picker with local preview. Revokes Object URLs
-// when the file is replaced or the component unmounts. No Base64
-// conversion; no localStorage; no automatic upload.
+// Professional receipt-selection surface.
+//
+// - Real native file input (visually hidden, opened by a labeled
+//   button — keyboard/touch accessible, >= 44px targets).
+// - Selected filename + size + type, supported-type guidance and the
+//   real backend size limit (constants.ts mirrors the server cap).
+// - Immediate client validation mirroring the server (MIME + size);
+//   the server remains authoritative for security.
+// - Replace and remove actions before submission; Object URLs are
+//   revoked on replace, removal and unmount (never Base64, never
+//   localStorage, never an automatic upload).
+// - Bounded preview with preserved aspect ratio; zoom in an
+//   accessible Dialog; a malformed (undecodable) image degrades to a
+//   safe validation state — no crash, no server URL exposure.
+// - No drag-and-drop requirement; nothing is animated continuously.
 
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import ImageRoundedIcon from '@mui/icons-material/ImageRounded';
+import ZoomInRoundedIcon from '@mui/icons-material/ZoomInRounded';
 import {
   Alert,
   Box,
@@ -19,6 +33,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ALLOWED_RECEIPT_MIME_TYPES, MAX_RECEIPT_BYTES } from '../constants';
 import { formatFileSize } from '../formatters';
 import type { PaymentError } from '../types';
+import { ReceiptZoomDialog } from './ReceiptZoomDialog';
 
 interface Props {
   value: File | null;
@@ -42,9 +57,12 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<PreviewState | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [decodeFailed, setDecodeFailed] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   // Build / replace the preview URL whenever `value` changes.
   useEffect(() => {
+    setDecodeFailed(false);
     if (!value) {
       setPreview(null);
       return;
@@ -101,6 +119,8 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
     if (preview?.url) URL.revokeObjectURL(preview.url);
     setPreview(null);
     setLocalError(null);
+    setDecodeFailed(false);
+    setZoomOpen(false);
     onChange(null);
   };
 
@@ -123,7 +143,7 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
               رسید پرداخت
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              فقط یک تصویر (JPEG/PNG/WebP، حداکثر ۵ مگابایت)
+              فقط یک تصویر (JPEG / PNG / WebP، حداکثر ۵ مگابایت)
             </Typography>
           </Stack>
 
@@ -152,47 +172,78 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
           />
 
           {!value ? (
-            <Button
-              type="button"
-              onClick={handlePick}
-              variant="outlined"
-              startIcon={<CloudUploadRoundedIcon />}
-              disabled={disabled}
-              sx={{ alignSelf: 'flex-start', minHeight: 48 }}
-              aria-label="انتخاب تصویر رسید"
-            >
-              انتخاب تصویر رسید
-            </Button>
+            <Box>
+              <Button
+                type="button"
+                onClick={handlePick}
+                variant="outlined"
+                startIcon={<CloudUploadRoundedIcon />}
+                disabled={disabled}
+                sx={{ minHeight: 48, px: 2 }}
+                aria-label="انتخاب تصویر رسید"
+                data-testid="select-receipt"
+              >
+                انتخاب تصویر رسید
+              </Button>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                تصویر رسید باید خوانا باشد و مبلغ آن با مبلغ اعلام‌شده مطابقت داشته باشد. نوع فایل‌های
+                پشتیبانی‌شده: JPEG، PNG و WebP — حداکثر ۵ مگابایت.
+              </Typography>
+            </Box>
           ) : (
             <Stack
               spacing={1.5}
               sx={{
                 p: 1.5,
                 border: 1,
-                borderColor: 'divider',
+                borderColor: decodeFailed ? 'error.light' : 'divider',
                 borderRadius: '16px',
-                backgroundColor: 'background.default',
+                backgroundColor: 'var(--mui-palette-surfaceContainerLow)',
               }}
+              data-testid="receipt-selected"
             >
               <Stack
                 direction="row"
-                spacing={2}
+                spacing={1.5}
                 sx={{ alignItems: 'center', justifyContent: 'space-between' }}
               >
-                <Stack spacing={0.5} sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, wordBreak: 'break-all' }}>
-                    {value.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {value.type || 'نوع نامشخص'} • {formatFileSize(value.size)}
-                  </Typography>
+                <Stack
+                  direction="row"
+                  spacing={1.5}
+                  sx={{ alignItems: 'center', minWidth: 0, flex: 1 }}
+                >
+                  <ImageRoundedIcon color="primary" aria-hidden sx={{ flexShrink: 0 }} />
+                  <Stack spacing={0.25} sx={{ minWidth: 0 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 600, overflowWrap: 'anywhere' }}
+                      dir="auto"
+                    >
+                      {value.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {value.type || 'نوع نامشخص'} • {formatFileSize(value.size)}
+                    </Typography>
+                  </Stack>
                 </Stack>
-                <Stack direction="row" spacing={0.5}>
+                <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
+                  {preview && !decodeFailed ? (
+                    <IconButton
+                      onClick={() => setZoomOpen(true)}
+                      disabled={disabled}
+                      aria-label="بزرگ‌نمایی رسید"
+                      sx={{ minWidth: 44, minHeight: 44 }}
+                      data-testid="preview-zoom"
+                    >
+                      <ZoomInRoundedIcon />
+                    </IconButton>
+                  ) : null}
                   <Button
                     size="small"
                     onClick={handlePick}
                     disabled={disabled}
                     sx={{ minHeight: 44 }}
+                    data-testid="replace-receipt"
                   >
                     جایگزینی
                   </Button>
@@ -201,17 +252,19 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
                     disabled={disabled}
                     aria-label="حذف رسید انتخاب‌شده"
                     sx={{ minWidth: 44, minHeight: 44 }}
+                    data-testid="remove-receipt"
                   >
                     <DeleteOutlineRoundedIcon />
                   </IconButton>
                 </Stack>
               </Stack>
-              {preview ? (
+
+              {preview && !decodeFailed ? (
                 <Box
                   sx={{
                     borderRadius: '16px',
                     overflow: 'hidden',
-                    backgroundColor: 'background.paper',
+                    backgroundColor: 'var(--mui-palette-surfaceContainerHighest)',
                     border: 1,
                     borderColor: 'divider',
                     maxHeight: 280,
@@ -223,6 +276,7 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
                   <img
                     src={preview.url}
                     alt="پیش‌نمایش رسید"
+                    onError={() => setDecodeFailed(true)}
                     style={{
                       maxWidth: '100%',
                       maxHeight: 280,
@@ -231,6 +285,13 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
                     }}
                   />
                 </Box>
+              ) : null}
+
+              {decodeFailed ? (
+                <Alert severity="warning" role="alert" data-testid="receipt-decode-error">
+                  تصویر انتخاب‌شده قابل نمایش نیست (ممکن است فایل آسیب‌دیده باشد). لطفاً تصویر دیگری
+                  انتخاب کنید.
+                </Alert>
               ) : null}
             </Stack>
           )}
@@ -242,9 +303,18 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
           ) : null}
 
           <Typography variant="caption" color="text.secondary">
-            تصویر رسید نزد ما محافظت‌شده نگه‌داری می‌شود. فقط برای بررسی توسط اپراتور قابل دسترسی است و
-            لینک عمومی ندارد.
+            تصویر رسید نزد ما محافظت‌شده نگه‌داری می‌شود؛ فقط برای بررسی توسط اپراتور قابل دسترسی است و
+            لینک عمومی ندارد. پس از ارسال، وضعیت بررسی در همین صفحه نمایش داده می‌شود.
           </Typography>
+
+          <ReceiptZoomDialog
+            open={zoomOpen && preview !== null && !decodeFailed}
+            src={preview?.url ?? ''}
+            alt="بزرگ‌نمایی رسید پرداخت"
+            fileName={value?.name ?? null}
+            fileSize={value?.size ?? null}
+            onClose={() => setZoomOpen(false)}
+          />
         </Stack>
       </CardContent>
     </Card>

@@ -35,7 +35,13 @@
 //
 // Usage: bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs
 
-import { randomBytes } from 'node:crypto';
+import {
+  fetchJson,
+  getOperatorToken,
+  getSuperuserToken,
+  nextPhone,
+  randomId,
+} from './smoke-common.mjs';
 
 const PORT = Number(process.env.PB_SMOKE_PLACEMENT_PORT ?? 18093);
 const URL = `http://127.0.0.1:${PORT}`;
@@ -111,69 +117,18 @@ const AUDIO_FIXTURE = (() => {
 })();
 
 // ---------------------------------------------------------------------------
-// Shared helpers
+// Shared helpers (fixtures and HTTP primitives come from ./smoke-common.mjs)
 // ---------------------------------------------------------------------------
-let phoneCounter = 0;
-function nextPhone() {
-  const tail = String(phoneCounter++).padStart(2, '0');
-  const r = randomBytes(4).readUInt32BE(0) % 10_000_000;
-  return `09${String(r).padStart(7, '0')}${tail}`.slice(0, 11);
-}
-function randId() {
-  return randomBytes(6).toString('hex');
-}
-
 async function jf(path, init = {}) {
-  const res = await fetch(`${URL}${path}`, {
-    ...init,
-    headers: { 'content-type': 'application/json', ...(init.headers ?? {}) },
-    signal: AbortSignal.timeout(15_000),
-  });
-  const text = await res.text();
-  let body = null;
-  try {
-    body = text ? JSON.parse(text) : null;
-  } catch {
-    body = { _raw: text };
-  }
-  return { status: res.status, body, headers: res.headers };
+  return fetchJson(URL, path, init);
 }
 
-// ---------------------------------------------------------------------------
-// Superuser / operator tokens
-// ---------------------------------------------------------------------------
 async function getSu() {
-  const e = process.env.PB_TEST_SU_EMAIL,
-    p = process.env.PB_TEST_SU_PASSWORD;
-  const r = await jf('/api/collections/_superusers/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: e, password: p }),
-  });
-  return r.body?.token || '';
+  return getSuperuserToken(URL);
 }
 
 async function getOp(su) {
-  const ph = nextPhone();
-  const s = await jf('/api/collections/fep_users/records', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone: ph,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const uid = s.body?.id || '';
-  await jf(`/api/collections/fep_users/records/${uid}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const l = await jf('/api/collections/fep_users/auth-with-password', {
-    method: 'POST',
-    body: JSON.stringify({ identity: s.body?.phone || ph, password: 'Test1234!' }),
-  });
-  return l.body?.token || '';
+  return getOperatorToken(URL, su);
 }
 
 // ---------------------------------------------------------------------------
@@ -184,8 +139,8 @@ async function makeTopic(su, overrides = {}) {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      title: `T ${randId()}`,
-      slug: `t-${randId()}`,
+      title: `T ${randomId()}`,
+      slug: `t-${randomId()}`,
       description: 'd',
       sort_order: overrides.sort_order ?? 0,
       status: overrides.status || 'published',
@@ -196,7 +151,7 @@ async function makeTopic(su, overrides = {}) {
 }
 
 async function uploadAudio(su, lessonId) {
-  const boundary = `--FB${randId()}`;
+  const boundary = `--FB${randomId()}`;
   const parts = [
     `--${boundary}\r\nContent-Disposition: form-data; name="audio"; filename="t.mp3"\r\nContent-Type: audio/mpeg\r\n\r\n`,
     AUDIO_FIXTURE,
@@ -224,7 +179,7 @@ async function makeLesson(su, topicId, overrides = {}) {
     body: JSON.stringify({
       topic: topicId,
       level: overrides.level || 'B1',
-      title: overrides.title || `L ${randId()}`,
+      title: overrides.title || `L ${randomId()}`,
       summary: overrides.summary || 's',
       body: overrides.body || 'b',
       estimated_minutes: overrides.estimated_minutes ?? 10,
@@ -296,7 +251,7 @@ async function makeFullStudent(su, level = 'B1') {
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
       name: 'P',
-      slug: `p-${randId()}`,
+      slug: `p-${randomId()}`,
       duration_days: 90,
       price_toman: 100000,
       is_active: true,
@@ -312,7 +267,7 @@ async function makeFullStudent(su, level = 'B1') {
     0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
     0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
   ]);
-  const boundary = `--FB${randId()}`;
+  const boundary = `--FB${randomId()}`;
   const prBody = Buffer.concat([
     Buffer.from(
       `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
@@ -490,7 +445,7 @@ async function renewOverlapUser(su, userId, token) {
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
       name: 'P2',
-      slug: `p2-${randId()}`,
+      slug: `p2-${randomId()}`,
       duration_days: 90,
       price_toman: 100000,
       is_active: true,
@@ -505,7 +460,7 @@ async function renewOverlapUser(su, userId, token) {
     0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
     0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
   ]);
-  const boundary = `--FB${randId()}`;
+  const boundary = `--FB${randomId()}`;
   const prBody = Buffer.concat([
     Buffer.from(
       `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
@@ -574,7 +529,7 @@ async function main() {
   // Create base fixtures
   // ==================================================================
   const topic = await makeTopic(su, {
-    slug: `t-main-${randId()}`,
+    slug: `t-main-${randomId()}`,
     status: 'published',
     sort_order: 1,
   });
@@ -588,7 +543,7 @@ async function main() {
 
   // A2 lesson for wrong-level test
   const a2Topic = await makeTopic(su, {
-    slug: `t-a2-${randId()}`,
+    slug: `t-a2-${randomId()}`,
     status: 'published',
     sort_order: 2,
   });
@@ -597,7 +552,7 @@ async function main() {
 
   // Draft lesson
   const dTopic = await makeTopic(su, {
-    slug: `t-draft-${randId()}`,
+    slug: `t-draft-${randomId()}`,
     status: 'published',
     sort_order: 3,
   });
@@ -606,7 +561,7 @@ async function main() {
 
   // Archived lesson
   const archTopic = await makeTopic(su, {
-    slug: `t-arch-${randId()}`,
+    slug: `t-arch-${randomId()}`,
     status: 'published',
     sort_order: 4,
   });
@@ -619,7 +574,7 @@ async function main() {
 
   // Second B1 lesson for ordering tests
   const topic2 = await makeTopic(su, {
-    slug: `t-2-${randId()}`,
+    slug: `t-2-${randomId()}`,
     status: 'published',
     sort_order: 5,
   });
@@ -776,7 +731,7 @@ async function main() {
   // 11-12. Concurrent same-Revision updates: one wins, loser retries
   // ==================================================================
   const dupTopic = await makeTopic(su, {
-    slug: `t-dup-${randId()}`,
+    slug: `t-dup-${randomId()}`,
     status: 'published',
     sort_order: 20,
   });
@@ -832,7 +787,7 @@ async function main() {
   // 12b. First-save race: two clients start the same lesson together
   // ==================================================================
   const raceTopic = await makeTopic(su, {
-    slug: `t-race-${randId()}`,
+    slug: `t-race-${randomId()}`,
     status: 'published',
     sort_order: 21,
   });
@@ -1218,7 +1173,7 @@ async function main() {
   const allSt = await makeFullStudent(su, 'B1');
   // Create just one B1 lesson, complete it
   const allTopic = await makeTopic(su, {
-    slug: `t-all-${randId()}`,
+    slug: `t-all-${randomId()}`,
     status: 'published',
     sort_order: 10,
   });

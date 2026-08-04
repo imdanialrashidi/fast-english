@@ -5,6 +5,7 @@ import { DashboardRoute } from '../features/dashboard';
 import { LessonDetailRoute, LessonsRoute, SampleRoute } from '../features/lessons';
 import { PaymentRoute, PaymentStatusRoute } from '../features/payment';
 import { LevelResultRoute, PlacementRoute } from '../features/placement';
+import { PlayerProvider } from '../features/player';
 import { AuthProvider, decideRoute, type RouteKind, useAuth } from '../lib/auth';
 import { AccountRoute } from './routes/AccountRoute';
 import { CatalogRoute } from './routes/CatalogRoute';
@@ -98,95 +99,112 @@ function ThemedApp() {
             }
           />
 
-          <Route element={<AppShell />}>
-            <Route
-              path="/payment"
-              element={
-                <Guard kind="pending-only">
-                  <PaymentRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/payment-status"
-              element={
-                <Guard kind="pending-only">
-                  <PaymentStatusRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <Guard kind="active-only">
-                  <DashboardRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/placement"
-              element={
-                <Guard kind="active-only">
-                  <PlacementRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/placement/result"
-              element={
-                <Guard kind="active-only">
-                  <LevelResultRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/lessons"
-              element={
-                <Guard kind="active-only">
-                  <LessonsRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/lessons/:id"
-              element={
-                <Guard kind="active-only">
-                  <LessonDetailRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/lessons/demo"
-              element={
-                <Guard kind="active-only">
-                  <LessonDetailRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/account"
-              element={
-                <Guard kind="active-only">
-                  <AccountRoute />
-                </Guard>
-              }
-            />
-            <Route
-              path="/operator/*"
-              element={
-                <Guard kind="operator-only">
-                  <OperatorRoute />
-                </Guard>
-              }
-            />
-          </Route>
-
-          <Route path="/sample" element={<SampleRoute />} />
-          {catalogEnabled ? <Route path="/dev/catalog" element={<CatalogRoute />} /> : null}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Single shared audio element for the whole app (Mini Player
+              constraint: never two simultaneous audio elements). */}
+          <Route
+            path="/*"
+            element={
+              <PlayerProvider>
+                <AppRoutes />
+              </PlayerProvider>
+            }
+          />
         </Routes>
       </Box>
     </AuthProvider>
+  );
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route
+          path="/payment"
+          element={
+            <Guard kind="pending-only">
+              <PaymentRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/payment-status"
+          element={
+            <Guard kind="pending-only">
+              <PaymentStatusRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <Guard kind="active-only">
+              <DashboardRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/placement"
+          element={
+            <Guard kind="active-only">
+              <PlacementRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/placement/result"
+          element={
+            <Guard kind="active-only">
+              <LevelResultRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/lessons"
+          element={
+            <Guard kind="active-only">
+              <LessonsRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/lessons/:id"
+          element={
+            <Guard kind="active-only">
+              <LessonDetailRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/lessons/demo"
+          element={
+            <Guard kind="active-only">
+              <LessonDetailRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <Guard kind="active-only">
+              <AccountRoute />
+            </Guard>
+          }
+        />
+        <Route
+          path="/operator/*"
+          element={
+            <Guard kind="operator-only">
+              <OperatorRoute />
+            </Guard>
+          }
+        />
+      </Route>
+
+      <Route path="/sample" element={<SampleRoute />} />
+      {catalogEnabled ? <Route path="/dev/catalog" element={<CatalogRoute />} /> : null}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

@@ -1,19 +1,28 @@
 // app/src/features/payment/routes/PaymentRoute.tsx
 // Real student payment page. Loads plans and the active destination
-// from the backend, lets the student pick a plan, fill optional
-// transfer details, attach one receipt image, and submit the
-// multipart form to the real P1-S1B route.
+// from the backend, walks the user through the five payment stages,
+// collects one receipt image with client validation mirroring the
+// server, requires an explicit transfer confirmation, and submits
+// the multipart form to the real P1-S1B route.
+//
+// The journey stages reflect real state only:
+//   - stage 1 active until a plan is selected
+//   - stage 2 active until a receipt is selected
+//   - stage 3 active until the transfer confirmation is checked
+//   - stage 4 (submission) is shown while the request is being sent
+//   - stage 5 (result) is owned by /payment-status after success
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
 import {
   Alert,
   Box,
   Button,
   Card,
   CardContent,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
   Stack,
   TextField,
   Typography,
@@ -31,11 +40,13 @@ import {
   loadActivePlans,
   loadCurrentRequest,
 } from '../api';
-import { DestinationCard } from '../components/DestinationCard';
+import { PaymentErrorPanel } from '../components/PaymentErrorPanel';
+import { PaymentInstructions } from '../components/PaymentInstructions';
+import { PaymentJourney } from '../components/PaymentJourney';
 import { PlanSelector } from '../components/PlanSelector';
 import { ReceiptPicker } from '../components/ReceiptPicker';
 import { toPaymentError } from '../errors';
-import { formatDurationDays, formatToman } from '../formatters';
+import { formatDurationDays, formatFileSize, formatToman } from '../formatters';
 import { type PaymentFormValues, paymentFormSchema } from '../schemas';
 import type { PaymentDestination, PaymentError as PaymentErrorModel, Plan } from '../types';
 
@@ -52,6 +63,7 @@ export function PaymentRoute() {
     'none' | 'pending' | 'rejected' | 'other' | 'unknown'
   >('unknown');
   const [submissionError, setSubmissionError] = useState<PaymentErrorModel | null>(null);
+  const [transferConfirmed, setTransferConfirmed] = useState(false);
 
   const {
     register,
@@ -127,6 +139,16 @@ export function PaymentRoute() {
     };
   }, []);
 
+  const selectedPlan = useMemo(
+    () =>
+      load.kind === 'ready' ? (load.plans.find((p) => p.id === selectedPlanId) ?? null) : null,
+    [load, selectedPlanId],
+  );
+
+  // Journey stages (0-based):
+  //   0 info, 1 card-to-card, 2 receipt, 3 submit, 4 result
+  const journeyActiveStep = selectedPlanId ? (receiptFile ? (transferConfirmed ? 3 : 2) : 1) : 0;
+
   const submissionDisabled = useMemo(() => {
     if (isSubmitting) return true;
     if (load.kind !== 'ready') return true;
@@ -134,8 +156,9 @@ export function PaymentRoute() {
     if (load.plans.length === 0) return true;
     if (!selectedPlanId) return true;
     if (!receiptFile) return true;
+    if (!transferConfirmed) return true;
     return false;
-  }, [isSubmitting, load, selectedPlanId, receiptFile]);
+  }, [isSubmitting, load, selectedPlanId, receiptFile, transferConfirmed]);
 
   const onSubmit = handleSubmit(async (values) => {
     setSubmissionError(null);
@@ -181,16 +204,18 @@ export function PaymentRoute() {
     }
   });
 
-  // Redirect to status if a pending request already exists.
+  // Redirect to status when a request already exists: pending,
+  // approved or cancelled. The status workspace owns those states;
+  // the form is only for users with no request or a rejected one.
   useEffect(() => {
-    if (currentRequestKind === 'pending') {
+    if (currentRequestKind === 'pending' || currentRequestKind === 'other') {
       navigate('/payment-status', { replace: true });
     }
   }, [currentRequestKind, navigate]);
 
   if (load.kind === 'loading' || currentRequestKind === 'unknown') {
     return (
-      <PageContainer maxWidth="sm">
+      <PageContainer maxWidth="md">
         <PageHeader title="پرداخت" subtitle="در حال بارگذاری طرح‌ها و مقصد پرداخت…" />
         <StatePanel variant="loading" title="در حال بارگذاری…" />
       </PageContainer>
@@ -199,21 +224,12 @@ export function PaymentRoute() {
 
   if (load.kind === 'error') {
     return (
-      <PageContainer maxWidth="sm">
+      <PageContainer maxWidth="md">
         <PageHeader title="پرداخت" />
-        <StatePanel
-          variant="error"
-          title="بارگذاری اطلاعات پرداخت ناموفق بود"
-          description={load.error.message}
-          action={
-            <Button
-              variant="outlined"
-              onClick={() => window.location.reload()}
-              sx={{ minHeight: 44 }}
-            >
-              تلاش دوباره
-            </Button>
-          }
+        <PaymentErrorPanel
+          error={load.error}
+          retryLabel="تلاش دوباره"
+          onRetry={() => window.location.reload()}
         />
       </PageContainer>
     );
@@ -221,8 +237,24 @@ export function PaymentRoute() {
 
   const { plans, destination } = load;
 
+  // Renewal is NOT supported by the current backend rules (expired
+  // accounts are outside the pre-approval statuses), so the form is
+  // hidden and an honest notice is shown instead.
+  if (user?.account_status === 'expired') {
+    return (
+      <PageContainer maxWidth="md">
+        <PageHeader title="پرداخت" subtitle="اشتراک شما به پایان رسیده است." />
+        <StatePanel
+          variant="unavailable"
+          title="تمدید اشتراک در حال حاضر فعال نیست"
+          description="برای تمدید اشتراک یا بررسی وضعیت حساب، با پشتیبانی تماس بگیرید. پس از فعال‌شدن امکان تمدید، در همین صفحه می‌توانید رسید جدید ارسال کنید."
+        />
+      </PageContainer>
+    );
+  }
+
   return (
-    <PageContainer maxWidth="sm">
+    <PageContainer maxWidth="md">
       <PageHeader
         title="پرداخت"
         subtitle={
@@ -232,9 +264,14 @@ export function PaymentRoute() {
         }
       />
 
+      <Box sx={{ mb: 3 }}>
+        <PaymentJourney activeStep={journeyActiveStep} completedSteps={journeyActiveStep} />
+      </Box>
+
       {currentRequestKind === 'rejected' ? (
         <Alert severity="warning" sx={{ mb: 2 }} role="status">
-          درخواست قبلی شما رد شده است. می‌توانید رسید جدیدی ارسال کنید.
+          درخواست قبلی شما رد شده است. می‌توانید رسید جدیدی ارسال کنید؛ درخواست جدید جداگانه بررسی
+          می‌شود.
         </Alert>
       ) : null}
 
@@ -248,160 +285,205 @@ export function PaymentRoute() {
         </Box>
       ) : (
         <Box
-          component="form"
-          noValidate
-          onSubmit={onSubmit}
-          aria-label="فرم پرداخت"
-          sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+          sx={{
+            display: { md: 'grid' },
+            gridTemplateColumns: { md: 'minmax(0, 5fr) minmax(0, 7fr)' },
+            gap: { md: 3 },
+          }}
         >
-          <Card>
-            <CardContent>
-              <Stack spacing={2}>
-                <Typography component="h2" variant="h4">
-                  انتخاب طرح
-                </Typography>
-                <PlanSelector
-                  plans={plans}
-                  selectedId={selectedPlanId || null}
-                  onSelect={(id) => setValue('planId', id, { shouldValidate: true })}
-                />
-                {errors.planId ? (
-                  <Typography variant="caption" color="error.main" role="alert">
-                    {errors.planId.message}
-                  </Typography>
-                ) : null}
-              </Stack>
-            </CardContent>
-          </Card>
+          {/* Instructions column (details + trust content). */}
+          <Box sx={{ mb: { xs: 2, md: 0 }, minWidth: 0 }}>
+            <PaymentInstructions plan={selectedPlan} destination={destination} />
+          </Box>
 
-          {destination ? (
-            <DestinationCard destination={destination} />
-          ) : (
-            <StatePanel
-              variant="unavailable"
-              title="مقصد پرداخت فعال نیست"
-              description="تا زمانی که مقصد پرداخت توسط اپراتور فعال نشده باشد، نمی‌توانید درخواستی ثبت کنید."
-            />
-          )}
-
-          <Card>
-            <CardContent>
-              <Stack spacing={2}>
-                <Typography component="h2" variant="h4">
-                  جزئیات انتقال (اختیاری)
-                </Typography>
-                <TextField
-                  label="چهار رقم آخر کارت مبدأ"
-                  inputMode="numeric"
-                  autoComplete="off"
-                  {...register('senderCardLast4')}
-                  error={Boolean(errors.senderCardLast4)}
-                  helperText={
-                    errors.senderCardLast4?.message ??
-                    'فقط برای پیگیری داخلی استفاده می‌شود. هرگز اطلاعات کامل کارت ارسال نکنید.'
-                  }
-                  slotProps={{
-                    input: {
-                      // Force LTR for the digit-only field. The form
-                      // already accepts Persian digits via the schema
-                      // transform; the display is Latin so users see
-                      // exactly what they typed.
-                      inputProps: {
-                        inputMode: 'numeric',
-                        pattern: '[0-9]*',
-                        maxLength: 8,
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  label="شمارهٔ پیگیری بانک"
-                  inputMode="text"
-                  autoComplete="off"
-                  {...register('bankReference')}
-                  error={Boolean(errors.bankReference)}
-                  helperText={
-                    errors.bankReference?.message ??
-                    `اگر بانک شما شمارهٔ پیگیری صادر کرده، اینجا وارد کنید. (${formatPersianPreview(senderCardLast4)})`
-                  }
-                />
-                <TextField
-                  label="زمان واریز"
-                  type="datetime-local"
-                  slotProps={{ inputLabel: { shrink: true } }}
-                  {...register('transferAt')}
-                  error={Boolean(errors.transferAt)}
-                  helperText={errors.transferAt?.message ?? ' '}
-                />
-              </Stack>
-            </CardContent>
-          </Card>
-
-          <ReceiptPicker
-            value={receiptFile ?? null}
-            onChange={(f) =>
-              setValue('receiptFile', f as unknown as File, { shouldValidate: true })
-            }
-            error={
-              errors.receiptFile
-                ? toPaymentError(new Error(errors.receiptFile.message ?? 'رسید نامعتبر است.'))
-                : null
-            }
-            disabled={isSubmitting}
-          />
-
-          {submissionError ? (
-            <Alert severity="error" role="alert" data-testid="submission-error">
-              {submissionError.message}
-            </Alert>
-          ) : null}
-
+          {/* Selection + submission column. */}
           <Box
-            sx={{
-              position: 'sticky',
-              bottom: { xs: 'calc(80px + env(safe-area-inset-bottom, 0px))', md: 0 },
-              zIndex: 1,
-              pt: 1,
-            }}
+            component="form"
+            noValidate
+            onSubmit={onSubmit}
+            aria-label="فرم پرداخت"
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}
           >
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              fullWidth
-              disabled={submissionDisabled}
-              endIcon={
-                isSubmitting ? (
-                  <CircularProgress size={16} color="inherit" />
-                ) : (
-                  <ArrowForwardRoundedIcon sx={{ transform: 'scaleX(-1)' }} />
-                )
-              }
-              sx={{ minHeight: 48 }}
-              data-testid="submit-payment"
-            >
-              {isSubmitting ? (
-                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                  <HourglassEmptyRoundedIcon fontSize="small" />
-                  <span>در حال ارسال…</span>
+            <Card>
+              <CardContent>
+                <Stack spacing={2}>
+                  <Typography component="h2" variant="h4">
+                    انتخاب طرح
+                  </Typography>
+                  <PlanSelector
+                    plans={plans}
+                    selectedId={selectedPlanId || null}
+                    onSelect={(id) => {
+                      setValue('planId', id, { shouldValidate: true });
+                      setTransferConfirmed(false);
+                    }}
+                  />
+                  {errors.planId ? (
+                    <Typography variant="caption" color="error.main" role="alert">
+                      {errors.planId.message}
+                    </Typography>
+                  ) : null}
                 </Stack>
-              ) : (
-                'ارسال رسید و ثبت درخواست'
-              )}
-            </Button>
-            {selectedPlanId ? (
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block', mt: 1, textAlign: 'center' }}
-              >
-                {(() => {
-                  const p = plans.find((x) => x.id === selectedPlanId);
-                  if (!p) return null;
-                  return `${p.name} — ${formatToman(p.priceToman)} تومان — ${formatDurationDays(p.durationDays)}`;
-                })()}
-              </Typography>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent>
+                <Stack spacing={2}>
+                  <Typography component="h2" variant="h4">
+                    جزئیات انتقال (اختیاری)
+                  </Typography>
+                  <TextField
+                    label="چهار رقم آخر کارت مبدأ"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    {...register('senderCardLast4')}
+                    error={Boolean(errors.senderCardLast4)}
+                    helperText={
+                      errors.senderCardLast4?.message ??
+                      'فقط برای پیگیری داخلی استفاده می‌شود. هرگز اطلاعات کامل کارت ارسال نکنید.'
+                    }
+                    slotProps={{
+                      input: {
+                        inputProps: {
+                          inputMode: 'numeric',
+                          pattern: '[0-9]*',
+                          maxLength: 8,
+                        },
+                      },
+                    }}
+                  />
+                  <TextField
+                    label="شمارهٔ پیگیری بانک"
+                    inputMode="text"
+                    autoComplete="off"
+                    {...register('bankReference')}
+                    error={Boolean(errors.bankReference)}
+                    helperText={
+                      errors.bankReference?.message ??
+                      `اگر بانک شما شمارهٔ پیگیری صادر کرده، اینجا وارد کنید. (${formatPersianPreview(senderCardLast4)})`
+                    }
+                  />
+                  <TextField
+                    label="زمان واریز"
+                    type="datetime-local"
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    {...register('transferAt')}
+                    error={Boolean(errors.transferAt)}
+                    helperText={errors.transferAt?.message ?? ' '}
+                  />
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <ReceiptPicker
+              value={receiptFile ?? null}
+              onChange={(f) => {
+                setValue('receiptFile', f as unknown as File, { shouldValidate: true });
+                setTransferConfirmed(false);
+              }}
+              error={
+                errors.receiptFile
+                  ? toPaymentError(new Error(errors.receiptFile.message ?? 'رسید نامعتبر است.'))
+                  : null
+              }
+              disabled={isSubmitting}
+            />
+
+            {receiptFile && selectedPlan ? (
+              <Card data-testid="confirmation-summary">
+                <CardContent>
+                  <Stack spacing={1.5}>
+                    <Typography component="h2" variant="h4">
+                      خلاصه و تأیید ارسال
+                    </Typography>
+                    <Stack spacing={1}>
+                      <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>
+                        پلن:{' '}
+                        <strong>
+                          {selectedPlan.name} — {formatToman(selectedPlan.priceToman)} تومان
+                        </strong>
+                      </Typography>
+                      <Typography variant="body2">
+                        مبلغ: <strong>{formatToman(selectedPlan.priceToman)} تومان</strong>
+                      </Typography>
+                      <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>
+                        فایل انتخاب‌شده: <strong>{receiptFile.name}</strong> (
+                        {formatFileSize(receiptFile.size)})
+                      </Typography>
+                    </Stack>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={transferConfirmed}
+                          onChange={(e) => setTransferConfirmed(e.target.checked)}
+                          disabled={isSubmitting}
+                          slotProps={{ input: { 'aria-label': 'تأیید انجام انتقال' } }}
+                        />
+                      }
+                      label="انتقال را انجام داده‌ام و رسید انتخاب‌شده مربوط به همین پرداخت است."
+                      sx={{ alignItems: 'flex-start' }}
+                    />
+                  </Stack>
+                </CardContent>
+              </Card>
             ) : null}
+
+            {submissionError ? (
+              <PaymentErrorPanel error={submissionError} data-testid="submission-error" />
+            ) : null}
+
+            <Box
+              sx={{
+                position: 'sticky',
+                bottom: { xs: 'calc(80px + env(safe-area-inset-bottom, 0px))', md: 0 },
+                zIndex: 1,
+                pt: 1,
+                backgroundColor: 'var(--mui-palette-background-default)',
+              }}
+            >
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={submissionDisabled}
+                endIcon={
+                  isSubmitting ? (
+                    <CircularProgress size={16} color="inherit" aria-label="در حال ارسال" />
+                  ) : (
+                    <ArrowForwardRoundedIcon sx={{ transform: 'scaleX(-1)' }} />
+                  )
+                }
+                sx={{ minHeight: 48 }}
+                data-testid="submit-payment"
+              >
+                {isSubmitting ? 'در حال ارسال رسید…' : 'ارسال رسید و ثبت درخواست'}
+              </Button>
+              {isSubmitting ? (
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  role="status"
+                  aria-live="polite"
+                  sx={{ display: 'block', mt: 1, textAlign: 'center' }}
+                >
+                  در حال ارسال… پس از دریافت تأیید سرور، به صفحهٔ وضعیت منتقل می‌شوید.
+                </Typography>
+              ) : selectedPlanId ? (
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mt: 1, textAlign: 'center' }}
+                >
+                  {(() => {
+                    const p = plans.find((x) => x.id === selectedPlanId);
+                    if (!p) return null;
+                    return `${p.name} — ${formatToman(p.priceToman)} تومان — ${formatDurationDays(p.durationDays)}`;
+                  })()}
+                </Typography>
+              ) : null}
+            </Box>
           </Box>
         </Box>
       )}

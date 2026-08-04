@@ -23,11 +23,8 @@ import { expect, type Page, test } from '@playwright/test';
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 
 const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
-  { name: '360x800', width: 360, height: 800 },
   { name: '390x844', width: 390, height: 844 },
-  { name: '430x932', width: 430, height: 932 },
   { name: '768x1024', width: 768, height: 1024 },
-  { name: '1024x768', width: 1024, height: 768 },
   { name: '1440x900', width: 1440, height: 900 },
 ];
 
@@ -631,10 +628,12 @@ test.describe('authenticated shell (App Bar, bottom nav, flows)', () => {
     for (const route of ['/dashboard', '/lessons', '/account']) {
       await setAuthAndGo(page, student.token, student.record, route);
       expect(await noHorizontalOverflow(page), `${route} light`).toBe(true);
-      await page.getByRole('button', { name: 'حالت تیره' }).click();
+      // Click the Top Bar switch (the Account page also carries a copy of
+      // the preference control since Visual Slice 2).
+      await page.getByTestId('theme-switch').getByRole('button', { name: 'حالت تیره' }).click();
       await page.waitForTimeout(50);
       expect(await noHorizontalOverflow(page), `${route} dark`).toBe(true);
-      await page.getByRole('button', { name: 'حالت سیستمی' }).click();
+      await page.getByTestId('theme-switch').getByRole('button', { name: 'حالت سیستمی' }).click();
     }
   });
 

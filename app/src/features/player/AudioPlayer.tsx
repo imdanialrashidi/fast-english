@@ -1,19 +1,16 @@
 // app/src/features/player/AudioPlayer.tsx
-// P3-S2 — Reusable Audio Player with full controls.
+// Visual Slice 2 — premium Audio Player presentation bound to the shared
+// PlayerProvider (single audio element; see PlayerProvider.tsx).
 //
-// Features:
-//   - Play/pause
-//   - Current time / total duration
-//   - Seek slider (keyboard accessible)
-//   - Skip backward 10s / forward 10s
-//   - Playback speed (0.75×, 1×, 1.25×, 1.5×, 2×)
-//   - Volume / mute
-//   - Loading/buffering state
-//   - Error state with retry
-//   - Completed indicator
-//   - Resume from a saved position (initialPosition)
-//   - All controls keyboard accessible
-//   - Accessible slider labels
+// Visual hierarchy:
+//   - Play/Pause is the dominant control (56px filled primary circle).
+//   - Skip -10s / +10s stay reachable (44px targets).
+//   - Timeline + stable timestamps (audioTime: tabular numerals, LTR).
+//   - Speed stays a fixed row of 5 chips (no wrapping, no layout growth).
+//   - Volume slider appears only where useful (sm+); mute always available.
+//   - States: loading metadata, ready, playing, paused, completed,
+//     temporary network error with retry, entitlement error handled by the
+//     route (no raw media/backend errors are ever rendered here).
 
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import Forward10RoundedIcon from '@mui/icons-material/Forward10Rounded';
@@ -24,8 +21,9 @@ import Replay10RoundedIcon from '@mui/icons-material/Replay10Rounded';
 import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import { Box, Button, Chip, IconButton, Slider, Stack, Tooltip, Typography } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { setAudioBusy } from '../../pwa/activity';
+import { useEffect, useRef } from 'react';
+import { radius } from '../../app/theme/tokens';
+import { type PlayerSession, usePlayer } from './PlayerProvider';
 
 export interface AudioPlayerProps {
   /** The audio source URL (from the protected audio proxy) */
@@ -42,7 +40,7 @@ export interface AudioPlayerProps {
   completed?: boolean;
   /** Whether to show the completed indicator */
   showCompleted?: boolean;
-  /** Whether to auto-load metadata (don't auto-play) */
+  /** Kept for API compatibility; the provider always preloads metadata. */
   preload?: 'none' | 'metadata' | 'auto';
   /**
    * Position (seconds) to seek to after metadata loads, e.g. a saved resume
@@ -51,6 +49,8 @@ export interface AudioPlayerProps {
   initialPosition?: number;
   /** Callback to refresh the audio source (e.g., get a new file token) */
   onRetry?: () => void;
+  /** Active-lesson identity used for the session registry + Mini Player. */
+  session?: PlayerSession | null;
 }
 
 const PLAYBACK_SPEEDS = [0.75, 1, 1.25, 1.5, 2] as const;
@@ -72,228 +72,35 @@ export function AudioPlayer({
   preload = 'metadata',
   initialPosition,
   onRetry,
+  session,
 }: AudioPlayerProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [isSeeking, setIsSeeking] = useState(false);
-  const seekValueRef = useRef(0);
-  const pendingSeekRef = useRef<number | null>(null);
+  const player = usePlayer();
+  // The provider hosts the single audio element; `preload` is accepted for
+  // API compatibility but the shared element always preloads metadata.
+  void preload;
+  const appliedPositionRef = useRef<number | null>(null);
 
-  // Reset state when source changes
+  // Bind the lesson session + callbacks. `bind` resets the player only when
+  // the lesson/source actually changes, so re-mounts of the same lesson
+  // (back navigation) keep the position.
   useEffect(() => {
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setIsLoading(true);
-    setHasError(false);
-    setIsMuted(false);
-    setVolume(1);
-    setPlaybackRate(1);
-    setIsSeeking(false);
-    setAudioBusy(false);
-  }, [src]);
+    if (!src || !session) return;
+    player.bind(session, src, { onTimeUpdate, onSeek, onEnded, onRetry });
+    return () => player.unbind(session.lessonId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [src, session?.lessonId]);
 
-  // Apply the resume position. Setting currentTime before metadata is loaded is
-  // legal and queued by the browser; the loadedmetadata handler re-applies it
-  // as a fallback for engines that ignore the early seek.
+  // Apply the resume position once per value change (same semantics as the
+  // previous pending-seek implementation). Re-mounts of the same lesson
+  // re-apply the resume position; manual seeks afterwards are never overridden.
   useEffect(() => {
-    if (initialPosition === undefined || initialPosition === null) {
-      pendingSeekRef.current = null;
-      return;
+    if (initialPosition === undefined || initialPosition === null) return;
+    if (appliedPositionRef.current !== initialPosition) {
+      appliedPositionRef.current = initialPosition;
+      player.applyInitialPosition(initialPosition);
     }
-    const audio = audioRef.current;
-    const target = Math.max(0, initialPosition);
-    if (audio) {
-      audio.currentTime = target;
-      setCurrentTime(target);
-    }
-    pendingSeekRef.current = target;
-  }, [initialPosition]);
+  }, [initialPosition, player]);
 
-  // --- Audio event handlers ---
-  const handleLoadedMetadata = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    setDuration(audio.duration || 0);
-    setIsLoading(false);
-    if (pendingSeekRef.current !== null && Number.isFinite(audio.duration) && audio.duration > 0) {
-      const target = Math.min(pendingSeekRef.current, Math.max(0, audio.duration - 0.25));
-      audio.currentTime = target;
-      setCurrentTime(target);
-      pendingSeekRef.current = null;
-    }
-  }, []);
-
-  const handleTimeUpdate = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio || isSeeking) return;
-    const pos = audio.currentTime;
-    setCurrentTime(pos);
-    const dur = audio.duration || duration;
-    if (dur > 0) {
-      onTimeUpdate?.(pos, dur);
-    }
-  }, [isSeeking, duration, onTimeUpdate]);
-
-  const handlePlay = useCallback(() => {
-    setIsPlaying(true);
-    setAudioBusy(true);
-  }, []);
-
-  const handlePause = useCallback(() => {
-    setIsPlaying(false);
-    setAudioBusy(false);
-    const audio = audioRef.current;
-    if (audio) {
-      const pos = audio.currentTime;
-      const dur = audio.duration || duration;
-      if (dur > 0) {
-        onTimeUpdate?.(pos, dur);
-      }
-    }
-  }, [duration, onTimeUpdate]);
-
-  const handleEnded = useCallback(() => {
-    setIsPlaying(false);
-    setAudioBusy(false);
-    const audio = audioRef.current;
-    if (audio) {
-      const pos = audio.currentTime;
-      const dur = audio.duration || duration;
-      if (dur > 0) {
-        onTimeUpdate?.(pos, dur);
-      }
-    }
-    onEnded?.();
-  }, [duration, onTimeUpdate, onEnded]);
-
-  const handleError = useCallback(() => {
-    setIsLoading(false);
-    setHasError(true);
-    setIsPlaying(false);
-    setAudioBusy(false);
-  }, []);
-
-  const handleWaiting = useCallback(() => {
-    setIsLoading(true);
-  }, []);
-
-  const handleCanPlay = useCallback(() => {
-    setIsLoading(false);
-  }, []);
-
-  const handleLoadedData = useCallback(() => {
-    setIsLoading(false);
-  }, []);
-
-  // --- Controls ---
-  const togglePlay = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) {
-      void audio.play().catch(() => {
-        setHasError(true);
-      });
-    } else {
-      audio.pause();
-    }
-  }, []);
-
-  const handleSeekStart = useCallback(() => {
-    setIsSeeking(true);
-  }, []);
-
-  const handleSeekChange = useCallback((_event: Event, value: number | number[]) => {
-    const v = Array.isArray(value) ? value[0] : value;
-    seekValueRef.current = v;
-    setCurrentTime(v);
-  }, []);
-
-  const handleSeekEnd = useCallback(
-    (_event: Event | React.SyntheticEvent, value: number | number[]) => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      const v = Array.isArray(value) ? value[0] : value;
-      audio.currentTime = v;
-      setCurrentTime(v);
-      setIsSeeking(false);
-      onSeek?.(v);
-      onTimeUpdate?.(v, audio.duration || duration);
-    },
-    [duration, onSeek, onTimeUpdate],
-  );
-
-  const skipBackward = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const newTime = Math.max(0, audio.currentTime - 10);
-    audio.currentTime = newTime;
-    setCurrentTime(newTime);
-    onSeek?.(newTime);
-    onTimeUpdate?.(newTime, audio.duration || duration);
-  }, [duration, onSeek, onTimeUpdate]);
-
-  const skipForward = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const newTime = Math.min(audio.duration || duration, audio.currentTime + 10);
-    audio.currentTime = newTime;
-    setCurrentTime(newTime);
-    onSeek?.(newTime);
-    onTimeUpdate?.(newTime, audio.duration || duration);
-  }, [duration, onSeek, onTimeUpdate]);
-
-  const changeSpeed = useCallback((speed: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.playbackRate = speed;
-    setPlaybackRate(speed);
-  }, []);
-
-  const toggleMute = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = !audio.muted;
-    setIsMuted(audio.muted);
-  }, []);
-
-  const handleVolumeChange = useCallback(
-    (_event: Event, value: number | number[]) => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      const v = Array.isArray(value) ? value[0] : value;
-      audio.volume = v;
-      setVolume(v);
-      if (v === 0) {
-        audio.muted = true;
-        setIsMuted(true);
-      } else if (isMuted) {
-        audio.muted = false;
-        setIsMuted(false);
-      }
-    },
-    [isMuted],
-  );
-
-  // Keyboard handler for the play/pause on Enter/Space
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        togglePlay();
-      }
-    },
-    [togglePlay],
-  );
-
-  // ---- Render ----
   if (!src) {
     return (
       <Box
@@ -301,7 +108,7 @@ export function AudioPlayer({
           p: 2,
           textAlign: 'center',
           bgcolor: 'action.hover',
-          borderRadius: '16px',
+          borderRadius: radius.radiusCard,
         }}
       >
         <Typography variant="body2" color="text.secondary">
@@ -311,39 +118,23 @@ export function AudioPlayer({
     );
   }
 
-  const displayTime = isSeeking ? seekValueRef.current : currentTime;
-  const effectiveDuration = duration || 0;
+  const displayTime = player.currentTime;
+  const effectiveDuration = player.duration || 0;
 
   return (
     <Box
       role="group"
       aria-label="پخش‌کنندهٔ صوت"
+      data-testid="audio-player"
+      aria-busy={player.isLoading}
       sx={{
         p: 2,
         bgcolor: 'background.paper',
-        borderRadius: '16px',
+        borderRadius: radius.radiusCard,
         border: 1,
         borderColor: 'divider',
       }}
     >
-      {/* Hidden audio element */}
-      <audio
-        ref={audioRef}
-        preload={preload}
-        src={src}
-        onLoadedMetadata={handleLoadedMetadata}
-        onTimeUpdate={handleTimeUpdate}
-        onPlay={handlePlay}
-        onPause={handlePause}
-        onEnded={handleEnded}
-        onError={handleError}
-        onWaiting={handleWaiting}
-        onCanPlay={handleCanPlay}
-        onLoadedData={handleLoadedData}
-      >
-        <track kind="captions" src="data:text/vtt,WEBVTT%0A%0A" srcLang="en" label="English" />
-      </audio>
-
       {/* Completed indicator */}
       {showCompleted && completed && (
         <Stack direction="row" spacing={0.5} sx={{ mb: 1, alignItems: 'center' }}>
@@ -354,42 +145,36 @@ export function AudioPlayer({
         </Stack>
       )}
 
-      {/* Error state */}
-      {hasError && (
+      {/* Temporary network error — retry is safe, no raw media errors */}
+      {player.hasError && (
         <Stack spacing={1} sx={{ mb: 1 }}>
-          <Typography variant="body2" color="error">
+          <Typography variant="body2" color="error" role="alert">
             خطا در پخش صوت.
           </Typography>
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<RefreshRoundedIcon />}
-            onClick={() => {
-              setHasError(false);
-              setIsLoading(true);
-              onRetry?.();
-              // Force reload the audio element
-              const audio = audioRef.current;
-              if (audio) {
-                audio.load();
-              }
-            }}
-          >
-            تلاش مجدد
-          </Button>
+          <Box>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<RefreshRoundedIcon />}
+              onClick={player.retry}
+            >
+              تلاش مجدد
+            </Button>
+          </Box>
         </Stack>
       )}
 
-      {/* Loading / Buffering */}
-      {isLoading && !hasError && (
+      {/* Loading / buffering */}
+      {player.isLoading && !player.hasError && (
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
           در حال بارگذاری…
         </Typography>
       )}
 
-      {/* Main controls */}
       <Stack spacing={1.5}>
-        {/* Seek slider */}
+        {/* Timeline / seek — stays interactive even during a temporary
+            network error so the student can still scrub (seeks are queued
+            and saved once playback recovers). */}
         <Box sx={{ px: 0.5 }}>
           <Slider
             aria-label="موقعیت پخش"
@@ -397,10 +182,7 @@ export function AudioPlayer({
             min={0}
             max={effectiveDuration || 1}
             step={0.1}
-            onChange={handleSeekChange}
-            onChangeCommitted={handleSeekEnd}
-            onMouseDown={handleSeekStart}
-            onTouchStart={handleSeekStart}
+            onChange={(_e, v) => player.seekTo(Number(Array.isArray(v) ? v[0] : v))}
             size="small"
             sx={{
               '& .MuiSlider-thumb': { width: 14, height: 14 },
@@ -408,7 +190,7 @@ export function AudioPlayer({
           />
         </Box>
 
-        {/* Time display — audioTime variant: tabular numerals, LTR-isolated */}
+        {/* Timestamps stay stable (tabular numerals, LTR-isolated) */}
         <Stack
           direction="row"
           sx={{ justifyContent: 'space-between', alignItems: 'center', px: 0.5 }}
@@ -421,29 +203,29 @@ export function AudioPlayer({
           </Typography>
         </Stack>
 
-        {/* Control buttons */}
-        <Stack direction="row" sx={{ justifyContent: 'center', alignItems: 'center', gap: 0.5 }}>
-          {/* Skip backward 10s */}
+        {/* Transport: dominant Play/Pause with reachable skips */}
+        <Stack
+          direction="row"
+          sx={{ justifyContent: 'center', alignItems: 'center', gap: 1, flexWrap: 'nowrap' }}
+        >
           <Tooltip title="۱۰ ثانیه قبل">
             <IconButton
               aria-label="۱۰ ثانیه به عقب"
-              onClick={skipBackward}
-              size="small"
-              disabled={hasError}
+              onClick={() => player.skipBy(-10)}
+              disabled={player.hasError}
             >
               <Replay10RoundedIcon />
             </IconButton>
           </Tooltip>
 
-          {/* Play/Pause */}
           <IconButton
-            aria-label={isPlaying ? 'توقف' : 'پخش'}
-            onClick={togglePlay}
-            onKeyDown={handleKeyDown}
+            aria-label={player.isPlaying ? 'توقف' : 'پخش'}
+            onClick={player.togglePlay}
             color="primary"
+            data-testid="player-play-toggle"
             sx={{
-              width: 48,
-              height: 48,
+              width: 56,
+              height: 56,
               bgcolor: 'primary.main',
               color: 'primary.contrastText',
               '&:hover': { bgcolor: 'primary.dark' },
@@ -453,79 +235,76 @@ export function AudioPlayer({
                 outlineColor: 'primary.main',
               },
             }}
-            disabled={hasError}
+            disabled={player.hasError}
           >
-            {isPlaying ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
+            {player.isPlaying ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
           </IconButton>
 
-          {/* Skip forward 10s */}
           <Tooltip title="۱۰ ثانیه بعد">
             <IconButton
               aria-label="۱۰ ثانیه به جلو"
-              onClick={skipForward}
-              size="small"
-              disabled={hasError}
+              onClick={() => player.skipBy(10)}
+              disabled={player.hasError}
             >
               <Forward10RoundedIcon />
             </IconButton>
           </Tooltip>
         </Stack>
 
-        {/* Bottom row: speed + volume */}
+        {/* Speed: fixed five-chip row — never wraps, never grows the layout */}
         <Stack
           direction="row"
-          sx={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}
+          sx={{ justifyContent: 'center', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}
         >
-          {/* Playback speed */}
-          <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-              سرعت:
-            </Typography>
-            {PLAYBACK_SPEEDS.map((speed) => (
-              <Chip
-                key={speed}
-                label={`${speed}×`}
-                size="small"
-                variant={playbackRate === speed ? 'filled' : 'outlined'}
-                color={playbackRate === speed ? 'primary' : 'default'}
-                onClick={() => changeSpeed(speed)}
-                aria-label={`سرعت پخش ${speed} برابر`}
-                aria-pressed={playbackRate === speed}
-                sx={{
-                  cursor: 'pointer',
-                  fontWeight: playbackRate === speed ? 600 : 400,
-                  minHeight: 44,
-                  minWidth: 44,
-                }}
-              />
-            ))}
-          </Stack>
-
-          {/* Volume / mute */}
-          <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-            <IconButton
-              aria-label={isMuted ? 'باز کردن صدا' : 'قطع صدا'}
-              onClick={toggleMute}
+          {PLAYBACK_SPEEDS.map((speed) => (
+            <Chip
+              key={speed}
+              label={`${speed}×`}
               size="small"
-              disabled={hasError}
-            >
-              {isMuted || volume === 0 ? (
-                <VolumeOffRoundedIcon fontSize="small" />
-              ) : (
-                <VolumeUpRoundedIcon fontSize="small" />
-              )}
-            </IconButton>
+              variant={player.playbackRate === speed ? 'filled' : 'outlined'}
+              color={player.playbackRate === speed ? 'primary' : 'default'}
+              onClick={() => player.setRate(speed)}
+              aria-label={`سرعت پخش ${speed} برابر`}
+              aria-pressed={player.playbackRate === speed}
+              sx={{
+                cursor: 'pointer',
+                fontWeight: player.playbackRate === speed ? 600 : 400,
+                minHeight: 44,
+                minWidth: 44,
+                flexShrink: 0,
+              }}
+            />
+          ))}
+        </Stack>
+
+        {/* Volume / mute — slider only where useful (sm+), mute always */}
+        <Stack
+          direction="row"
+          sx={{ justifyContent: 'center', alignItems: 'center', gap: 1, flexWrap: 'nowrap' }}
+        >
+          <IconButton
+            aria-label={player.isMuted ? 'باز کردن صدا' : 'قطع صدا'}
+            onClick={player.toggleMute}
+            disabled={player.hasError}
+          >
+            {player.isMuted || player.volume === 0 ? (
+              <VolumeOffRoundedIcon />
+            ) : (
+              <VolumeUpRoundedIcon />
+            )}
+          </IconButton>
+          <Box sx={{ display: { xs: 'none', sm: 'block' }, width: 128, minWidth: 128 }}>
             <Slider
               aria-label="بلندی صدا"
-              value={isMuted ? 0 : volume}
+              value={player.isMuted ? 0 : player.volume}
               min={0}
               max={1}
               step={0.05}
-              onChange={handleVolumeChange}
+              onChange={(_e, v) => player.setVolume(Number(Array.isArray(v) ? v[0] : v))}
               size="small"
-              sx={{ width: { xs: 96, sm: 120 }, minWidth: 96 }}
+              disabled={player.hasError}
             />
-          </Stack>
+          </Box>
         </Stack>
       </Stack>
     </Box>

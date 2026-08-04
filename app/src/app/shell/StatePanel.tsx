@@ -27,18 +27,26 @@ const labels: Record<StateVariant, StateMeta> = {
 };
 
 // Reusable, accessible state presentation. Always combines an icon and text
-// so state is not conveyed by color alone.
+// so state is not conveyed by color alone. Every state carries the "what",
+// and (when known) the "why" + next action via `description`/`action`.
 export function StatePanel({
   variant,
   title,
   description,
   action,
+  requestId,
   'data-testid': testId,
 }: {
   variant: StateVariant;
   title?: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
+  /**
+   * Optional request identifier for support escalation. This is a
+   * placeholder surface for the future Monitoring slice — the Monitoring
+   * slice will populate real request IDs; nothing logs or persists it here.
+   */
+  requestId?: string;
   'data-testid'?: string;
 }) {
   const meta = labels[variant];
@@ -75,6 +83,11 @@ export function StatePanel({
               </Typography>
             ) : null}
             {action ? <Box sx={{ pt: 1 }}>{action}</Box> : null}
+            {requestId ? (
+              <Typography variant="caption" color="text.secondary" data-testid="state-request-id">
+                شناسهٔ درخواست: {requestId}
+              </Typography>
+            ) : null}
           </Stack>
         </Stack>
       </CardContent>

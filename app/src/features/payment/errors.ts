@@ -44,26 +44,42 @@ function extractFromUnknown(err: unknown): ExtractedErr {
     return { status: 500, code: 'unexpected', message: '' };
   }
   const e = err as Record<string, unknown> & {
-    response?: { status?: number; data?: unknown };
+    response?: { status?: number; data?: unknown; code?: string; message?: string };
     status?: number;
     code?: string;
     message?: string;
     name?: string;
-    cause?: { code?: string };
+    cause?: { code?: string; data?: { code?: string } };
   };
   let status = 500;
   let body: Record<string, unknown> | null = null;
-  if (e.response && typeof e.response === 'object') {
-    status = Number((e.response as { status?: number }).status ?? 500);
-    const data = (e.response as { data?: unknown }).data;
-    if (data && typeof data === 'object') {
-      body = data as Record<string, unknown>;
-    }
-  } else if (typeof e.status === 'number') {
+
+  // Two real envelopes reach this mapper:
+  //  1. raw-fetch wrapper: { response: { status, data: parsedBody } }
+  //  2. PocketBase JS SDK ClientResponseError: { status, response: parsedBody }
+  //     where parsedBody is the custom-route body { code, message } —
+  //     the SDK puts the parsed body directly on `response`.
+  const resp = e.response;
+  if (typeof e.status === 'number') {
     status = e.status;
+  } else if (resp && typeof resp === 'object' && typeof resp.status === 'number') {
+    status = resp.status;
+  }
+  if (resp && typeof resp === 'object') {
+    if (resp.data && typeof resp.data === 'object') {
+      // Shape 1: { status, data: { code, ... } }
+      body = resp.data as Record<string, unknown>;
+    } else if (typeof resp.code === 'string') {
+      // Shape 2: SDK custom-route body { code, message }.
+      body = resp as unknown as Record<string, unknown>;
+    }
   }
   const code = String(
-    (body?.code as string) ?? (e.code as string) ?? (e.cause?.code as string) ?? '',
+    (body?.code as string) ??
+      (e.code as string) ??
+      (e.cause?.code as string) ??
+      (e.cause?.data?.code as string) ??
+      '',
   );
   const message = String((body?.message as string) ?? (e.message as string) ?? '');
   return { status, code, message };

@@ -167,7 +167,7 @@ test('Service Worker does NOT register in simulated Native (Capacitor) mode', as
   expect(registration.controller).toBeNull();
 });
 
-test('protected API responses are never cached', async ({ page }) => {
+test('protected API responses are never cached', { tag: '@critical' }, async ({ page }) => {
   await waitForServiceWorker(page);
 
   // Fire a representative set of protected requests through the controlled
@@ -201,7 +201,7 @@ test('protected API responses are never cached', async ({ page }) => {
   expect(joined).not.toContain('token');
 });
 
-test('tokenized audio URLs are never cached', async ({ page }) => {
+test('tokenized audio URLs are never cached', { tag: '@critical' }, async ({ page }) => {
   await waitForServiceWorker(page);
 
   const status = await page.evaluate(async () => {
@@ -220,7 +220,9 @@ test('tokenized audio URLs are never cached', async ({ page }) => {
   expect(entries.some((u) => u.includes('/lessons/'))).toBe(false);
 });
 
-test('payment and Placement traffic are not cached (GET + POST)', async ({ page }) => {
+test('payment and Placement traffic are not cached (GET + POST)', { tag: '@critical' }, async ({
+  page,
+}) => {
   await waitForServiceWorker(page);
 
   const statuses = await page.evaluate(async () => {
@@ -258,7 +260,10 @@ test('payment and Placement traffic are not cached (GET + POST)', async ({ page 
   expect(joined).not.toContain('progress');
 });
 
-test('offline navigation renders the honest cached App shell', async ({ context, page }) => {
+test('offline navigation renders the honest cached App shell', { tag: '@critical' }, async ({
+  context,
+  page,
+}) => {
   // Fresh context so the first activation shows the offline-ready notice.
   await page.goto('/');
   await page.evaluate(() => navigator.serviceWorker.ready);

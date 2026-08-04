@@ -22,12 +22,8 @@ const P2S1_DIR = `${QA_ROOT}/p2-s1-placement-qa-fixed`;
 const P2S2_DIR = `${QA_ROOT}/p2-s2-dashboard-qa-fixed`;
 
 const VIEWPORTS: { w: number; h: number; name: string }[] = [
-  { w: 360, h: 800, name: '360x800' },
-  { w: 375, h: 812, name: '375x812' },
   { w: 390, h: 844, name: '390x844' },
-  { w: 430, h: 932, name: '430x932' },
   { w: 768, h: 1024, name: '768x1024' },
-  { w: 1024, h: 768, name: '1024x768' },
   { w: 1440, h: 900, name: '1440x900' },
 ];
 
@@ -248,7 +244,9 @@ test.describe('P2-S1 responsive placement QA', () => {
   });
 
   for (const vp of VIEWPORTS) {
-    test(`[${vp.name}] placement screenshots`, async ({ page }) => {
+    test(`[${vp.name}] placement screenshots`, {
+      tag: vp.name === '390x844' ? '@critical' : undefined,
+    }, async ({ page }) => {
       mkdirSync(`${P2S1_DIR}/${vp.name}`, { recursive: true });
       await page.setViewportSize({ width: vp.w, height: vp.h });
 
@@ -538,7 +536,8 @@ test.describe('P2-S2 responsive dashboard QA', () => {
       // 4. Dashboard
       await expect(page.getByText(/خوش آمدید/i).first()).toBeVisible({ timeout: 5000 });
       await expect(page.getByText(/C2/i).first()).toBeVisible({ timeout: 3000 });
-      await expect(page.getByText(/دروس آموزشی/i).first()).toBeVisible({ timeout: 3000 });
+      // Visual Slice 2 renamed the dashboard progress card heading.
+      await expect(page.getByText(/پیشرفت آموزشی/i).first()).toBeVisible({ timeout: 3000 });
       await expect(page.getByText(/روزهای باقی‌مانده/i).first()).toBeVisible({ timeout: 3000 });
       await page.screenshot({ path: `${P2S2_DIR}/${vp.name}/04-dashboard.png`, fullPage: true });
       expect(

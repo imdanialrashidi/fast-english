@@ -389,7 +389,9 @@ test.describe('P3-S1 Lessons E2E', () => {
   // ------------------------------------------------------------------
   // 1. Eligible student login → lessons list → detail
   // ------------------------------------------------------------------
-  test('eligible student sees lessons list with correct lessons', async ({ page }) => {
+  test('eligible student sees lessons list with correct lessons', { tag: '@critical' }, async ({
+    page,
+  }) => {
     await page.goto('/login');
     // The login form uses `name="phone"` (from react-hook-form register('phone'))
     await page.locator('input[name="phone"]').fill(student.phone);
@@ -434,7 +436,7 @@ test.describe('P3-S1 Lessons E2E', () => {
   // ------------------------------------------------------------------
   // 2. Wrong-level lesson is denied
   // ------------------------------------------------------------------
-  test('wrong-level lesson access returns error', async ({ page }) => {
+  test('wrong-level lesson access returns error', { tag: '@critical' }, async ({ page }) => {
     await page.goto('/login');
     await page.locator('input[name="phone"]').fill(student.phone);
     await page.locator('input[name="password"]').fill(student.password);

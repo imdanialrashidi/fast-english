@@ -35,12 +35,8 @@ const SCREENSHOTS_DIR =
   process.env.OPERATOR_QA_OUT ?? '/tmp/opencode/product-app-visual-polish/operator';
 
 const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
-  { name: '360x800', width: 360, height: 800 },
-  { name: '375x812', width: 375, height: 812 },
   { name: '390x844', width: 390, height: 844 },
-  { name: '430x932', width: 430, height: 932 },
   { name: '768x1024', width: 768, height: 1024 },
-  { name: '1024x768', width: 1024, height: 768 },
   { name: '1440x900', width: 1440, height: 900 },
 ];
 

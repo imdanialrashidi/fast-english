@@ -58,13 +58,6 @@ describe('createPaymentRequest submission semantics', () => {
     expect(sendMock).toHaveBeenCalledTimes(1);
   });
 
-  it('rejects with a PaymentError on network failure', async () => {
-    sendMock.mockRejectedValue(new TypeError('Failed to fetch'));
-    await expect(
-      createPaymentRequest({ planId: 'p1', receiptFile: makeFile() }),
-    ).rejects.toMatchObject({ code: 'unavailable' });
-  });
-
   it('two sequential calls produce two distinct POSTs with no shared state', async () => {
     sendMock.mockResolvedValue({ kind: 'request', request: minimalRequest() });
     await createPaymentRequest({ planId: 'p1', receiptFile: makeFile('a.jpg') });
@@ -78,6 +71,9 @@ describe('createPaymentRequest submission semantics', () => {
     expect(a.name).toBe('a.jpg');
     expect(b.name).toBe('b.jpg');
   });
+
+  // Note: network-failure error mapping is covered by api.test.ts
+  // ("maps a network error to unavailable") — not duplicated here.
 });
 
 function minimalRequest() {

@@ -35,6 +35,8 @@ export const layout = {
   // Chrome heights.
   headerHeight: { xs: 56, md: 64 },
   bottomNavigationHeight: 64,
+  // Tablet rail (md–lg) is icon-only; desktop (lg+) uses the full side nav.
+  navigationRailWidth: 88,
   desktopNavigationWidth: 248,
   // Content width ceilings.
   contentMaxWidth: 1200,

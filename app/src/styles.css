@@ -32,3 +32,31 @@ body {
 #root {
   min-height: 100dvh;
 }
+
+/* Controlled route-content entrance (Visual Slice 2). Durations/easings come
+   from the motion tokens injected as inline `animation` values; the keyframes
+   themselves only describe opacity/transform so the animation never touches
+   layout-heavy properties. The theme's `prefers-reduced-motion` rule
+   collapses the duration to ~0 for users who request reduced motion. */
+@keyframes fep-route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mini Player entrance (slide-up + fade). Same reduced-motion handling. */
+@keyframes fep-mini-player-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
