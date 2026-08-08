@@ -67,13 +67,46 @@ export async function login(base, phone, password = 'Test1234!') {
   return r.body.token;
 }
 
-// Create a fresh operator user and return its token.
-export async function getOperatorToken(base, suToken) {
+export async function staffLogin(base, email, password) {
+  const r = await fetchJson(base, '/api/collections/staff_admins/auth-with-password', {
+    method: 'POST',
+    body: JSON.stringify({ identity: email, password }),
+  });
+  if (r.status !== 200 || !r.body?.token) throw new Error(`staff login failed: status=${r.status}`);
+  return r.body.token;
+}
+
+// Create one active, verified Staff Administrator (the single backstage
+// identity of this slice) and return its token. Only superuser tooling
+// (and the controlled bootstrap command) can create staff records.
+export async function getStaffToken(base, suToken) {
+  const email = `staff-${randomId()}@fep-smoke.invalid`;
+  const password = 'Test1234!';
+  const s = await fetchJson(base, '/api/collections/staff_admins/records', {
+    method: 'POST',
+    headers: { authorization: suToken },
+    body: JSON.stringify({
+      email,
+      password,
+      passwordConfirm: password,
+      display_name: 'Smoke Staff',
+      is_active: true,
+      verified: true,
+    }),
+  });
+  if (!s.body?.id) throw new Error(`staff create failed: ${JSON.stringify(s.body)}`);
+  return staffLogin(base, email, password);
+}
+
+// Legacy fep_users "operator" account: still exists for migration safety,
+// but must no longer be accepted by Staff routes (and requireStudent
+// rejects it on Student routes too).
+export async function getLegacyOperatorToken(base, suToken) {
   const phone = nextPhone();
   const s = await fetchJson(base, '/api/collections/fep_users/records', {
     method: 'POST',
     body: JSON.stringify({
-      name: 'Op',
+      name: 'Legacy Op',
       phone,
       password: 'Test1234!',
       passwordConfirm: 'Test1234!',
@@ -92,7 +125,7 @@ export async function getOperatorToken(base, suToken) {
 // plan → receipt submission → operator approval → fresh session token.
 // Returns { token, userId, phone }.
 export async function createActiveStudent(base, suToken) {
-  const opToken = await getOperatorToken(base, suToken);
+  const staffToken = await getStaffToken(base, suToken);
   const phone = nextPhone();
   const password = 'Test1234!';
   const signupRes = await fetchJson(base, '/api/collections/fep_users/records', {
@@ -161,13 +194,13 @@ export async function createActiveStudent(base, suToken) {
   const prId = prBody?.request?.id;
   if (!prId) throw new Error(`No PR ID: ${JSON.stringify(prBody)}`);
 
-  // Approve via operator
+  // Approve via Staff Administrator
   const approveRes = await fetchJson(
     base,
     `/api/fast-english/operator/payment-requests/${prId}/approve`,
     {
       method: 'POST',
-      headers: { authorization: opToken },
+      headers: { authorization: staffToken },
       body: JSON.stringify({}),
     },
   );

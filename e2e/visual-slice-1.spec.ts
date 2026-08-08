@@ -100,7 +100,12 @@ async function createActiveStudent(
   const activate = await fetch(`${PB_URL}/api/collections/fep_users/records/${created.id}`, {
     method: 'PATCH',
     headers: { 'content-type': 'application/json', authorization: su },
-    body: JSON.stringify({ account_status: 'active', placement_completed: true }),
+    body: JSON.stringify({
+      account_status: 'active',
+      placement_completed: true,
+      // Podcast Slice 5: the Home route requires a selected (preferred) level.
+      selected_level: 'B1',
+    }),
   });
   if (!activate.ok) throw new Error(`student activate failed: ${activate.status}`);
   const login = await fetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
@@ -185,6 +190,10 @@ test.describe('theme behavior', () => {
 
   test('theme switch does not reload the page', async ({ page }) => {
     await page.goto('/dev/catalog');
+    // The Vite dev server performs a one-time optimizer self-reload on the
+    // very first browser load ("504 Outdated Optimize Dep"); let it settle
+    // before counting theme-switch navigations.
+    await page.waitForTimeout(1500);
     let navigations = 0;
     page.on('framenavigated', () => {
       navigations += 1;
@@ -418,6 +427,10 @@ test.describe('computed-style contrast (real rendered pairs)', () => {
       const ratio = contrastOf(fg, bg);
       expect(ratio, `${scheme} primary CTA contrast`).toBeGreaterThanOrEqual(4.5);
       await page.getByRole('button', { name: 'حالت تیره' }).click();
+      // The theme switch animates surface colors (motion token); measure
+      // only after the transition settles so the assertion sees final
+      // colors, never a mid-blend value.
+      await page.waitForTimeout(300);
     }
   });
 
@@ -555,41 +568,48 @@ test.describe('authenticated shell (App Bar, bottom nav, flows)', () => {
   }) => {
     const su = await getSuperuserToken();
     const student = await createActiveStudent(su);
-    await setAuthAndGo(page, student.token, student.record, '/dashboard');
+    await setAuthAndGo(page, student.token, student.record, '/');
+    // The display preference lives only in Account settings (Podcast
+    // Slice 1); drive the scheme there and re-check the App Bar.
     for (const scheme of ['light', 'dark'] as const) {
+      await setAuthAndGo(page, student.token, student.record, '/account');
+      await page
+        .getByTestId('account-theme-switch')
+        .getByRole('button', { name: scheme === 'dark' ? 'حالت تیره' : 'حالت روشن' })
+        .click();
+      await setAuthAndGo(page, student.token, student.record, '/');
       const header = page.locator('header').first();
       const bg = await header.evaluate((el) => getComputedStyle(el).backgroundColor);
-      const iconColor = await page
-        .getByRole('link', { name: 'پنل اپراتور' })
+      const titleColor = await page
+        .getByRole('link', { name: 'فست انگلیش' })
         .evaluate((el) => getComputedStyle(el).color);
-      expect(iconColor.toLowerCase()).not.toMatch(/rgb\(0, 0, 0\)|rgb\(255, 255, 255\)/);
-      const ratio = contrastOf(iconColor, bg);
-      expect(ratio, `${scheme} app bar icon contrast`).toBeGreaterThanOrEqual(3);
-      await page.getByRole('button', { name: 'حالت تیره' }).click();
+      expect(titleColor.toLowerCase()).not.toMatch(/rgb\(0, 0, 0\)|rgb\(255, 255, 255\)/);
+      const ratio = contrastOf(titleColor, bg);
+      expect(ratio, `${scheme} app bar title contrast`).toBeGreaterThanOrEqual(3);
     }
   });
 
-  test('App Bar title does not overlap the theme control at 360px', async ({ page }) => {
+  test('App Bar carries no theme control and the title fits at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     const su = await getSuperuserToken();
     const student = await createActiveStudent(su);
-    await setAuthAndGo(page, student.token, student.record, '/dashboard');
-    const control = page.getByTestId('theme-switch');
-    await expect(control).toBeVisible();
+    await setAuthAndGo(page, student.token, student.record, '/');
+    // Podcast Slice 1: the display preference lives only in Account
+    // settings — never in the always-visible Top App Bar.
+    await expect(page.getByTestId('theme-switch')).toHaveCount(0);
     const titleBox = (await page.getByRole('link', { name: 'فست انگلیش' }).boundingBox())!;
-    const controlBox = (await control.boundingBox())!;
-    // RTL: actions sit at the inline-start (left); title must end before them.
-    expect(titleBox.x).toBeGreaterThanOrEqual(controlBox.x + controlBox.width - 1);
+    expect(titleBox.x).toBeGreaterThanOrEqual(0);
+    expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(360);
   });
 
   test('bottom navigation shows a selected indicator beyond color', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const su = await getSuperuserToken();
     const student = await createActiveStudent(su);
-    await setAuthAndGo(page, student.token, student.record, '/dashboard');
+    await setAuthAndGo(page, student.token, student.record, '/');
     const nav = page.getByTestId('student-bottom-nav');
     await expect(nav).toBeVisible();
-    const selected = nav.getByRole('button', { name: 'خانه' });
+    const selected = nav.getByRole('button', { name: 'خانه', exact: true });
     await expect(selected).toHaveAttribute('aria-label', 'خانه');
     // Selected state renders the ::after indicator (non-transparent).
     const indicator = await selected.evaluate((el) => {
@@ -619,21 +639,30 @@ test.describe('authenticated shell (App Bar, bottom nav, flows)', () => {
     expect(navBox.y).toBeGreaterThan(0);
   });
 
-  test('dashboard and lessons flows render in Light and Dark without overflow', async ({
+  test('home, library, progress and account flows render in Light and Dark without overflow', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const su = await getSuperuserToken();
     const student = await createActiveStudent(su);
-    for (const route of ['/dashboard', '/lessons', '/account']) {
+    for (const route of ['/', '/library', '/progress', '/lessons', '/account']) {
       await setAuthAndGo(page, student.token, student.record, route);
       expect(await noHorizontalOverflow(page), `${route} light`).toBe(true);
-      // Click the Top Bar switch (the Account page also carries a copy of
-      // the preference control since Visual Slice 2).
-      await page.getByTestId('theme-switch').getByRole('button', { name: 'حالت تیره' }).click();
+      // The display preference control lives only in Account settings
+      // (Podcast Slice 1); switch through it, then re-check the route.
+      await setAuthAndGo(page, student.token, student.record, '/account');
+      await page
+        .getByTestId('account-theme-switch')
+        .getByRole('button', { name: 'حالت تیره' })
+        .click();
       await page.waitForTimeout(50);
+      await setAuthAndGo(page, student.token, student.record, route);
       expect(await noHorizontalOverflow(page), `${route} dark`).toBe(true);
-      await page.getByTestId('theme-switch').getByRole('button', { name: 'حالت سیستمی' }).click();
+      await setAuthAndGo(page, student.token, student.record, '/account');
+      await page
+        .getByTestId('account-theme-switch')
+        .getByRole('button', { name: 'حالت سیستمی' })
+        .click();
     }
   });
 

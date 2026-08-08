@@ -1,0 +1,62 @@
+/* Vazirmatn variable WOFF2 — self-hosted from the official v33.003 release.
+   No runtime font CDN. License: SIL OFL 1.1 (see ./assets/fonts/OFL.txt). */
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/Vazirmatn-VF.woff2") format("woff2-variations");
+}
+
+/* `color-scheme` is owned by the theme (Light/Dark/System): the pre-paint
+   init script in index.html sets it before first paint and MUI's generated
+   CSS keeps it in sync with the active scheme. Nothing here may pin it. */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: "Vazirmatn", "IRANSansX", "Tahoma", "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Long English lesson bodies inside the RTL shell use a Latin system stack
+   with `lang="en" dir="ltr"` set on the container. */
+[lang="en"] {
+  font-family:
+    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Controlled route-content entrance (Visual Slice 2). Durations/easings come
+   from the motion tokens injected as inline `animation` values; the keyframes
+   themselves only describe opacity/transform so the animation never touches
+   layout-heavy properties. The theme's `prefers-reduced-motion` rule
+   collapses the duration to ~0 for users who request reduced motion. */
+@keyframes fep-route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mini Player entrance (slide-up + fade). Same reduced-motion handling. */
+@keyframes fep-mini-player-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

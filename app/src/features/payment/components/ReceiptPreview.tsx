@@ -11,8 +11,8 @@ import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import ZoomInRoundedIcon from '@mui/icons-material/ZoomInRounded';
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import { ReceiptZoomDialog } from '../../../../../shared/ui/ReceiptZoomDialog';
 import { useReceiptPreview } from '../useReceiptPreview';
-import { ReceiptZoomDialog } from './ReceiptZoomDialog';
 
 interface Props {
   recordId: string | null;

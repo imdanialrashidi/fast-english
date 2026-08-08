@@ -1,22 +1,37 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import PodcastsRoundedIcon from '@mui/icons-material/PodcastsRounded';
 import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded';
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material';
 import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { productCopy } from '../copy/productCopy';
 
-const items = [
-  { label: 'خانه', value: '/dashboard', icon: <HomeRoundedIcon /> },
-  { label: 'درس‌ها', value: '/lessons', icon: <MenuBookRoundedIcon /> },
-  { label: 'پیشرفت', value: '/placement', icon: <TimelineRoundedIcon /> },
-  { label: 'حساب', value: '/account', icon: <PersonRoundedIcon /> },
+// Final Student destinations (Podcast Slice 5): خانه / کتابخانه / پیشرفت /
+// حساب. Home is the exact '/' route; everything else matches by prefix.
+export const studentNavItems = [
+  { label: productCopy.nav.home, value: '/', icon: <HomeRoundedIcon /> },
+  { label: productCopy.nav.library, value: '/library', icon: <PodcastsRoundedIcon /> },
+  { label: productCopy.nav.progress, value: '/progress', icon: <TimelineRoundedIcon /> },
+  { label: productCopy.nav.account, value: '/account', icon: <PersonRoundedIcon /> },
 ] as const;
+
+/** Selected destination for a pathname ('' when none matches). */
+export function currentNavValue(pathname: string): string {
+  for (const item of studentNavItems) {
+    if (item.value === '/') {
+      if (pathname === '/') return item.value;
+    } else if (pathname.startsWith(item.value)) {
+      return item.value;
+    }
+  }
+  return '';
+}
 
 export function StudentBottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const current = items.find((i) => location.pathname.startsWith(i.value))?.value ?? items[0].value;
+  const current = currentNavValue(location.pathname);
 
   const handleChange = useCallback(
     (_: unknown, next: string) => {
@@ -50,7 +65,7 @@ export function StudentBottomNav() {
         aria-label="ناوبری اصلی"
         sx={{ height: 64 }}
       >
-        {items.map((item) => (
+        {studentNavItems.map((item) => (
           <BottomNavigationAction
             key={item.value}
             value={item.value}

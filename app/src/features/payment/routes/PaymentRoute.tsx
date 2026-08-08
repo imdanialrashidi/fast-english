@@ -30,9 +30,9 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import { PageContainer } from '../../../app/shell/PageContainer';
-import { PageHeader } from '../../../app/shell/PageHeader';
-import { StatePanel } from '../../../app/shell/StatePanel';
+import { PageContainer } from '../../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { useAuth } from '../../../lib/auth';
 import {
   createPaymentRequest,

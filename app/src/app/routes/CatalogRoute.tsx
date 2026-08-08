@@ -33,10 +33,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { Brand } from '../brand/Brand';
-import { StatePanel } from '../shell/StatePanel';
-import { contrastRatio } from '../theme/contrast';
-import { ThemeSwitch } from '../theme/ThemeSwitch';
+import { Brand } from '../../../../shared/ui/brand/Brand';
+import { contrastRatio } from '../../../../shared/ui/contrast';
+import { StatePanel } from '../../../../shared/ui/StatePanel';
+import { ThemeSwitch } from '../../../../shared/ui/ThemeSwitch';
 import {
   duration,
   easing,
@@ -51,8 +51,8 @@ import {
   sourceBrand,
   spacingScale,
   typeScale,
-} from '../theme/tokens';
-import { cefr, cefrLevels } from '../theme/tokens/cefr';
+} from '../../../../shared/ui/tokens';
+import { cefr, cefrLevels } from '../../../../shared/ui/tokens/cefr';
 
 function Section({
   id,

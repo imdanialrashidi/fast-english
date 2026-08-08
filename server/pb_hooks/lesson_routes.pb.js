@@ -75,18 +75,48 @@ routerAdd(
     }
 
     // Sanitized lesson shape (no body, no audio filename, no internal notes)
-    function shapeLessonListItem(rec) {
+    function shapeLessonListItem(rec, pd) {
       if (!rec) return null;
       var topicId = "";
       try { topicId = String(rec.get("topic") || ""); } catch (_) {}
       var topicTitle = "";
       var topicSlug = "";
+      var topicContentKey = "";
+      var topicTitleFa = "";
+      var topicDescFa = "";
+      var topicFeatured = false;
+      var episodeArtwork = "";
+      var episodeHero = "";
+      var categoryInfo = null;
       if (topicId) {
         try {
           var t = $app.findRecordById(TOPICS_C, topicId);
           if (t) {
             topicTitle = String(t.get("title") || "");
             topicSlug = String(t.get("slug") || "");
+            topicContentKey = String(t.get("content_key") || "");
+            topicTitleFa = String(t.get("title_fa") || "");
+            topicDescFa = String(t.get("description_fa") || "");
+            topicFeatured = Boolean(t.get("is_featured"));
+            episodeArtwork = pd && pd.resolveEpisodeArtwork ? pd.resolveEpisodeArtwork(String(rec.id || "")) : "";
+            if (t.get("hero_image_wide")) {
+              episodeHero = pd && pd.resolveHeroArtworkUrl ? pd.resolveHeroArtworkUrl(String(rec.id || "")) : "";
+            }
+            var catId = "";
+            try { catId = String(t.get("category") || ""); } catch (_) {}
+            if (catId) {
+              try {
+                var cat = $app.findRecordById("categories", catId);
+                if (cat) {
+                  categoryInfo = {
+                    id: String(cat.id || ""),
+                    key: String(cat.get("key") || ""),
+                    slug: String(cat.get("slug") || ""),
+                    titleFa: String(cat.get("title_fa") || ""),
+                  };
+                }
+              } catch (_) {}
+            }
           }
         } catch (_) {}
       }
@@ -107,6 +137,18 @@ routerAdd(
         audioDurationSeconds: authoritativeDuration,
         publishedAt: rec.get("published_at") || null,
         isPublicSample: Boolean(rec.get("is_public_sample")),
+        episode: {
+          id: topicId,
+          slug: topicSlug,
+          contentKey: topicContentKey,
+          title: topicTitle,
+          titleFa: topicTitleFa,
+          descriptionFa: topicDescFa,
+          category: categoryInfo,
+          artwork: episodeArtwork,
+          heroImage: episodeHero || null,
+          featured: topicFeatured,
+        },
       };
     }
 
@@ -124,9 +166,15 @@ routerAdd(
         if (!student) {
           entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
         } else {
-          var role = String(student.get("role") || "");
-          if (role !== "student") {
-            entitlementErr = { status: 403, body: { code: "access_denied", message: "Access denied." } };
+          // Central Student guard (guards.pb.js): Auth Collection must
+          // be `fep_users` with role === 'student'. Legacy Staff
+          // records are rejected here.
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          // Fail closed: an unavailable guard must not let the request through.
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
           } else {
             var acct = String(student.get("account_status") || "");
             if (acct === "suspended") {
@@ -168,12 +216,32 @@ routerAdd(
 
       var uid = String(e.auth.id || "");
 
-      // Get selected level from live user
+      // Load the live student; resolve recommended/preferred levels.
       var student = null;
       try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
       if (!student) return e.json(401, { code: "user_not_found", message: "User not found." });
-      var selLvl = String(student.get("selected_level") || "");
-      if (!selLvl) return e.json(403, { code: "no_level", message: "No level selected." });
+      var pd = null;
+      try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+      if (!pd) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var recommendedLevel = pd.getRecommendedLevel($app, student);
+      var preferredLevel = pd.getPreferredLevel(student, recommendedLevel);
+
+      // Browsing level: temporary per-request state (never persisted).
+      // Defaults to the preferred level; the level equality check is no
+      // longer an authorization requirement (entitlement grants access to
+      // every Published Variant, A1–C2).
+      var requestedLevel = "";
+      try {
+        var qLevel = e.request.url.query().get("level");
+        if (qLevel) {
+          requestedLevel = pd.normalizeLevel(qLevel);
+          if (!requestedLevel) {
+            return e.json(400, { code: "invalid_level", message: "Invalid level. Must be one of: A1, A2, B1, B2, C1, C2." });
+          }
+        }
+      } catch (_) {}
+      if (!requestedLevel) requestedLevel = preferredLevel;
+      if (!requestedLevel) return e.json(403, { code: "no_level", message: "No level selected." });
 
       // Rate limit
       var rateErr = checkRate(uid);
@@ -189,37 +257,26 @@ routerAdd(
         if (qPer) { var np2 = parseInt(qPer, 10); if (np2 > 0 && np2 <= 100) perPage = np2; }
       } catch (_) {}
 
-      // Find published lessons for the student's level, ordered by topic sort_order then published_at
-      var lessons = [];
-      var totalItems = 0;
+      // Find published lessons for the requested browsing level, ordered by topic sort_order then published_at
+      var allMatching = [];
       try {
-        // First count
-        var countHits = $app.findRecordsByFilter(
-          LESSONS_C,
-          "level = {:lvl} && status = 'published'",
-          "",
-          0,
-          0,
-          { lvl: selLvl }
-        );
-        totalItems = countHits ? countHits.length : 0;
-
-        // Paginated fetch — ordered by created desc (stable sort)
-        var skip = (page - 1) * perPage;
-        lessons = $app.findRecordsByFilter(
+        allMatching = $app.findRecordsByFilter(
           LESSONS_C,
           "level = {:lvl} && status = 'published'",
           "-published_at",
-          perPage,
-          skip,
-          { lvl: selLvl }
+          0,
+          0,
+          { lvl: requestedLevel }
         );
       } catch (qe) {}
 
-      // Filter to only those with published topics
-      var filtered = [];
-      for (var li = 0; li < (lessons ? lessons.length : 0); li++) {
-        var lesson = lessons[li];
+      // Filter to only those with published topics AND published parent
+      // Categories (Category archival hides all child content). This runs
+      // BEFORE pagination so hidden records never consume page slots or
+      // inflate totalItems.
+      var visible = [];
+      for (var li = 0; li < (allMatching ? allMatching.length : 0); li++) {
+        var lesson = allMatching[li];
         if (!lesson) continue;
         var tId = "";
         try { tId = String(lesson.get("topic") || ""); } catch (_) {}
@@ -227,12 +284,22 @@ routerAdd(
         if (tId) {
           try {
             var tRec = $app.findRecordById(TOPICS_C, tId);
-            if (tRec && tRec.get("status") === "published") topicPublished = true;
+            if (tRec && tRec.get("status") === "published") {
+              var catRes = pd.requirePublishedCategory($app, tRec.get("category"));
+              if (catRes.ok) topicPublished = true;
+            }
           } catch (_) {}
         }
         if (topicPublished) {
-          filtered.push(shapeLessonListItem(lesson));
+          visible.push(lesson);
         }
+      }
+
+      var totalItems = visible.length;
+      var skip = (page - 1) * perPage;
+      var filtered = [];
+      for (var vi = skip; vi < visible.length && filtered.length < perPage; vi++) {
+        filtered.push(shapeLessonListItem(visible[vi], pd));
       }
 
       try { e.response.header().set("Cache-Control", "private, no-store"); } catch (_) {}
@@ -243,6 +310,9 @@ routerAdd(
         page: page,
         perPage: perPage,
         totalItems: totalItems,
+        level: requestedLevel,
+        recommendedLevel: recommendedLevel,
+        preferredLevel: preferredLevel,
       });
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
@@ -297,9 +367,15 @@ routerAdd(
         if (!student) {
           entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
         } else {
-          var role = String(student.get("role") || "");
-          if (role !== "student") {
-            entitlementErr = { status: 403, body: { code: "access_denied", message: "Access denied." } };
+          // Central Student guard (guards.pb.js): Auth Collection must
+          // be `fep_users` with role === 'student'. Legacy Staff
+          // records are rejected here.
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          // Fail closed: an unavailable guard must not let the request through.
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
           } else {
             var acct = String(student.get("account_status") || "");
             if (acct === "suspended") {
@@ -341,12 +417,15 @@ routerAdd(
 
       var uid = String(e.auth.id || "");
 
-      // Get selected level from live user
+      // Load the live student; resolve recommended/preferred levels.
       var student = null;
       try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
       if (!student) return e.json(401, { code: "user_not_found", message: "User not found." });
-      var selLvl = String(student.get("selected_level") || "");
-      if (!selLvl) return e.json(403, { code: "no_level", message: "No level selected." });
+      var pd = null;
+      try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+      if (!pd) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var recommendedLevel = pd.getRecommendedLevel($app, student);
+      var preferredLevel = pd.getPreferredLevel(student, recommendedLevel);
 
       // Path parameter
       var lessonId = "";
@@ -362,10 +441,11 @@ routerAdd(
       try { lesson = $app.findRecordById(LESSONS_C, lessonId); } catch (_) {}
       if (!lesson) return e.json(404, { code: "not_found", message: "Lesson not found." });
 
-      // Verify it's published and matches the student's level
+      // Cross-level access: the level equality check is removed — an
+      // entitled Student may open any Published Variant (A1–C2).
       var lessonLevel = String(lesson.get("level") || "");
       var lessonStatus = String(lesson.get("status") || "");
-      if (lessonStatus !== "published" || lessonLevel !== selLvl) {
+      if (lessonStatus !== "published") {
         return e.json(404, { code: "not_found", message: "Lesson not found." });
       }
 
@@ -375,13 +455,44 @@ routerAdd(
       var topicPublished = false;
       var topicTitle = "";
       var topicSlug = "";
+      var topicContentKey = "";
+      var topicTitleFa = "";
+      var topicDescFa = "";
+      var topicFeatured = false;
+      var episodeHero = "";
+      var categoryInfo = null;
       if (topicId) {
         try {
           var tRec = $app.findRecordById(TOPICS_C, topicId);
           if (tRec) {
             topicTitle = String(tRec.get("title") || "");
             topicSlug = String(tRec.get("slug") || "");
-            if (tRec.get("status") === "published") topicPublished = true;
+            topicContentKey = String(tRec.get("content_key") || "");
+            topicTitleFa = String(tRec.get("title_fa") || "");
+            topicDescFa = String(tRec.get("description_fa") || "");
+            topicFeatured = Boolean(tRec.get("is_featured"));
+            if (tRec.get("hero_image_wide")) {
+              episodeHero = pd.resolveHeroArtworkUrl(String(lesson.id || ""));
+            }
+            if (tRec.get("status") === "published") {
+              var catRes = pd.requirePublishedCategory($app, tRec.get("category"));
+              if (catRes.ok) topicPublished = true;
+            }
+            var catId2 = "";
+            try { catId2 = String(tRec.get("category") || ""); } catch (_) {}
+            if (catId2) {
+              try {
+                var cat2 = $app.findRecordById("categories", catId2);
+                if (cat2) {
+                  categoryInfo = {
+                    id: String(cat2.id || ""),
+                    key: String(cat2.get("key") || ""),
+                    slug: String(cat2.get("slug") || ""),
+                    titleFa: String(cat2.get("title_fa") || ""),
+                  };
+                }
+              } catch (_) {}
+            }
           }
         } catch (_) {}
       }
@@ -409,6 +520,37 @@ routerAdd(
       // Server-authoritative duration (publish hook enforces it is set).
       var authoritativeDuration = Number(lesson.get("audio_duration_seconds") || 0);
 
+      // Available levels for the same Episode: only Published Variants
+      // (parent Episode and Category already proven published), in the
+      // canonical CEFR order, with enough information for a future Level
+      // Switcher. Draft/archived Variant IDs are never included.
+      var availableLevels = [];
+      var levelList = pd.listPublishedLevelsForEpisode($app, topicId);
+      for (var ai = 0; ai < levelList.length; ai++) {
+        var entry = levelList[ai];
+        availableLevels.push({
+          level: entry.level,
+          variantId: entry.variantId,
+          available: true,
+          isRecommended: entry.level === recommendedLevel,
+          isPreferred: entry.level === preferredLevel,
+        });
+      }
+
+      // Vocabulary count for this Variant (single query).
+      var vocabularyCount = 0;
+      try {
+        var vocabHits = $app.findRecordsByFilter(
+          "lesson_vocabulary",
+          "lesson = {:lid}",
+          "",
+          0,
+          0,
+          { lid: String(lesson.id || "") }
+        );
+        vocabularyCount = vocabHits ? vocabHits.length : 0;
+      } catch (_) {}
+
       return e.json(200, {
         id: String(lesson.id || ""),
         topic: {
@@ -428,6 +570,30 @@ routerAdd(
           contentType: audioContentType,
           estimatedMinutes: Number(lesson.get("estimated_minutes") || 0),
         },
+        episode: {
+          id: topicId,
+          slug: topicSlug,
+          contentKey: topicContentKey,
+          title: topicTitle,
+          titleFa: topicTitleFa,
+          descriptionFa: topicDescFa,
+          category: categoryInfo,
+          artwork: pd.resolveEpisodeArtwork(String(lesson.id || "")),
+          heroImage: episodeHero || null,
+          featured: topicFeatured,
+        },
+        variant: {
+          id: String(lesson.id || ""),
+          level: lessonLevel,
+          summaryFa: String(lesson.get("summary_fa") || ""),
+          transcript: String(lesson.get("body") || ""),
+          audioDurationSeconds: authoritativeDuration,
+          publicationStatus: lessonStatus,
+        },
+        recommendedLevel: recommendedLevel,
+        preferredLevel: preferredLevel,
+        availableLevels: availableLevels,
+        vocabularyCount: vocabularyCount,
       });
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
@@ -487,7 +653,8 @@ routerAdd(
         return e.json(200, { kind: "sample_unavailable" });
       }
 
-      // Verify topic is published
+      // Verify topic is published AND its parent Category is published
+      // (Category archival hides all child content, including samples).
       var topicId = "";
       try { topicId = String(sample.get("topic") || ""); } catch (_) {}
       var topicPublished = false;
@@ -499,7 +666,14 @@ routerAdd(
           if (tRec) {
             topicTitle = String(tRec.get("title") || "");
             topicSlug = String(tRec.get("slug") || "");
-            if (tRec.get("status") === "published") topicPublished = true;
+            if (tRec.get("status") === "published") {
+              var pdS = null;
+              try { pdS = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdS = null; }
+              if (pdS) {
+                var catS = pdS.requirePublishedCategory($app, tRec.get("category"));
+                if (catS.ok) topicPublished = true;
+              }
+            }
           }
         } catch (_) {}
       }
@@ -574,6 +748,7 @@ routerAdd(
   "/api/fast-english/public/sample/audio",
   function (e) {
     var LESSONS_C = "lessons";
+    var TOPICS_C = "topics";
     var MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10 MB
 
     // Per-IP rate limit
@@ -609,6 +784,28 @@ routerAdd(
       } catch (_) {}
 
       if (!sample) {
+        return e.json(404, { code: "not_found", message: "Sample not found." });
+      }
+
+      // Verify topic + parent Category are published (Category archival
+      // hides all child content, including the public sample audio).
+      var saTopicId = "";
+      try { saTopicId = String(sample.get("topic") || ""); } catch (_) {}
+      var saTopicPublished = false;
+      if (saTopicId) {
+        try {
+          var saTopic = $app.findRecordById(TOPICS_C, saTopicId);
+          if (saTopic && saTopic.get("status") === "published") {
+            var pdSA = null;
+            try { pdSA = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdSA = null; }
+            if (pdSA) {
+              var catSA = pdSA.requirePublishedCategory($app, saTopic.get("category"));
+              if (catSA.ok) saTopicPublished = true;
+            }
+          }
+        } catch (_) {}
+      }
+      if (!saTopicPublished) {
         return e.json(404, { code: "not_found", message: "Sample not found." });
       }
 
@@ -845,7 +1042,11 @@ routerAdd(
         return e.json(401, { code: "auth_required", message: "Authentication required." });
       }
 
-      // Role check
+      // Student rule on the resolved record. This route accepts a Bearer
+      // token OR a file token (for <audio> elements); a file token has no
+      // e.auth record, so the same rule as the central guard (guards.pb.js:
+      // fep_users collection, role === 'student') is applied to the record
+      // resolved from either token. Legacy Staff records are rejected.
       var role = String(student.get("role") || "");
       if (role !== "student") {
         return e.json(403, { code: "access_denied", message: "Access denied." });
@@ -901,26 +1102,29 @@ routerAdd(
       try { lesson = $app.findRecordById(LESSONS_C, lessonId); } catch (_) {}
       if (!lesson) return e.json(404, { code: "not_found", message: "Lesson not found." });
 
-      // Level match
-      var lessonLevel = String(lesson.get("level") || "");
-      if (lessonLevel !== selLvl) {
-        return e.json(404, { code: "not_found", message: "Lesson not found." });
-      }
-
       // Lesson status
       var lessonStatus = String(lesson.get("status") || "");
       if (lessonStatus !== "published") {
         return e.json(404, { code: "not_found", message: "Lesson not found." });
       }
 
-      // Topic published check
+      // Topic published check + published parent Category check.
+      // (Cross-level access: no level equality check — an entitled
+      // Student may stream any Published Variant, A1–C2.)
       var topicId = "";
       try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
       var topicPublished = false;
       if (topicId) {
         try {
           var tRec = $app.findRecordById(TOPICS_C, topicId);
-          if (tRec && tRec.get("status") === "published") topicPublished = true;
+          if (tRec && tRec.get("status") === "published") {
+            var pdCat = null;
+            try { pdCat = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdCat = null; }
+            if (pdCat) {
+              var catRes = pdCat.requirePublishedCategory($app, tRec.get("category"));
+              if (catRes.ok) topicPublished = true;
+            }
+          }
         } catch (_) {}
       }
       if (!topicPublished) {
@@ -1064,6 +1268,182 @@ routerAdd(
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
       try { $app.logger().error("lesson_routes: PREMIUM AUDIO error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
+    }
+  }
+);
+
+// =====================================================================
+// GET /api/fast-english/artwork/{lessonId}
+// Public Episode artwork (Podcast Slice 2).
+//
+// Artwork policy (docs/PODCAST_DOMAIN.md): Published Episode artwork is
+// public and cacheable because it appears in Library discovery. Draft and
+// archived artwork remains inaccessible (404). The route is public (no
+// auth) but only serves bytes when the Variant, its Episode and its
+// Category are all published.
+//
+// Resolution order (server-side, single source):
+//   lesson.thumbnail_override -> topic.artwork_square -> Product fallback
+// The fallback is a controlled, deterministic inline SVG asset — never a
+// broken image. No artwork copy is stored per Variant.
+//
+//   GET /api/fast-english/artwork/{lessonId}/hero
+// Optional wide presentation image (topic.hero_image_wide); 404 when the
+// Episode has no wide image. Same published-state gating.
+//
+// The shared byte-serving helpers live in podcast_domain.pb.js (PB 0.39
+// JSVM does not share top-level declarations with routerAdd closures).
+// =====================================================================
+
+routerAdd(
+  "GET",
+  "/api/fast-english/artwork/{lessonId}",
+  function (e) {
+    var LESSONS_C = "lessons";
+    var TOPICS_C = "topics";
+
+    // Per-IP rate limit. Buckets are keyed by the real client IP so one
+    // caller cannot exhaust the budget for every user; the map is bounded
+    // by evicting stale windows once it grows large.
+    if (typeof globalThis.__fepArtwork === "undefined") { globalThis.__fepArtwork = {}; }
+    var RATE_WIN = globalThis.__fepArtwork;
+    var RATE_MAX = 60;
+    var RATE_MS = 300000;
+
+    var pd = null;
+    try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+
+    function checkRate() {
+      var key = (pd && pd.clientIp) ? pd.clientIp(e) : "unknown";
+      var now = Date.now(); var ws = now - RATE_MS;
+      try {
+        if (Object.keys(RATE_WIN).length >= 2048) {
+          var keys = Object.keys(RATE_WIN);
+          for (var ki = 0; ki < keys.length; ki++) {
+            var w2 = RATE_WIN[keys[ki]];
+            if (!w2 || !w2.length || w2[w2.length - 1] <= ws) delete RATE_WIN[keys[ki]];
+          }
+        }
+      } catch (_) {}
+      var win = RATE_WIN[key]; if (!win || !Array.isArray(win)) { win = []; RATE_WIN[key] = win; }
+      var keep = []; for (var wi = 0; wi < win.length; wi++) { if (win[wi] > ws) keep.push(win[wi]); }
+      win.length = 0; for (var wj = 0; wj < keep.length; wj++) win.push(keep[wj]);
+      if (win.length >= RATE_MAX) { var retry = Math.ceil((win[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
+      win.push(now);
+      return null;
+    }
+
+    try {
+      var rateErr = checkRate();
+      if (rateErr) return e.json(rateErr.status, rateErr.body);
+
+      var lessonId = "";
+      try { lessonId = String(e.request.pathValue("lessonId") || ""); } catch (_) {}
+      if (!lessonId) return e.json(400, { code: "invalid_request", message: "Missing lessonId." });
+
+      if (!pd || !pd.artworkCheckTopicPublished) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+
+      var lesson = null;
+      try { lesson = $app.findRecordById(LESSONS_C, lessonId); } catch (_) {}
+      if (!lesson) return e.json(404, { code: "not_found", message: "Not found." });
+      if (String(lesson.get("status") || "") !== "published") {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+      var topicId = "";
+      try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
+      var topic = null;
+      if (topicId) { try { topic = $app.findRecordById(TOPICS_C, topicId); } catch (_) {} }
+      if (!pd.artworkCheckTopicPublished($app, topic)) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+
+      // Resolution order: thumbnail_override -> artwork_square -> fallback.
+      var storedName = String(lesson.get("thumbnail_override") || "");
+      var serveRecord = lesson;
+      if (!storedName) {
+        storedName = String(topic.get("artwork_square") || "");
+        serveRecord = topic;
+      }
+      return pd.serveArtworkBytes($app, e, serveRecord, storedName, pd.artworkContentType(storedName), pd.fallbackArtworkSvg());
+    } catch (topErr) {
+      var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
+      try { $app.logger().error("lesson_routes: ARTWORK error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
+    }
+  }
+);
+
+routerAdd(
+  "GET",
+  "/api/fast-english/artwork/{lessonId}/hero",
+  function (e) {
+    var LESSONS_C = "lessons";
+    var TOPICS_C = "topics";
+
+    // Per-IP rate limit. Buckets are keyed by the real client IP so one
+    // caller cannot exhaust the budget for every user; the map is bounded
+    // by evicting stale windows once it grows large.
+    if (typeof globalThis.__fepHeroArt === "undefined") { globalThis.__fepHeroArt = {}; }
+    var RATE_WIN = globalThis.__fepHeroArt;
+    var RATE_MAX = 60;
+    var RATE_MS = 300000;
+
+    var pd = null;
+    try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+
+    function checkRate() {
+      var key = (pd && pd.clientIp) ? pd.clientIp(e) : "unknown";
+      var now = Date.now(); var ws = now - RATE_MS;
+      try {
+        if (Object.keys(RATE_WIN).length >= 2048) {
+          var keys = Object.keys(RATE_WIN);
+          for (var ki = 0; ki < keys.length; ki++) {
+            var w2 = RATE_WIN[keys[ki]];
+            if (!w2 || !w2.length || w2[w2.length - 1] <= ws) delete RATE_WIN[keys[ki]];
+          }
+        }
+      } catch (_) {}
+      var win = RATE_WIN[key]; if (!win || !Array.isArray(win)) { win = []; RATE_WIN[key] = win; }
+      var keep = []; for (var wi = 0; wi < win.length; wi++) { if (win[wi] > ws) keep.push(win[wi]); }
+      win.length = 0; for (var wj = 0; wj < keep.length; wj++) win.push(keep[wj]);
+      if (win.length >= RATE_MAX) { var retry = Math.ceil((win[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
+      win.push(now);
+      return null;
+    }
+
+    try {
+      var rateErr = checkRate();
+      if (rateErr) return e.json(rateErr.status, rateErr.body);
+
+      var lessonId = "";
+      try { lessonId = String(e.request.pathValue("lessonId") || ""); } catch (_) {}
+      if (!lessonId) return e.json(400, { code: "invalid_request", message: "Missing lessonId." });
+
+      if (!pd || !pd.artworkCheckTopicPublished) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+
+      var lesson = null;
+      try { lesson = $app.findRecordById(LESSONS_C, lessonId); } catch (_) {}
+      if (!lesson) return e.json(404, { code: "not_found", message: "Not found." });
+      if (String(lesson.get("status") || "") !== "published") {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+      var topicId = "";
+      try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
+      var topic = null;
+      if (topicId) { try { topic = $app.findRecordById(TOPICS_C, topicId); } catch (_) {} }
+      if (!pd.artworkCheckTopicPublished($app, topic)) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+
+      var heroName = String(topic.get("hero_image_wide") || "");
+      if (!heroName) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+      return pd.serveArtworkBytes($app, e, topic, heroName, pd.artworkContentType(heroName), null);
+    } catch (topErr) {
+      var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
+      try { $app.logger().error("lesson_routes: HERO error: " + msg); } catch (_) {}
       return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   }

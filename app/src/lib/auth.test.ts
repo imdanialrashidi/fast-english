@@ -13,8 +13,6 @@ const active: FepUser = {
 };
 const pending: FepUser = { ...active, account_status: 'pending_payment' };
 const suspended: FepUser = { ...active, account_status: 'suspended' };
-const operator: FepUser = { ...active, role: 'operator' };
-
 describe('decideRoute', () => {
   it('public route always allows', () => {
     expect(decideRoute('public', null, false)).toEqual({ kind: 'allow' });
@@ -25,10 +23,10 @@ describe('decideRoute', () => {
     expect(d).toEqual({ kind: 'redirect', to: '/placement' });
   });
 
-  it('guest-only redirects authenticated active user with completed placement to /dashboard', () => {
+  it('guest-only redirects authenticated active user with completed placement to the Home route', () => {
     const completed: FepUser = { ...active, placement_completed: true, selected_level: 'B1' };
     const d = decideRoute('guest-only', completed, true);
-    expect(d).toEqual({ kind: 'redirect', to: '/dashboard' });
+    expect(d).toEqual({ kind: 'redirect', to: '/' });
   });
 
   it('guest-only redirects authenticated pending user to /payment', () => {
@@ -57,9 +55,9 @@ describe('decideRoute', () => {
     expect(decideRoute('pending-only', expired, true)).toEqual({ kind: 'allow' });
   });
 
-  it('pending-only redirects active user to placement/dashboard', () => {
+  it('pending-only redirects active user to the Home route', () => {
     const d = decideRoute('pending-only', active, true);
-    expect(d.kind).toBe('redirect');
+    expect(d).toEqual({ kind: 'redirect', to: '/' });
   });
 
   it('active-only redirects unauthenticated to /login', () => {
@@ -81,26 +79,5 @@ describe('decideRoute', () => {
   it('active-only redirects suspended user to /payment', () => {
     const d = decideRoute('active-only', suspended, true);
     expect(d).toEqual({ kind: 'redirect', to: '/payment' });
-  });
-
-  it('operator-only denies unauthenticated', () => {
-    expect(decideRoute('operator-only', null, false)).toEqual({
-      kind: 'redirect',
-      to: '/login',
-    });
-  });
-
-  it('operator-only denies student', () => {
-    const d = decideRoute('operator-only', active, true);
-    expect(d).toEqual({ kind: 'deny' });
-  });
-
-  it('operator-only allows operator', () => {
-    expect(decideRoute('operator-only', operator, true)).toEqual({ kind: 'allow' });
-  });
-
-  it('operator-only denies content_manager', () => {
-    const cm: FepUser = { ...active, role: 'content_manager' };
-    expect(decideRoute('operator-only', cm, true)).toEqual({ kind: 'deny' });
   });
 });

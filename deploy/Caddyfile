@@ -4,11 +4,12 @@
 #   fastenglishpodcast.com            static Landing (multi-page) + /releases/ (APK)
 #   www.fastenglishpodcast.com        permanent redirect to the canonical root
 #   app.fastenglishpodcast.com        Product App/PWA + /api/* -> PocketBase 127.0.0.1:8090
-#   admin.fastenglishpodcast.com      Operator interface (same SPA) + /api/* -> PocketBase
+#   admin.fastenglishpodcast.com      Unified Staff Admin Console (dist-admin) + /api/* -> PocketBase
 #
 # Layout on the server (see docs/DEPLOYMENT.md):
 #   /opt/fast-english/current/landing   static landing (atomic symlink)
 #   /opt/fast-english/current/app       product app (atomic symlink)
+#   /opt/fast-english/current/admin     unified Staff Admin Console (atomic symlink)
 #   /opt/fast-english/shared/releases   persistent APK + release metadata (immutable files)
 #   /opt/fast-english/shared/logs/      access logs (rotated, bounded)
 #
@@ -180,7 +181,7 @@ app.fastenglishpodcast.com {
 }
 
 # ---------------------------------------------------------------------------
-# Operator interface + PocketBase APIs
+# Unified Staff Admin Console + PocketBase APIs
 # ---------------------------------------------------------------------------
 admin.fastenglishpodcast.com {
 	encode zstd gzip
@@ -209,9 +210,6 @@ admin.fastenglishpodcast.com {
 		}
 	}
 
-	# Operator entry point. 308 keeps the redirect uncached and reversible.
-	redir / /operator 308
-
 	handle /api/* {
 		request_body {
 			max_size 6MB
@@ -228,16 +226,17 @@ admin.fastenglishpodcast.com {
 		respond 404
 	}
 
+	# The Admin Console is a separate SPA (dist-admin): no Student bundle,
+	# no Service Worker, no manifest, no PWA shortcuts. `admin/` never
+	# redirects to a Student /operator route.
 	handle {
-		root * /opt/fast-english/current/app
+		root * /opt/fast-english/current/admin
 		try_files {path} /index.html
 		file_server
 
 		@assets path /assets/*
 		header @assets Cache-Control "public, max-age=31536000, immutable"
-		@nocache path /index.html /sw.js /manifest.webmanifest
+		@nocache path /index.html
 		header @nocache Cache-Control "no-cache, no-store, must-revalidate"
-		@icons path /pwa-*.png
-		header @icons Cache-Control "public, max-age=3600"
 	}
 }

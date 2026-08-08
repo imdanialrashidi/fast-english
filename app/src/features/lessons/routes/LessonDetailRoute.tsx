@@ -12,13 +12,13 @@
 import { Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { PageContainer } from '../../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../../shared/ui/StatePanel';
+import { duration, easing, layout } from '../../../../../shared/ui/tokens';
+import type { CefrLevel } from '../../../../../shared/ui/tokens/cefr';
 import { LevelBadge } from '../../../app/shell/LevelBadge';
-import { PageContainer } from '../../../app/shell/PageContainer';
-import { PageHeader } from '../../../app/shell/PageHeader';
 import { LessonDetailSkeleton } from '../../../app/shell/PageSkeletons';
-import { StatePanel } from '../../../app/shell/StatePanel';
-import { duration, easing, layout } from '../../../app/theme/tokens';
-import type { CefrLevel } from '../../../app/theme/tokens/cefr';
 import { AudioPlayer } from '../../player';
 import * as progressApi from '../../progress/api';
 import type { LessonProgressResponse } from '../../progress/types';

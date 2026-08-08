@@ -22,7 +22,7 @@ import VolumeOffRoundedIcon from '@mui/icons-material/VolumeOffRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 import { Box, Button, Chip, IconButton, Slider, Stack, Tooltip, Typography } from '@mui/material';
 import { useEffect, useRef } from 'react';
-import { radius } from '../../app/theme/tokens';
+import { radius } from '../../../../shared/ui/tokens';
 import { type PlayerSession, usePlayer } from './PlayerProvider';
 
 export interface AudioPlayerProps {

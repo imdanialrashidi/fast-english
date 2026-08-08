@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import { PageContainer } from '../shell/PageContainer';
-import { PageHeader } from '../shell/PageHeader';
-import { StatePanel } from '../shell/StatePanel';
+import { PageContainer } from '../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../shared/ui/StatePanel';
 
 export function PlacementRoute() {
   return (

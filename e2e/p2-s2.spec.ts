@@ -5,6 +5,7 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { createStaff } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 
@@ -99,30 +100,8 @@ async function seedFixtures(suToken: string): Promise<void> {
 }
 
 async function getOperatorToken(suToken: string): Promise<string> {
-  const phone = nextPhone();
-  const s = await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const uid = (s.body as Record<string, string>)?.id || '';
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${uid}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${suToken}` },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const l = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    body: JSON.stringify({
-      identity: (s.body as Record<string, string>)?.phone || phone,
-      password: 'Test1234!',
-    }),
-  });
-  return (l.body as { token?: string })?.token || '';
+  const staff = await createStaff(suToken);
+  return staff.token;
 }
 
 async function createActiveStudent(suToken: string): Promise<{ phone: string; token: string }> {
@@ -300,9 +279,9 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     const acceptBtn = page.getByRole('button', { name: /C2/i });
     await acceptBtn.click();
 
-    // Should redirect to dashboard
-    await page.waitForURL('**/dashboard', { timeout: 10000 });
-    await expect(page.getByText(/خوش آمدید/i)).toBeVisible({ timeout: 5000 });
+    // Should redirect to the Home route
+    await page.waitForURL(/\/$/, { timeout: 10000 });
+    await expect(page.getByText(/سلام/i).first()).toBeVisible({ timeout: 5000 });
     await expect(page.getByText('C2').first()).toBeVisible();
   });
 
@@ -323,15 +302,17 @@ test.describe('P2-S2 Level Selection and Dashboard E2E', () => {
     await page.getByLabel('شمارهٔ موبایل').fill(student.phone);
     await page.locator('input[name="password"]').fill('Test1234!');
     await page.getByRole('button', { name: 'ورود' }).click();
-    await page.waitForURL('**/dashboard', { timeout: 10000 });
+    await page.waitForURL(/\/$/, { timeout: 10000 });
 
-    // Check elements
-    await expect(page.getByText(/خوش آمدید/i)).toBeVisible();
+    // Check elements (Podcast Slice 5 Home)
+    await expect(page.getByText(/سلام/i).first()).toBeVisible();
     await expect(page.getByText('B1').first()).toBeVisible();
     await expect(page.getByText(/سطح پیشنهادی/i).first()).toBeVisible();
-    // Visual Slice 2 renamed the dashboard progress card heading.
-    await expect(page.getByText(/پیشرفت آموزشی/i)).toBeVisible();
+    // Home progress panel carries the Product vocabulary.
+    await expect(page.getByTestId('progress-card')).toBeVisible();
     await expect(page.getByText(/روزهای باقی‌مانده/i)).toBeVisible();
+    // Logout lives in the Account destination.
+    await page.goto('/account');
     await expect(page.getByRole('button', { name: /خروج/i })).toBeVisible();
   });
 

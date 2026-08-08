@@ -262,13 +262,14 @@ routerAdd(
     }
 
     try {
-      // ----- 1. Authenticated identity -----
-      if (!e.auth) {
-        return e.json(401, {
-          code: "unauthorized",
-          message: "Authentication required.",
-        });
-      }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records (role
+      // operator / content_manager) are rejected here.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var guardErr = g.requireStudent(e);
+      if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
 
       // ----- 2. Account state gate -----
       var accountStatus = "";
@@ -694,12 +695,11 @@ routerAdd(
       "cancelled",
     ];
 
-    if (!e.auth) {
-      return e.json(401, {
-        code: "unauthorized",
-        message: "Authentication required.",
-      });
-    }
+    var g2 = null;
+    try { g2 = require(__hooks + '/guards.pb.js'); } catch (_) { g2 = null; }
+    if (!g2 || !g2.requireStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+    var guardErr2 = g2.requireStudent(e);
+    if (guardErr2) return e.json(guardErr2.status, { code: guardErr2.code, message: guardErr2.message });
 
     function shapeRequestForClient(rec) {
       if (!rec) return null;
@@ -898,14 +898,14 @@ routerAdd(
     }
 
     try {
-      // 1. Authenticated identity (requireAuth already gates this, but
-      //    we re-check defensively).
-      if (!e || !e.auth) {
-        return e.json(401, {
-          code: "unauthorized",
-          message: "Authentication required.",
-        });
-      }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records (role
+      // operator / content_manager) are rejected here.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var guardErr = g.requireStudent(e);
+      if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
 
       // 2. Path parameter: the request id. The ServeMux wildcard
       //    name is "requestId".

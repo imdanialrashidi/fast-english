@@ -1,10 +1,10 @@
 import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
 import { Box, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material';
+import { PageContainer } from '../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../shared/ui/StatePanel';
 import { previewContinueLesson } from '../../data/previewData';
 import { LevelBadge } from '../shell/LevelBadge';
-import { PageContainer } from '../shell/PageContainer';
-import { PageHeader } from '../shell/PageHeader';
-import { StatePanel } from '../shell/StatePanel';
 
 // Representative lesson reading screen.
 // - Persian chrome (RTL) around the body

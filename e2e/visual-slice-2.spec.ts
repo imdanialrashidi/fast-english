@@ -8,8 +8,8 @@
 //      validation visibility, keyboard flow, first-invalid focus.
 //   2. Navigation — phone bottom nav, tablet rail, desktop side nav,
 //      no overlap, selected state beyond color.
-//   3. Dashboard — dominant Continue Learning action, real metrics,
-//      subscription state, empty states (no lessons / all completed).
+//   3. Home — dominant Continue Listening action, real progress metrics,
+//      compact subscription state, empty states (no episodes / completed).
 //   4. Lessons — the three real progress states, long-title containment,
 //      CTA visibility at 360px, completed lessons stay interactive.
 //   5. Lesson detail / Player — single H1, LTR reading, player geometry at
@@ -21,6 +21,7 @@
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
+import { createStaff } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const SCREENSHOTS_DIR = process.env.VISUAL_SLICE_2_OUT ?? '/tmp/opencode/fep-visual-slice-2';
@@ -76,23 +77,85 @@ const AUDIO_FIXTURE = Buffer.from(
   })(),
 );
 
+// Minimal valid PNG (1x1) for Episode artwork uploads (Podcast Slice 2).
+const PNG_FIXTURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+  0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+  0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
+]);
+
+let defaultCategoryId = '';
+
+async function getDefaultCategoryId(su: string): Promise<string> {
+  if (defaultCategoryId) return defaultCategoryId;
+  const r = await jsonFetch(
+    `${PB_URL}/api/collections/categories/records?filter=(key='general')&perPage=1`,
+    { headers: { authorization: `Bearer ${su}` } },
+  );
+  const item = (r.body as { items?: Array<{ id: string }> })?.items?.[0];
+  if (!item) throw new Error('default category missing');
+  defaultCategoryId = item.id;
+  return defaultCategoryId;
+}
+
+async function uploadArtwork(su: string, topicId: string) {
+  const boundary = `--FB${randId()}`;
+  const parts = [
+    `--${boundary}\r\nContent-Disposition: form-data; name="artwork_square"; filename="art.png"\r\nContent-Type: image/png\r\n\r\n`,
+    PNG_FIXTURE,
+    `\r\n--${boundary}--\r\n`,
+  ];
+  const buf = Buffer.concat(parts.map((p) => (typeof p === 'string' ? Buffer.from(p) : p)));
+  const res = await fetch(`${PB_URL}/api/collections/topics/records/${topicId}`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${su}`,
+      'content-type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: buf,
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (res.status !== 200) throw new Error(`artwork upload: ${res.status}`);
+}
+
 async function makeTopic(su: string, overrides: Record<string, unknown> = {}) {
-  const r = await jsonFetch(`${PB_URL}/api/collections/topics/records`, {
+  const slug = (overrides.slug as string) || `t-${randId()}`;
+  // Podcast Slice 2: published Episodes require category/content_key/
+  // title_fa/description_fa and artwork, so fixtures publish through the
+  // same draft -> artwork -> publish path the hooks enforce.
+  const cr = await jsonFetch(`${PB_URL}/api/collections/topics/records`, {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      title: `T ${randId()}`,
-      slug: `t-${randId()}`,
+      title: (overrides.title as string) || `T ${randId()}`,
+      slug,
       description: 'd',
       sort_order: overrides.sort_order ?? 0,
-      status: 'published',
-      ...overrides,
+      status: 'draft',
     }),
   });
-  if (r.status >= 400) {
-    throw new Error(`topic create failed: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+  if (cr.status >= 400) {
+    throw new Error(`topic create failed: ${cr.status} ${JSON.stringify(cr.body).slice(0, 200)}`);
   }
-  return r.body;
+  const topicId = cr.body?.id as string;
+  if (overrides.keepDraft) return cr.body;
+  await uploadArtwork(su, topicId);
+  const patch: Record<string, unknown> = {
+    status: overrides.status || 'published',
+    category: await getDefaultCategoryId(su),
+    content_key: `fx-${randId()}`,
+    content_version: 1,
+    title_fa: 'عنوان اپیزود',
+    description_fa: 'توضیح اپیزود',
+  };
+  const pr = await jsonFetch(`${PB_URL}/api/collections/topics/records/${topicId}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify(patch),
+  });
+  if (pr.status !== 200) throw new Error(`topic publish: ${pr.status}`);
+  return cr.body;
 }
 
 async function uploadAudio(su: string, lessonId: string) {
@@ -135,6 +198,9 @@ async function makeLesson(su: string, topicId: string, overrides: Record<string,
   if (overrides.is_public_sample) patch.is_public_sample = true;
   const dur = Number(overrides.audio_duration_seconds || 0) || 600;
   patch.audio_duration_seconds = dur;
+  // Podcast Slice 2 Variant invariants for new publishes
+  patch.summary_fa = 'خلاصه فارسی';
+  patch.content_version = 1;
   const pr = await jsonFetch(`${PB_URL}/api/collections/lessons/records/${id}`, {
     method: 'PATCH',
     headers: { authorization: `Bearer ${su}` },
@@ -182,27 +248,9 @@ async function createActiveStudent(su: string, level = 'B1') {
   // Full entitlement flow: signup → payment request + receipt → operator
   // approval → real subscription → placement → level selection. Mirrors the
   // p3-s1 fixture so dashboard subscription data (plan/expiry/days) is real.
-  const opPhone = nextPhone();
-  const opS = await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const opId = opS.body?.id as string;
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${opId}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const opL = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    body: JSON.stringify({ identity: opS.body?.phone as string, password: 'Test1234!' }),
-  });
-  const opToken = (opL.body as { token?: string })?.token || '';
+  // Staff Administrator token (Podcast Slice 1)
+  const staff = await createStaff(su);
+  const opToken = staff.token;
 
   const phone = nextPhone();
   const password = 'Test1234!';
@@ -359,7 +407,7 @@ let su: string;
 let student: { token: string; phone: string; userId: string };
 let noLessonStudent: { token: string };
 let doneStudent: { token: string };
-let topicId: string;
+
 let lessonIds: Record<string, string>;
 
 let PLAN_ID = '';
@@ -394,7 +442,7 @@ test.beforeAll(async () => {
 
   // One topic per lesson: `lessons` enforces a unique (topic, level) index.
   // States covered: not-started, in-progress, completed and a long-title
-  // lesson (all at B1 so they appear in one student's list).
+  // lesson (all at A1 so they appear in one student's list).
   const makeTopicLesson = async (title: string, topicTitle?: string) => {
     const topic = await makeTopic(su, {
       title: topicTitle ?? `موضوع ${title}`,
@@ -408,15 +456,42 @@ test.beforeAll(async () => {
     });
     return lesson.id as string;
   };
-  topicId = '';
+
+  const lessonTitles = [
+    'A Fresh Start',
+    'Daily Routine',
+    'Small Talk',
+    'این یک عنوان بسیار بلند برای آزمودن پیچیدن متن است — A Very Long English Title That Must Wrap Safely Inside Its Card Without Breaking Anything',
+  ] as const;
+  const longTitle = lessonTitles[3];
+
+  // Idempotent fixture guard: in some environments Playwright restarts the
+  // worker mid-run against the same shared disposable PocketBase. Reusing
+  // already-seeded lessons keeps the strict heading assertions strict
+  // (exactly one of each title); without the guard, duplicated fixtures
+  // break every strict-mode assertion in this file (same pattern as
+  // p3-s2.spec.ts).
+  const existing = await jsonFetch(`${PB_URL}/api/collections/lessons/records?perPage=200`, {
+    headers: { authorization: `Bearer ${su}` },
+  });
+  const existingLessons = (existing.body?.items as Array<Record<string, unknown>>) || [];
+  const existingByTitle = new Map(
+    existingLessons.filter((l) => l.level === 'A1').map((l) => [String(l.title), String(l.id)]),
+  );
+
+  const ensureLesson = async (title: string, topicTitle?: string) => {
+    const existingId = existingByTitle.get(title);
+    if (existingId) return existingId;
+    const id = await makeTopicLesson(title, topicTitle);
+    existingByTitle.set(title, id);
+    return id;
+  };
+
   lessonIds = {
-    notStarted: await makeTopicLesson('A Fresh Start'),
-    inProgress: await makeTopicLesson('Daily Routine'),
-    completed: await makeTopicLesson('Small Talk'),
-    longTitle: await makeTopicLesson(
-      'این یک عنوان بسیار بلند برای آزمودن پیچیدن متن است — A Very Long English Title That Must Wrap Safely Inside Its Card Without Breaking Anything',
-      'موضوع عنوان بلند',
-    ),
+    notStarted: await ensureLesson(lessonTitles[0]),
+    inProgress: await ensureLesson(lessonTitles[1]),
+    completed: await ensureLesson(lessonTitles[2]),
+    longTitle: await ensureLesson(longTitle, 'موضوع عنوان بلند'),
   };
 
   student = await createActiveStudent(su, 'A1');
@@ -470,7 +545,8 @@ test.describe('entry and auth hierarchy', () => {
     await page.setViewportSize({ width: 360, height: 800 });
     await page.goto('/');
     expect(await noHorizontalOverflow(page)).toBe(true);
-    await expect(page.getByTestId('entry-theme-switch')).toBeVisible();
+    // Podcast Slice 1: no always-visible theme control on the entry page.
+    await expect(page.getByTestId('theme-switch')).toHaveCount(0);
     await expect(page.getByRole('link', { name: 'ساخت حساب' })).toBeVisible();
   });
 
@@ -519,14 +595,14 @@ test.describe('responsive navigation', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
     const nav = page.getByTestId('student-bottom-nav');
     await expect(nav).toBeVisible();
     await expect(page.getByTestId('student-side-nav')).toBeHidden();
-    for (const label of ['خانه', 'درس‌ها', 'پیشرفت', 'حساب']) {
-      await expect(nav.getByRole('button', { name: label })).toBeVisible();
+    for (const label of ['خانه', 'کتابخانه', 'پیشرفت', 'حساب']) {
+      await expect(nav.getByRole('button', { name: label, exact: true })).toBeVisible();
     }
-    const selected = nav.getByRole('button', { name: 'خانه' });
+    const selected = nav.getByRole('button', { name: 'خانه', exact: true });
     await expect(selected).toHaveAttribute('aria-current', 'page');
     const indicator = await selected.evaluate((el) => {
       const s = getComputedStyle(el, '::after');
@@ -538,7 +614,7 @@ test.describe('responsive navigation', () => {
 
   test('tablet: rail replaces the bottom navigation without content overlap', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
     const nav = page.getByTestId('student-bottom-nav');
     await expect(nav).toBeHidden();
     const rail = page.locator('[data-testid="student-side-nav"] .MuiDrawer-paper');
@@ -566,7 +642,7 @@ test.describe('responsive navigation', () => {
     await expect(side).toBeVisible();
     const sideBox = (await side.boundingBox())!;
     expect(sideBox.width).toBe(248);
-    await expect(side.getByRole('button', { name: 'درس‌ها' })).toBeVisible();
+    await expect(side.getByRole('button', { name: 'کتابخانه' })).toBeVisible();
     // Content and side navigation are disjoint; the container stays bounded.
     const container = page.locator('.MuiContainer-root').first();
     await expect(container).toBeVisible();
@@ -577,9 +653,9 @@ test.describe('responsive navigation', () => {
 
   test('tablet rail selection carries aria-current', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, student.token, record, '/library');
     await expect(
-      page.locator('[data-testid="student-side-nav"]').getByRole('button', { name: 'درس‌ها' }),
+      page.locator('[data-testid="student-side-nav"]').getByRole('button', { name: 'کتابخانه' }),
     ).toHaveAttribute('aria-current', 'page');
   });
 });
@@ -587,20 +663,25 @@ test.describe('responsive navigation', () => {
 // ---------------------------------------------------------------------------
 // 3. Dashboard
 // ---------------------------------------------------------------------------
-test.describe('dashboard hierarchy', () => {
+// ---------------------------------------------------------------------------
+// 3. Home (Podcast Slice 5 — the redesigned Podcast-first Home)
+// ---------------------------------------------------------------------------
+test.describe('home hierarchy', () => {
   const record = { id: '', phone: '' };
 
-  test('Continue Learning is the dominant action with real data', async ({ page }) => {
+  test('Continue Listening is the dominant action with real data', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
-    const card = page.getByTestId('continue-card');
+    await setAuthAndGo(page, student.token, record, '/');
+    const card = page.getByTestId('home-continue');
     await expect(card).toBeVisible({ timeout: 15_000 });
-    await expect(card.getByText('ادامه یادگیری')).toBeVisible();
+    await expect(card.getByText('ادامه گوش‌دادن')).toBeVisible();
+    // Real Episode metadata (titleFa from the published Topic).
+    await expect(card.getByText('عنوان اپیزود', { exact: true })).toBeVisible();
     await expect(card.getByText('Daily Routine', { exact: true })).toBeVisible();
     // Saved position 150 → «ادامه از 2:30»; authoritative duration 600 − 150
-    // → «حدود 8 دقیقه باقیمانده» (no fabricated time).
+    // → «حدود 8 دقیقه باقی‌مانده» (no fabricated time).
     await expect(card.getByText('ادامه از 2:30')).toBeVisible();
-    await expect(card.getByText('موضوع Daily Routine — حدود 8 دقیقه باقی‌مانده')).toBeVisible();
+    await expect(card.getByText('حدود 8 دقیقه باقی‌مانده')).toBeVisible();
 
     const cta = page.getByTestId('continue-cta');
     const primary = await cta.evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -627,47 +708,50 @@ test.describe('dashboard hierarchy', () => {
 
   test('real progress metrics display without placeholder numbers', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
     const progressCard = page.getByTestId('progress-card');
     await expect(progressCard).toBeVisible({ timeout: 15_000 });
-    await expect(progressCard.getByText('شروع شده')).toBeVisible();
+    await expect(progressCard.getByText('اپیزودهای شروع‌شده')).toBeVisible();
     await expect(progressCard.getByText('2', { exact: true })).toBeVisible(); // 2 started
-    await expect(progressCard.getByText('کامل شده')).toBeVisible();
-    await expect(progressCard.getByText('1', { exact: true })).toBeVisible(); // 1 completed
-    await expect(progressCard.getByText('سطح انتخابی')).toBeVisible();
-    await expect(progressCard.getByText('A1')).toBeVisible();
+    await expect(progressCard.getByText('اپیزودهای کامل‌شده')).toBeVisible();
+    await expect(progressCard.getByText('1 از 4')).toBeVisible(); // 1 completed of 4
+    await expect(progressCard.getByText('سطح پیش‌فرض:')).toBeVisible();
+    await expect(progressCard.getByText('A1', { exact: true })).toBeVisible();
+    // Suggested C2 vs preferred A1 — both presented without judgment.
+    await expect(progressCard.getByText(/سطح پیشنهادی: C2/)).toBeVisible();
     await expect(progressCard.getByRole('progressbar', { name: /پیشرفت کلی/ })).toBeVisible();
   });
 
-  test('subscription status is understandable', async ({ page }) => {
+  test('subscription status is compact and understandable', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
     const card = page.getByTestId('subscription-card');
     await expect(card).toBeVisible({ timeout: 15_000 });
     await expect(card.getByText('اشتراک', { exact: true })).toBeVisible();
     await expect(card.getByText('فعال')).toBeVisible();
     await expect(card.getByText(/روزهای باقی‌مانده:/)).toBeVisible();
     await expect(card.getByText(/تاریخ انقضا:/)).toBeVisible();
+    // Not a payment-style card: no actions inside the status area.
+    await expect(card.getByRole('button')).toHaveCount(0);
   });
 
-  test('empty state: no published lessons explains what happened and the next action', async ({
+  test('empty state: no published episodes explains what happened and the next action', async ({
     page,
   }) => {
-    await setAuthAndGo(page, noLessonStudent.token, record, '/dashboard');
-    await expect(page.getByText('هنوز درسی منتشر نشده است').first()).toBeVisible({
+    await setAuthAndGo(page, noLessonStudent.token, record, '/');
+    await expect(page.getByText('اولین اپیزودت را شروع کن')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/هنوز اپیزود تازه‌ای برای این سطح منتشر نشده است/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'پیدا کردن اپیزود' })).toBeVisible();
+  });
+
+  test('empty state: all lessons completed shows the completion state', async ({ page }) => {
+    await setAuthAndGo(page, doneStudent.token, record, '/');
+    await expect(page.getByText('همهٔ اپیزودهای این سطح را گوش کردی')).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText(/به‌زودی درس‌های جدید/)).toBeVisible();
-  });
-
-  test('empty state: all lessons completed shows the success state', async ({ page }) => {
-    await setAuthAndGo(page, doneStudent.token, record, '/dashboard');
-    await expect(page.getByText('همهٔ درس‌های این سطح کامل شد')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('button', { name: 'مشاهدهٔ درس‌ها' }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'رفتن به کتابخانه' })).toBeVisible();
   });
 });
-
-// ---------------------------------------------------------------------------
 // 4. Lessons
 // ---------------------------------------------------------------------------
 test.describe('lesson list states', () => {
@@ -819,10 +903,10 @@ test.describe('lesson detail and player', () => {
       page.getByRole('group', { name: 'پخش‌کنندهٔ صوت' }).getByText('2:30', { exact: true }),
     ).toBeVisible({ timeout: 10_000 });
 
-    // SPA-navigate to the lesson list: audio keeps playing via the shared
+    // SPA-navigate to the Library: audio keeps playing via the shared
     // element and the Mini Player appears above the bottom navigation.
-    await page.getByTestId('student-bottom-nav').getByRole('button', { name: 'درس‌ها' }).click();
-    await expect(page).toHaveURL(/\/lessons$/, { timeout: 10_000 });
+    await page.getByTestId('student-bottom-nav').getByRole('button', { name: 'کتابخانه' }).click();
+    await expect(page).toHaveURL(/\/library$/, { timeout: 10_000 });
 
     const mini = page.getByTestId('mini-player');
     await expect(mini).toBeVisible({ timeout: 10_000 });
@@ -874,9 +958,9 @@ test.describe('theme on redesigned pages', () => {
   // Routes resolve inside the test bodies: fixtures are created in beforeAll,
   // which runs after module evaluation.
   const routeFor = (key: string): string =>
-    key === 'detail' ? `/lessons/${lessonIds.notStarted}` : `/${key}`;
+    key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'dashboard' ? '/' : `/${key}`;
 
-  for (const key of ['dashboard', 'lessons', 'account', 'detail'] as const) {
+  for (const key of ['home', 'library', 'progress', 'lessons', 'account', 'detail'] as const) {
     test(`route renders in Light and Dark without overflow: ${key}`, {
       tag: key === 'dashboard' ? '@critical' : undefined,
     }, async ({ page }) => {
@@ -885,10 +969,16 @@ test.describe('theme on redesigned pages', () => {
       await page.emulateMedia({ colorScheme: 'light' });
       await setAuthAndGo(page, student.token, record, route);
       expect(await noHorizontalOverflow(page), `${route} light`).toBe(true);
-      // Click the Top Bar switch (the account page also carries a copy).
-      await page.getByTestId('theme-switch').getByRole('button', { name: 'حالت تیره' }).click();
+      // The display preference lives only in Account settings (Podcast
+      // Slice 1): switch there, then re-check the target route in Dark.
+      await setAuthAndGo(page, student.token, record, '/account');
+      await page
+        .getByTestId('account-theme-switch')
+        .getByRole('button', { name: 'حالت تیره' })
+        .click();
       await page.waitForTimeout(80);
       await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
+      await setAuthAndGo(page, student.token, record, route);
       expect(await noHorizontalOverflow(page), `${route} dark`).toBe(true);
       // Semantic surfaces actually changed.
       const bg = await page.evaluate(() =>
@@ -903,25 +993,32 @@ test.describe('theme on redesigned pages', () => {
   test('Continue Learning CTA keeps AA contrast in both schemes', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ colorScheme: 'light' });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
+    // Switch schemes through the Account settings control (the only
+    // theme control, Podcast Slice 1) and measure the CTA on the route.
     for (const scheme of ['light', 'dark'] as const) {
+      await setAuthAndGo(page, student.token, record, '/account');
+      await page
+        .getByTestId('account-theme-switch')
+        .getByRole('button', { name: scheme === 'dark' ? 'حالت تیره' : 'حالت روشن' })
+        .click();
+      await setAuthAndGo(page, student.token, record, '/');
       const pair = await page.getByTestId('continue-cta').evaluate((el) => {
         const s = getComputedStyle(el);
         return { fg: s.color, bg: s.backgroundColor };
       });
       expect(contrastOf(pair.fg, pair.bg), `${scheme} continue CTA`).toBeGreaterThanOrEqual(4.5);
-      await page.getByRole('button', { name: 'حالت تیره' }).click();
-      // MUI transitions background-color on theme flip; measure only after
-      // the surface has settled so the assertion sees final colors.
-      await page.waitForTimeout(400);
     }
   });
 
   test('system mode still drives the redesigned pages', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ colorScheme: 'dark' });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
-    await page.getByRole('button', { name: 'حالت سیستمی' }).click();
+    await setAuthAndGo(page, student.token, record, '/account');
+    await page
+      .getByTestId('account-theme-switch')
+      .getByRole('button', { name: 'حالت سیستمی' })
+      .click();
     await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
     await page.emulateMedia({ colorScheme: 'light' });
     await expect
@@ -941,7 +1038,7 @@ test.describe('theme on redesigned pages', () => {
 
   test('reduced motion collapses the route entrance animation', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
     const durationMs = await page
       .getByTestId('route-transition')
       .evaluate((el) => getComputedStyle(el).animationDuration);
@@ -958,7 +1055,7 @@ test.describe('responsive geometry', () => {
 
   const publicRoutes = ['/', '/login', '/signup'];
   const authRouteFor = (key: string): string =>
-    key === 'detail' ? `/lessons/${lessonIds.notStarted}` : `/${key}`;
+    key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'home' ? '/' : `/${key}`;
 
   for (const viewport of VIEWPORTS) {
     for (const route of publicRoutes) {
@@ -989,7 +1086,7 @@ test.describe('responsive geometry', () => {
       });
     }
 
-    for (const key of ['dashboard', 'lessons', 'account', 'detail'] as const) {
+    for (const key of ['home', 'library', 'progress', 'lessons', 'account', 'detail'] as const) {
       test(`authenticated ${key} at ${viewport.name}`, async ({ page }) => {
         const route = authRouteFor(key);
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -1014,17 +1111,20 @@ test.describe('responsive geometry', () => {
         });
         expect(violations, `${route} at ${viewport.name}`).toEqual([]);
         // Theme control stays reachable on every viewport.
-        await expect(page.getByTestId('theme-switch')).toBeVisible();
+        // No always-visible theme control in the Student shell (Settings only).
+        await expect(page.getByTestId('theme-switch')).toHaveCount(0);
       });
     }
   }
 
   test('App Bar title and actions do not collide at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await setAuthAndGo(page, student.token, record, '/dashboard');
+    await setAuthAndGo(page, student.token, record, '/');
     const titleBox = (await page.getByRole('link', { name: 'فست انگلیش' }).boundingBox())!;
-    const controlBox = (await page.getByTestId('theme-switch').boundingBox())!;
-    expect(titleBox.x).toBeGreaterThanOrEqual(controlBox.x + controlBox.width - 1);
+    expect(titleBox.x).toBeGreaterThanOrEqual(0);
+    expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(360);
+    // No theme control in the App Bar (Settings only).
+    await expect(page.getByTestId('theme-switch')).toHaveCount(0);
   });
 });
 
@@ -1036,8 +1136,8 @@ test.describe('optional evidence: uninspected screenshots', () => {
   const shots = (): Array<{ file: string; route: string; auth?: boolean; student?: string }> => [
     { file: 'entry', route: '/' },
     { file: 'login', route: '/login' },
-    { file: 'dashboard-populated', route: '/dashboard', auth: true },
-    { file: 'dashboard-empty', route: '/dashboard', auth: true, student: 'none' },
+    { file: 'home-populated', route: '/', auth: true },
+    { file: 'home-empty', route: '/', auth: true, student: 'none' },
     { file: 'lessons-populated', route: '/lessons', auth: true },
     { file: 'lesson-detail', route: `/lessons/${lessonIds.notStarted}`, auth: true },
     { file: 'audio-player-playing', route: `/lessons/${lessonIds.inProgress}`, auth: true },

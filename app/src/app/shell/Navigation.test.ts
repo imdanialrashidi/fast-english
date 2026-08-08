@@ -12,7 +12,8 @@ const sideNav = readFileSync(
   'utf8',
 );
 
-const requiredLabels = ['خانه', 'درس‌ها', 'پیشرفت', 'حساب'];
+// Final Student destinations (Podcast Slice 5): خانه / کتابخانه / پیشرفت / حساب.
+const requiredLabels = ['خانه', 'کتابخانه', 'پیشرفت', 'حساب'];
 
 describe('student navigation', () => {
   it('bottom nav declares the four primary destinations', () => {
@@ -21,10 +22,13 @@ describe('student navigation', () => {
     }
   });
 
-  it('side nav declares the same four primary destinations', () => {
-    for (const label of requiredLabels) {
-      expect(sideNav).toContain(label);
-    }
+  it('side nav renders the same shared destination items', () => {
+    expect(sideNav).toContain('studentNavItems');
+    expect(sideNav).toContain('currentNavValue');
+  });
+
+  it('bottom nav no longer offers the legacy lessons destination', () => {
+    expect(bottomNav).not.toContain('درس‌ها');
   });
 
   it('bottom nav is hidden on tablet and up (md+)', () => {

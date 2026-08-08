@@ -37,27 +37,29 @@ const SUPPLIED_HEXES = [
   '307191',
 ];
 
-// Files where the supplied hexes may legitimately appear.
+// Files where the supplied hexes may legitimately appear. The design
+// tokens live in shared/ui (Podcast Slice 1) and are scanned together
+// with the app source.
 const HEX_APPROVED_REL = new Set([
-  'src/app/theme/tokens/colors.ts', // the palette definition itself
-  'src/app/theme/theme.test.ts', // test fixtures
-  'src/app/theme/palette.contrast.test.ts', // test fixtures
+  'shared/ui/tokens/colors.ts', // the palette definition itself
+  'shared/ui/theme.test.ts', // test fixtures
+  'shared/ui/palette.contrast.test.ts', // test fixtures
 ]);
 
 // Files where literal shadows/durations may appear (the token definitions).
 const SHADOW_APPROVED_REL = new Set([
-  'src/app/theme/tokens/elevation.ts',
-  'src/app/theme/theme.ts',
-  'src/app/theme/theme.test.ts',
+  'shared/ui/tokens/elevation.ts',
+  'shared/ui/theme.ts',
+  'shared/ui/theme.test.ts',
 ]);
 
 const DURATION_APPROVED_REL = new Set([
-  'src/app/theme/tokens/motion.ts',
-  'src/app/theme/theme.ts',
-  'src/app/theme/theme.test.ts',
-  'src/app/theme/ThemeSwitch.tsx',
-  'src/app/shell/AppHeader.tsx',
-  'src/app/routes/CatalogRoute.tsx',
+  'shared/ui/tokens/motion.ts',
+  'shared/ui/theme.ts',
+  'shared/ui/theme.test.ts',
+  'shared/ui/ThemeSwitch.tsx',
+  'app/src/app/shell/AppHeader.tsx',
+  'app/src/app/routes/CatalogRoute.tsx',
 ]);
 
 // Approved literal border-radius values (px) from tokens/shape.ts.
@@ -75,11 +77,17 @@ function walk(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-const appFiles = walk(APP_DIR).filter((f) => !f.includes('.test.'));
-const allAppFiles = walk(APP_DIR);
+// Scan the Product-App source together with the shared design system
+// (tokens/theme/Brand moved to shared/ in Podcast Slice 1).
+const SHARED_UI_DIR = join(ROOT, 'shared', 'ui');
+const appFiles = walk(APP_DIR)
+  .concat(walk(SHARED_UI_DIR))
+  .filter((f) => !f.includes('.test.'));
+const allAppFiles = walk(APP_DIR).concat(walk(SHARED_UI_DIR));
 
 function rel(file: string): string {
-  return relative(APP_DIR, file);
+  // Repo-relative path so app/ and shared/ files share one namespace.
+  return relative(ROOT, file);
 }
 
 describe('static quality rules (Product App)', () => {
@@ -143,7 +151,7 @@ describe('static quality rules (Product App)', () => {
     const offenders: string[] = [];
     for (const file of appFiles) {
       const content = readFileSync(file, 'utf8');
-      if (/assets\/brand\//.test(content) && rel(file) !== 'src/app/brand/Brand.tsx') {
+      if (/assets\/brand\//.test(content) && rel(file) !== 'shared/ui/brand/Brand.tsx') {
         offenders.push(rel(file));
       }
     }

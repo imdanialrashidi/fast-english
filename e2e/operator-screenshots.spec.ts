@@ -89,29 +89,12 @@ let shared: {
 async function ensureShared(): Promise<void> {
   if (shared) return;
   const su = await superuserAuth();
-  const opPhone = uniquePhone();
-  const signup = await fetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      name: 'اپراتور عکس',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const opBody = (await signup.json()) as { id?: string };
-  await fetch(`${PB_URL}/api/collections/fep_users/records/${opBody.id}`, {
-    method: 'PATCH',
-    headers: { 'content-type': 'application/json', authorization: su },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const login = await fetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: opPhone, password: 'Test1234!' }),
-  });
-  const loginBody = (await login.json()) as { token?: string; record?: Record<string, unknown> };
+  // Staff Administrator fixture (Podcast Slice 1)
+  const staff = await createStaff(su);
+  const loginBody: { token: string; record: Record<string, unknown> } = {
+    token: staff.token,
+    record: staff.record,
+  };
   const planRes = await fetch(`${PB_URL}/api/collections/plans/records`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: su },
@@ -166,7 +149,6 @@ async function createPendingRequest(
       passwordConfirm: 'Test1234!',
     }),
   });
-  const userBody = (await signup.json()) as { id?: string };
   const sLogin = await fetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

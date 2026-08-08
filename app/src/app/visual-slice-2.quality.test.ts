@@ -11,15 +11,16 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { appTheme } from './theme/theme';
-import { layout, radius } from './theme/tokens';
+import { appTheme } from '../../../shared/ui/theme';
+import { layout, radius } from '../../../shared/ui/tokens';
 
 const ROOT = process.cwd();
 function read(rel: string): string {
   return readFileSync(resolve(ROOT, 'app', 'src', rel), 'utf8');
 }
 
-// Every page redesigned in this slice.
+// Every page redesigned in this slice (Visual Slice 2) plus the Podcast
+// Slice 5 redesigned surfaces (Home, Library, Progress, Episode foundations).
 const REDESIGNED_PAGES = [
   'app/routes/EntryRoute.tsx',
   'app/routes/LoginRoute.tsx',
@@ -28,7 +29,12 @@ const REDESIGNED_PAGES = [
   'app/shell/AppShell.tsx',
   'app/shell/StudentBottomNav.tsx',
   'app/shell/StudentSideNav.tsx',
-  'features/dashboard/routes/DashboardRoute.tsx',
+  'features/home/routes/HomeRoute.tsx',
+  'features/library/routes/LibraryRoute.tsx',
+  'features/progress/routes/ProgressRoute.tsx',
+  'features/podcast/components/EpisodeCard.tsx',
+  'features/podcast/components/EpisodeArtwork.tsx',
+  'features/podcast/components/ContentSection.tsx',
   'features/lessons/routes/LessonsRoute.tsx',
   'features/lessons/routes/LessonDetailRoute.tsx',
   'features/lessons/components/LessonCard.tsx',
@@ -38,7 +44,7 @@ const REDESIGNED_PAGES = [
 
 describe('Visual Slice 2 — deterministic design consistency', () => {
   it('page padding comes from the layout tokens and reserves Mini Player space', () => {
-    const pc = read('app/shell/PageContainer.tsx');
+    const pc = readFileSync(resolve(ROOT, 'shared', 'ui', 'PageContainer.tsx'), 'utf8');
     expect(pc).toContain('layout.pageInlinePadding');
     expect(pc).toContain('layout.bottomNavigationHeight');
     expect(pc).toContain('var(--fep-mini-player-space, 0px)');
@@ -46,7 +52,9 @@ describe('Visual Slice 2 — deterministic design consistency', () => {
 
   it('student content width is bounded on every redesigned route', () => {
     for (const file of [
-      'features/dashboard/routes/DashboardRoute.tsx',
+      'features/home/routes/HomeRoute.tsx',
+      'features/library/routes/LibraryRoute.tsx',
+      'features/progress/routes/ProgressRoute.tsx',
       'features/lessons/routes/LessonDetailRoute.tsx',
       'app/routes/AccountRoute.tsx',
     ]) {
@@ -111,11 +119,14 @@ describe('Visual Slice 2 — deterministic design consistency', () => {
 
   it('bottom navigation stays limited to the four primary destinations', () => {
     const nav = read('app/shell/StudentBottomNav.tsx');
-    const destinations = [...nav.matchAll(/value:\s*'\/[^']+'/g)].map((m) => m[0]);
+    const destinations = [...nav.matchAll(/value:\s*'\/[^']*'/g)].map((m) => m[0]);
     expect(destinations).toHaveLength(4);
-    expect(nav).toContain("label: 'خانه'");
-    expect(nav).toContain("label: 'درس‌ها'");
-    expect(nav).toContain("label: 'حساب'");
+    expect(nav).toContain('label: productCopy.nav.home');
+    expect(nav).toContain('label: productCopy.nav.library');
+    expect(nav).toContain('label: productCopy.nav.progress');
+    expect(nav).toContain('label: productCopy.nav.account');
+    // Podcast Slice 5: the lessons destination is no longer primary.
+    expect(nav).not.toContain('درس‌ها');
   });
 
   it('Entry page: registration is the only dominant filled action, login is outlined', () => {

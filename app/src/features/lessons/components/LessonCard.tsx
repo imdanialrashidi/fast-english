@@ -19,8 +19,8 @@ import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineR
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import { Box, Button, Card, LinearProgress, Stack, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router';
+import type { CefrLevel } from '../../../../../shared/ui/tokens/cefr';
 import { LevelBadge } from '../../../app/shell/LevelBadge';
-import type { CefrLevel } from '../../../app/theme/tokens/cefr';
 import type { LessonProgressResponse } from '../../progress/types';
 import type { LessonListItem } from '../types';
 

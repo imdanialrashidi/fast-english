@@ -30,10 +30,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
+import { ReceiptZoomDialog } from '../../../../../shared/ui/ReceiptZoomDialog';
 import { ALLOWED_RECEIPT_MIME_TYPES, MAX_RECEIPT_BYTES } from '../constants';
 import { formatFileSize } from '../formatters';
 import type { PaymentError } from '../types';
-import { ReceiptZoomDialog } from './ReceiptZoomDialog';
 
 interface Props {
   value: File | null;
@@ -303,8 +303,8 @@ export function ReceiptPicker({ value, onChange, error, disabled }: Props) {
           ) : null}
 
           <Typography variant="caption" color="text.secondary">
-            تصویر رسید نزد ما محافظت‌شده نگه‌داری می‌شود؛ فقط برای بررسی توسط اپراتور قابل دسترسی است و
-            لینک عمومی ندارد. پس از ارسال، وضعیت بررسی در همین صفحه نمایش داده می‌شود.
+            تصویر رسید نزد ما محافظت‌شده نگه‌داری می‌شود؛ فقط برای بررسی پرداخت قابل دسترسی است و لینک
+            عمومی ندارد. پس از ارسال، وضعیت بررسی در همین صفحه نمایش داده می‌شود.
           </Typography>
 
           <ReceiptZoomDialog

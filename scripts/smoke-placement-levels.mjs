@@ -8,7 +8,7 @@ import { randomBytes } from 'node:crypto';
 import {
   createActiveStudent,
   fetchJson,
-  getOperatorToken,
+  getStaffToken,
   getSuperuserToken,
   login,
   nextPhone,
@@ -169,7 +169,7 @@ async function renewOverlapUser(suToken, userId, token) {
     body: JSON.stringify({ account_status: 'payment_rejected' }),
   });
   // Second subscription via the real approve flow
-  const opToken = await getOperatorToken(API_URL, suToken);
+  const opToken = await getStaffToken(API_URL, suToken);
   const planRes = await jsonFetch('/api/collections/plans/records', {
     method: 'POST',
     headers: { authorization: suToken },
@@ -440,7 +440,7 @@ async function main() {
 
   // S14: Operator denied from selection
   start('S14-operator-denied-selection');
-  const opToken = await getOperatorToken(API_URL, suToken);
+  const opToken = await getStaffToken(API_URL, suToken);
   const sel7 = await selectLevel(opToken, 'A1');
   check(sel7.status === 403, `status 403 got ${sel7.status}`);
   pass();

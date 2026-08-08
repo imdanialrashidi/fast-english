@@ -138,29 +138,24 @@ for (const q of MAX_QUESTIONS) {
 }
 
 // Create student + subscription
-const opPhone = nextPhone();
-const opR = await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
+const opR = await jsonFetch(`${PB_URL}/api/collections/staff_admins/records`, {
   method: 'POST',
+  headers: { authorization: `Bearer ${suToken}` },
   body: JSON.stringify({
-    name: 'Op',
-    phone: opPhone,
+    email: `cap-staff-${randomBytes(4).toString('hex')}@fep-smoke.invalid`,
     password: 'Test1234!',
     passwordConfirm: 'Test1234!',
+    display_name: 'Cap Staff',
+    is_active: true,
+    verified: true,
   }),
 });
-ok(opR.status === 200, 'op signup');
-const opBody = opR.body;
-const opCanonicalPhone = opBody.phone || opPhone;
-await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${opBody.id}`, {
-  method: 'PATCH',
-  headers: { authorization: `Bearer ${suToken}` },
-  body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-});
-const opLogin = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
+ok(opR.status === 200, 'staff create');
+const opLogin = await jsonFetch(`${PB_URL}/api/collections/staff_admins/auth-with-password`, {
   method: 'POST',
-  body: JSON.stringify({ identity: opCanonicalPhone, password: 'Test1234!' }),
+  body: JSON.stringify({ identity: opR.body.email, password: 'Test1234!' }),
 });
-ok(opLogin.status === 200, 'op login');
+ok(opLogin.status === 200, 'staff login');
 const opToken = opLogin.body.token;
 
 const phone = nextPhone();

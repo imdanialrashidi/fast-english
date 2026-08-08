@@ -6,7 +6,7 @@
 // idempotent under Playwright worker restarts (the guard reuses an
 // existing fixture set instead of duplicating it).
 //
-// Coverage: operator login; pending queue; search + filter; selection;
+// Coverage: Staff login (Admin Console); pending queue; search + filter; selection;
 // user / plan / amount inspection; protected receipt preview + zoom;
 // approve confirmation + success + Subscription activation + queue
 // removal; reject confirmation + public-reason validation + internal-note
@@ -22,6 +22,7 @@ import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
+import { ADMIN_URL } from '../playwright.config';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
@@ -79,6 +80,17 @@ async function createUser(su: string, name: string, extra: Record<string, unknow
   const userPhone = body.phone;
   if (!userId || !userPhone) throw new Error('user create returned no id/phone');
   return { id: userId, phone: userPhone };
+}
+
+async function staffLogin(email: string, password: string) {
+  const r = await fetch(`${PB_URL}/api/collections/staff_admins/auth-with-password`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ identity: email, password }),
+  });
+  const body = (await r.json()) as { token?: string; record?: Record<string, unknown> };
+  if (!body.token || !body.record) throw new Error(`staff login failed: ${r.status}`);
+  return { token: body.token, record: body.record };
 }
 
 async function loginToken(phone: string) {
@@ -145,7 +157,13 @@ async function submitPaymentRequest(
 
 interface Fixtures {
   su: string;
-  op: { id: string; phone: string; token: string; record: Record<string, unknown> };
+  op: {
+    id: string;
+    email: string;
+    password: string;
+    token: string;
+    record: Record<string, unknown>;
+  };
   planName: string;
   pendA: {
     id: string;
@@ -172,21 +190,25 @@ async function setupFixtures(): Promise<Fixtures> {
   // of clashing with the first (assertions always target fx values).
   const runSuffix = randomBytes(3).toString('hex');
 
-  const opUser = await createUser(su, `اپراتور ویترین-${runSuffix}`, {
-    placement_completed: true,
-    selected_level: 'B1',
-  });
-  await fetch(`${PB_URL}/api/collections/fep_users/records/${opUser.id}`, {
-    method: 'PATCH',
+  // Staff Administrator fixture (the single backstage identity).
+  const staffEmail = `opr-staff-${runSuffix}@fep-smoke.invalid`;
+  const staffPassword = 'Opr-Staff-1234!';
+  const staffRes = await fetch(`${PB_URL}/api/collections/staff_admins/records`, {
+    method: 'POST',
     headers: { 'content-type': 'application/json', authorization: su },
     body: JSON.stringify({
-      role: 'operator',
-      account_status: 'active',
-      placement_completed: true,
-      selected_level: 'B1',
+      email: staffEmail,
+      password: staffPassword,
+      passwordConfirm: staffPassword,
+      display_name: `اپراتور ویترین-${runSuffix}`,
+      is_active: true,
+      verified: true,
     }),
   });
-  const opLogin = await loginToken(opUser.phone);
+  if (!staffRes.ok) {
+    throw new Error(`staff create failed: ${staffRes.status} ${await staffRes.text()}`);
+  }
+  const opLogin = await staffLogin(staffEmail, staffPassword);
 
   const planRes = await fetch(`${PB_URL}/api/collections/plans/records`, {
     method: 'POST',
@@ -300,7 +322,13 @@ async function setupFixtures(): Promise<Fixtures> {
 
   return {
     su,
-    op: { id: opUser.id, phone: opUser.phone, token: opLogin.token, record: opLogin.record },
+    op: {
+      id: staffRes.id,
+      email: staffEmail,
+      password: staffPassword,
+      token: opLogin.token,
+      record: opLogin.record,
+    },
     planName,
     pendA: {
       id: studentA.id,
@@ -326,6 +354,22 @@ async function setupFixtures(): Promise<Fixtures> {
 }
 
 async function setAuth(page: Page, token: string, record: Record<string, unknown>, path: string) {
+  await page.goto(`${ADMIN_URL}/login`);
+  await page.evaluate(
+    ({ t, r }) => localStorage.setItem('fep_staff_auth', JSON.stringify({ token: t, model: r })),
+    { t: token, r: record },
+  );
+  await page.goto(`${ADMIN_URL}${path}`, { waitUntil: 'domcontentloaded' });
+}
+
+// Student-origin navigation with the Student session (for the
+// Student-visibility checks; the Student app keeps its own storage key).
+async function setStudentAuth(
+  page: Page,
+  token: string,
+  record: Record<string, unknown>,
+  path: string,
+) {
   await page.goto('/');
   await page.evaluate(
     ({ t, r }) => localStorage.setItem('pocketbase_auth', JSON.stringify({ token: t, model: r })),
@@ -334,30 +378,32 @@ async function setAuth(page: Page, token: string, record: Record<string, unknown
   await page.goto(path, { waitUntil: 'domcontentloaded' });
 }
 
-test.describe('Operator workspace redesign', () => {
+test.describe('Staff workspace redesign (Admin Console)', () => {
   let fx: Fixtures;
 
   test.beforeAll(async () => {
     fx = await setupFixtures();
   });
 
-  test('1. operator login works through the real auth form', { tag: '@smoke' }, async ({
+  test('1. Staff login works through the real Admin login form', { tag: '@smoke' }, async ({
     page,
   }) => {
-    await page.goto('/login');
-    await page.getByLabel('شمارهٔ موبایل').fill(fx.op.phone);
-    await page.getByLabel('رمز عبور', { exact: true }).fill('Test1234!');
-    await page.getByRole('button', { name: 'ورود' }).click();
-    // The operator account is active + placement-complete → dashboard.
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
-    // The Top App Bar keeps the operator entry point.
-    await page.getByRole('link', { name: 'پنل اپراتور' }).click();
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await page.goto(`${ADMIN_URL}/login`);
+    await expect(page.getByRole('heading', { name: 'ورود مدیریت' })).toBeVisible();
+    await page.getByTestId('admin-login-email').locator('input').fill(fx.op.email);
+    await page.getByTestId('admin-login-password').locator('input').fill(fx.op.password);
+    await page.getByTestId('admin-login-submit').click();
+    // Lands on the Admin dashboard.
+    await expect(page).toHaveURL(`${ADMIN_URL}/`, { timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'داشبورد مدیریت' })).toBeVisible();
+    // Opens the payment queue.
+    await page.getByRole('link', { name: 'پرداختها' }).click();
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
   });
 
   test('2. pending queue shows the real pending requests', async ({ page }) => {
-    await setAuth(page, fx.op.token, fx.op.record, '/operator?status=pending');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments?status=pending');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await expect(page.getByText(fx.pendA.name).first()).toBeVisible();
     await expect(page.getByText(fx.pendB.name).first()).toBeVisible();
     // Decided requests are not in the pending view.
@@ -366,8 +412,8 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('3. search and status filter reflect in URL and rows', async ({ page }) => {
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await expect(page.getByText(fx.doneC.name).first()).toBeVisible();
 
     // Status filter → approved only.
@@ -390,10 +436,10 @@ test.describe('Operator workspace redesign', () => {
 
   test('4. selecting a request opens the detail with URL identity', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await page.getByTestId(`operator-request-item-${fx.pendA.requestId}`).click();
-    await expect(page).toHaveURL(new RegExp(`/operator/payment-requests/${fx.pendA.requestId}`));
+    await expect(page).toHaveURL(new RegExp(`/payments/${fx.pendA.requestId}`));
     // Split workspace keeps the queue visible next to the detail.
     await expect(page.getByTestId('operator-workspace-split')).toBeVisible();
     await expect(
@@ -402,12 +448,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('5. user summary shows safe identity and account status', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     await expect(
       page.getByRole('heading', { name: new RegExp(`درخواست ${fx.pendA.name}`) }),
     ).toBeVisible();
@@ -423,12 +464,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('6. plan and expected amount are shown from authoritative values', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     await expect(
       page.getByRole('heading', { name: new RegExp(`درخواست ${fx.pendA.name}`) }),
     ).toBeVisible();
@@ -437,12 +473,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('7. protected receipt preview loads as a blob, never a server URL', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     const img = page.locator('img[alt="رسید پرداخت"]').first();
     await expect(img).toBeVisible({ timeout: 10_000 });
     const src = await img.getAttribute('src');
@@ -454,12 +485,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('8. receipt zoom opens an accessible dialog', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     await expect(page.locator('img[alt="رسید پرداخت"]').first()).toBeVisible({ timeout: 10_000 });
     await page
       .getByRole('button', { name: /بزرگ‌نمایی رسید پرداخت/ })
@@ -473,12 +499,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('9. approve requires an explicit confirmation and safe cancel', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     await expect(page.getByTestId('operator-approve-open')).toBeVisible();
     await page.getByTestId('operator-approve-open').click();
     const dialog = page.getByTestId('approve-dialog');
@@ -496,12 +517,7 @@ test.describe('Operator workspace redesign', () => {
   test('10. approve success only after Backend acknowledgement + authoritative dates', async ({
     page,
   }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     await expect(page.getByTestId('operator-approve-open')).toBeVisible();
     await page.getByTestId('operator-approve-open').click();
     const dialog = page.getByTestId('approve-dialog');
@@ -519,12 +535,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('11. activated Subscription is displayed from the refreshed detail', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendA.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendA.requestId}`);
     await expect(page.getByText('اشتراک کاربر')).toBeVisible();
     await expect(page.getByText('اشتراک فعال')).toBeVisible();
     await expect(page.getByText(fx.planName).first()).toBeVisible();
@@ -532,8 +543,8 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('12. the approved request leaves the pending queue', async ({ page }) => {
-    await setAuth(page, fx.op.token, fx.op.record, '/operator?status=pending');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments?status=pending');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await expect(page.getByText(fx.pendA.name)).toHaveCount(0);
     await expect(page.getByText(fx.pendB.name).first()).toBeVisible();
   });
@@ -541,12 +552,7 @@ test.describe('Operator workspace redesign', () => {
   test('13. reject requires confirmation with an explicit student-visibility warning', async ({
     page,
   }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendB.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendB.requestId}`);
     await expect(page.getByTestId('operator-reject-open')).toBeVisible();
     await page.getByTestId('operator-reject-open').click();
     const dialog = page.getByTestId('reject-dialog');
@@ -561,12 +567,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('14. public reason is validated inline before submission', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendB.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendB.requestId}`);
     await page.getByTestId('operator-reject-open').click();
     const dialog = page.getByTestId('reject-dialog');
     const reason = dialog.getByLabel('دلیل رد (عمومی)');
@@ -582,12 +583,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('15. public reason and internal note are visually separated fields', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendB.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendB.requestId}`);
     await page.getByTestId('operator-reject-open').click();
     const dialog = page.getByTestId('reject-dialog');
     const publicField = dialog.getByLabel('دلیل رد (عمومی)');
@@ -603,12 +599,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('16. reject success updates queue and detail', async ({ page }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendB.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendB.requestId}`);
     await page.getByTestId('operator-reject-open').click();
     const dialog = page.getByTestId('reject-dialog');
     await dialog.getByLabel('دلیل رد (عمومی)').fill(LONG_PERSIAN_REASON);
@@ -621,7 +612,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('17. the Student sees the public rejection reason', async ({ page }) => {
-    await setAuth(page, fx.pendB.token, fx.pendB.record, '/payment-status');
+    await setStudentAuth(page, fx.pendB.token, fx.pendB.record, '/payment-status');
     await expect(page.getByTestId('rejection-reason')).toBeVisible();
     // The server body parser on this PB version double-encodes multi-byte
     // Persian in stored reasons; assert the reason block exists and is
@@ -631,7 +622,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('18. the Student never sees the internal note', async ({ page }) => {
-    await setAuth(page, fx.pendB.token, fx.pendB.record, '/payment-status');
+    await setStudentAuth(page, fx.pendB.token, fx.pendB.record, '/payment-status');
     const bodyText = await page.locator('body').innerText();
     expect(bodyText).not.toContain(INTERNAL_NOTE_MARKER);
     // The internal note label must not appear in the Student surface.
@@ -644,18 +635,8 @@ test.describe('Operator workspace redesign', () => {
     try {
       const pageA = await ctxA.newPage();
       const pageB = await ctxB.newPage();
-      await setAuth(
-        pageA,
-        fx.op.token,
-        fx.op.record,
-        `/operator/payment-requests/${fx.raceE.requestId}`,
-      );
-      await setAuth(
-        pageB,
-        fx.op.token,
-        fx.op.record,
-        `/operator/payment-requests/${fx.raceE.requestId}`,
-      );
+      await setAuth(pageA, fx.op.token, fx.op.record, `/payments/${fx.raceE.requestId}`);
+      await setAuth(pageB, fx.op.token, fx.op.record, `/payments/${fx.raceE.requestId}`);
       await expect(pageA.getByTestId('operator-approve-open')).toBeVisible();
       await expect(pageB.getByTestId('operator-reject-open')).toBeVisible();
 
@@ -704,18 +685,8 @@ test.describe('Operator workspace redesign', () => {
     try {
       const pageA = await ctxA.newPage();
       const pageB = await ctxB.newPage();
-      await setAuth(
-        pageA,
-        fx.op.token,
-        fx.op.record,
-        `/operator/payment-requests/${fx.raceF.requestId}`,
-      );
-      await setAuth(
-        pageB,
-        fx.op.token,
-        fx.op.record,
-        `/operator/payment-requests/${fx.raceF.requestId}`,
-      );
+      await setAuth(pageA, fx.op.token, fx.op.record, `/payments/${fx.raceF.requestId}`);
+      await setAuth(pageB, fx.op.token, fx.op.record, `/payments/${fx.raceF.requestId}`);
       await expect(pageA.getByTestId('operator-reject-open')).toBeVisible();
 
       // Operator A rejects.
@@ -748,12 +719,7 @@ test.describe('Operator workspace redesign', () => {
   test('21. already-decided request opens read-only with no decision controls', async ({
     page,
   }) => {
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.doneC.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.doneC.requestId}`);
     await expect(
       page.getByRole('heading', { name: new RegExp(`درخواست ${fx.doneC.name}`) }),
     ).toBeVisible();
@@ -763,41 +729,45 @@ test.describe('Operator workspace redesign', () => {
     await expect(page.getByText('امکان تصمیم‌گیری وجود ندارد')).toBeVisible();
   });
 
-  test('22. unauthorized Student is denied the operator surface', async ({ page }) => {
+  test('22. unauthorized Student is denied the Admin surface', async ({ page }) => {
     const student = await createUser(fx.su, 'دانشجوی ممنوع');
     const login = await loginToken(student.phone);
-    await setAuth(page, login.token, login.record, '/operator');
-    await expect(page.getByText('دسترسی ندارید')).toBeVisible();
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toHaveCount(0);
+    // A Student session in the Admin's storage key fails the staff_admins
+    // refresh and lands on the Admin login — never the queue.
+    await setAuth(page, login.token, login.record, '/payments');
+    await expect(page.getByRole('heading', { name: 'ورود مدیریت' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toHaveCount(0);
   });
 
   test('23. operator chrome has no Student destinations', async ({ page }) => {
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     const hasBottomNav = await page.evaluate(() =>
       Array.from(document.querySelectorAll('nav')).some((n) =>
         (n.getAttribute('aria-label') || '').includes('پایین'),
       ),
     );
     expect(hasBottomNav).toBe(false);
-    await expect(page.getByTestId('operator-logout')).toBeVisible();
-    await expect(page.getByLabel('انتخاب حالت نمایش')).toBeVisible();
-    // No analytics / content / support destinations invented.
-    await expect(page.getByRole('link', { name: /داشبورد|درس‌ها|پیشرفت/ })).toHaveCount(0);
+    await expect(page.getByTestId('admin-logout')).toBeVisible();
+    // No theme control in the Admin shell (Settings only) and no
+    // Student destinations.
+    await expect(page.getByLabel('انتخاب حالت نمایش')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /درس‌ها|پیشرفت|حساب/ })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'داشبورد' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'پرداختها' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'تنظیمات' })).toBeVisible();
   });
 
   test('24. mobile 390px: queue → full detail → back preserves queue state', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuth(page, fx.op.token, fx.op.record, '/operator?status=pending');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments?status=pending');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     // No split pane is forced on phones.
     await expect(page.getByTestId('operator-workspace-split')).toHaveCount(0);
     const item = page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`);
     await item.scrollIntoViewIfNeeded();
     await item.click();
-    await expect(page).toHaveURL(
-      new RegExp(`/operator/payment-requests/${fx.pendStable.requestId}`),
-    );
+    await expect(page).toHaveURL(new RegExp(`/payments/${fx.pendStable.requestId}`));
     // Full detail surface with the decision controls reachable.
     await expect(
       page.getByRole('heading', { name: new RegExp(`درخواست ${fx.pendStable.name}`) }),
@@ -805,19 +775,14 @@ test.describe('Operator workspace redesign', () => {
     await expect(page.getByTestId('operator-reject-open')).toBeVisible();
     // Back returns to the same queue state (pending filter preserved).
     await page.getByTestId('operator-detail-back').click();
-    await expect(page).toHaveURL(/\/operator\?status=pending/);
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await expect(page).toHaveURL(/\/payments\?status=pending/);
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await expect(page.getByText(fx.pendStable.name).first()).toBeVisible();
   });
 
   test('25. tablet 768×1024: compact split workspace', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
-    await setAuth(
-      page,
-      fx.op.token,
-      fx.op.record,
-      `/operator/payment-requests/${fx.pendStable.requestId}`,
-    );
+    await setAuth(page, fx.op.token, fx.op.record, `/payments/${fx.pendStable.requestId}`);
     await expect(page.getByTestId('operator-workspace-split')).toBeVisible();
     await expect(page.getByTestId('queue-pane')).toBeVisible();
     await expect(page.getByTestId('detail-pane')).toBeVisible();
@@ -838,8 +803,8 @@ test.describe('Operator workspace redesign', () => {
 
   test('26. desktop 1440×900: split with selection keeping queue context', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`).click();
     await expect(page.getByTestId('operator-workspace-split')).toBeVisible();
     // The queue stays visible with the selected item marked.
@@ -866,16 +831,20 @@ test.describe('Operator workspace redesign', () => {
 
   test('27. Dark Mode keeps the queue and selected states intact', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     // Select a request so the selected state is measurable in Dark Mode.
     await page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`).click();
     await expect(page.getByTestId('operator-workspace-split')).toBeVisible();
-    await page.getByRole('button', { name: 'حالت تیره' }).click();
+    // The display preference lives only in Admin Settings (Podcast Slice 1).
+    await page.goto(`${ADMIN_URL}/settings`);
+    await page.getByTestId('admin-theme-switch').getByRole('button', { name: 'حالت تیره' }).click();
     await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
-    await expect(
-      page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`),
-    ).toBeVisible();
+    await page.goto(`${ADMIN_URL}/payments`);
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
+    // Re-select the request (a fresh navigation starts without selection).
+    await page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`).click();
+    await expect(page.getByTestId('operator-workspace-split')).toBeVisible();
     // Selected state remains visible in Dark: aria-current + the shape
     // indicator bar (not color alone).
     const selected = page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`);
@@ -884,7 +853,9 @@ test.describe('Operator workspace redesign', () => {
       const before = window.getComputedStyle(el, '::before');
       return before.opacity;
     });
-    expect(Number(indicator)).toBe(1);
+    // The route entrance animation may still be settling; require the
+    // indicator to be effectively opaque.
+    expect(Number(indicator)).toBeGreaterThan(0.9);
     const noOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
     );
@@ -893,14 +864,12 @@ test.describe('Operator workspace redesign', () => {
 
   test('28. keyboard-only workflow: select, open, decide dialog, escape', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     const item = page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`);
     await item.focus();
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(
-      new RegExp(`/operator/payment-requests/${fx.pendStable.requestId}`),
-    );
+    await expect(page).toHaveURL(new RegExp(`/payments/${fx.pendStable.requestId}`));
     // Tab through the detail until the Reject button gets focus-visible,
     // then open it with the keyboard.
     await page.getByTestId('operator-reject-open').focus();
@@ -912,7 +881,7 @@ test.describe('Operator workspace redesign', () => {
   });
 
   test('29. long Persian reason renders wrapped with no overflow', async ({ page }) => {
-    await setAuth(page, fx.doneD.token, fx.doneD.record, '/payment-status');
+    await setStudentAuth(page, fx.doneD.token, fx.doneD.record, '/payment-status');
     await expect(page.getByTestId('rejection-reason')).toBeVisible();
     const noOverflow = await page.evaluate(() => {
       const doc = document.documentElement;
@@ -927,8 +896,8 @@ test.describe('Operator workspace redesign', () => {
 
   test('30. no raw Backend errors surface anywhere in the workspace', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await setAuth(page, fx.op.token, fx.op.record, '/operator');
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+    await setAuth(page, fx.op.token, fx.op.record, '/payments');
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     const queueText = await page.locator('body').innerText();
     for (const leak of [
       'Internal error',

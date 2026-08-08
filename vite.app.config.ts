@@ -72,6 +72,11 @@ const pwaManifest = {
 
 export default defineConfig({
   root: 'app',
+  // Isolated dep-optimizer cache: the Admin dev server (vite.admin.config.ts)
+  // must never invalidate the Student dev server's optimized deps mid-run
+  // (they share the repo node_modules; a shared cache causes 504
+  // "Outdated Optimize Dep" races when both servers are up).
+  cacheDir: '../node_modules/.vite-app',
   plugins: [
     react(),
     VitePWA({

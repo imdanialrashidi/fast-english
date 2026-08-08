@@ -19,7 +19,7 @@ import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import { Box, IconButton, LinearProgress, Paper, Typography } from '@mui/material';
 import { useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { duration, easing, layout } from '../../app/theme/tokens';
+import { duration, easing, layout } from '../../../../shared/ui/tokens';
 import { usePlayer } from './PlayerProvider';
 
 const MINI_PLAYER_HEIGHT = 56;

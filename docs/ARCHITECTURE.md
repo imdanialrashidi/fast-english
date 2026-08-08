@@ -7,7 +7,7 @@ Durable constraints only. Not a diary.
 - Main modules: `landing/` (static, Tailwind), `app/` (MUI product app), `server/` (PocketBase migrations + hooks), `android/` (Capacitor), `scripts/`.
 - Data stores: PocketBase SQLite (`server/pb_data/`, git-ignored, never committed).
 - External services: none required (no payment provider, no SMS, no CDN font).
-- Deployment topology: `fastenglishpodcast.com` (static), `app.fastenglishpodcast.com` (app + `/api/*` reverse proxy), `admin.fastenglishpodcast.com` (PocketBase dashboard), PocketBase bound `127.0.0.1:8090`, Caddy HTTPS, systemd, daily backup + off-VPS copy.
+- Deployment topology: `fastenglishpodcast.com` (static), `app.fastenglishpodcast.com` (app + `/api/*` reverse proxy), `admin.fastenglishpodcast.com` (Unified Staff Admin Console), PocketBase bound `127.0.0.1:8090`, Caddy HTTPS, systemd, daily backup + off-VPS copy.
 
 ## Repository/build topology
 - One repo, one root `package.json`, one `pnpm-lock.yaml`. No workspace/monorepo framework.
@@ -34,7 +34,7 @@ Durable constraints only. Not a diary.
 1. Client (browser/APK) → Caddy → PocketBase `/api/*`. All authz server-side.
 2. Signup: client sends phone/name/password(+optional email) → PB normalizes phone, enforces uniqueness, sets `role=student`, `account_status=pending_payment`.
 3. Payment: client sends `plan_id` + transfer fields + receipt image → PB validates, snapshots plan, stores receipt in protected file field, creates `pending` request.
-4. Operator approve: PB verifies operator role, compares externally, in one transaction sets request `approved` + creates/extends subscription (idempotent via unique subscription→request link).
+4. Staff approve: PB verifies the `staff_admins` identity (requireStaffAdmin), compares externally, in one transaction sets request `approved` + creates/extends subscription (idempotent via unique subscription→request link).
 5. Premium content: PB hook/endpoint checks authenticated + not suspended + active subscription + published before returning lesson body/audio; never returns correct placement answers.
 
 ## Non-negotiable invariants
@@ -46,7 +46,7 @@ Durable constraints only. Not a diary.
 - Correct placement answers never sent to client; grading server-side only.
 - Premium body/audio denied to pending/rejected/expired/suspended even via direct API.
 - Premium audio is streamed through the lesson audio proxy with a short-lived PB file token passed as a query parameter (an `<audio>` element cannot send custom headers). The proxy re-validates live entitlement on every request, so a leaked token grants nothing beyond the owner's current entitlement; it is never stored in the app.
-- Operator endpoints verify operator role server-side; UI guard is not authz.
+- Staff endpoints verify the `staff_admins` collection + `is_active` server-side (requireStaffAdmin); UI guard is not authz. Student routes verify the `fep_users` collection + `student` role (requireStudent / requireActiveStudent).
 - PWA SW never caches `/api/` or private/premium data.
 - No secrets in source/bundles/logs/fixtures; `server/pb_data/` never committed.
 
@@ -73,6 +73,12 @@ Durable constraints only. Not a diary.
 - Deployment: immutable releases under `/opt/fast-english/releases/<id>`, atomic `current` symlink, `pb_data` outside releases, `deploy/deploy.sh` with pre-deployment backup + health checks + smoke + automatic rollback; previous release never deleted.
 - Backup/restore: PocketBase automatic backups daily 02:30 UTC (`backups.cron`), keep 14 (`cronMaxKeep`), verified copies moved off `pb_data` at 02:40 UTC (`fast-english-backup-copy.timer`), S3 backups bucket only when credentials are approved; restore drill on a disposable instance (`deploy/restore-drill.sh`); initial verified backup before every first deploy.
 - Logging: non-sensitive logs; no receipt URLs/PII in logs; Caddy access logs rotate (10×10MiB, 30 days) and filter `request>uri` with the official query filter replacing the `token` query parameter with `[REDACTED]` (proven by `deploy/test-log-redaction.sh`); `log_credentials` is never enabled (Authorization/Cookie redacted by Caddy defaults); PocketBase `logs.maxDays=30`, `logAuthId=false`.
-- Security: PocketBase binds 127.0.0.1:8090 only (systemd `ProtectSystem=strict`, non-root `fastenglish` user); the superuser Dashboard `/_/` is 404 on public domains and reachable only over an SSH tunnel; Caddy request bodies bounded to 6MB on `/api/*` (5MB receipt + documented margin); CORS restricted to the two public HTTPS origins; superuser IP whitelist recommended once the operator IP is known.
+- Security: PocketBase binds 127.0.0.1:8090 only (systemd `ProtectSystem=strict`, non-root `fastenglish` user); the superuser Dashboard `/_/` is 404 on public domains and reachable only over an SSH tunnel; Caddy request bodies bounded to 6MB on `/api/*` (5MB receipt + documented margin); CORS restricted to the three public HTTPS origins; superuser IP whitelist recommended once the staff IP is known.
 - Rollback: symlink flip + PocketBase restart + Caddy reload; static release rollback never touches `pb_data`; APK rollback = previous versioned APK (immutable filenames, old files never overwritten).
 - Production deployment package: `deploy/` (Caddyfile, systemd units, install/configure/deploy/backup/restore-drill/smoke/ops/log-redaction scripts, env template) — validated locally; actual deployment requires DNS + server access (see `docs/DEPLOYMENT.md` §9, Gate open).
+
+## Student App surface (Podcast Slice 5)
+- Routes: `/` RootGate (guests → Entry; active+placement+level → Home in the shared shell; otherwise → /payment or /placement), `/login`, `/signup`, shell routes `/payment`, `/payment-status`, `/placement`, `/placement/result`, `/lessons`, `/lessons/:id`, `/lessons/demo`, `/library` (transitional), `/progress`, `/account`, `/dashboard` → `/` redirect, `/sample`, Not Found.
+- The shared `PlayerProvider` (single `<audio>` element) wraps all routes; it stops playback when the auth session disappears. Home renders via `<AppShell><HomeRoute/></AppShell>`.
+- Home loads four existing endpoints in parallel: preferred-level lesson list, `/progress/continue`, `/progress/summary`, `/dashboard` (subscription line). Continue hero merges the continue payload with the list item (artwork/category/titleFa). Pure composition rules live in `app/src/features/home/logic.ts` (unit-tested).
+- Reusable Episode foundations (`app/src/features/podcast/components/`): EpisodeArtwork, EpisodeCard, ContentSection — consumed by Home now and by Library (Slice 6) next.

@@ -11,6 +11,7 @@
 import { mkdirSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
 import {
+  createStaff,
   ensureOwnedDestination,
   ensureOwnedPlan,
   PB_URL,
@@ -38,30 +39,8 @@ async function ensureFixtures(): Promise<void> {
 
 async function getOperatorToken(): Promise<string> {
   const suToken = await superuserAuth();
-  const opPhone = uniquePhone();
-  const signup = await fetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      name: 'Op',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const body = (await signup.json()) as { id?: string; phone?: string };
-  await fetch(`${PB_URL}/api/collections/fep_users/records/${body.id}`, {
-    method: 'PATCH',
-    headers: { 'content-type': 'application/json', authorization: suToken },
-    body: JSON.stringify({ role: 'operator' }),
-  });
-  const login = await fetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: body.phone || opPhone, password: 'Test1234!' }),
-  });
-  const loginBody = (await login.json()) as { token?: string };
-  return loginBody.token || '';
+  const staff = await createStaff(suToken);
+  return staff.token;
 }
 
 async function signupAndLogin(page: Page, phone: string): Promise<void> {
@@ -162,7 +141,7 @@ for (const layout of LAYOUTS) {
       await expect(page.getByText('در حال ارسال رسید…')).toBeVisible({ timeout: 5_000 });
       await page.screenshot({ path: `${dir}/03-uploading.png` });
       await page.waitForURL('**/payment-status', { timeout: 30_000 });
-      await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+      await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
         timeout: 15_000,
       });
       await page.screenshot({ path: `${dir}/04-pending.png`, fullPage: true });
@@ -208,7 +187,7 @@ for (const layout of LAYOUTS) {
         await pageB.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
         await pageB.getByRole('button', { name: /ارسال رسید/ }).click();
         await pageB.waitForURL('**/payment-status', { timeout: 30_000 });
-        await expect(pageB.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+        await expect(pageB.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
           timeout: 15_000,
         });
         const req2 = pageB.waitForRequest(

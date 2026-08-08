@@ -9,8 +9,8 @@
 
 import { Alert, Box, Button, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
+import { CopyValue } from '../../../../../shared/ui/CopyValue';
 import type { PaymentError } from '../types';
-import { CopyValue } from './CopyValue';
 
 interface Props {
   error: PaymentError;

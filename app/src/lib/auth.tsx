@@ -208,7 +208,7 @@ export function useAuth(): AuthContextValue {
 }
 
 // Route guard decisions. Pure functions; safe to unit-test.
-export type RouteKind = 'guest-only' | 'pending-only' | 'active-only' | 'operator-only' | 'public';
+export type RouteKind = 'guest-only' | 'pending-only' | 'active-only' | 'public';
 
 export type GuardDecision = { kind: 'allow' } | { kind: 'redirect'; to: string } | { kind: 'deny' };
 
@@ -225,7 +225,7 @@ export function decideRoute(
         // Route active users based on placement completion state
         if (user?.account_status === 'active') {
           if (user?.placement_completed && user?.selected_level) {
-            return { kind: 'redirect', to: '/dashboard' };
+            return { kind: 'redirect', to: '/' };
           }
           // Placement not completed — might be no attempt, in progress, or submitted without selection
           return { kind: 'redirect', to: '/placement' };
@@ -244,7 +244,7 @@ export function decideRoute(
       }
       return {
         kind: 'redirect',
-        to: user?.account_status === 'active' ? '/dashboard' : '/login',
+        to: user?.account_status === 'active' ? '/' : '/login',
       };
     case 'active-only':
       if (!isAuthenticated) return { kind: 'redirect', to: '/login' };
@@ -259,11 +259,5 @@ export function decideRoute(
             ? '/payment'
             : '/payment',
       };
-    case 'operator-only':
-      if (!isAuthenticated) return { kind: 'redirect', to: '/login' };
-      if (user?.role === 'operator') {
-        return { kind: 'allow' };
-      }
-      return { kind: 'deny' };
   }
 }

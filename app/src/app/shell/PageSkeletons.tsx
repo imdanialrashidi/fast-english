@@ -6,7 +6,7 @@
 // under `prefers-reduced-motion` by default (v9 behavior).
 
 import { Box, Card, Skeleton, Stack } from '@mui/material';
-import { layout } from '../theme/tokens/spacing';
+import { layout } from '../../../../shared/ui/tokens/spacing';
 
 function LoadingRegion({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -35,46 +35,49 @@ function LoadingRegion({ label, children }: { label: string; children: React.Rea
   );
 }
 
-/** Dashboard loading state: header, Continue hero card, metrics, cards. */
-export function DashboardSkeleton() {
+/** Home loading state (Podcast Slice 5): greeting, hero artwork + lines,
+ *  section rows — media-aware so the layout does not shift when the real
+ *  content arrives. */
+export function HomeSkeleton() {
   return (
-    <LoadingRegion label="در حال بارگذاری داشبورد…">
-      <Stack spacing={2}>
+    <LoadingRegion label="در حال بارگذاری صفحهٔ اصلی…">
+      <Stack spacing={3}>
         <Stack spacing={1}>
-          <Skeleton variant="text" width="45%" height={32} />
+          <Skeleton variant="text" width="40%" height={32} />
           <Skeleton variant="text" width="30%" height={20} />
         </Stack>
-        <Card data-testid="skeleton-continue-card" sx={{ borderRadius: '24px' }}>
-          <Stack spacing={1.5} sx={{ p: 3 }}>
-            <Skeleton variant="text" width="35%" height={20} />
-            <Skeleton variant="text" width="70%" height={28} />
-            <Skeleton variant="text" width="40%" height={18} />
-            <Skeleton variant="rounded" height={48} width="60%" />
-          </Stack>
-        </Card>
-        <Card>
-          <Stack spacing={1.5} sx={{ p: 2.5 }}>
-            <Skeleton variant="text" width="30%" height={22} />
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: 'repeat(2, minmax(0, 1fr))',
-                  sm: 'repeat(4, minmax(0, 1fr))',
-                },
-                gap: 2,
-              }}
-            >
-              {[0, 1, 2, 3].map((i) => (
-                <Stack key={i} spacing={0.5}>
-                  <Skeleton variant="text" width="60%" height={24} />
-                  <Skeleton variant="text" width="80%" height={14} />
-                </Stack>
-              ))}
-            </Box>
+        <Card data-testid="skeleton-home-hero" sx={{ borderRadius: '24px' }}>
+          <Stack spacing={2} sx={{ p: 3 }}>
+            <Skeleton variant="text" width="30%" height={20} />
+            <Stack direction="row" spacing={2}>
+              <Skeleton variant="rounded" width={96} height={96} />
+              <Stack spacing={1} sx={{ flex: 1 }}>
+                <Skeleton variant="text" width="60%" height={24} />
+                <Skeleton variant="text" width="40%" height={16} />
+                <Skeleton variant="text" width="25%" height={16} />
+              </Stack>
+            </Stack>
             <Skeleton variant="rounded" height={6} />
+            <Skeleton variant="rounded" height={48} />
           </Stack>
         </Card>
+        <Box>
+          <Skeleton variant="text" width="25%" height={24} sx={{ mb: 1.5 }} />
+          <Stack spacing={1.5}>
+            {[0, 1, 2].map((i) => (
+              <Card key={i}>
+                <Stack direction="row" spacing={1.5} sx={{ p: 1.5 }}>
+                  <Skeleton variant="rounded" width={88} height={88} />
+                  <Stack spacing={1} sx={{ flex: 1 }}>
+                    <Skeleton variant="text" width="45%" height={18} />
+                    <Skeleton variant="text" width="70%" height={18} />
+                    <Skeleton variant="rounded" height={40} width="60%" />
+                  </Stack>
+                </Stack>
+              </Card>
+            ))}
+          </Stack>
+        </Box>
       </Stack>
     </LoadingRegion>
   );

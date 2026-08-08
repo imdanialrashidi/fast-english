@@ -28,8 +28,10 @@ const isFast = process.env.PW_FAST === '1';
 const PORT = Number(process.env.PB_E2E_PORT ?? 18101);
 const APP_PORT = Number(process.env.APP_E2E_PORT ?? 18102);
 const LANDING_PORT = Number(process.env.LANDING_E2E_PORT ?? 18103);
+const ADMIN_PORT = Number(process.env.ADMIN_E2E_PORT ?? 18104);
 const APP_URL = `http://127.0.0.1:${APP_PORT}`;
 const LANDING_URL = `http://127.0.0.1:${LANDING_PORT}`;
+const ADMIN_URL = `http://127.0.0.1:${ADMIN_PORT}`;
 const PB_URL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
@@ -43,8 +45,10 @@ export default defineConfig({
   maxFailures: isFast ? 1 : 0,
   reporter: isFast ? [['list']] : [['list'], ['html', { open: 'never' }]],
   outputDir: './test-results/e2e',
-  timeout: isFast ? 60_000 : 120_000,
-  expect: { timeout: isFast ? 10_000 : 15_000 },
+  timeout: isFast ? 90_000 : 120_000,
+  // The fast lane cold-transforms both dev servers on first touch
+  // (app + admin), so expectations need a slightly larger budget.
+  expect: { timeout: isFast ? 20_000 : 15_000 },
   globalSetup: './e2e/global-setup.ts',
   globalTeardown: './e2e/global-teardown.ts',
   use: {
@@ -76,8 +80,21 @@ export default defineConfig({
           // no-op, avoiding the dev-only double auth-refresh race that
           // otherwise redirects freshly authenticated tests off the
           // target route (see app/src/lib/auth.tsx init()).
-          command: `NODE_ENV=production VITE_CATALOG=1 VITE_API_TARGET=${PB_URL} node_modules/.bin/vite --config vite.app.config.ts --port ${APP_PORT} --host 127.0.0.1 --strictPort --mode production`,
+          command: `NODE_ENV=production VITE_CATALOG=1 VITE_API_TARGET=${PB_URL} node_modules/.bin/vite --config vite.app.config.ts --port ${APP_PORT} --host 127.0.0.1 --strictPort --mode production > /tmp/fep-vite-app.log 2>&1 & echo $! > /tmp/fep-vite-app.pid; sleep 2; curl -fsS http://127.0.0.1:${APP_PORT}/ -o /dev/null; sleep 1; curl -fsS http://127.0.0.1:${APP_PORT}/ -o /dev/null; wait $(cat /tmp/fep-vite-app.pid)`,
           url: APP_URL,
+          reuseExistingServer: true,
+          timeout: 60_000,
+          stdout: 'pipe',
+          stderr: 'pipe',
+        },
+        {
+          // Fast lane: Admin Console dev server (production-mode React).
+          // Pre-warmed the same way as the app server: the first page load
+          // triggers a one-time optimizer self-reload ("504 Outdated
+          // Optimize Dep"); warming it before tests start keeps the runs
+          // deterministic.
+          command: `NODE_ENV=production VITE_API_TARGET=${PB_URL} node_modules/.bin/vite --config vite.admin.config.ts --port ${ADMIN_PORT} --host 127.0.0.1 --strictPort --mode production > /tmp/fep-vite-admin.log 2>&1 & echo $! > /tmp/fep-vite-admin.pid; sleep 2; curl -fsS http://127.0.0.1:${ADMIN_PORT}/login -o /dev/null; sleep 1; curl -fsS http://127.0.0.1:${ADMIN_PORT}/login -o /dev/null; wait $(cat /tmp/fep-vite-admin.pid)`,
+          url: ADMIN_URL,
           reuseExistingServer: true,
           timeout: 60_000,
           stdout: 'pipe',
@@ -113,6 +130,15 @@ export default defineConfig({
           stdout: 'pipe',
           stderr: 'pipe',
         },
+        {
+          // The Admin Console: built and previewed like production.
+          command: `vite build --config vite.admin.config.ts && VITE_API_TARGET=${PB_URL} node_modules/.bin/vite preview --config vite.admin.config.ts --port ${ADMIN_PORT} --host 127.0.0.1 --strictPort`,
+          url: ADMIN_URL,
+          reuseExistingServer: !isCI,
+          timeout: 120_000,
+          stdout: 'pipe',
+          stderr: 'pipe',
+        },
       ],
 });
 
@@ -120,3 +146,4 @@ export const PB_URL_E2E = PB_URL;
 export const PB_PORT_E2E = PORT;
 export const APP_URL_E2E = APP_URL;
 export const LANDING_URL_E2E = LANDING_URL;
+export { ADMIN_PORT, ADMIN_URL };

@@ -7,6 +7,7 @@
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { createStaff } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const VISUAL_QA_DIR = '/tmp/opencode/product-app-visual-polish/lessons-audio';
@@ -69,20 +70,83 @@ const AUDIO_FIXTURE = Buffer.from(
   })(),
 );
 
+// Minimal valid PNG (1x1) for Episode artwork uploads (Podcast Slice 2).
+const PNG_FIXTURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+  0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+  0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
+]);
+
+let defaultCategoryId = '';
+
+async function getDefaultCategoryId(su: string): Promise<string> {
+  if (defaultCategoryId) return defaultCategoryId;
+  const r = await jsonFetch(
+    `${PB_URL}/api/collections/categories/records?filter=(key='general')&perPage=1`,
+    { headers: { authorization: `Bearer ${su}` } },
+  );
+  const item = (r.body as { items?: Array<{ id: string }> })?.items?.[0];
+  if (!item) throw new Error('default category missing');
+  defaultCategoryId = item.id;
+  return defaultCategoryId;
+}
+
+async function uploadArtwork(su: string, topicId: string) {
+  const boundary = `--FB${randId()}`;
+  const parts = [
+    `--${boundary}\r\nContent-Disposition: form-data; name="artwork_square"; filename="art.png"\r\nContent-Type: image/png\r\n\r\n`,
+    PNG_FIXTURE,
+    `\r\n--${boundary}--\r\n`,
+  ];
+  const buf = Buffer.concat(parts.map((p) => (typeof p === 'string' ? Buffer.from(p) : p)));
+  const res = await fetch(`${PB_URL}/api/collections/topics/records/${topicId}`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${su}`,
+      'content-type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: buf,
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (res.status !== 200) throw new Error(`artwork upload: ${res.status}`);
+}
+
 async function makeTopic(su: string, overrides: Record<string, unknown> = {}) {
-  const r = await jsonFetch(`${PB_URL}/api/collections/topics/records`, {
+  const slug = (overrides.slug as string) || `t-${randId()}`;
+  // Podcast Slice 2: published Episodes require category/content_key/
+  // title_fa/description_fa and artwork, so fixtures publish through the
+  // same draft -> artwork -> publish path the hooks enforce.
+  const cr = await jsonFetch(`${PB_URL}/api/collections/topics/records`, {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      title: `T ${randId()}`,
-      slug: `t-${randId()}`,
+      title: (overrides.title as string) || `T ${randId()}`,
+      slug,
       description: 'd',
       sort_order: overrides.sort_order ?? 0,
-      status: overrides.status || 'published',
-      ...overrides,
+      status: 'draft',
     }),
   });
-  return r.body;
+  const id = cr.body?.id as string;
+  if (!id) throw new Error(`topic create: ${JSON.stringify(cr.body).slice(0, 200)}`);
+  if (overrides.keepDraft) return cr.body;
+  await uploadArtwork(su, id);
+  const patch: Record<string, unknown> = {
+    status: overrides.status || 'published',
+    category: await getDefaultCategoryId(su),
+    content_key: `fx-${randId()}`,
+    content_version: 1,
+    title_fa: 'عنوان اپیزود',
+    description_fa: 'توضیح اپیزود',
+  };
+  const pr = await jsonFetch(`${PB_URL}/api/collections/topics/records/${id}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify(patch),
+  });
+  if (pr.status !== 200) throw new Error(`topic publish: ${pr.status}`);
+  return cr.body;
 }
 
 async function uploadAudio(su: string, lessonId: string) {
@@ -127,6 +191,9 @@ async function makeLesson(su: string, topicId: string, overrides: Record<string,
   // Set server-authoritative duration for published lessons
   const dur = Number(overrides.audio_duration_seconds || 0) || 600;
   patch.audio_duration_seconds = dur;
+  // Podcast Slice 2 Variant invariants for new publishes
+  patch.summary_fa = 'خلاصه فارسی';
+  patch.content_version = 1;
   const pr = await jsonFetch(`${PB_URL}/api/collections/lessons/records/${id}`, {
     method: 'PATCH',
     headers: { authorization: `Bearer ${su}` },
@@ -140,30 +207,9 @@ async function makeLesson(su: string, topicId: string, overrides: Record<string,
 // Create fully-entitled student
 // ---------------------------------------------------------------------------
 async function createFullStudent(su: string, level = 'B1') {
-  const opPhone = nextPhone();
-  const opS = await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const opId = opS.body?.id as string;
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${opId}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const opL = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    body: JSON.stringify({
-      identity: (opS.body?.phone as string) || opPhone,
-      password: 'Test1234!',
-    }),
-  });
-  const opToken = (opL.body as { token?: string })?.token || '';
+  // Staff Administrator token (Podcast Slice 1)
+  const staff = await createStaff(su);
+  const opToken = staff.token;
 
   const phone = nextPhone();
   const password = 'Test1234!';
@@ -590,9 +636,9 @@ test.describe('P3-S2 Progress and Audio Player', () => {
   // 12. Dashboard shows real progress
   test('12 - dashboard shows real progress', async ({ page }) => {
     await injectToken(page);
-    await page.goto('/dashboard');
-    // Visual Slice 2 renamed the dashboard progress card heading.
-    await expect(page.locator('text=پیشرفت آموزشی')).toBeVisible({ timeout: 10_000 });
+    await page.goto('/');
+    // Podcast Slice 5 Home progress panel.
+    await expect(page.getByTestId('progress-card')).toBeVisible({ timeout: 10_000 });
   });
 
   // 13. Continue Learning opens expected lesson

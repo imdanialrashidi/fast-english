@@ -38,6 +38,7 @@ target/
 dist-app/
 dist-landing/
 dist-landing-apk/
+dist-admin/
 playwright-report/
 test-results/
 *.log

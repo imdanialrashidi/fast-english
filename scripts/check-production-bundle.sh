@@ -12,12 +12,13 @@
 #       - the Android debug-origin validation error message
 #       - the landing URL validator that REJECTS loopback hosts
 #
-# Usage: bash scripts/check-production-bundle.sh <landing-dir> <app-dir>
+# Usage: bash scripts/check-production-bundle.sh <landing-dir> <app-dir> [<admin-dir>]
 # Exit:  0 gate passed; 1 otherwise.
 set -Eeuo pipefail
 
 LANDING="${1:-dist-landing}"
 APP="${2:-dist-app}"
+ADMIN="${3:-dist-admin}"
 
 fail=0
 note() { echo "OK   $*"; }
@@ -25,6 +26,19 @@ bad() { echo "FAIL $*"; fail=1; }
 
 [[ -f "$LANDING/index.html" ]] || { echo "missing $LANDING/index.html" >&2; exit 1; }
 [[ -f "$APP/index.html" ]] || { echo "missing $APP/index.html" >&2; exit 1; }
+[[ -f "$ADMIN/index.html" ]] || { echo "missing $ADMIN/index.html" >&2; exit 1; }
+
+# Admin Console surface identity + no PWA artifacts (Podcast Slice 1).
+if grep -q 'admin-surface' "$ADMIN/index.html"; then
+  note "admin bundle carries the admin-surface marker"
+else
+  bad "admin bundle missing the admin-surface marker"
+fi
+if [[ -f "$ADMIN/sw.js" || -f "$ADMIN/manifest.webmanifest" ]]; then
+  bad "admin bundle must not contain a Service Worker or manifest"
+else
+  note "admin bundle has no Service Worker / manifest"
+fi
 
 # --- 1. configured production values --------------------------------------
 if grep -rq "https://fastenglishpodcast.com/releases/fast-english-podcast-v1.0.0.apk" "$LANDING"; then
@@ -49,6 +63,8 @@ HARD_FORBIDDEN=(
   '192\.168\.'
   ':5173'
   ':4173'
+  ':5175'
+  ':4175'
   'app-debug'
   '\.debug\.apk'
   'debug\.keystore'
@@ -61,7 +77,7 @@ HARD_FORBIDDEN=(
   'SmokePass'
   'FEP_SUPERUSER'
 )
-for dir in "$LANDING" "$APP"; do
+for dir in "$LANDING" "$APP" "$ADMIN"; do
   for pat in "${HARD_FORBIDDEN[@]}"; do
     if grep -rIqE "$pat" "$dir" 2>/dev/null; then
       bad "$dir contains forbidden pattern: $pat"
@@ -82,7 +98,7 @@ ALLOWED_INERT=(
   'http://localhost`;e&&\(r=e\.location\.origin'
   'e\.hostname===`(localhost|127\.0\.0\.1)`'
 )
-for dir in "$LANDING" "$APP"; do
+for dir in "$LANDING" "$APP" "$ADMIN"; do
   hits="$(grep -rIoE '.{0,50}(localhost|127\.0\.0\.1).{0,50}' "$dir" --include='*.js' --include='*.html' --include='*.webmanifest' 2>/dev/null || true)"
   if [[ -z "$hits" ]]; then
     note "$dir has no localhost/127.0.0.1 occurrences"

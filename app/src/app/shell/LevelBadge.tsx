@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
-import type { CefrLevel } from '../theme/tokens/cefr';
-import { cefr } from '../theme/tokens/cefr';
+import type { CefrLevel } from '../../../../shared/ui/tokens/cefr';
+import { cefr } from '../../../../shared/ui/tokens/cefr';
 
 // CEFR level badge that combines color, label text, and a level name so the
 // level is never communicated by color alone.

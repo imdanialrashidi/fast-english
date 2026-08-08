@@ -1,0 +1,68 @@
+{
+  "$schema": "../../schemas/episode-package.schema.json",
+  "schemaVersion": "1.0.0",
+  "contentKey": "general.example-episode",
+  "contentVersion": 1,
+  "categoryKey": "general",
+  "episode": {
+    "slug": "example-episode",
+    "titleEn": "Pyramids of Egypt",
+    "titleFa": "اهرام مصر",
+    "descriptionFa": "روایتی سطح‌بندی‌شده درباره تاریخ و معماری اهرام مصر، مناسب زبان‌آموزان سطوح مختلف.",
+    "artworkSquare": "artwork/square.png",
+    "heroImageWide": "artwork/hero.png",
+    "artworkAltFa": "نمای اهرام مصر در نور غروب",
+    "episodeNumber": 1,
+    "featured": false
+  },
+  "variants": [
+    {
+      "level": "B1",
+      "summaryFa": "در این اپیزود با تاریخچه و معماری اهرام مصر آشنا می‌شوید.",
+      "audio": "audio/b1.mp3",
+      "transcript": "transcripts/b1.md",
+      "vocabulary": [
+        {
+          "term": "pyramid",
+          "phonetic": "/ˈpɪrəmɪd/",
+          "partOfSpeech": "noun",
+          "meaningFa": "هرم",
+          "definitionEn": "A large structure with triangular sides that meet at a point.",
+          "exampleSentence": "The pyramid was built thousands of years ago."
+        },
+        {
+          "term": "block",
+          "phonetic": "/blɒk/",
+          "partOfSpeech": "noun",
+          "meaningFa": "بلوک",
+          "definitionEn": "A large solid piece of stone or other material.",
+          "exampleSentence": "Workers moved each stone block into place."
+        }
+      ]
+    },
+    {
+      "level": "C1",
+      "summaryFa": "بررسی معماری و مهندسی اهرام در سطح پیشرفته.",
+      "audio": "audio/c1.mp3",
+      "transcript": "transcripts/c1.md",
+      "vocabulary": [
+        {
+          "term": "monument",
+          "phonetic": "/ˈmɒnjʊmənt/",
+          "partOfSpeech": "noun",
+          "meaningFa": "یادمان",
+          "definitionEn": "A structure built to remember a person or event.",
+          "exampleSentence": "The monument has survived for four thousand years."
+        },
+        {
+          "term": "excavation",
+          "phonetic": "/ˌekskəˈveɪʃn/",
+          "partOfSpeech": "noun",
+          "meaningFa": "کاوش",
+          "definitionEn": "The activity of digging in the ground to find old objects.",
+          "exampleSentence": "The excavation revealed a hidden chamber beneath the sand."
+        }
+      ]
+    }
+  ]
+}

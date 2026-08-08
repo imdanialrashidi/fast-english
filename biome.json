@@ -5,7 +5,6 @@
       "**",
       "!dist-app",
       "!dist-landing",
-      "!dist-landing-apk",
       "!node_modules",
       "!**/node_modules",
       "!.vite",
@@ -19,8 +18,10 @@
       "!build",
       "!playwright-report",
       "!test-results",
-      "!app/src/assets/brand",
-      "!fast_english_logo_assets"
+      "!fast_english_logo_assets",
+      "!shared/assets/brand",
+      "!dist-landing-apk",
+      "!dist-admin"
     ]
   },
   "formatter": {

@@ -14,12 +14,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router';
+import { PageContainer } from '../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../shared/ui/StatePanel';
 import { previewRecommendations } from '../../data/previewData';
 import { useAuth } from '../../lib/auth';
 import { LevelBadge } from '../shell/LevelBadge';
-import { PageContainer } from '../shell/PageContainer';
-import { PageHeader } from '../shell/PageHeader';
-import { StatePanel } from '../shell/StatePanel';
 
 export function DashboardRoute() {
   const { user } = useAuth();

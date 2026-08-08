@@ -1,8 +1,8 @@
 import { Box, Stack, Typography } from '@mui/material';
+import { PageContainer } from '../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../shared/ui/PageHeader';
 import { previewRecommendations } from '../../data/previewData';
 import { LevelBadge } from '../shell/LevelBadge';
-import { PageContainer } from '../shell/PageContainer';
-import { PageHeader } from '../shell/PageHeader';
 
 export function LessonsRoute() {
   return (

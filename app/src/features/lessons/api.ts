@@ -31,11 +31,22 @@ export function resolveMediaUrl(path: string): string {
   return resolveApiUrl(path);
 }
 
-export async function getLessonList(page = 1, perPage = 50): Promise<LessonListResponse> {
-  const raw = await pb().send<Record<string, unknown>>(
-    `${API_BASE}/lessons?page=${page}&perPage=${perPage}`,
-    { method: 'GET' },
-  );
+/**
+ * Premium lesson list. `level` is the temporary browsing level (defaults to
+ * the server-side preferred level when omitted). Browsing another level is
+ * read-only: it never changes the Placement result, the preferred level,
+ * Progress, or the Subscription.
+ */
+export async function getLessonList(
+  page = 1,
+  perPage = 50,
+  level?: string,
+): Promise<LessonListResponse> {
+  const params = new URLSearchParams({ page: String(page), perPage: String(perPage) });
+  if (level) params.set('level', level);
+  const raw = await pb().send<Record<string, unknown>>(`${API_BASE}/lessons?${params.toString()}`, {
+    method: 'GET',
+  });
   return raw as unknown as LessonListResponse;
 }
 

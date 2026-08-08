@@ -69,9 +69,15 @@ routerAdd(
         if (!student) {
           entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
         } else {
-          var role = String(student.get("role") || "");
-          if (role !== "student") {
-            entitlementErr = { status: 403, body: { code: "access_denied", message: "Access denied." } };
+          // Central Student guard (guards.pb.js): Auth Collection must
+          // be `fep_users` with role === 'student'. Legacy Staff
+          // records are rejected here.
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          // Fail closed: an unavailable guard must not let the request through.
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
           } else {
             var acct = String(student.get("account_status") || "");
             if (acct === "suspended") {
@@ -120,25 +126,34 @@ routerAdd(
       var rateErr = checkRate(uid);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
-      // Load lesson and verify published + level match
+      // Load lesson and verify published (cross-level: no level equality
+      // check — an entitled Student may track progress on any Published
+      // Variant, A1–C2).
       var lesson = null;
       try { lesson = $app.findRecordById(LESSONS_C, lessonId); } catch (_) {}
       if (!lesson) return e.json(404, { code: "not_found", message: "Lesson not found." });
 
-      var lessonLevel = String(lesson.get("level") || "");
       var lessonStatus = String(lesson.get("status") || "");
-      if (lessonStatus !== "published" || lessonLevel !== selLvl) {
+      if (lessonStatus !== "published") {
         return e.json(404, { code: "not_found", message: "Lesson not found." });
       }
 
-      // Verify topic is published
+      // Verify topic is published AND its parent Category is published
+      // (Category archival hides all child content but retains Progress).
       var topicId = "";
       try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
       var topicPublished = false;
       if (topicId) {
         try {
           var tRec = $app.findRecordById(TOPICS_C, topicId);
-          if (tRec && tRec.get("status") === "published") topicPublished = true;
+          if (tRec && tRec.get("status") === "published") {
+            var pdG = null;
+            try { pdG = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdG = null; }
+            if (pdG) {
+              var catG = pdG.requirePublishedCategory($app, tRec.get("category"));
+              if (catG.ok) topicPublished = true;
+            }
+          }
         } catch (_) {}
       }
       if (!topicPublished) {
@@ -348,10 +363,15 @@ routerAdd(
             throw { httpStatus: 401, code: "user_not_found", message: "User not found." };
           }
 
-          // 2. Verify entitlement
-          var role = String(student.get("role") || "");
-          if (role !== "student") {
-            throw { httpStatus: 403, code: "access_denied", message: "Access denied." };
+          // 2. Verify entitlement — central Student guard
+          // (guards.pb.js): Auth Collection must be `fep_users` with
+          // role === 'student'. Legacy Staff records are rejected.
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          // Fail closed: an unavailable guard must not let the request through.
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            throw { httpStatus: guardErr.status, code: guardErr.code, message: guardErr.message };
           }
           var acct = String(student.get("account_status") || "");
           if (acct === "suspended") {
@@ -393,26 +413,34 @@ routerAdd(
             throw { httpStatus: rateErr.status, code: rateErr.body.code, message: rateErr.body.message };
           }
 
-          // 3. Reload published matching-level Lesson
+          // 3. Reload published Lesson (cross-level: no level equality
+          // check — an entitled Student may update progress on any
+          // Published Variant, A1–C2).
           var lesson = null;
           try { lesson = txApp.findRecordById(LESSONS_C, lessonId); } catch (_) {}
           if (!lesson) {
             throw { httpStatus: 404, code: "not_found", message: "Lesson not found." };
           }
-          var lessonLevel = String(lesson.get("level") || "");
           var lessonStatus = String(lesson.get("status") || "");
-          if (lessonStatus !== "published" || lessonLevel !== selLvl) {
+          if (lessonStatus !== "published") {
             throw { httpStatus: 404, code: "not_found", message: "Lesson not found." };
           }
 
-          // Verify topic is published
+          // Verify topic is published AND its parent Category is published
           var topicId = "";
           try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
           var topicPublished = false;
           if (topicId) {
             try {
               var tRec = txApp.findRecordById(TOPICS_C, topicId);
-              if (tRec && tRec.get("status") === "published") topicPublished = true;
+              if (tRec && tRec.get("status") === "published") {
+                var pdP = null;
+                try { pdP = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdP = null; }
+                if (pdP) {
+                  var catP = pdP.requirePublishedCategory(txApp, tRec.get("category"));
+                  if (catP.ok) topicPublished = true;
+                }
+              }
             } catch (_) {}
           }
           if (!topicPublished) {
@@ -650,9 +678,15 @@ routerAdd(
         if (!student) {
           entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
         } else {
-          var role = String(student.get("role") || "");
-          if (role !== "student") {
-            entitlementErr = { status: 403, body: { code: "access_denied", message: "Access denied." } };
+          // Central Student guard (guards.pb.js): Auth Collection must
+          // be `fep_users` with role === 'student'. Legacy Staff
+          // records are rejected here.
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          // Fail closed: an unavailable guard must not let the request through.
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
           } else {
             var acct = String(student.get("account_status") || "");
             if (acct === "suspended") {
@@ -696,11 +730,15 @@ routerAdd(
       var rateErr = checkRate(uid);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
-      // Count published lessons for this level with published topics
+      // Count published lessons for this level with published topics AND
+      // published parent Categories (Category archival hides child content
+      // from dashboard counts; Progress records themselves are retained).
       var allLessons = [];
       try {
         allLessons = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "-published_at", 0, 0, { lvl: selLvl });
       } catch (_) {}
+      var pdSum = null;
+      try { pdSum = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdSum = null; }
       var publishedCount = 0;
       var totalDurationSeconds = 0;
       if (allLessons && allLessons.length > 0) {
@@ -711,7 +749,13 @@ routerAdd(
           try { tId = String(ls.get("topic") || ""); } catch (_) {}
           var tPub = false;
           if (tId) {
-            try { var tRec = $app.findRecordById(TOPICS_C, tId); if (tRec && tRec.get("status") === "published") tPub = true; } catch (_) {}
+            try {
+              var tRec = $app.findRecordById(TOPICS_C, tId);
+              if (tRec && tRec.get("status") === "published" && pdSum) {
+                var catS2 = pdSum.requirePublishedCategory($app, tRec.get("category"));
+                if (catS2.ok) tPub = true;
+              }
+            } catch (_) {}
           }
           if (tPub) {
             publishedCount++;
@@ -834,9 +878,15 @@ routerAdd(
         if (!student) {
           entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
         } else {
-          var role = String(student.get("role") || "");
-          if (role !== "student") {
-            entitlementErr = { status: 403, body: { code: "access_denied", message: "Access denied." } };
+          // Central Student guard (guards.pb.js): Auth Collection must
+          // be `fep_users` with role === 'student'. Legacy Staff
+          // records are rejected here.
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          // Fail closed: an unavailable guard must not let the request through.
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
           } else {
             var acct = String(student.get("account_status") || "");
             if (acct === "suspended") {
@@ -880,12 +930,15 @@ routerAdd(
       var rateErr = checkRate(uid);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
-      // Get all published lessons for this level (with published topics)
+      // Get all published lessons for this level (with published topics
+      // AND published parent Categories).
       var allLessons = [];
       try {
         allLessons = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "-published_at", 0, 0, { lvl: selLvl });
       } catch (_) {}
 
+      var pdCont = null;
+      try { pdCont = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdCont = null; }
       var validLessons = [];
       if (allLessons && allLessons.length > 0) {
         for (var li = 0; li < allLessons.length; li++) {
@@ -895,7 +948,13 @@ routerAdd(
           try { tId = String(ls.get("topic") || ""); } catch (_) {}
           var tPub = false;
           if (tId) {
-            try { var tRec = $app.findRecordById(TOPICS_C, tId); if (tRec && tRec.get("status") === "published") tPub = true; } catch (_) {}
+            try {
+              var tRec = $app.findRecordById(TOPICS_C, tId);
+              if (tRec && tRec.get("status") === "published" && pdCont) {
+                var catC2 = pdCont.requirePublishedCategory($app, tRec.get("category"));
+                if (catC2.ok) tPub = true;
+              }
+            } catch (_) {}
           }
           if (tPub) {
             validLessons.push(ls);

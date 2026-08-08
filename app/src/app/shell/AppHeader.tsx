@@ -1,27 +1,14 @@
-import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Stack,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useScrollTrigger,
-} from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar, Typography, useScrollTrigger } from '@mui/material';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router';
-import { useAuth } from '../../lib/auth';
-import { Brand } from '../brand/Brand';
-import { ThemeSwitch } from '../theme/ThemeSwitch';
-import { duration, easing } from '../theme/tokens';
+import { Brand } from '../../../../shared/ui/brand/Brand';
+import { duration, easing } from '../../../../shared/ui/tokens';
 
 const isDetailPath = (pathname: string): boolean =>
   pathname.startsWith('/lessons/') && pathname !== '/lessons';
 
 /**
- * Shared Top App Bar foundation.
+ * Student Top App Bar.
  *
  * - Semantic foregrounds only (`onSurface`/`onSurfaceVariant`); no raw
  *   black or white icon colors.
@@ -32,14 +19,14 @@ const isDetailPath = (pathname: string): boolean =>
  * - Sticky and in-flow: never covers content.
  * - Scroll elevation is a documented state (`data-scrolled`) driven by
  *   MUI's ScrollTrigger; the shadow comes from the elevation tokens.
+ * - No theme control here: display preference lives only in Account
+ *   Settings (تنظیمات نمایش) per Podcast Slice 1.
  */
 export function AppHeader() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const isOperator = location.pathname.startsWith('/operator');
   const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 8 });
-  const showBack = !isOperator && isDetailPath(location.pathname);
+  const showBack = isDetailPath(location.pathname);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -47,11 +34,6 @@ export function AppHeader() {
     } else {
       navigate('/lessons');
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login', { replace: true });
   };
 
   return (
@@ -78,83 +60,33 @@ export function AppHeader() {
         ) : null}
 
         <Box sx={{ display: { xs: 'none', md: 'block' }, flexShrink: 0 }}>
-          {isOperator ? (
+          <RouterLink
+            to="/"
+            aria-label="فست انگلیش — صفحهٔ اصلی"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
             <Brand variant="compact" size="sm" />
-          ) : (
-            <RouterLink
-              to="/dashboard"
-              aria-label="فست انگلیش — داشبورد"
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <Brand variant="compact" size="sm" />
-            </RouterLink>
-          )}
+          </RouterLink>
         </Box>
 
-        {isOperator ? (
-          // Not a heading: the operator workspace owns the page's primary
-          // heading (queue or selected request). This label only identifies
-          // the chrome, so screen readers get exactly one h1 per view.
-          <Typography
-            component="span"
-            variant="titleMedium"
-            sx={{
-              fontWeight: 700,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            پنل اپراتور
-          </Typography>
-        ) : (
-          <Typography
-            component={RouterLink}
-            to="/dashboard"
-            variant="titleMedium"
-            sx={{
-              fontWeight: 700,
-              color: 'onSurface',
-              textDecoration: 'none',
-              display: { xs: 'block', md: 'none' },
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            فست انگلیش
-          </Typography>
-        )}
+        <Typography
+          component={RouterLink}
+          to="/"
+          variant="titleMedium"
+          sx={{
+            fontWeight: 700,
+            color: 'onSurface',
+            textDecoration: 'none',
+            display: { xs: 'block', md: 'none' },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          فست انگلیش
+        </Typography>
 
         <Box sx={{ flex: 1 }} />
-
-        <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', flexShrink: 0 }}>
-          {!isOperator && (
-            <Tooltip title="پنل اپراتور">
-              <IconButton
-                component={RouterLink}
-                to="/operator"
-                aria-label="پنل اپراتور"
-                sx={{ color: 'onSurface' }}
-              >
-                <AdminPanelSettingsRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-          {isOperator && (
-            <Tooltip title="خروج از پنل اپراتور">
-              <IconButton
-                onClick={handleLogout}
-                aria-label="خروج"
-                data-testid="operator-logout"
-                sx={{ color: 'onSurface' }}
-              >
-                <LogoutRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-          <ThemeSwitch />
-        </Stack>
       </Toolbar>
     </AppBar>
   );

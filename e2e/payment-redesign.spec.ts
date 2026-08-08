@@ -25,6 +25,7 @@
 
 import { expect, type Page, test } from '@playwright/test';
 import {
+  createStaff,
   ensureOwnedDestination,
   ensureOwnedPlan,
   PB_URL,
@@ -56,32 +57,8 @@ async function ensureFixtures(): Promise<void> {
 
 async function getOperatorToken(): Promise<string> {
   const suToken = await superuserAuth();
-  const opPhone = uniquePhone();
-  const signup = await fetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      name: 'Op',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const body = (await signup.json()) as { id?: string; phone?: string };
-  if (!body.id) throw new Error('operator signup failed');
-  await fetch(`${PB_URL}/api/collections/fep_users/records/${body.id}`, {
-    method: 'PATCH',
-    headers: { 'content-type': 'application/json', authorization: suToken },
-    body: JSON.stringify({ role: 'operator' }),
-  });
-  const login = await fetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ identity: body.phone || opPhone, password: 'Test1234!' }),
-  });
-  const loginBody = (await login.json()) as { token?: string };
-  if (!loginBody.token) throw new Error('operator login failed');
-  return loginBody.token;
+  const staff = await createStaff(suToken);
+  return staff.token;
 }
 
 async function approveRequest(requestId: string): Promise<void> {
@@ -136,7 +113,7 @@ async function submitFlow(page: Page, fileName = 'r.jpg'): Promise<void> {
   await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
   await page.getByRole('button', { name: /ارسال رسید/ }).click();
   await page.waitForURL('**/payment-status', { timeout: 30_000 });
-  await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+  await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
     timeout: 15_000,
   });
 }
@@ -200,7 +177,7 @@ test.describe('payment redesign — instructions and copy', () => {
     expect(cardNumber).toMatch(/^[۰-۹0-9]{4}،[۰-۹0-9]{4}،[۰-۹0-9]{4}،[۰-۹0-9]{4}$/);
     // The bank row exists with a real value.
     await expect(page.getByText('نام بانک', { exact: true })).toBeVisible();
-    await expect(page.getByText(/به‌صورت دستی توسط اپراتور/)).toBeVisible();
+    await expect(page.getByText(/به‌صورت دستی/)).toBeVisible();
 
     // The amount block is the selected plan's value once chosen.
     await planRadio(page, sharedPlanId).check();
@@ -379,7 +356,7 @@ test.describe('payment redesign — submission, pending, rejected, approved', ()
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
 
     // Pending workspace replaces the submission form.
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByTestId('pending-alert')).toBeVisible();
@@ -391,18 +368,18 @@ test.describe('payment redesign — submission, pending, rejected, approved', ()
 
     // Refresh (both reload and in-page retry) preserves the pending state.
     await page.reload();
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
     await page.getByTestId('refresh-status').click();
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
 
     // Duplicate submission is prevented: /payment redirects to status.
     await page.goto('/payment');
     await expect(page).toHaveURL(/\/payment-status/);
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
   });
@@ -447,7 +424,7 @@ test.describe('payment redesign — submission, pending, rejected, approved', ()
     await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
     const secondShow = page.getByRole('button', { name: 'نمایش رسید' });
@@ -591,7 +568,7 @@ test.describe('payment redesign — submission, pending, rejected, approved', ()
     await signupAndLogin(page, 'E2E امن', phone, 'Test1234!');
     await submitFlow(page);
     await page.reload();
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
     const bodyText = await page.locator('body').innerText();
@@ -678,7 +655,7 @@ test.describe('payment redesign — viewport geometry', () => {
       await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
       await page.getByRole('button', { name: /ارسال رسید/ }).click();
       await page.waitForURL('**/payment-status', { timeout: 30_000 });
-      await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+      await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
         timeout: 15_000,
       });
       expect(await noHorizontalOverflow(), `${name} /payment-status overflow`).toBe(true);
@@ -736,7 +713,7 @@ test.describe('payment redesign — dark mode and keyboard', () => {
     await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
     const overflow = await page.evaluate(

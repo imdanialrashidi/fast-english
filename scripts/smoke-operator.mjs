@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // scripts/smoke-operator.mjs
-// Real-backend PocketBase operator + subscription smoke test.
+// Real-backend PocketBase Staff + subscription smoke test (Podcast Slice 1:
+// the Staff Administrator replaced the legacy fep_users operator).
 //
 // Usage: PB_SMOKE_PAY_PORT=18092 bash scripts/smoke-payment.sh node scripts/smoke-operator.mjs
 //
@@ -8,9 +9,9 @@
 //   Auth/reads (1-22):
 //     1.  unauthenticated queue denied
 //     2.  Student queue denied
-//     3.  Content Manager queue denied
-//     4.  suspended Operator denied
-//     5.  active Operator queue succeeds
+//     3.  legacy Content-Manager record denied
+//     4.  inactive Staff denied (auth + routes + refresh)
+//     5.  active Staff queue succeeds
 //     6.  queue response sanitized (no internal_note, no receipt URL)
 //     7.  pending-first order
 //     8.  oldest-pending order
@@ -24,9 +25,9 @@
 //     16. detail succeeds
 //     17. detail sanitized
 //     18. nonexistent Request safely fails
-//     19. operator Receipt succeeds
-//     20. Student operator-Receipt access denied
-//     21. Content Manager operator-Receipt access denied
+//     19. Staff Receipt succeeds
+//     20. Student Staff-Receipt access denied
+//     21. legacy Content-Manager Staff-Receipt access denied
 //     22. Receipt no-store/nosniff
 //   Approval (23-34):
 //     23. approval of pending Request succeeds
@@ -59,7 +60,7 @@
 //     48. approve-after-reject returns 409
 //     49. reject-after-approve returns 409
 //     50. concurrent approve-vs-reject produces exactly one terminal state
-//     51. operator write Rate Limit returns real 429
+//     51. Staff write Rate Limit returns real 429
 //     52. no Process or Temp data remains
 
 import { randomBytes } from 'node:crypto';
@@ -241,17 +242,32 @@ async function createPaymentRequest(token, planId) {
   });
 }
 
-async function makeOperator() {
-  const u = await signupUser('Operator One');
-  // Use superuser to promote to operator
+async function makeStaff() {
+  // Podcast Slice 1: the single backstage identity is staff_admins.
+  // Only superuser tooling can create staff records; the record must be
+  // active AND verified to authenticate (bootstrap semantics).
   const suToken = await getSuperuserToken();
-  const updateRes = await jsonFetch(`/api/collections/fep_users/records/${u.id}`, {
-    method: 'PATCH',
+  const email = `staff-${randomBytes(4).toString('hex')}@fep-smoke.invalid`;
+  const password = 'Test1234!';
+  const r = await jsonFetch('/api/collections/staff_admins/records', {
+    method: 'POST',
     headers: { authorization: suToken, 'content-type': 'application/json' },
-    body: JSON.stringify({ role: 'operator' }),
+    body: JSON.stringify({
+      email,
+      password,
+      passwordConfirm: password,
+      display_name: 'Staff One',
+      is_active: true,
+      verified: true,
+    }),
   });
-  if (updateRes.status !== 200) throw new Error(`operator promote failed: ${updateRes.status}`);
-  return u;
+  if (r.status !== 200) throw new Error(`staff create failed: ${r.status}`);
+  const loginRes = await jsonFetch('/api/collections/staff_admins/auth-with-password', {
+    method: 'POST',
+    body: JSON.stringify({ identity: email, password }),
+  });
+  if (loginRes.status !== 200) throw new Error(`staff login failed: ${loginRes.status}`);
+  return { ...r.body, token: loginRes.body.token, email, password };
 }
 
 async function makeContentManager() {
@@ -263,15 +279,6 @@ async function makeContentManager() {
     body: JSON.stringify({ role: 'content_manager' }),
   });
   return u;
-}
-
-async function suspendUser(id) {
-  const suToken = await getSuperuserToken();
-  await jsonFetch(`/api/collections/fep_users/records/${id}`, {
-    method: 'PATCH',
-    headers: { authorization: suToken, 'content-type': 'application/json' },
-    body: JSON.stringify({ account_status: 'suspended' }),
-  });
 }
 
 async function queueAs(token, params = {}) {
@@ -331,23 +338,22 @@ async function runScenario(label, fn) {
 // =====================================================================
 
 async function main() {
-  console.log(`smoke-operator: target = ${URL}`);
+  console.log(`smoke-staff/operator: target = ${URL}`);
 
   // Shared state
   let suToken;
   let planId;
   let _destinationId;
-  let operator;
+  let staff;
   let student1, student2, student3;
   let request1Id, _request2Id, _request3Id;
-  let contentManager;
+  const contentManager = await makeContentManager();
 
   // ---- Setup ----
   suToken = await getSuperuserToken();
   planId = await setupPlan(suToken);
   _destinationId = await setupDestination(suToken);
-  operator = await makeOperator();
-  contentManager = await makeContentManager();
+  staff = await makeStaff();
   student1 = await signupUser('Student One');
   student2 = await signupUser('Student Two');
   student3 = await signupUser('Student Three');
@@ -362,43 +368,67 @@ async function main() {
   await runScenario('2-student-queue-denied', async () => {
     const r = await queueAs(student1.token);
     check(r.status === 403, `student queue returns 403 (got ${r.status})`);
-    check(
-      r.body?.code === 'operator_access_denied',
-      `student queue code = operator_access_denied (got ${r.body?.code})`,
-    );
   });
 
-  await runScenario('3-content-manager-queue-denied', async () => {
+  await runScenario('3-legacy-content-manager-queue-denied', async () => {
+    // Legacy fep_users role records are no longer accepted by Staff routes.
     const r = await queueAs(contentManager.token);
-    check(r.status === 403, `content manager queue returns 403 (got ${r.status})`);
+    check(r.status === 403, `legacy content manager queue returns 403 (got ${r.status})`);
   });
 
-  await runScenario('4-suspended-operator-denied', async () => {
-    await suspendUser(operator.id);
-    // Suspended user cannot authenticate (returns 401). Try with the
-    // old token instead — the route middleware should reject it.
-    const r = await queueAs(operator.token);
-    // Suspended users either get 403 from our handler or 401 from the
-    // middleware if the token was cleared. Either is acceptable.
-    check(r.status === 401 || r.status === 403, `suspended operator denied (got ${r.status})`);
-    // Unsuspend for later tests
-    const su = await getSuperuserToken();
-    await jsonFetch(`/api/collections/fep_users/records/${operator.id}`, {
-      method: 'PATCH',
-      headers: { authorization: su, 'content-type': 'application/json' },
-      body: JSON.stringify({ account_status: 'active' }),
-    });
-    // Re-login
-    const reLogin = await jsonFetch('/api/collections/fep_users/auth-with-password', {
+  await runScenario('4-inactive-staff-denied', async () => {
+    // 4a. An inactive Staff record cannot authenticate at all.
+    const suT = await getSuperuserToken();
+    const inactiveEmail = `staff-inactive-${randomBytes(4).toString('hex')}@fep-smoke.invalid`;
+    await jsonFetch('/api/collections/staff_admins/records', {
       method: 'POST',
-      body: JSON.stringify({ identity: operator.phone, password: 'Test1234!' }),
+      headers: { authorization: suT, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        email: inactiveEmail,
+        password: 'Test1234!',
+        passwordConfirm: 'Test1234!',
+        display_name: 'Inactive Staff',
+        is_active: false,
+        verified: true,
+      }),
     });
-    if (reLogin.body?.token) operator.token = reLogin.body.token;
+    const badLogin = await jsonFetch('/api/collections/staff_admins/auth-with-password', {
+      method: 'POST',
+      body: JSON.stringify({ identity: inactiveEmail, password: 'Test1234!' }),
+    });
+    check(badLogin.status >= 400, `inactive staff login rejected (got ${badLogin.status})`);
+    // 4b. A previously-valid token stops working after deactivation
+    // (requireStaffAdmin re-checks is_active on every request).
+    const suT2 = await getSuperuserToken();
+    await jsonFetch(`/api/collections/staff_admins/records/${staff.id}`, {
+      method: 'PATCH',
+      headers: { authorization: suT2, 'content-type': 'application/json' },
+      body: JSON.stringify({ is_active: false }),
+    });
+    const r = await queueAs(staff.token);
+    check(r.status === 403, `deactivated staff queue returns 403 (got ${r.status})`);
+    const refresh = await jsonFetch('/api/collections/staff_admins/auth-refresh', {
+      method: 'POST',
+      headers: { authorization: staff.token },
+    });
+    check(refresh.status >= 400, `deactivated staff refresh rejected (got ${refresh.status})`);
+    // Re-activate for the remaining scenarios.
+    const suT3 = await getSuperuserToken();
+    await jsonFetch(`/api/collections/staff_admins/records/${staff.id}`, {
+      method: 'PATCH',
+      headers: { authorization: suT3, 'content-type': 'application/json' },
+      body: JSON.stringify({ is_active: true }),
+    });
+    const reLogin = await jsonFetch('/api/collections/staff_admins/auth-with-password', {
+      method: 'POST',
+      body: JSON.stringify({ identity: staff.email, password: staff.password }),
+    });
+    if (reLogin.body?.token) staff.token = reLogin.body.token;
   });
 
-  await runScenario('5-operator-queue-succeeds', async () => {
-    const r = await queueAs(operator.token);
-    check(r.status === 200, `operator queue succeeds (got ${r.status})`);
+  await runScenario('5-staff-queue-succeeds', async () => {
+    const r = await queueAs(staff.token);
+    check(r.status === 200, `staff queue succeeds (got ${r.status})`);
     check(Array.isArray(r.body?.items), 'queue has items array');
   });
 
@@ -411,7 +441,7 @@ async function main() {
   _request3Id = cr3.body?.request?.id;
 
   await runScenario('6-queue-sanitized', async () => {
-    const r = await queueAs(operator.token);
+    const r = await queueAs(staff.token);
     check(r.status === 200, 'queue returns 200');
     const item = r.body?.items?.[0];
     if (item) {
@@ -422,7 +452,7 @@ async function main() {
   });
 
   await runScenario('7-pending-first', async () => {
-    const r = await queueAs(operator.token);
+    const r = await queueAs(staff.token);
     check(r.status === 200, 'queue returns 200');
     const items = r.body?.items || [];
     // All pending items should be first
@@ -440,7 +470,7 @@ async function main() {
 
   await runScenario('8-oldest-pending-first', async () => {
     // Student1's request should be the oldest pending
-    const r = await queueAs(operator.token);
+    const r = await queueAs(staff.token);
     const items = r.body?.items || [];
     const pending = items.filter((i) => i.status === 'pending');
     check(pending.length >= 3, `at least 3 pending items (got ${pending.length})`);
@@ -453,62 +483,62 @@ async function main() {
   });
 
   await runScenario('9-status-filter', async () => {
-    const r = await queueAs(operator.token, { status: 'pending' });
+    const r = await queueAs(staff.token, { status: 'pending' });
     check(r.status === 200, 'pending filter returns 200');
     const allPending = (r.body?.items || []).every((i) => i.status === 'pending');
     check(allPending, 'filter returns only pending items');
   });
 
   await runScenario('10-invalid-status-filter', async () => {
-    const r = await queueAs(operator.token, { status: 'invalid_status_xyz' });
+    const r = await queueAs(staff.token, { status: 'invalid_status_xyz' });
     check(r.status === 400, `invalid status filter returns 400 (got ${r.status})`);
   });
 
   await runScenario('11-bounded-pagination', async () => {
-    const r = await queueAs(operator.token, { page: 1, perPage: 2 });
+    const r = await queueAs(staff.token, { page: 1, perPage: 2 });
     check(r.status === 200, 'paginated queue returns 200');
     check(r.body?.items?.length <= 2, `perPage respected (got ${r.body?.items?.length})`);
     check(r.body?.perPage === 2, 'perPage reflected in response');
     check(r.body?.totalItems >= 3, 'totalItems correct');
     // Test max perPage
-    const r2 = await queueAs(operator.token, { perPage: 100 });
+    const r2 = await queueAs(staff.token, { perPage: 100 });
     check(r2.body?.perPage === 50, 'perPage capped at 50');
     // Invalid page
-    const r3 = await queueAs(operator.token, { page: -1 });
+    const r3 = await queueAs(staff.token, { page: -1 });
     check(r3.status === 200, 'negative page corrected gracefully');
   });
 
   await runScenario('12-search-by-phone', async () => {
     // Search by the student's phone last digits
-    const r = await queueAs(operator.token, { search: student1.phone.substring(5) });
+    const r = await queueAs(staff.token, { search: student1.phone.substring(5) });
     check(r.status === 200, 'search by phone returns 200');
     // We'll check that search doesn't crash; actual phone matching depends
     // on partial match logic in the backend
   });
 
   await runScenario('13-search-by-name', async () => {
-    const r = await queueAs(operator.token, { search: 'Student' });
+    const r = await queueAs(staff.token, { search: 'Student' });
     check(r.status === 200, 'search by name returns 200');
   });
 
   await runScenario('14-search-by-reference', async () => {
-    const r = await queueAs(operator.token, { search: 'ref-001' });
+    const r = await queueAs(staff.token, { search: 'ref-001' });
     check(r.status === 200, 'search by bank reference returns 200');
   });
 
   await runScenario('15-search-injection', async () => {
-    const r = await queueAs(operator.token, { search: "'; DROP TABLE --" });
+    const r = await queueAs(staff.token, { search: "'; DROP TABLE --" });
     check(r.status === 200, `injection attempt safely handled (got ${r.status})`);
   });
 
   await runScenario('16-detail-succeeds', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.status === 200, `detail returns 200 (got ${r.status})`);
     check(r.body?.id === request1Id, 'detail returns correct request');
   });
 
   await runScenario('17-detail-sanitized', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.body?.student?.phone !== undefined, 'student phone present');
     // Phone should be masked
     check(
@@ -525,29 +555,29 @@ async function main() {
   });
 
   await runScenario('18-nonexistent-request', async () => {
-    const r = await detailAs(operator.token, 'nonexistent0000');
+    const r = await detailAs(staff.token, 'nonexistent0000');
     check(r.status === 404, `nonexistent request returns 404 (got ${r.status})`);
   });
 
-  await runScenario('19-operator-receipt-succeeds', async () => {
-    const r = await receiptAs(operator.token, request1Id);
-    check(r.status === 200, `operator receipt returns 200 (got ${r.status})`);
+  await runScenario('19-staff-receipt-succeeds', async () => {
+    const r = await receiptAs(staff.token, request1Id);
+    check(r.status === 200, `staff receipt returns 200 (got ${r.status})`);
     check(r.body.length > 0, 'receipt has bytes');
     check(r.contentType === 'image/jpeg', `content-type is image/jpeg (got ${r.contentType})`);
   });
 
-  await runScenario('20-student-operator-receipt-denied', async () => {
+  await runScenario('20-student-staff-receipt-denied', async () => {
     const r = await receiptAs(student1.token, request1Id);
-    check(r.status === 403, `student operator-receipt returns 403 (got ${r.status})`);
+    check(r.status === 403, `student staff-receipt returns 403 (got ${r.status})`);
   });
 
-  await runScenario('21-content-manager-receipt-denied', async () => {
+  await runScenario('21-legacy-content-manager-receipt-denied', async () => {
     const r = await receiptAs(contentManager.token, request1Id);
-    check(r.status === 403, `content manager operator-receipt returns 403 (got ${r.status})`);
+    check(r.status === 403, `legacy content manager staff-receipt returns 403 (got ${r.status})`);
   });
 
   await runScenario('22-receipt-headers', async () => {
-    const r = await receiptAs(operator.token, request1Id);
+    const r = await receiptAs(staff.token, request1Id);
     check(r.status === 200, 'receipt returns 200');
     check(
       r.xContentTypeOptions === 'nosniff',
@@ -562,7 +592,7 @@ async function main() {
   // ---- Approval (23-34) ----
 
   await runScenario('23-approve-pending', async () => {
-    const r = await approveAs(operator.token, request1Id);
+    const r = await approveAs(staff.token, request1Id);
     check(r.status === 200, `approve returns 200 (got ${r.status})`);
     check(r.body?.kind === 'approved', `kind = approved (got ${r.body?.kind})`);
     check(r.body?.id !== undefined, 'subscription id returned');
@@ -571,7 +601,7 @@ async function main() {
 
   await runScenario('24-exactly-one-subscription', async () => {
     // Verify by checking detail
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.body?.subscriptionId !== undefined, 'subscription stored on request');
     // Verify no duplicate subscription exists via direct subscription count
     // Use superuser to count
@@ -584,18 +614,18 @@ async function main() {
   });
 
   await runScenario('25-request-becomes-approved', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.body?.status === 'approved', `request status = approved (got ${r.body?.status})`);
   });
 
   await runScenario('26-reviewed-by-time-stored', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.body?.reviewedAt !== null, 'reviewed_at stored');
-    check(r.body?.reviewer?.id === operator.id, 'reviewed_by stored');
+    check(r.body?.reviewer?.id === staff.id, 'reviewed_by stored');
   });
 
   await runScenario('27-user-becomes-active', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(
       r.body?.student?.accountStatus === 'active',
       `student account status = active (got ${r.body?.student?.accountStatus})`,
@@ -603,7 +633,7 @@ async function main() {
   });
 
   await runScenario('28-snapshots-copied', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.body?.planName !== '', 'plan name snapshot present');
     check(r.body?.amountToman > 0, 'amount snapshot present');
     check(r.body?.durationDays > 0, 'duration snapshot present');
@@ -621,7 +651,7 @@ async function main() {
       headers: { authorization: su, 'content-type': 'application/json' },
       body: JSON.stringify({ name: 'Changed Plan', price_toman: 999999 }),
     });
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     check(r.body?.planName === 'Smoke Monthly', `snapshot unchanged (got ${r.body?.planName})`);
     check(r.body?.amountToman === 1234567, `amount unchanged (got ${r.body?.amountToman})`);
     // Restore
@@ -633,22 +663,22 @@ async function main() {
   });
 
   await runScenario('30-repeated-approval-same-subscription', async () => {
-    const r = await approveAs(operator.token, request1Id);
+    const r = await approveAs(staff.token, request1Id);
     check(r.status === 200, `repeated approve returns 200 (got ${r.status})`);
     check(r.body?.kind === 'already_approved', `kind = already_approved (got ${r.body?.kind})`);
   });
 
   await runScenario('31-repeated-approval-no-double-extension', async () => {
     // Get the subscription data after the first approval
-    const r1 = await detailAs(operator.token, request1Id);
+    const r1 = await detailAs(staff.token, request1Id);
     const sub1 = r1.body?.currentActiveSubscription;
     const expiresAt1 = sub1?.expiresAt;
 
     // Approve again
-    await approveAs(operator.token, request1Id);
+    await approveAs(staff.token, request1Id);
 
     // Check expiration hasn't changed
-    const r2 = await detailAs(operator.token, request1Id);
+    const r2 = await detailAs(staff.token, request1Id);
     const sub2 = r2.body?.currentActiveSubscription;
     check(expiresAt1 === sub2?.expiresAt, 'expiry not extended by repeated approval');
   });
@@ -661,7 +691,7 @@ async function main() {
     // Send 5 concurrent approve requests
     const promises = [];
     for (let i = 0; i < 5; i++) {
-      promises.push(approveAs(operator.token, reqId));
+      promises.push(approveAs(staff.token, reqId));
     }
     const results = await Promise.all(promises);
     const successes = results.filter((r) => r.status === 200).length;
@@ -672,7 +702,7 @@ async function main() {
     check(successes <= 1, `at most one concurrent approval succeeds (got ${successes})`);
     // Verify via detail that exactly one subscription exists when
     // at least one approval succeeded.
-    const detail = await detailAs(operator.token, reqId);
+    const detail = await detailAs(staff.token, reqId);
     const hasSub = detail.body?.subscriptionId !== undefined;
     check(successes === 0 || hasSub, `concurrent: ${successes} successes, hasSub=${hasSub}`);
   });
@@ -691,7 +721,7 @@ async function main() {
         starts_at: new Date().toISOString(),
         expires_at: new Date().toISOString(),
         status: 'active',
-        approved_by: operator.id,
+        approved_by: staff.id,
         approved_at: new Date().toISOString(),
       }),
     });
@@ -720,7 +750,7 @@ async function main() {
   // ---- Renewal (35-40) ----
 
   await runScenario('35-first-subscription-starts-at-approval', async () => {
-    const r = await detailAs(operator.token, request1Id);
+    const r = await detailAs(staff.token, request1Id);
     const sub = r.body?.currentActiveSubscription;
     if (sub) {
       const startMs = new Date(sub.startsAt).getTime();
@@ -736,7 +766,7 @@ async function main() {
 
   await runScenario('36-renewal-during-active-period', async () => {
     // Verify student1 (already approved) has an active subscription
-    const detail1 = await detailAs(operator.token, request1Id);
+    const detail1 = await detailAs(staff.token, request1Id);
     const sub1 = detail1.body?.currentActiveSubscription;
     if (sub1) {
       check(sub1.status === 'active', 'student1 subscription is active');
@@ -752,9 +782,9 @@ async function main() {
     const cr4 = await createPaymentRequest(student4.token, planId);
     if (cr4.status === 201) {
       const reqId4 = cr4.body?.request?.id;
-      const approve4 = await approveAs(operator.token, reqId4);
+      const approve4 = await approveAs(staff.token, reqId4);
       if (approve4.status === 200) {
-        const detail4a = await detailAs(operator.token, reqId4);
+        const detail4a = await detailAs(staff.token, reqId4);
         check(
           detail4a.body?.currentActiveSubscription?.status === 'active',
           'renewal subscription is active',
@@ -784,9 +814,9 @@ async function main() {
     const student5 = await signupUser('Student Five');
     const cr5 = await createPaymentRequest(student5.token, shortPlanId);
     const reqId5 = cr5.body?.request?.id;
-    await approveAs(operator.token, reqId5);
+    await approveAs(staff.token, reqId5);
     // The subscription should expire in ~1 day from now
-    const detail5 = await detailAs(operator.token, reqId5);
+    const detail5 = await detailAs(staff.token, reqId5);
     const expireMs = new Date(detail5.body?.currentActiveSubscription?.expiresAt).getTime();
     const diffDays = (expireMs - Date.now()) / (1000 * 60 * 60 * 24);
     check(
@@ -816,10 +846,10 @@ async function main() {
     const cr6 = await createPaymentRequest(student6.token, plan90Id);
     if (cr6.status === 201) {
       const reqId6 = cr6.body?.request?.id;
-      const approve6 = await approveAs(operator.token, reqId6);
+      const approve6 = await approveAs(staff.token, reqId6);
       if (approve6.status === 200) {
         check(true, 'duration test approval ok');
-        const detail6 = await detailAs(operator.token, reqId6);
+        const detail6 = await detailAs(staff.token, reqId6);
         const sub6 = detail6.body?.currentActiveSubscription;
         if (sub6) {
           const startMs = new Date(sub6.startsAt).getTime();
@@ -849,36 +879,36 @@ async function main() {
   const reqId7 = cr7.body?.request?.id;
 
   await runScenario('41-rejection-requires-reason', async () => {
-    const r = await rejectAs(operator.token, reqId7, {});
+    const r = await rejectAs(staff.token, reqId7, {});
     check(r.status === 400, `reject without reason returns 400 (got ${r.status})`);
     check(
       r.body?.code === 'rejection_reason_required',
       `code = rejection_reason_required (got ${r.body?.code})`,
     );
 
-    const r2 = await rejectAs(operator.token, reqId7, { public_rejection_reason: '' });
+    const r2 = await rejectAs(staff.token, reqId7, { public_rejection_reason: '' });
     check(r2.status === 400, 'reject with empty reason returns 400');
 
-    const r3 = await rejectAs(operator.token, reqId7, { public_rejection_reason: 'ab' });
+    const r3 = await rejectAs(staff.token, reqId7, { public_rejection_reason: 'ab' });
     check(r3.status === 400, 'reject with too-short reason returns 400');
   });
 
   await runScenario('42-rejection-sets-fields', async () => {
-    const r = await rejectAs(operator.token, reqId7, {
+    const r = await rejectAs(staff.token, reqId7, {
       public_rejection_reason: 'Transfer does not match records.',
       internal_note: 'Checked with bank, no matching deposit.',
     });
     check(r.status === 200, `reject succeeds (got ${r.status})`);
     check(r.body?.kind === 'rejected', 'kind = rejected');
 
-    const detail = await detailAs(operator.token, reqId7);
+    const detail = await detailAs(staff.token, reqId7);
     check(detail.body?.status === 'rejected', 'request status = rejected');
     check(detail.body?.reviewedAt !== null, 'reviewed_at set');
-    check(detail.body?.reviewer?.id === operator.id, 'reviewer set');
+    check(detail.body?.reviewer?.id === staff.id, 'reviewer set');
   });
 
   await runScenario('43-rejection-no-subscription', async () => {
-    const detail = await detailAs(operator.token, reqId7);
+    const detail = await detailAs(staff.token, reqId7);
     check(
       detail.body?.subscriptionId === null || detail.body?.subscriptionId === undefined,
       'no subscription created',
@@ -891,7 +921,7 @@ async function main() {
   });
 
   await runScenario('44-user-becomes-payment-rejected', async () => {
-    const detail = await detailAs(operator.token, reqId7);
+    const detail = await detailAs(staff.token, reqId7);
     check(
       detail.body?.student?.accountStatus === 'payment_rejected',
       `student status = payment_rejected (got ${detail.body?.student?.accountStatus})`,
@@ -904,7 +934,7 @@ async function main() {
     // new pending ones? Let me check the Product contract.
     // From docs: "resubmit only after rejection" - so no, approved blocks new requests.
     // Instead, let's verify that student1 remains active:
-    const detail = await detailAs(operator.token, request1Id);
+    const detail = await detailAs(staff.token, request1Id);
     check(detail.body?.student?.accountStatus === 'active', 'approved student stays active');
   });
 
@@ -915,7 +945,7 @@ async function main() {
     // payment_rejected while a valid subscription exists. A fresh operator is
     // used so its rate-limit window does not interfere with the other suites.
     const su = await getSuperuserToken();
-    const op2 = await makeOperator();
+    const op2 = await makeStaff();
     const st = await signupUser('Overlap Student');
     const r1 = await createPaymentRequest(st.token, planId);
     const req1Id = r1.body?.request?.id;
@@ -998,7 +1028,7 @@ async function main() {
     // second in ~30d) and assert the detail picks the later one.
     const su = await getSuperuserToken();
     const st = await signupUser('Max Expiry Student');
-    const op3 = await makeOperator();
+    const op3 = await makeStaff();
     const r1 = await createPaymentRequest(st.token, planId);
     const req1Id = r1.body?.request?.id;
     await approveAs(op3.token, req1Id);
@@ -1060,7 +1090,7 @@ async function main() {
   });
 
   await runScenario('47-old-rejected-unchanged', async () => {
-    const detail = await detailAs(operator.token, reqId7);
+    const detail = await detailAs(staff.token, reqId7);
     check(detail.body?.status === 'rejected', 'old request still rejected');
     check(
       detail.body?.publicRejectionReason === 'Transfer does not match records.',
@@ -1069,7 +1099,7 @@ async function main() {
   });
 
   await runScenario('48-approve-after-reject-blocked', async () => {
-    const r = await approveAs(operator.token, reqId7);
+    const r = await approveAs(staff.token, reqId7);
     check(
       r.status === 409 || r.status === 429,
       `approve after reject returns 409/429 (got ${r.status})`,
@@ -1087,11 +1117,11 @@ async function main() {
   const reqId8 = cr8.body?.request?.id;
 
   await runScenario('49-reject-after-approve-blocked', async () => {
-    const approveRes = await approveAs(operator.token, reqId8);
+    const approveRes = await approveAs(staff.token, reqId8);
     // Approve might be rate-limited; if it succeeded, reject should fail.
     // If rate-limited, skip the reject-after-approve assertion.
     if (approveRes.status === 200) {
-      const r = await rejectAs(operator.token, reqId8, {
+      const r = await rejectAs(staff.token, reqId8, {
         public_rejection_reason: 'Try reject after approve.',
       });
       check(
@@ -1118,13 +1148,13 @@ async function main() {
 
     // Fire concurrent approve and reject
     const results = await Promise.all([
-      approveAs(operator.token, reqId9),
-      rejectAs(operator.token, reqId9, { public_rejection_reason: 'Concurrent test reject.' }),
+      approveAs(staff.token, reqId9),
+      rejectAs(staff.token, reqId9, { public_rejection_reason: 'Concurrent test reject.' }),
     ]);
     const successes = results.filter((r) => r.status === 200).length;
     check(successes >= 1, 'at least one concurrent operation succeeded');
     // Check that exactly one terminal state exists
-    const detail = await detailAs(operator.token, reqId9);
+    const detail = await detailAs(staff.token, reqId9);
     check(
       ['approved', 'rejected'].includes(detail.body?.status),
       `terminal state reached (status=${detail.body?.status})`,
@@ -1146,7 +1176,7 @@ async function main() {
     // Now try to approve all of them rapidly
     let lastStatus = 0;
     for (const rid of manyReqs) {
-      const r = await approveAs(operator.token, rid);
+      const r = await approveAs(staff.token, rid);
       lastStatus = r.status;
       if (r.status === 429) break;
     }

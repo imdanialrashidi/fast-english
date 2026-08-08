@@ -18,8 +18,9 @@ const expectedRoutes = [
   '/placement',
   '/lessons',
   '/lessons/demo',
+  '/library',
+  '/progress',
   '/account',
-  '/operator/*',
 ];
 
 describe('app routes', () => {
@@ -29,12 +30,22 @@ describe('app routes', () => {
     });
   }
 
+  it('redirects the legacy /dashboard path to the Home route', () => {
+    expect(appSource).toMatch(/path="\/dashboard"[^>]*<Navigate to="\/" replace \/>/);
+  });
+
   it('wraps authenticated routes with the shared AppShell', () => {
     expect(appSource).toMatch(/<Route element=\{<AppShell \/>\}>/);
   });
 
-  it('falls back to the entry route for unknown paths', () => {
+  it('falls back to the Student-safe Not Found route for unknown paths', () => {
     expect(appSource).toContain('path="*"');
-    expect(appSource).toContain('<Navigate to="/" replace />');
+    expect(appSource).toContain('<NotFoundRoute />');
+  });
+
+  it('does not declare any Staff/Admin route in the Student app', () => {
+    expect(appSource).not.toMatch(/path="\/operator/);
+    expect(appSource).not.toMatch(/path="\/admin/);
+    expect(appSource).not.toMatch(/path="\/staff/);
   });
 });

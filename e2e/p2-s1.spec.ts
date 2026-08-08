@@ -5,6 +5,7 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { createStaff } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 
@@ -94,30 +95,8 @@ async function seedFixtures(suToken: string): Promise<void> {
 }
 
 async function getOperatorToken(suToken: string): Promise<string> {
-  const phone = nextPhone();
-  const s = await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  const uid = (s.body as Record<string, string>)?.id || '';
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${uid}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${suToken}` },
-    body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-  });
-  const l = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    body: JSON.stringify({
-      identity: (s.body as Record<string, string>)?.phone || phone,
-      password: 'Test1234!',
-    }),
-  });
-  return (l.body as { token?: string })?.token || '';
+  const staff = await createStaff(suToken);
+  return staff.token;
 }
 
 async function createActiveStudent(

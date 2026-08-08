@@ -62,8 +62,12 @@ run bash scripts/smoke-placement.sh node scripts/smoke-placement.mjs
 # 8. Placement-levels smoke (Phase 2; level selection + dashboard).
 run bash scripts/smoke-placement.sh node scripts/smoke-placement-levels.mjs
 
-# 9. Operator smoke (Phase 2; operator approval + management).
+# 9. Operator smoke (Phase 2; Staff approval + management).
 run bash scripts/smoke-payment.sh node scripts/smoke-operator.mjs
+
+# 9b. Staff Auth smoke (Podcast Slice 1; schema, locked rules, cross-token
+#     authorization matrix, bootstrap fail-safes, legacy diagnostic).
+run bash scripts/smoke-payment.sh node scripts/smoke-staff.mjs
 
 # 10. Multi-tab race smoke (Phase 2 closure; atomic answer save proof).
 run bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs
@@ -77,22 +81,53 @@ run bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
 # 13. Progress smoke (P3-S2; 30+ assertions for progress persistence, entitlement, concurrency).
 run bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs
 
-# 14. Build both surfaces deterministically.
+# 13b. Podcast domain smoke (Podcast Slice 2; categories, Episode/Variant
+#      domain, vocabulary, cross-level entitlement, migration backfill proof,
+#      Progress integrity, archival semantics).
+run bash scripts/smoke-placement.sh node scripts/smoke-podcast-domain.mjs
+
+# 13c. Content-import smoke (Podcast Slice 3; the 28-scenario importer suite:
+#      validation, template failure, zero-mutation plan, Draft import,
+#      idempotency, conflicts, version rules, rollback, audit, authz).
+run bash scripts/smoke-placement.sh node scripts/smoke-content-import.mjs
+
+# 13e. Content-admin smoke (Podcast Slice 4; the 28-scenario Staff Content
+#      Studio suite: categories, episodes, variants, vocabulary, readiness,
+#      publish/archive, draft preview, ZIP ingestion, stale plans, audit).
+run bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs
+
+# 13d. Content Package Schema validation (Podcast Slice 3): the committed
+#      JSON Schema must be parseable JSON, the committed example package
+#      must validate, and the generated template must fail as designed.
+printf '\n=== content package schema validation (Slice 3) ===\n'
+node -e "JSON.parse(require('fs').readFileSync('schemas/episode-package.schema.json', 'utf8')); console.log('episode-package.schema.json: valid JSON')"
+node scripts/content/cli.mjs validate content-packages/example-episode >/dev/null || {
+  echo 'example content package failed validation' >&2
+  exit 1
+}
+echo 'content-packages/example-episode: PASS'
+
+# 14. Build all surfaces deterministically.
 run npx vite build --config vite.app.config.ts
 run npx vite build --config vite.landing.config.ts
 run node scripts/prerender-landing.mjs
+run npx vite build --config vite.admin.config.ts
 
 # 15. Topology output verification.
 printf '\n=== topology verification ===\n'
 
 test -f dist-landing/index.html || { echo 'missing dist-landing/index.html' >&2; exit 1; }
 test -f dist-app/index.html || { echo 'missing dist-app/index.html' >&2; exit 1; }
+test -f dist-admin/index.html || { echo 'missing dist-admin/index.html' >&2; exit 1; }
 
 # Outputs must be distinct files.
-if [[ dist-landing/index.html -ef dist-app/index.html ]]; then
-  echo 'dist-landing/index.html and dist-app/index.html must be distinct files' >&2
-  exit 1
-fi
+for pair in "dist-landing/index.html dist-app/index.html" "dist-app/index.html dist-admin/index.html" "dist-landing/index.html dist-admin/index.html"; do
+  set -- $pair
+  if [[ "$1" -ef "$2" ]]; then
+    echo "$1 and $2 must be distinct files" >&2
+    exit 1
+  fi
+done
 
 # Required markers.
 grep -q 'app-surface' dist-app/index.html || {
@@ -101,6 +136,10 @@ grep -q 'app-surface' dist-app/index.html || {
 }
 grep -q 'landing-surface' dist-landing/index.html || {
   echo 'landing-surface marker missing in dist-landing/index.html' >&2
+  exit 1
+}
+grep -q 'admin-surface' dist-admin/index.html || {
+  echo 'admin-surface marker missing in dist-admin/index.html' >&2
   exit 1
 }
 
@@ -113,6 +152,21 @@ if grep -rq 'app-surface' dist-landing/; then
   echo 'app-surface marker leaked into dist-landing bundle' >&2
   exit 1
 fi
+if grep -rq 'admin-surface' dist-app/ || grep -rq 'app-surface' dist-admin/; then
+  echo 'Student/Admin surface markers leaked across bundles' >&2
+  exit 1
+fi
+
+# 15b. Admin Console must never ship the Student PWA artifacts.
+if [[ -f dist-admin/sw.js || -f dist-admin/manifest.webmanifest ]]; then
+  echo 'dist-admin must not contain a Service Worker or Student manifest' >&2
+  exit 1
+fi
+echo 'dist-admin has no Service Worker / Student manifest (PWA separation OK)'
+
+# 15c. Student/Admin bundle import boundaries (precise markers, no broad
+#      string scanning).
+run node scripts/check-bundle-boundaries.mjs dist-app dist-admin
 
 # 16. Landing SEO/link checks against the built output (P4-S1).
 run node scripts/check-landing-output.mjs

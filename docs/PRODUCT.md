@@ -30,7 +30,7 @@ Non-confidential source of truth for what Fast English Podcast must do.
 ## Surface separation
 - Static landing (`fastenglishpodcast.com`): fully static; intro, value prop, CEFR levels, sample lesson preview, plans + manual-payment explanation, APK link + version/size/SHA-256, PWA install instructions, app link, FAQ, about, cooperation, support, privacy, terms. Tailwind allowed here only.
 - Product app (`app.fastenglishpodcast.com`): all product behavior. Material UI only; no Tailwind.
-- Admin (`admin.fastenglishpodcast.com`): PocketBase superuser dashboard for technical/content admin only; routine payment review uses the in-app operator UI.
+- Admin (`admin.fastenglishpodcast.com`): the Unified Staff Admin Console (separate Vite application); routine payment review lives there. PocketBase superuser dashboard stays unreachable publicly.
 
 ## Plans (prices are open business inputs)
 - monthly: 30 days; quarterly: 90 days; yearly: 365 days. Prices backend-managed.
@@ -60,12 +60,20 @@ Non-confidential source of truth for what Fast English Podcast must do.
 - Active users who haven't completed placement only. Exactly 20 active questions from current test version; 4 choices each; correct answers never sent to client; backend grading; attempt persists across refresh; one accepted final submission; duplicate submit rejected or idempotent. Suggested level stored separately from selected level; user may accept or change. Described as recommendation, not certification.
 
 ## Content and progress
-- Topics; one lesson version per topic+CEFR level (A1–C2); protected audio; published state; one public sample lesson; simple per-user progress.
-- Premium content served only when authenticated, not suspended, active subscription, lesson published. Pending/rejected/expired/suspended users must not receive premium body/audio even via direct API.
-- PWA SW never caches `/api/`, auth, payments, receipts, placement, premium text/audio, private account data. Only app shell + public static assets cached.
+- Podcast Library Categories; Episodes (Topics) shared across CEFR levels; one level-specific Episode Variant (Lesson) per topic+CEFR level (A1–C2); protected audio; published state; one public sample lesson; per-Variant per-user progress.
+- Entitled Students (authenticated, active, non-suspended, placement completed, active subscription) may access every Published Episode Variant across all levels — level is not an authorization boundary; the default browsing level is the Student's preferred level.
+- Premium content served only when authenticated, not suspended, active subscription, Category+Episode+Variant published. Pending/rejected/expired/suspended users must not receive premium body/audio even via direct API.
+- PWA SW never caches `/api/`, auth, payments, receipts, placement, premium text/audio, private account data, or artwork. Only app shell + public static assets cached.
+- Level browsing is read-only: it never changes the Placement result (recommended level), the preferred level, Progress of other levels, or the Subscription. Progress is stored per Variant and stays independent across levels. Archiving content hides it but never deletes Progress.
 
 ## Operator
-- Restricted routes `/operator`, `/operator/payment-requests[/:id]`, `/operator/subscriptions`, limited user support view. Queue: pending first, status filter, search by phone/name/bank ref, pagination, request age, plan/amount snapshot, status badges. Review screen: masked sensitive values, snapshot, protected receipt zoom/preview, transfer details, current subscription, approve/reject, confirm dialog, double-submit lock, feedback, reviewer + reviewed time. Every operator endpoint verifies operator role server-side; UI guard is not authorization. Operators never access passwords, tokens, superuser settings, unrestricted user records, technical credentials.
+- Restricted routes `/payments`, `/payments/:requestId` (Admin Console). Queue: pending first, status filter, search by phone/name/bank ref, pagination, request age, plan/amount snapshot, status badges. Review screen: masked sensitive values, snapshot, protected receipt zoom/preview, transfer details, current subscription, approve/reject, confirm dialog, double-submit lock, feedback, reviewer + reviewed time. Every Staff endpoint verifies the `staff_admins` collection + `is_active` server-side (requireStaffAdmin); UI guard is not authorization. Staff never access passwords, tokens, superuser settings, unrestricted user records, technical credentials.
+
+## Student product language (Podcast Slice 5)
+- The Student App is presented as a Personal English Podcast App: final destinations خانه / کتابخانه / پیشرفت / حساب (phone Bottom Navigation, tablet Navigation Rail, desktop Side Navigation); legacy /dashboard redirects to the Home route.
+- Canonical public vocabulary: اپیزود (never درس/فایل/مطلب/پادکست/جلسه for the same entity), کتابخانه, سطح پیشنهادی (Placement result, never changed by browsing), سطح پیشفرض (default browsing level), ادامه گوشدادن, شروع گوشدادن, مرور دوباره, کلمات کلیدی, متن اپیزود, پیشرفت. Central source of truth: `app/src/app/copy/productCopy.ts` + `copy-guidelines.md`.
+- Home answers, in order: what to listen now (Continue Listening hero when real resumable progress exists; intentional first-use start experience otherwise), what else is relevant (preferred-level episodes with featured-first sort — not marketed as smart/personalized), how progress is going (one compact level-scoped panel), and whether the account/subscription needs attention (quiet compact line; never a payment-style card).
+- Theme preference (سیستم/روشن/تاریک) exists only in Account settings. No Staff/operator terminology appears in the Student surface.
 
 ## UI and accessibility
 - Single custom MUI theme, CSS variables, RTL. Persian UI `lang="fa" dir="rtl"`; English lesson body `lang="en" dir="ltr"`. Self-hosted verified Vazirmatn variable WOFF2 (license/attribution confirmed); robust local fallback; no runtime CDN font. English content may use system Latin sans.

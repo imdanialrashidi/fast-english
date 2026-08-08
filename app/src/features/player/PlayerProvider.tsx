@@ -16,7 +16,16 @@
 // flag, resume semantics and error behavior are preserved from the previous
 // AudioPlayer implementation.
 
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useAuth } from '../../lib/auth';
 import { setAudioBusy } from '../../pwa/activity';
 
 export interface PlayerSession {
@@ -130,6 +139,34 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       callbacksRef.current = {};
     }
   }, []);
+
+  // The provider now outlives the authenticated shell (it wraps every
+  // route, including Home). Logging out must stop playback and drop the
+  // session: without this, audio would keep playing with no Mini Player
+  // visible on the public pages.
+  const { isAuthenticated } = useAuth();
+  useEffect(() => {
+    if (isAuthenticated || !stateRef.current.src) return;
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }
+    setAudioBusy(false);
+    callbacksRef.current = {};
+    pendingSeekRef.current = null;
+    setState((prev) => ({
+      ...prev,
+      src: null,
+      session: null,
+      isPlaying: false,
+      isLoading: false,
+      hasError: false,
+      currentTime: 0,
+      duration: 0,
+    }));
+  }, [isAuthenticated]);
 
   // --- Audio element events (same semantics as the previous AudioPlayer) --
   const handleLoadedMetadata = useCallback(() => {

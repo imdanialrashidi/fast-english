@@ -20,7 +20,7 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { Box, Stack, Step, StepLabel, Stepper, Typography, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { duration, easing } from '../../../app/theme/tokens';
+import { duration, easing } from '../../../../../shared/ui/tokens';
 
 export const JOURNEY_STAGES = [
   'مشاهده اطلاعات پرداخت',

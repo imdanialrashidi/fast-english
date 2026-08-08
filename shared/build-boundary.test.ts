@@ -8,7 +8,7 @@ const landingStyles = readFileSync(resolve(repoRoot, 'landing', 'src', 'styles.c
 const appFiles = [
   'src/main.tsx',
   'src/app/App.tsx',
-  'src/app/theme/theme.ts',
+  'src/app/theme/ThemeHost.tsx',
   'src/app/shell/AppShell.tsx',
 ];
 const landingFiles = [

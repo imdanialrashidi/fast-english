@@ -7,9 +7,9 @@
 // surfaceContainer role and the card number on surfaceContainerHighest.
 
 import { Box, Card, CardContent, Stack, Typography } from '@mui/material';
+import { CopyValue } from '../../../../../shared/ui/CopyValue';
 import { formatCardNumber, formatDurationDays, formatToman } from '../formatters';
 import type { PaymentDestination, Plan } from '../types';
-import { CopyValue } from './CopyValue';
 
 export function PaymentDetailsCard({
   plan,

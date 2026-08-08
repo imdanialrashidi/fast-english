@@ -7,14 +7,14 @@
 #   App + Auth (loads, PWA manifest + SW, signup, login, logout, refresh,
 #     no localhost references)
 #   Payment + Operator (receipt upload, protected preview, pending state,
-#     operator queue/detail/approval/activation — gated on operator creds)
+#     Staff queue/detail/approval/activation — gated on Staff creds)
 #   Placement (start/save/resume/submit/level/dashboard — gated on active
-#     plan + operator approval)
+#     plan + Staff approval)
 #   Lessons + Progress (list/detail/audio full + Range 206 + seek + progress
 #     save/resume/continue — gated on published lessons)
 #   Entitlement (expired / future-dated / suspended / wrong-role denials —
 #     via the superuser token from the secrets file)
-#   Admin domain (operator login, queue, no student content, /_/ blocked)
+#   Admin domain (Staff login, queue, no student content, /_/ blocked)
 #
 # Only dedicated disposable test accounts are used (FEP_SMOKE_* variables);
 # they are deleted again at the end. No real payment is ever submitted.
@@ -22,7 +22,7 @@
 # Usage:
 #   bash deploy/smoke-prod.sh [--quick] [--full]
 #   --quick  public surface only (no accounts needed)
-#   --full   everything that has prerequisites (operator/superuser creds,
+#   --full   everything that has prerequisites (Staff/superuser creds,
 #            active plan, published lessons)
 #   Default: --full with graceful SKIP for missing prerequisites.
 #
@@ -224,15 +224,17 @@ if [[ -n "$TOKEN" ]]; then
 fi
 # logout is client-side (authStore.clear); verified in E2E, not over HTTPS.
 
-# --- operator token (needed by entitlement fixtures and the operator section) --
+# --- Staff token (needed by entitlement fixtures and the Staff section).
+# Podcast Slice 1: the queue is served to `staff_admins` only; the legacy
+# fep_users operator identity no longer works here.
 OP_TOKEN=""; OP_ID=""
 if [[ -r "$SECRETS" ]]; then
   set -a; # shellcheck disable=SC1090
   source "$SECRETS"; set +a
-  if [[ -n "${FEP_SMOKE_OPERATOR_PHONE:-}" && -n "${FEP_SMOKE_OPERATOR_PASSWORD:-}" ]]; then
-    OP_LOGIN="$(curl "${CURL_OPTS[@]}" -X POST "$APP_BASE/api/collections/fep_users/auth-with-password" \
+  if [[ -n "${FEP_SMOKE_STAFF_EMAIL:-}" && -n "${FEP_SMOKE_STAFF_PASSWORD:-}" ]]; then
+    OP_LOGIN="$(curl "${CURL_OPTS[@]}" -X POST "$APP_BASE/api/collections/staff_admins/auth-with-password" \
       -H 'Content-Type: application/json' \
-      --data-binary "{\"identity\":\"${FEP_SMOKE_OPERATOR_PHONE}@fep.local\",\"password\":\"$FEP_SMOKE_OPERATOR_PASSWORD\"}")" || OP_LOGIN=""
+      --data-binary "{\"identity\":\"${FEP_SMOKE_STAFF_EMAIL}\",\"password\":\"$FEP_SMOKE_STAFF_PASSWORD\"}")" || OP_LOGIN=""
     OP_TOKEN="$(echo "$OP_LOGIN" | jget "['token']")"
     OP_ID="$(echo "$OP_LOGIN" | jget "['record']['id']")"
   fi
@@ -289,7 +291,8 @@ if [[ -r "$SECRETS" && -n "${USER_ID:-}" ]]; then
   fi
 fi
 if [[ -n "${SUPERUSER_TOKEN:-}" && -n "${USER_ID:-}" ]]; then
-  # wrong-role: content_manager cannot read the operator queue
+  # legacy wrong-role: a fep_users content_manager (or operator) record
+  # is no longer accepted by Staff routes
   ROLE_EMAIL="smoke-role-$(date +%s | tail -c 5)@fep.local"
   ROLE_USER="$(curl "${CURL_OPTS[@]}" -X POST "$APP_BASE/api/collections/fep_users/records" \
     -H "Authorization: $SUPERUSER_TOKEN" -H 'Content-Type: application/json' \
@@ -301,7 +304,7 @@ if [[ -n "${SUPERUSER_TOKEN:-}" && -n "${USER_ID:-}" ]]; then
       -H 'Content-Type: application/json' \
       --data-binary "{\"identity\":\"$ROLE_EMAIL\",\"password\":\"$PW\"}")" | jget "['token']")"
     c="$(code "$APP_BASE/api/fast-english/operator/payment-requests" -H "Authorization: $ROLE_TOKEN")"
-    [[ "$c" == "403" ]] && ok "wrong-role denied operator queue (403)" || bad "wrong-role operator queue -> $c (expected 403)"
+    [[ "$c" == "403" ]] && ok "legacy wrong-role denied Staff queue (403)" || bad "legacy wrong-role Staff queue -> $c (expected 403)"
   fi
 
   # suspended: premium endpoints must deny
@@ -372,16 +375,16 @@ else
 fi
 
 # ===========================================================================
-# 5. Operator queue + approval + activation (operator-gated)
+# 5. Staff queue + approval + activation (Staff-gated)
 # ===========================================================================
-echo "--- Operator ---"
+echo "--- Staff payment review ---"
 if [[ -n "$OP_TOKEN" && "$OP_TOKEN" != "None" && -n "${USER_ID:-}" && -n "${REQ_ID:-}" ]]; then
   c="$(code "$APP_BASE/api/fast-english/operator/payment-requests?page=1&perPage=5" -H "Authorization: $OP_TOKEN")"
-  [[ "$c" == "200" ]] && ok "operator queue accessible" || bad "operator queue -> $c"
+  [[ "$c" == "200" ]] && ok "staff queue accessible" || bad "staff queue -> $c"
   c="$(code "$APP_BASE/api/fast-english/operator/payment-requests/$REQ_ID" -H "Authorization: $OP_TOKEN")"
-  [[ "$c" == "200" ]] && ok "operator detail (disposable request)" || bad "operator detail -> $c"
+  [[ "$c" == "200" ]] && ok "staff detail (disposable request)" || bad "staff detail -> $c"
   c="$(code "$APP_BASE/api/fast-english/operator/payment-requests/$REQ_ID/receipt" -H "Authorization: $OP_TOKEN")"
-  [[ "$c" == "200" ]] && ok "operator receipt preview" || bad "operator receipt -> $c"
+  [[ "$c" == "200" ]] && ok "staff receipt preview" || bad "staff receipt -> $c"
   APPR="$(curl "${CURL_OPTS[@]}" -X POST "$APP_BASE/api/fast-english/operator/payment-requests/$REQ_ID/approve" \
     -H "Authorization: $OP_TOKEN")" || APPR=""
   if [[ "$(echo "$APPR" | jget "['kind']")" == "approved" && -n "$(echo "$APPR" | jget "['id']")" ]]; then
@@ -405,7 +408,7 @@ if [[ -n "$OP_TOKEN" && "$OP_TOKEN" != "None" && -n "${USER_ID:-}" && -n "${REQ_
     bad "approval failed: $(echo "$APPR" | head -c 200)"
   fi
 else
-  skip "operator credentials or payment request unavailable (queue/approval not exercised)"
+  skip "staff credentials or payment request unavailable (queue/approval not exercised)"
 fi
 
 # ===========================================================================

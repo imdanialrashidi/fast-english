@@ -28,7 +28,7 @@ function check(cond, msg) {
 import {
   createActiveStudent,
   fetchJson,
-  getOperatorToken,
+  getStaffToken,
   getSuperuserToken,
   nextPhone,
   randomId,
@@ -74,7 +74,7 @@ async function renewOverlapUser(suToken, userId, token) {
     body: JSON.stringify({ account_status: 'payment_rejected' }),
   });
   // Second subscription via the real approve flow
-  const opToken = await getOperatorToken(URL, suToken);
+  const opToken = await getStaffToken(URL, suToken);
   const planRes = await jsonFetch('/api/collections/plans/records', {
     method: 'POST',
     headers: { authorization: suToken },

@@ -18,13 +18,13 @@ import {
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link as RouterLink, useNavigate } from 'react-router';
+import { Brand } from '../../../../shared/ui/brand/Brand';
+import { PageContainer } from '../../../../shared/ui/PageContainer';
+import { StatePanel } from '../../../../shared/ui/StatePanel';
 import { useAuth } from '../../lib/auth';
 import { AuthError } from '../../lib/authErrors';
 import { formatIranianPhoneForDisplay, normalizeIranianPhone } from '../../lib/phone';
 import { type SignupValues, signupSchema } from '../../lib/schemas';
-import { Brand } from '../brand/Brand';
-import { PageContainer } from '../shell/PageContainer';
-import { StatePanel } from '../shell/StatePanel';
 
 // Focuses the first invalid field after a failed submit (keyboard-first).
 function focusFirstInvalid(form: HTMLFormElement | null): void {

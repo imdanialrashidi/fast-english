@@ -2,9 +2,9 @@
 // Vertical status timeline for the payment request workspace.
 //
 // Nodes reflect the real backend status only:
-//   pending  → رسید ارسال شد ✓ → بررسی توسط اپراتور (active) → نتیجه بررسی (upcoming)
-//   rejected → رسید ارسال شد ✓ → بررسی توسط اپراتور ✓ → نتیجه بررسی (error)
-//   approved → رسید ارسال شد ✓ → بررسی توسط اپراتور ✓ → پرداخت تأیید شد (success)
+//   pending  → رسید ارسال شد ✓ → بررسی دستی (active) → نتیجه بررسی (upcoming)
+//   rejected → رسید ارسال شد ✓ → بررسی دستی ✓ → نتیجه بررسی (error)
+//   approved → رسید ارسال شد ✓ → بررسی دستی ✓ → پرداخت تأیید شد (success)
 //   cancelled→ رسید ارسال شد ✓ → درخواست لغو شد (neutral)
 //
 // State is never conveyed by color alone: every node carries an
@@ -16,7 +16,7 @@ import HourglassBottomRoundedIcon from '@mui/icons-material/HourglassBottomRound
 import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
 import { Box, Stack, Typography } from '@mui/material';
-import { duration, easing } from '../../../app/theme/tokens';
+import { duration, easing } from '../../../../../shared/ui/tokens';
 import { formatPersianDateTime } from '../formatters';
 import type { PaymentStatus } from '../types';
 
@@ -84,9 +84,9 @@ export function PaymentStatusTimeline({
       },
       {
         icon: <HourglassBottomRoundedIcon sx={{ fontSize: 20 }} />,
-        title: 'در انتظار بررسی اپراتور',
+        title: 'در انتظار بررسی',
         description:
-          'رسید شما دریافت شد و اپراتور آن را به‌صورت دستی بررسی می‌کند. پرداخت به‌صورت خودکار تأیید نمی‌شود.',
+          'رسید شما دریافت شد و به‌صورت دستی بررسی می‌شود. پرداخت به‌صورت خودکار تأیید نمی‌شود.',
         circleBg: 'var(--mui-palette-primary-main)',
         circleColor: 'var(--mui-palette-onPrimary)',
         lineBg: 'var(--mui-palette-surfaceContainerHighest)',
@@ -94,7 +94,7 @@ export function PaymentStatusTimeline({
       {
         icon: <RadioButtonUncheckedRoundedIcon sx={{ fontSize: 20 }} />,
         title: 'نتیجهٔ بررسی',
-        description: 'نتیجه پس از بررسی اپراتور در همین صفحه نمایش داده می‌شود.',
+        description: 'نتیجه پس از بررسی در همین صفحه نمایش داده می‌شود.',
         circleBg: 'var(--mui-palette-surfaceContainerHighest)',
         circleColor: 'var(--mui-palette-onSurfaceVariant)',
         lineBg: 'var(--mui-palette-surfaceContainerHighest)',
@@ -112,7 +112,7 @@ export function PaymentStatusTimeline({
       {
         ...base,
         icon: <CheckCircleRoundedIcon sx={{ fontSize: 20 }} />,
-        title: 'بررسی توسط اپراتور انجام شد',
+        title: 'بررسی انجام شد',
         description: updatedTime ? `زمان بررسی: ${updatedTime}` : 'زمان بررسی: —',
         time: updatedTime,
       },
@@ -137,7 +137,7 @@ export function PaymentStatusTimeline({
       {
         ...base,
         icon: <CheckCircleRoundedIcon sx={{ fontSize: 20 }} />,
-        title: 'بررسی توسط اپراتور انجام شد',
+        title: 'بررسی انجام شد',
         description: updatedTime ? `زمان بررسی: ${updatedTime}` : 'زمان بررسی: —',
         time: updatedTime,
       },
@@ -163,7 +163,7 @@ export function PaymentStatusTimeline({
       {
         icon: <RemoveCircleOutlineRoundedIcon sx={{ fontSize: 20 }} />,
         title: 'درخواست لغو شد',
-        description: 'این درخواست توسط اپراتور یا سامانه لغو شده است.',
+        description: 'این درخواست لغو شده است.',
         circleBg: 'var(--mui-palette-surfaceContainerHighest)',
         circleColor: 'var(--mui-palette-onSurfaceVariant)',
         lineBg: 'var(--mui-palette-surfaceContainerHighest)',

@@ -37,7 +37,7 @@
 
 import {
   fetchJson,
-  getOperatorToken,
+  getStaffToken,
   getSuperuserToken,
   nextPhone,
   randomId,
@@ -128,26 +128,93 @@ async function getSu() {
 }
 
 async function getOp(su) {
-  return getOperatorToken(URL, su);
+  return getStaffToken(URL, su);
 }
 
 // ---------------------------------------------------------------------------
-// Topic / lesson fixtures
+// Topic / lesson fixtures (Podcast Slice 2: Episode/Variant invariants)
 // ---------------------------------------------------------------------------
+
+// Minimal valid PNG (1x1) for Episode artwork uploads.
+const PNG_FIXTURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+  0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+  0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+  0x00, 0x00, 0x03, 0x00, 0x01, 0x36, 0x28, 0x19,
+]);
+
+let defaultCategoryId = '';
+
+async function getDefaultCategoryId(su) {
+  if (defaultCategoryId) return defaultCategoryId;
+  const r = await jf("/api/collections/categories/records?filter=(key='general')&perPage=1", {
+    headers: { authorization: `Bearer ${su}` },
+  });
+  const item = r.body?.items?.[0];
+  if (!item) throw new Error('default category missing');
+  defaultCategoryId = item.id;
+  return defaultCategoryId;
+}
+
+async function uploadArtwork(su, topicId) {
+  const boundary = `--FB${randomId()}`;
+  const parts = [
+    `--${boundary}\r\nContent-Disposition: form-data; name="artwork_square"; filename="art.png"\r\nContent-Type: image/png\r\n\r\n`,
+    PNG_FIXTURE,
+    `\r\n--${boundary}--\r\n`,
+  ];
+  const buf = Buffer.concat(parts.map((p) => (typeof p === 'string' ? Buffer.from(p) : p)));
+  const res = await fetch(`${URL}/api/collections/topics/records/${topicId}`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${su}`,
+      'content-type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: buf,
+    signal: AbortSignal.timeout(15_000),
+  });
+  const t = await res.text();
+  if (res.status !== 200) throw new Error(`artwork upload: ${res.status} ${t.slice(0, 200)}`);
+  return JSON.parse(t);
+}
+
 async function makeTopic(su, overrides = {}) {
-  const r = await jf('/api/collections/topics/records', {
+  const slug = overrides.slug || `t-${randomId()}`;
+  // Episode invariants require category/content_key/title_fa/description_fa
+  // and artwork when the Topic is published, so fixtures publish through
+  // the same draft -> artwork -> publish path the hooks enforce.
+  const cr = await jf('/api/collections/topics/records', {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      title: `T ${randomId()}`,
-      slug: `t-${randomId()}`,
+      title: overrides.title || `T ${randomId()}`,
+      slug,
       description: 'd',
       sort_order: overrides.sort_order ?? 0,
-      status: overrides.status || 'published',
-      ...overrides,
+      status: 'draft',
     }),
   });
-  return r.body;
+  if (!cr.body?.id) throw new Error(`topic create: ${JSON.stringify(cr.body).slice(0, 200)}`);
+  const id = cr.body.id;
+  if (overrides.keepDraft) return { id, body: cr.body };
+
+  await uploadArtwork(su, id);
+  const patch = {
+    status: overrides.status || 'published',
+    category: await getDefaultCategoryId(su),
+    content_key: `fx-${randomId()}`,
+    content_version: 1,
+    title_fa: 'عنوان اپیزود',
+    description_fa: 'توضیح اپیزود',
+  };
+  const pr = await jf(`/api/collections/topics/records/${id}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify(patch),
+  });
+  if (pr.status !== 200)
+    throw new Error(`topic publish: ${pr.status} ${JSON.stringify(pr.body).slice(0, 200)}`);
+  return { id, body: pr.body };
 }
 
 async function uploadAudio(su, lessonId) {
@@ -199,6 +266,9 @@ async function makeLesson(su, topicId, overrides = {}) {
     if (!(dur > 0)) dur = Number(overrides.estimated_minutes || 10) * 60;
     if (!(dur > 0)) dur = 600;
     patch.audio_duration_seconds = dur;
+    // Podcast Slice 2 Variant invariants for new publishes
+    patch.summary_fa = overrides.summary_fa || 'خلاصه فارسی';
+    patch.content_version = 1;
   }
   const pr = await jf(`/api/collections/lessons/records/${id}`, {
     method: 'PATCH',
@@ -852,13 +922,14 @@ async function main() {
   });
 
   // ==================================================================
-  // 14. Wrong level denied
+  // 14. Cross-level progress (Podcast Slice 2: level is no longer an
+  // authorization boundary — progress is per-Variant at any level)
   // ==================================================================
   const wrongLevel = await jf(`/api/fast-english/lessons/${a2Id}/progress`, {
     headers: { authorization: `Bearer ${sToken}` },
   });
-  aScenario('wrong level lesson returns 404', async () => {
-    await assertHttp(wrongLevel, 404, 'wrong level');
+  aScenario('cross-level progress accessible (200)', async () => {
+    await assertHttp(wrongLevel, 200, 'cross-level progress');
   });
 
   // ==================================================================

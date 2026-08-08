@@ -1,26 +1,32 @@
 // e2e/p1-s2.spec.ts
-// P1-S2 operator E2E: browser integration test.
+// Podcast Slice 1 — Staff payment-review E2E against the Admin Console.
 //
 // Tests:
-//  - Operator queue route renders (proves routing + guard + auth works)
-//  - Student is denied access to operator routes
+//  - Staff can sign into the Admin Console (ورود مدیریت)
+//  - The payment queue renders with real pending requests
+//  - A Student session cannot enter the Admin Console
+//  - Unauthenticated visitors are sent to the Admin login
 //
 // Backend behavior and dialog workflows are thoroughly covered by
-// scripts/smoke-operator.mjs (52 scenarios covering auth, queue,
-// detail, receipt, approve, reject, subscriptions, concurrency,
-// rate limiting).
+// scripts/smoke-operator.mjs (Staff queue, detail, receipt, approve,
+// reject, subscriptions, concurrency, rate limiting) and
+// scripts/smoke-staff.mjs (cross-token authorization matrix).
 
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { ADMIN_URL } from '../playwright.config';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
 
 function randomCreds() {
   const id = randomBytes(8).toString('hex');
-  return { email: `e2e-op3-${id}@fep-smoke.invalid`, password: `E2E-${id}` };
+  return {
+    email: `fixture-${id}@fep-smoke.invalid`,
+    password: `FX-${id}-${randomBytes(6).toString('hex')}`,
+  };
 }
 
 function uniquePhone(): string {
@@ -46,6 +52,28 @@ async function suToken(): Promise<string> {
   return body.token;
 }
 
+// The single backstage identity: an active + verified staff_admins record
+// created through superuser tooling (bootstrap semantics).
+async function createStaff(su: string, name: string) {
+  const email = `staff-${randomBytes(6).toString('hex')}@fep-smoke.invalid`;
+  const password = 'E2E-Staff-1234!';
+  const r = await fetch(`${PB_URL}/api/collections/staff_admins/records`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: su },
+    body: JSON.stringify({
+      email,
+      password,
+      passwordConfirm: password,
+      display_name: name,
+      is_active: true,
+      verified: true,
+    }),
+  });
+  const body = (await r.json()) as { id?: string };
+  if (!body.id) throw new Error(`staff create failed: ${r.status}`);
+  return { email, password, id: body.id };
+}
+
 async function signupUser(name: string) {
   const phone = uniquePhone();
   const r = await fetch(`${PB_URL}/api/collections/fep_users/records`, {
@@ -54,8 +82,8 @@ async function signupUser(name: string) {
     headers: { 'content-type': 'application/json' },
   });
   const body = (await r.json()) as { id?: string; phone?: string };
-  if (r.status === 429) throw new Error(`signup rate limited`);
-  if (!body.id || !body.phone) throw new Error(`signup failed`);
+  if (r.status === 429) throw new Error('signup rate limited');
+  if (!body.id || !body.phone) throw new Error(`signup failed: ${r.status}`);
   return { id: body.id, phone: body.phone };
 }
 
@@ -66,28 +94,22 @@ async function loginToken(phone: string) {
     body: JSON.stringify({ identity: phone, password: 'Test1234!' }),
   });
   const body = (await r.json()) as { token?: string; record?: Record<string, unknown> };
-  if (!body.token) throw new Error(`login failed`);
+  if (!body.token) throw new Error(`login failed: ${r.status}`);
   return { token: body.token, record: body.record };
 }
 
-test.describe('P1-S2 operator E2E', () => {
-  let opToken: string;
-  let opRecord: Record<string, unknown>;
+test.describe('P1-S2 Staff payment review E2E', () => {
+  let staffEmail: string;
+  let staffPassword: string;
 
   test.beforeAll(async () => {
     const su = await suToken();
-    const opUser = await signupUser('اپراتور');
-    // Promote to operator
-    await fetch(`${PB_URL}/api/collections/fep_users/records/${opUser.id}`, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json', authorization: su },
-      body: JSON.stringify({ role: 'operator' }),
-    });
-    const login = await loginToken(opUser.phone);
-    opToken = login.token;
-    opRecord = login.record!;
+    const staff = await createStaff(su, 'اپراتور');
+    staffEmail = staff.email;
+    staffPassword = staff.password;
 
-    // Create a plan + payment request so the queue is non-empty
+    // Create a plan + destination + a pending payment request so the
+    // queue is non-empty.
     const planRes = await fetch(`${PB_URL}/api/collections/plans/records`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: su },
@@ -123,8 +145,8 @@ test.describe('P1-S2 operator E2E', () => {
     form.append('bank_reference', 'ref');
     form.append('sender_card_last4', '1234');
     form.append('transfer_at', new Date().toISOString());
-    // Minimal valid JPEG (332 bytes, same fixture as smoke tests)
-    const _jpeg = Buffer.from([
+    // Minimal valid JPEG (same fixture as the smoke tests).
+    const jpeg = Buffer.from([
       0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x00, 0x00,
       0x01, 0x00, 0x01, 0x00, 0x00, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x08, 0x06, 0x06, 0x07, 0x06,
       0x05, 0x08, 0x07, 0x07, 0x07, 0x09, 0x09, 0x08, 0x0a, 0x0c, 0x14, 0x0d, 0x0c, 0x0b, 0x0b,
@@ -149,7 +171,7 @@ test.describe('P1-S2 operator E2E', () => {
       0xf7, 0xf8, 0xf9, 0xfa, 0xff, 0xda, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3f, 0x00, 0xfb,
       0xd0, 0xff, 0xd9,
     ]);
-    form.append('receipt_file', new Blob([_jpeg], { type: 'image/jpeg' }), 'r.jpg');
+    form.append('receipt_file', new Blob([jpeg], { type: 'image/jpeg' }), 'r.jpg');
     const req = await fetch(`${PB_URL}/api/fast-english/payment-requests`, {
       method: 'POST',
       headers: { authorization: sLogin.token },
@@ -161,50 +183,48 @@ test.describe('P1-S2 operator E2E', () => {
     }
   });
 
-  test('operator queue route renders with auth via localStorage', { tag: '@critical' }, async ({
-    page,
-  }) => {
-    // Set auth state directly via localStorage to avoid login form issues.
-    await page.goto('/');
-    await page.evaluate(
-      ({ token, record }) => {
-        localStorage.setItem('pocketbase_auth', JSON.stringify({ token, model: record }));
-      },
-      { token: opToken, record: opRecord },
-    );
+  test('staff signs into the Admin Console and opens the payment queue', {
+    tag: '@critical',
+  }, async ({ page }) => {
+    await page.goto(`${ADMIN_URL}/login`);
+    await expect(page.getByRole('heading', { name: 'ورود مدیریت' })).toBeVisible();
 
-    // Navigate to operator queue
-    await page.goto('/operator');
-    await page.waitForURL('**/operator', { timeout: 15_000 });
+    await page.getByTestId('admin-login-email').locator('input').fill(staffEmail);
+    await page.getByTestId('admin-login-password').locator('input').fill(staffPassword);
+    await page.getByTestId('admin-login-submit').click();
 
-    // The queue page shows pending requests
-    await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
-    // At least one student name visible
+    // Lands on the dashboard (real pending count) then opens the queue.
+    await page.waitForURL(`${ADMIN_URL}/`, { timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'داشبورد مدیریت' })).toBeVisible();
+    await page.getByRole('link', { name: 'پرداختها' }).click();
+    await page.waitForURL(`${ADMIN_URL}/payments`, { timeout: 15_000 });
+
+    await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
     await expect(page.getByText('دانشجو').first()).toBeVisible();
-    // Plan name visible in the queue
     await expect(page.getByText('E2E Plan').first()).toBeVisible();
   });
 
-  test('student denied operator access', async ({ page }) => {
-    // Create a new student and set their auth
+  test('student session cannot enter the Admin Console', async ({ page }) => {
     const studentUser = await signupUser('دسترسی');
     const sLogin = await loginToken(studentUser.phone);
 
-    await page.goto('/');
+    // A Student token placed in the Admin's own storage key must be
+    // rejected: the Staff session restore refreshes against staff_admins
+    // and fails, so the Admin redirects to its login.
+    await page.goto(`${ADMIN_URL}/login`);
     await page.evaluate(
       ({ token, record }) => {
-        localStorage.setItem('pocketbase_auth', JSON.stringify({ token, model: record }));
+        localStorage.setItem('fep_staff_auth', JSON.stringify({ token, model: record }));
       },
       { token: sLogin.token, record: sLogin.record },
     );
-
-    await page.goto('/operator');
-    // Student should see the permission denied panel
-    await expect(page.getByText('دسترسی ندارید')).toBeVisible({ timeout: 10_000 });
+    await page.goto(`${ADMIN_URL}/payments`);
+    await page.waitForURL(`${ADMIN_URL}/login`, { timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'ورود مدیریت' })).toBeVisible();
   });
 
-  test('unauthenticated redirects to login', async ({ page }) => {
-    await page.goto('/operator');
-    await page.waitForURL('**/login', { timeout: 15_000 });
+  test('unauthenticated admin visitor is sent to the Admin login', async ({ page }) => {
+    await page.goto(`${ADMIN_URL}/payments`);
+    await page.waitForURL(`${ADMIN_URL}/login`, { timeout: 15_000 });
   });
 });

@@ -10,7 +10,7 @@ Last updated: 2026-08-01 (P4-S3 package; deployment Gate OPEN — see §9).
 | `fastenglishpodcast.com` | static Landing + `/releases/` (APK + metadata) | Caddy → `/opt/fast-english/current/landing` + `shared/releases` |
 | `www.fastenglishpodcast.com` | 308 redirect to the canonical root | Caddy `redir` |
 | `app.fastenglishpodcast.com` | Product App/PWA + `/api/*` → PocketBase | Caddy → `current/app` + `127.0.0.1:8090` |
-| `admin.fastenglishpodcast.com` | Operator interface (same SPA) + `/api/*` | Caddy → `current/app` + `127.0.0.1:8090` |
+| `admin.fastenglishpodcast.com` | Unified Staff Admin Console (separate SPA) + `/api/*` | Caddy → `current/admin` + `127.0.0.1:8090` |
 
 Services on the server:
 
@@ -52,14 +52,15 @@ pnpm typecheck && pnpm check && pnpm test
 VITE_WEB_APP_URL=https://app.fastenglishpodcast.com \
 VITE_ANDROID_APK_URL=https://fastenglishpodcast.com/releases/fast-english-podcast-v1.0.0.apk \
 VITE_ANDROID_APK_VERSION=1.0.0 \
-pnpm build:landing && pnpm build:app && node scripts/prerender-landing.mjs
+pnpm build:landing && pnpm build:app && pnpm build:admin && node scripts/prerender-landing.mjs
 bash scripts/verify.sh
-bash scripts/check-production-bundle.sh dist-landing dist-app
+bash scripts/check-production-bundle.sh dist-landing dist-app dist-admin
 ```
 
-Then stage a bundle directory `<id>/{landing,app,server,android}` (copy
-`dist-landing/`, `dist-app/`, `server/pb_migrations+pb_hooks+VERSION`,
-`releases/*`) and copy it to the server. `VITE_SUPPORT_URL` stays unset until
+Then stage a bundle directory `<id>/{landing,app,admin,server,android}` (copy
+`dist-landing/`, `dist-app/`, `dist-admin/`,
+`server/pb_migrations+pb_hooks+VERSION`, `releases/*`) and copy it to the
+server. `VITE_SUPPORT_URL` stays unset until
 an approved support channel exists.
 
 ## 4. First-time install (server, as root)

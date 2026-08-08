@@ -43,10 +43,19 @@ routerAdd(
     // --- Inline helpers ---
 
     function checkEligibility(ev) {
-      if (!ev || !ev.auth) { return { status: 401, body: { code: "placement_auth_required", message: "Authentication required." } }; }
-      var role = ""; var acct = "";
-      try { role = String(ev.auth.get("role") || ""); acct = String(ev.auth.get("account_status") || ""); } catch (_) {}
-      if (role !== "student") { return { status: 403, body: { code: "placement_access_denied", message: "Access denied." } }; }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records are
+      // rejected here; the route keeps its own error vocabulary.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireStudent) { return { status: 500, body: { code: "placement_unavailable", message: "Internal error." } }; }
+      var r = g.requireStudent(ev);
+      if (r) {
+        var code = r.status === 401 ? "placement_auth_required" : "placement_access_denied";
+        return { status: r.status, body: { code: code, message: r.message } };
+      }
+      var acct = "";
+      try { acct = String(ev.auth.get("account_status") || ""); } catch (_) {}
       if (acct === "suspended") { return { status: 403, body: { code: "placement_suspended", message: "Account is suspended." } }; }
       if (acct !== "active") { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       var nowMs = Date.now();
@@ -300,10 +309,19 @@ routerAdd(
     // --- Inline helpers ---
 
     function checkEligibility(ev) {
-      if (!ev || !ev.auth) { return { status: 401, body: { code: "placement_auth_required", message: "Authentication required." } }; }
-      var role = ""; var acct = "";
-      try { role = String(ev.auth.get("role") || ""); acct = String(ev.auth.get("account_status") || ""); } catch (_) {}
-      if (role !== "student") { return { status: 403, body: { code: "placement_access_denied", message: "Access denied." } }; }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records are
+      // rejected here; the route keeps its own error vocabulary.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireStudent) { return { status: 500, body: { code: "placement_unavailable", message: "Internal error." } }; }
+      var r = g.requireStudent(ev);
+      if (r) {
+        var code = r.status === 401 ? "placement_auth_required" : "placement_access_denied";
+        return { status: r.status, body: { code: code, message: r.message } };
+      }
+      var acct = "";
+      try { acct = String(ev.auth.get("account_status") || ""); } catch (_) {}
       if (acct === "suspended") { return { status: 403, body: { code: "placement_suspended", message: "Account is suspended." } }; }
       if (acct !== "active") { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       var nowMs = Date.now();
@@ -497,10 +515,19 @@ routerAdd(
     // --- Inline helpers ---
 
     function checkEligibility(ev) {
-      if (!ev || !ev.auth) { return { status: 401, body: { code: "placement_auth_required", message: "Authentication required." } }; }
-      var role = ""; var acct = "";
-      try { role = String(ev.auth.get("role") || ""); acct = String(ev.auth.get("account_status") || ""); } catch (_) {}
-      if (role !== "student") { return { status: 403, body: { code: "placement_access_denied", message: "Access denied." } }; }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records are
+      // rejected here; the route keeps its own error vocabulary.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireStudent) { return { status: 500, body: { code: "placement_unavailable", message: "Internal error." } }; }
+      var r = g.requireStudent(ev);
+      if (r) {
+        var code = r.status === 401 ? "placement_auth_required" : "placement_access_denied";
+        return { status: r.status, body: { code: code, message: r.message } };
+      }
+      var acct = "";
+      try { acct = String(ev.auth.get("account_status") || ""); } catch (_) {}
       if (acct === "suspended") { return { status: 403, body: { code: "placement_suspended", message: "Account is suspended." } }; }
       if (acct !== "active") { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
       var nowMs = Date.now();

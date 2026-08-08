@@ -2,7 +2,7 @@
 // Single PocketBase client singleton. Imported by the AuthProvider and
 // any feature that needs direct PB access. Never instantiated elsewhere.
 import PocketBase from 'pocketbase';
-import { resolveApiOrigin } from './apiOrigin';
+import { resolveApiOrigin } from '../../../shared/lib/apiOrigin';
 
 let cachedClient: PocketBase | null = null;
 

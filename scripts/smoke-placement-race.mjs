@@ -103,29 +103,26 @@ if (Array.isArray(existing.b?.items)) {
 }
 console.log('Questions ready');
 
-// Create operator + student + subscription
-const opPhone = nextPhone();
-const opR = await jf(`${PB_URL}/api/collections/fep_users/records`, {
+// Create Staff Administrator + student + subscription (Podcast Slice 1:
+// approvals require a staff_admins identity).
+const opR = await jf(`${PB_URL}/api/collections/staff_admins/records`, {
   method: 'POST',
+  headers: { authorization: `Bearer ${suToken}` },
   body: JSON.stringify({
-    name: 'Op',
-    phone: opPhone,
+    email: `race-staff-${randomBytes(4).toString('hex')}@fep-smoke.invalid`,
     password: 'Test1234!',
     passwordConfirm: 'Test1234!',
+    display_name: 'Race Staff',
+    is_active: true,
+    verified: true,
   }),
 });
-ok(opR.s === 200, `op signup: ${opR.s}`);
-const opCanPhone = opR.b.phone || opPhone;
-await jf(`${PB_URL}/api/collections/fep_users/records/${opR.b.id}`, {
-  method: 'PATCH',
-  headers: { authorization: `Bearer ${suToken}` },
-  body: JSON.stringify({ role: 'operator', account_status: 'active' }),
-});
-const opLog = await jf(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
+ok(opR.s === 200, `staff create: ${opR.s}`);
+const opLog = await jf(`${PB_URL}/api/collections/staff_admins/auth-with-password`, {
   method: 'POST',
-  body: JSON.stringify({ identity: opCanPhone, password: 'Test1234!' }),
+  body: JSON.stringify({ identity: opR.b.email, password: 'Test1234!' }),
 });
-ok(opLog.s === 200, 'op login');
+ok(opLog.s === 200, 'staff login');
 const opToken = opLog.b.token;
 
 const stuPhone = nextPhone();

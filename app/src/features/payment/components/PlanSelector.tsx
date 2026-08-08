@@ -5,7 +5,7 @@
 
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import { Box, Card, CardActionArea, CardContent, Chip, Stack, Typography } from '@mui/material';
-import { duration, easing } from '../../../app/theme/tokens';
+import { duration, easing } from '../../../../../shared/ui/tokens';
 import { formatDurationDays, formatToman } from '../formatters';
 import type { Plan } from '../types';
 

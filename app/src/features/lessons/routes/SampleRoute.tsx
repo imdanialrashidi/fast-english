@@ -4,11 +4,11 @@
 
 import { Box, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+import { PageContainer } from '../../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../../shared/ui/StatePanel';
+import type { CefrLevel } from '../../../../../shared/ui/tokens/cefr';
 import { LevelBadge } from '../../../app/shell/LevelBadge';
-import { PageContainer } from '../../../app/shell/PageContainer';
-import { PageHeader } from '../../../app/shell/PageHeader';
-import { StatePanel } from '../../../app/shell/StatePanel';
-import type { CefrLevel } from '../../../app/theme/tokens/cefr';
 import * as api from '../api';
 import type { AudioDescriptor } from '../types';
 

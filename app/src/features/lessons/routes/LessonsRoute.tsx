@@ -5,10 +5,10 @@
 
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { PageContainer } from '../../../app/shell/PageContainer';
-import { PageHeader } from '../../../app/shell/PageHeader';
+import { PageContainer } from '../../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { LessonListSkeleton } from '../../../app/shell/PageSkeletons';
-import { StatePanel } from '../../../app/shell/StatePanel';
 import { useAuth } from '../../../lib/auth';
 import * as progressApi from '../../progress/api';
 import type { LessonProgressResponse } from '../../progress/types';

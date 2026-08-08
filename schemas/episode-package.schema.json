@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastenglishpodcast.com/schemas/episode-package.schema.json",
+  "title": "Fast English Podcast — Episode Content Package",
+  "description": "Versioned manifest contract for a Podcast Episode content package (Podcast Slice 3). One package = one Episode (topics) plus one or more CEFR Variants (lessons) with audio, transcripts and vocabulary. Assets are referenced by package-relative paths and are NOT embedded in the manifest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contentKey",
+    "contentVersion",
+    "categoryKey",
+    "episode",
+    "variants"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional reference to this schema document. Not part of the contract data."
+    },
+    "schemaVersion": {
+      "const": "1.0.0",
+      "description": "Supported manifest specification version."
+    },
+    "contentKey": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "description": "Stable import identity; must equal '<categoryKey>.<episode.slug>'."
+    },
+    "contentVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000,
+      "description": "Positive content version; higher versions update existing content."
+    },
+    "categoryKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9][a-z0-9_-]*$",
+      "description": "Key of an existing categories record (the pipeline never creates Categories)."
+    },
+    "episode": {
+      "$ref": "#/$defs/episode"
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/variant"
+      }
+    }
+  },
+  "$defs": {
+    "episode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "titleEn", "titleFa", "descriptionFa", "artworkSquare", "artworkAltFa"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "titleEn": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "titleFa": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "descriptionFa": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "artworkSquare": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "heroImageWide": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "artworkAltFa": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "episodeNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "featured": {
+          "type": "boolean"
+        }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "summaryFa", "audio", "transcript", "vocabulary"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["A1", "A2", "B1", "B2", "C1", "C2"]
+        },
+        "summaryFa": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "audio": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "transcript": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "vocabulary": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/vocabularyEntry"
+          }
+        }
+      }
+    },
+    "vocabularyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["term", "meaningFa", "definitionEn"],
+      "properties": {
+        "term": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "phonetic": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "partOfSpeech": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "meaningFa": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "definitionEn": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "exampleSentence": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "pronunciationAudio": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    }
+  }
+}

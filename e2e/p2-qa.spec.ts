@@ -14,6 +14,7 @@
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { createStaff } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const APP_URL = PB_URL.replace(/:\d+/, ':18102');
@@ -109,30 +110,8 @@ async function seedFixtures(suToken: string): Promise<void> {
 }
 
 async function getOperatorToken(suToken: string): Promise<string> {
-  const opPhone = nextPhone();
-  const opR = await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: 'Op',
-      phone: opPhone,
-      password: 'Test1234!',
-      passwordConfirm: 'Test1234!',
-    }),
-  });
-  if (opR.status !== 200) throw new Error(`op signup: ${opR.status}`);
-  const opBody = opR.body as Record<string, string>;
-  const canonicalOpPhone = opBody.phone || opPhone;
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${opBody.id}`, {
-    method: 'PATCH',
-    headers: { authorization: suToken },
-    body: JSON.stringify({ role: 'operator' }),
-  });
-  const opLogin = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    body: JSON.stringify({ identity: canonicalOpPhone, password: 'Test1234!' }),
-  });
-  if (opLogin.status !== 200) throw new Error('operator login failed');
-  return (opLogin.body as { token?: string }).token || '';
+  const staff = await createStaff(suToken);
+  return staff.token;
 }
 
 async function createActiveStudent(
@@ -528,16 +507,16 @@ test.describe('P2-S2 responsive dashboard QA', () => {
       await yesBtn.click();
 
       // Should navigate to dashboard
-      await page.waitForURL('**/dashboard', { timeout: 20000 });
+      await page.waitForURL(/\/$/, { timeout: 20000 });
       await page.waitForTimeout(1000);
 
       await assertNotLogin(page);
 
-      // 4. Dashboard
-      await expect(page.getByText(/خوش آمدید/i).first()).toBeVisible({ timeout: 5000 });
+      // 4. Home
+      await expect(page.getByText(/سلام/i).first()).toBeVisible({ timeout: 5000 });
       await expect(page.getByText(/C2/i).first()).toBeVisible({ timeout: 3000 });
-      // Visual Slice 2 renamed the dashboard progress card heading.
-      await expect(page.getByText(/پیشرفت آموزشی/i).first()).toBeVisible({ timeout: 3000 });
+      // Podcast Slice 5 Home progress panel.
+      await expect(page.getByTestId('progress-card')).toBeVisible({ timeout: 3000 });
       await expect(page.getByText(/روزهای باقی‌مانده/i).first()).toBeVisible({ timeout: 3000 });
       await page.screenshot({ path: `${P2S2_DIR}/${vp.name}/04-dashboard.png`, fullPage: true });
       expect(

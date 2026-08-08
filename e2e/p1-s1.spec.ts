@@ -187,13 +187,13 @@ test.describe('P1-S1 student payment flow', () => {
     // -- Redirect to /payment-status --
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
     // -- Pending state loads from backend --
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
 
     // -- Refresh preserves state --
     await page.reload();
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
 
@@ -324,7 +324,7 @@ test.describe('P1-S1 student payment flow', () => {
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
     // Wait for the status page to show the new pending record
     // (different from the old rejected state).
-    await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
       timeout: 15_000,
     });
 
@@ -504,7 +504,7 @@ test.describe('P1-S1 responsive QA', () => {
       await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
       await page.getByRole('button', { name: /ارسال رسید/ }).click();
       await page.waitForURL('**/payment-status', { timeout: 30_000 });
-      await expect(page.getByRole('heading', { name: /در انتظار بررسی اپراتور/ })).toBeVisible({
+      await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
         timeout: 15_000,
       });
       mkdirSync(`${VISUAL_QA_DIR}/payment/${name}`, { recursive: true });

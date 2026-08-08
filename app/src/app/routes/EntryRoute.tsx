@@ -1,8 +1,7 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router';
-import { Brand } from '../brand/Brand';
-import { PageContainer } from '../shell/PageContainer';
-import { ThemeSwitch } from '../theme/ThemeSwitch';
+import { Brand } from '../../../../shared/ui/brand/Brand';
+import { PageContainer } from '../../../../shared/ui/PageContainer';
 
 // App entry route: the first screen an unauthenticated visitor sees after
 // reaching the web app. Communicates value briefly and routes to login/signup.
@@ -26,17 +25,6 @@ export function EntryRoute() {
         position: 'relative',
       }}
     >
-      {/* Non-distracting theme control in the top corner. */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 12,
-          insetInlineEnd: 12,
-        }}
-      >
-        <ThemeSwitch data-testid="entry-theme-switch" />
-      </Box>
-
       <PageContainer maxWidth="sm" disableGutter>
         <Stack spacing={3} sx={{ alignItems: 'center', textAlign: 'center' }}>
           <Brand variant="full" size="md" />

@@ -11,9 +11,9 @@ import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import { Alert, Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { PageContainer } from '../../../app/shell/PageContainer';
-import { PageHeader } from '../../../app/shell/PageHeader';
-import { StatePanel } from '../../../app/shell/StatePanel';
+import { PageContainer } from '../../../../../shared/ui/PageContainer';
+import { PageHeader } from '../../../../../shared/ui/PageHeader';
+import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { loadCurrentRequest } from '../api';
 import { PaymentApprovedPanel } from '../components/PaymentApprovedPanel';
 import { PaymentErrorPanel } from '../components/PaymentErrorPanel';
@@ -175,11 +175,11 @@ function PendingPanel({ request }: { request: import('../types').PaymentRequest 
         <CardContent>
           <Stack spacing={2}>
             <Typography component="h2" variant="h4">
-              در انتظار بررسی اپراتور
+              در انتظار بررسی
             </Typography>
             <Alert severity="info" role="status" data-testid="pending-alert">
-              رسید شما دریافت شد و هم‌اکنون ثبت شده است. اپراتور آن را به‌صورت دستی بررسی می‌کند؛
-              پرداخت به‌صورت خودکار تأیید نمی‌شود و اشتراک فقط پس از تأیید فعال می‌شود.
+              رسید شما دریافت شد و هم‌اکنون ثبت شده است. رسید به‌صورت دستی بررسی می‌شود؛ پرداخت به‌صورت
+              خودکار تأیید نمی‌شود و اشتراک فقط پس از تأیید فعال می‌شود.
             </Alert>
             <PaymentStatusTimeline
               status={request.status}
@@ -231,8 +231,8 @@ function PendingPanel({ request }: { request: import('../types').PaymentRequest 
               />
             ) : null}
             <Typography variant="caption" color="text.secondary">
-              فقط داشتنِ تصویر رسید به‌تنهایی اثبات‌کنندهٔ پرداخت نیست؛ اپراتور پرداخت را با اطلاعات
-              بانکی تطبیق می‌دهد. نتیجه پس از بررسی در همین صفحه نمایش داده می‌شود.
+              فقط داشتنِ تصویر رسید به‌تنهایی اثبات‌کنندهٔ پرداخت نیست؛ پرداخت با اطلاعات بانکی تطبیق
+              می‌دهد. نتیجه پس از بررسی در همین صفحه نمایش داده می‌شود.
             </Typography>
           </Stack>
         </CardContent>
@@ -256,7 +256,7 @@ function CancelledPanel({ request }: { request: import('../types').PaymentReques
             updated={request.updated}
           />
           <Typography variant="body2" color="text.secondary">
-            این درخواست توسط اپراتور یا سامانه لغو شده است. برای ادامه، یک رسید جدید ارسال کنید.
+            این درخواست لغو شده است. برای ادامه، یک رسید جدید ارسال کنید.
           </Typography>
           <Box sx={{ pt: 1 }}>
             <Button

@@ -10,8 +10,10 @@ import { resolve } from 'node:path';
 
 const PORT = Number(process.env.PB_E2E_PORT ?? 18101);
 const APP_PORT = Number(process.env.APP_E2E_PORT ?? 18102);
+const ADMIN_PORT = Number(process.env.ADMIN_E2E_PORT ?? 18104);
 const PB_URL = `http://127.0.0.1:${PORT}`;
 const APP_URL = `http://127.0.0.1:${APP_PORT}`;
+const ADMIN_URL = `http://127.0.0.1:${ADMIN_PORT}`;
 
 export default async function globalSetup() {
   mkdirSync(resolve('test-results'), { recursive: true });
@@ -56,7 +58,7 @@ export default async function globalSetup() {
     PB_FEEDBACK: '0',
     PB_ENCRYPTION: process.env.PB_ENCRYPTION ?? 'dev-encryption-key-not-for-prod',
     PB_SMOKE_PAY_PORT: String(PORT),
-    PB_CORS_ORIGINS: `${APP_URL},http://localhost:5173,http://127.0.0.1:5173,http://localhost,https://localhost`,
+    PB_CORS_ORIGINS: `${APP_URL},${ADMIN_URL},http://localhost:5173,http://127.0.0.1:5173,http://localhost,https://localhost`,
   };
   const proc = spawn(
     'server/pocketbase',

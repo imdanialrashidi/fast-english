@@ -132,7 +132,7 @@ export function PaymentApprovedPanel({ request }: { request: PaymentRequest }) {
           </Stack>
 
           <Alert severity="success" role="status" data-testid="approved-alert">
-            پرداخت شما توسط اپراتور تأیید شد و اشتراک شما فعال شده است.
+            پرداخت شما تأیید شد و اشتراک شما فعال شده است.
           </Alert>
 
           <PaymentStatusTimeline

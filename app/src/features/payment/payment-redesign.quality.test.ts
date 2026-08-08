@@ -26,13 +26,18 @@ function read(rel: string): string {
   return readFileSync(resolve(ROOT, 'app', 'src', rel), 'utf8');
 }
 
+// Files that moved to the shared design system (Podcast Slice 1).
+function readShared(rel: string): string {
+  return readFileSync(resolve(ROOT, 'shared', rel), 'utf8');
+}
+
 const JOURNEY = 'features/payment/components/PaymentJourney.tsx';
 const DETAILS = 'features/payment/components/PaymentDetailsCard.tsx';
 const INSTRUCTIONS = 'features/payment/components/PaymentInstructions.tsx';
-const COPY_VALUE = 'features/payment/components/CopyValue.tsx';
+const COPY_VALUE = 'ui/CopyValue.tsx';
 const PICKER = 'features/payment/components/ReceiptPicker.tsx';
 const PREVIEW = 'features/payment/components/ReceiptPreview.tsx';
-const ZOOM = 'features/payment/components/ReceiptZoomDialog.tsx';
+const ZOOM = 'ui/ReceiptZoomDialog.tsx';
 const TIMELINE = 'features/payment/components/PaymentStatusTimeline.tsx';
 const SUMMARY = 'features/payment/components/PaymentRequestSummary.tsx';
 const REJECTED = 'features/payment/components/PaymentRejectedPanel.tsx';
@@ -79,7 +84,7 @@ describe('Payment redesign — journey architecture', () => {
     expect(status).not.toContain('type="submit"');
     // The workspace renders the real timeline + pending panel.
     expect(status).toContain('PaymentStatusTimeline');
-    expect(status).toContain('در انتظار بررسی اپراتور');
+    expect(status).toContain('در انتظار بررسی');
     expect(status).toContain('پس از بررسی در همین صفحه');
   });
 });
@@ -99,7 +104,7 @@ describe('Payment redesign — hierarchy', () => {
   });
 
   it('copy actions are secondary icon controls, not CTAs', () => {
-    const copy = read(COPY_VALUE);
+    const copy = readShared(COPY_VALUE);
     expect(copy).toContain('<IconButton');
     expect(copy).not.toContain('variant="contained"');
     const details = read(DETAILS);
@@ -164,7 +169,7 @@ describe('Payment redesign — geometry contracts', () => {
   });
 
   it('zoom dialog is full-screen on phones and bounded on larger screens', () => {
-    const zoom = read(ZOOM);
+    const zoom = readShared(ZOOM);
     expect(zoom).toContain('fullScreen={isPhone}');
     expect(zoom).toContain("theme.breakpoints.down('sm')");
     expect(zoom).toContain('maxWidth="md"');
@@ -192,7 +197,7 @@ describe('Payment redesign — geometry contracts', () => {
 
 describe('Payment redesign — copy + error semantics', () => {
   it('copy feedback is a short polite live region, not a snackbar flood', () => {
-    const copy = read(COPY_VALUE);
+    const copy = readShared(COPY_VALUE);
     expect(copy).toContain('aria-live="polite"');
     expect(copy).toContain('role="status"');
     expect(copy).toContain('کپی شد');
@@ -240,9 +245,9 @@ describe('Payment redesign — copy + error semantics', () => {
 
   it('trust content is explicit and makes no unsupported promises', () => {
     const instructions = read(INSTRUCTIONS);
-    expect(instructions).toContain('به‌صورت دستی توسط اپراتور');
+    expect(instructions).toContain('بررسی به‌صورت دستی انجام می‌شود');
     expect(instructions).toContain('به‌صورت خودکار تأیید نمی‌شود');
-    expect(instructions).toContain('فقط پس از تأیید اپراتور فعال می‌شود');
+    expect(instructions).toContain('فقط پس از تأیید فعال می‌شود');
     expect(instructions).toContain('از ارسال تکراری خودداری کنید');
     // No invented SLA ("within two hours") and no fake badges.
     expect(instructions).not.toMatch(/دو ساعت|۲ ساعت|ظرف \d+/);

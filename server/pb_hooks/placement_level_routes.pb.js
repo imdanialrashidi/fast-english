@@ -89,9 +89,13 @@ routerAdd(
 
       var uid = String(e.auth.id || "");
 
-      // Role check
-      var role = ""; try { role = String(e.auth.get("role") || ""); } catch (_) {}
-      if (role !== "student") { return e.json(403, { code: "access_denied", message: "Access denied." }); }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records are rejected.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireActiveStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var guardErr = g.requireActiveStudent(e);
+      if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
 
       // Suspended check
       var acct = ""; try { acct = String(e.auth.get("account_status") || ""); } catch (_) {}
@@ -316,15 +320,17 @@ routerAdd(
       try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
       if (!student) { return e.json(401, { code: "user_not_found", message: "User not found." }); }
 
-      // Role check
-      var role = String(student.get("role") || "");
-      if (role !== "student") { return e.json(403, { code: "access_denied", message: "Access denied." }); }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records are rejected.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireActiveStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var guardErr = g.requireActiveStudent(e);
+      if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
 
-      // Suspend check
+      // Suspend check (live record)
       var acct = String(student.get("account_status") || "");
       if (acct === "suspended") { return e.json(403, { code: "account_suspended", message: "Account is suspended." }); }
-      // Must be active
-      if (acct !== "active") { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
 
       // Subscription check
       var nowMs = Date.now();
@@ -489,14 +495,17 @@ routerAdd(
       try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
       if (!student) { return e.json(401, { code: "user_not_found", message: "User not found." }); }
 
-      // Role
-      var role = String(student.get("role") || "");
-      if (role !== "student") { return e.json(403, { code: "access_denied", message: "Access denied." }); }
+      // Central Student guard (guards.pb.js): Auth Collection must be
+      // `fep_users` with role === 'student'. Legacy Staff records are rejected.
+      var g = null;
+      try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+      if (!g || !g.requireActiveStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var guardErr = g.requireActiveStudent(e);
+      if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
 
-      // Account status
+      // Suspend check (live record)
       var acct = String(student.get("account_status") || "");
       if (acct === "suspended") { return e.json(403, { code: "account_suspended", message: "Account is suspended." }); }
-      if (acct !== "active") { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
 
       // Active subscription — scan all rows; grant when ANY row covers now,
       // and display the valid row with the greatest expires_at.
@@ -579,8 +588,11 @@ routerAdd(
       try {
         var lHits = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "", 0, 0, { lvl: selLvl });
 
-        // Published lesson IDs at the current selected level (topic must also be
-        // published). Built once and reused for counts and Continue Learning.
+        // Published lesson IDs at the current preferred level (topic AND
+        // parent Category must be published — Category archival hides child
+        // content from dashboard counts; Progress records are retained).
+        var pdDash = null;
+        try { pdDash = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdDash = null; }
         var pubIds = [];
         var pubMap = {};
         if (lHits && lHits.length > 0) {
@@ -593,10 +605,13 @@ routerAdd(
             if (tId3) {
               try {
                 var tR2 = $app.findRecordById(TOPICS_C, tId3);
-                if (tR2 && tR2.get("status") === "published") {
-                  pubIds.push(lid2);
-                  pubMap[lid2] = ls2;
-                  publishedCount++;
+                if (tR2 && tR2.get("status") === "published" && pdDash) {
+                  var catD = pdDash.requirePublishedCategory($app, tR2.get("category"));
+                  if (catD.ok) {
+                    pubIds.push(lid2);
+                    pubMap[lid2] = ls2;
+                    publishedCount++;
+                  }
                 }
               } catch (_) {}
             }

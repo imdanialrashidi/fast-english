@@ -131,3 +131,56 @@ async function listOwned(
 export function planRadio(page: Page, planId: string) {
   return page.getByTestId(`plan-${planId}`).getByRole('radio');
 }
+
+// --- Staff Administrator fixture (Podcast Slice 1) ------------------------
+// The single backstage identity lives in `staff_admins`. Every spec that
+// needs to approve/reject a payment request creates its own active +
+// verified staff record through the disposable superuser (bootstrap
+// semantics) and returns a fresh session. Emails are unique per creation,
+// so no same-name fixture collisions can occur.
+
+export async function createStaff(suToken: string): Promise<{
+  id: string;
+  email: string;
+  password: string;
+  token: string;
+  record: Record<string, unknown>;
+}> {
+  const id = randomBytes(8).toString('hex');
+  const email = `staff-${id}@fep-smoke.invalid`;
+  const password = `E2E-Staff-${id}!`;
+  const res = await fetch(`${PB_URL}/api/collections/staff_admins/records`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: suToken },
+    body: JSON.stringify({
+      email,
+      password,
+      passwordConfirm: password,
+      display_name: 'E2E Staff',
+      is_active: true,
+      verified: true,
+    }),
+  });
+  const body = (await res.json()) as { id?: string };
+  if (!body.id) throw new Error(`staff create failed: ${res.status}`);
+  const login = await fetch(`${PB_URL}/api/collections/staff_admins/auth-with-password`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ identity: email, password }),
+  });
+  const loginBody = (await login.json()) as { token?: string; record?: Record<string, unknown> };
+  if (!loginBody.token) throw new Error('staff login failed');
+  return {
+    id: body.id,
+    email,
+    password,
+    token: loginBody.token,
+    record: loginBody.record ?? {},
+  };
+}
+
+// Admin Console session injection: the Admin keeps its own AuthStore under
+// the `fep_staff_auth` localStorage key (never the Student `pocketbase_auth`).
+export function staffStoragePayload(token: string, record: Record<string, unknown>): string {
+  return JSON.stringify({ token, model: record });
+}

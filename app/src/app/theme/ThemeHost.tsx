@@ -9,8 +9,8 @@
 
 import { useColorScheme } from '@mui/material/styles';
 import { useEffect } from 'react';
+import { semanticDark, semanticLight } from '../../../../shared/ui/tokens/colors';
 import { applySystemBarTheme } from '../../lib/systemBars';
-import { semanticDark, semanticLight } from './tokens/colors';
 
 const META_COLOR = {
   light: semanticLight.surfaceContainerLow,

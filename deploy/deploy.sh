@@ -118,10 +118,10 @@ trap 'if [[ ${#PUB_TMPS[@]} -gt 0 ]]; then rm -f -- "${PUB_TMPS[@]}" 2>/dev/null
 # 1. Verify source and artifacts
 # ---------------------------------------------------------------------------
 echo "=== deploy: verifying bundle $BUNDLE ==="
-for d in landing app server/pb_migrations server/pb_hooks android; do
+for d in landing app admin server/pb_migrations server/pb_hooks android; do
   [[ -d "$BUNDLE/$d" ]] || die "bundle missing $d/"
 done
-[[ -f "$BUNDLE/app/index.html" && -f "$BUNDLE/landing/index.html" ]] || die "bundle missing index.html surfaces"
+[[ -f "$BUNDLE/app/index.html" && -f "$BUNDLE/landing/index.html" && -f "$BUNDLE/admin/index.html" ]] || die "bundle missing index.html surfaces"
 [[ -f "$BUNDLE/server/VERSION" ]] || die "bundle missing server/VERSION"
 [[ -f "$BUNDLE/android/release-metadata.json" ]] || die "bundle missing android/release-metadata.json"
 [[ -f "$BUNDLE/android/RELEASE-NOTES.md" ]] || die "bundle missing android/RELEASE-NOTES.md"
@@ -135,9 +135,17 @@ ACTUAL_SHA="$(sha256sum "$BUNDLE/android/$APK" | cut -d' ' -f1)"
 echo "deploy: APK $APK sha256 OK ($ACTUAL_SHA)"
 
 # No forbidden strings in the static surfaces (defense in depth).
-if grep -rIlE "10\.0\.2\.2|192\.168\.|:5173|:4173" "$BUNDLE/app" "$BUNDLE/landing" 2>/dev/null | grep -qvE '\.(png|svg|woff2|ico)$'; then
+if grep -rIlE "10\.0\.2\.2|192\.168\.|:5173|:4173|:5175|:4175" "$BUNDLE/app" "$BUNDLE/landing" "$BUNDLE/admin" 2>/dev/null | grep -qvE '\.(png|svg|woff2|ico)$'; then
   die "bundle contains development addresses (see files above)"
 fi
+
+# The Admin Console must not ship the Student PWA artifacts (no Service
+# Worker, no Student manifest). The Student bundle must not contain the
+# Admin login surface marker.
+if [[ -f "$BUNDLE/admin/sw.js" || -f "$BUNDLE/admin/manifest.webmanifest" ]]; then
+  die "admin bundle must not contain a Service Worker or manifest"
+fi
+grep -q 'admin-surface' "$BUNDLE/admin/index.html" || die "admin-surface marker missing in admin/index.html"
 
 # ---------------------------------------------------------------------------
 # 2. Create the immutable release directory

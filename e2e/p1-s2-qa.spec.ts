@@ -1,8 +1,8 @@
 // e2e/p1-s2-qa.spec.ts
-// P1-S2 operator responsive QA evidence (updated for the Operator
-// Workspace redesign).
+// P1-S2 Staff responsive QA evidence (Podcast Slice 1: the review
+// workspace now lives in the Admin Console).
 //
-// Captures screenshots of the Operator Queue and Operator Detail
+// Captures screenshots of the Admin payment queue and detail
 // surfaces at the required viewports. Screenshots are written to a
 // per-run output directory so they never enter the repo or
 // the test-results bundle. The spec also runs a battery of
@@ -14,7 +14,7 @@
 // remains RTL.
 //
 // Test data:
-//   - 1 operator user
+//   - 1 active staff_admins user
 //   - 3 payment requests:
 //       1) pending  → captures Queue, Detail, Approve/Reject dialogs
 //       2) approved → captures approved state (read-only view)
@@ -30,6 +30,7 @@ import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
+import { ADMIN_URL } from '../playwright.config';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
@@ -107,6 +108,17 @@ async function loginToken(phone: string) {
   return { token: body.token, record: body.record };
 }
 
+async function staffLogin(email: string, password: string) {
+  const r = await fetch(`${PB_URL}/api/collections/staff_admins/auth-with-password`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ identity: email, password }),
+  });
+  const body = (await r.json()) as { token?: string; record?: Record<string, unknown> };
+  if (!body.token) throw new Error(`staff login failed: ${r.status}`);
+  return { token: body.token, record: body.record };
+}
+
 // Minimal valid JPEG (332 bytes) shared with the other e2e specs.
 const JPEG = Buffer.from([
   0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01,
@@ -176,7 +188,8 @@ interface Fixtures {
   su: string;
   opToken: string;
   opRecord: Record<string, unknown>;
-  opPhone: string;
+  staffEmail: string;
+  staffPassword: string;
   pendingRequestId: string;
   approvedRequestId: string;
   rejectedRequestId: string;
@@ -218,14 +231,25 @@ async function setupFixtures(): Promise<Fixtures> {
     throw new Error(`destination create failed: ${destRes.status} ${await destRes.text()}`);
   }
 
-  // Operator user
-  const opUser = await createUser(su, 'اپراتور');
-  await fetch(`${PB_URL}/api/collections/fep_users/records/${opUser.id}`, {
-    method: 'PATCH',
+  // Staff Administrator (the single backstage identity)
+  const staffEmail = `qa-staff-${randomBytes(6).toString('hex')}@fep-smoke.invalid`;
+  const staffPassword = 'QA-Staff-1234!';
+  const staffRes = await fetch(`${PB_URL}/api/collections/staff_admins/records`, {
+    method: 'POST',
     headers: { 'content-type': 'application/json', authorization: su },
-    body: JSON.stringify({ role: 'operator' }),
+    body: JSON.stringify({
+      email: staffEmail,
+      password: staffPassword,
+      passwordConfirm: staffPassword,
+      display_name: 'اپراتور',
+      is_active: true,
+      verified: true,
+    }),
   });
-  const opLogin = await loginToken(opUser.phone);
+  if (!staffRes.ok) {
+    throw new Error(`staff create failed: ${staffRes.status} ${await staffRes.text()}`);
+  }
+  const opLogin = await staffLogin(staffEmail, staffPassword);
 
   // Three students with three requests
   const pendingStudentName = 'دانشجوی الف';
@@ -289,7 +313,8 @@ async function setupFixtures(): Promise<Fixtures> {
     su,
     opToken: opLogin.token,
     opRecord: opLogin.record!,
-    opPhone: opUser.phone,
+    staffEmail,
+    staffPassword,
     pendingRequestId,
     approvedRequestId,
     rejectedRequestId,
@@ -338,29 +363,30 @@ async function probeLayout(page: import('@playwright/test').Page): Promise<Layou
 }
 
 async function setAuthAndGo(page: import('@playwright/test').Page, fx: Fixtures, path: string) {
-  // Helper: set localStorage auth and navigate to `path'.
+  // Helper: set the Staff session in the Admin's own storage key and
+  // navigate to `path' on the Admin origin.
   async function go(token: string, record: Record<string, unknown>) {
-    await page.goto('/');
+    await page.goto(`${ADMIN_URL}/login`);
     await page.evaluate(
       ({ t, r }) => {
-        localStorage.setItem('pocketbase_auth', JSON.stringify({ token: t, model: r }));
+        localStorage.setItem('fep_staff_auth', JSON.stringify({ token: t, model: r }));
       },
       { t: token, r: record },
     );
-    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${ADMIN_URL}${path}`, { waitUntil: 'domcontentloaded' });
   }
 
   await go(fx.opToken, fx.opRecord);
 
   // If the page landed on the login page instead of the target,
   // the auth token might have been invalidated (e.g., PB restart).
-  // Retry once with a fresh auth token.
+  // Retry once with a fresh Staff token.
   const onLogin = await page.evaluate(() => {
     const h = document.querySelector('h1');
     return h !== null && /ورود/.test(h.textContent || '');
   });
   if (onLogin) {
-    const fresh = await loginToken(fx.opPhone);
+    const fresh = await staffLogin(fx.staffEmail, fx.staffPassword);
     await go(fresh.token, fresh.record!);
   }
 }
@@ -369,7 +395,7 @@ async function snap(page: import('@playwright/test').Page, file: string, fullPag
   await page.screenshot({ path: join(SCREENSHOTS_DIR, file), fullPage });
 }
 
-test.describe('P1-S2 operator responsive QA', () => {
+test.describe('P1-S2 Staff responsive QA (Admin Console)', () => {
   let fx: Fixtures;
 
   test.beforeAll(async () => {
@@ -417,8 +443,8 @@ test.describe('P1-S2 operator responsive QA', () => {
       page,
     }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, '/operator');
-      await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+      await setAuthAndGo(page, fx, '/payments');
+      await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
       await waitForQueueLoaded(page, fx.pendingStudentName);
 
       const layout = await probeLayout(page);
@@ -429,7 +455,7 @@ test.describe('P1-S2 operator responsive QA', () => {
       expect(layout.direction, `[${vp.name}] html dir`).toBe('rtl');
       expect(
         layout.hasStudentBottomNav,
-        `[${vp.name}] no Student Bottom Nav in operator route`,
+        `[${vp.name}] no Student Bottom Nav in the Admin surface`,
       ).toBe(false);
       expect(
         layout.overflowEls,
@@ -488,8 +514,8 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] queue filter (pending) shows only pending`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, '/operator?status=pending');
-      await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+      await setAuthAndGo(page, fx, '/payments?status=pending');
+      await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
       await waitForQueueLoaded(page, fx.pendingStudentName);
       // After filtering by pending, the approved + rejected rows
       // should not be visible. We probe by the visible name cells
@@ -527,8 +553,8 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] queue search by bank reference`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, '/operator');
-      await expect(page.getByRole('heading', { name: /صف درخواست/ })).toBeVisible();
+      await setAuthAndGo(page, fx, '/payments');
+      await expect(page.getByRole('heading', { name: /درخواست‌های پرداخت/ })).toBeVisible();
       await waitForQueueLoaded(page, fx.pendingStudentName);
       // Use the unique QA-PEND token as the search query. Only
       // the pending row contains that token in its bank reference
@@ -549,7 +575,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] detail (pending) renders with all sections`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.pendingRequestId}`);
       await expect(
         page.getByText(pendingStudentTitle(fx.pendingStudentName)).first(),
       ).toBeVisible();
@@ -581,7 +607,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] receipt preview is bounded`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.pendingRequestId}`);
       // The receipt inspector auto-loads the protected preview.
       const receiptImg = page.locator('img[alt="رسید پرداخت"]').first();
       await expect(receiptImg).toBeVisible({ timeout: 10_000 });
@@ -620,7 +646,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] receipt zoom dialog renders and is RTL`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.pendingRequestId}`);
       await expect(page.locator('img[alt="رسید پرداخت"]').first()).toBeVisible();
       // Click the receipt to open the zoom dialog
       await page.locator('img[alt="رسید پرداخت"]').first().click();
@@ -654,7 +680,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] approve dialog renders`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.pendingRequestId}`);
       await detailScope(page, vp).getByRole('button', { name: /تأیید/ }).click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
@@ -687,7 +713,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] reject dialog with long public reason`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.pendingRequestId}`);
       await page.getByRole('button', { name: /^رد$/ }).click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
@@ -747,7 +773,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] approved state (read-only)`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.approvedRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.approvedRequestId}`);
       // The page should show the approved status chip (the hidden queue
       // pane may also contain a matching chip — filter to visible).
       await expect(
@@ -768,14 +794,14 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] rejected state (read-only)`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.rejectedRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.rejectedRequestId}`);
       await expect(
         page.getByTestId('status-chip-rejected').filter({ visible: true }).first(),
       ).toBeVisible();
       await expect(page.getByTestId('operator-decision-panel')).toHaveCount(0);
       // The public rejection reason is rendered below the "دلیل رد (عمومی)"
       // label. We don't assert the exact text because the server-side
-      // body parser (operator_routes.pb.js) decodes UTF-8 byte-by-byte,
+      // body parser (staff_routes.pb.js) decodes UTF-8 byte-by-byte,
       // which double-encodes multi-byte Persian characters in the
       // stored value. The visible text is the QA evidence in the
       // screenshot; the structural assertions below are what we
@@ -796,7 +822,7 @@ test.describe('P1-S2 operator responsive QA', () => {
 
     test(`[${vp.name}] focus indicator is visible on Approve button`, async ({ page }) => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await setAuthAndGo(page, fx, `/operator/payment-requests/${fx.pendingRequestId}`);
+      await setAuthAndGo(page, fx, `/payments/${fx.pendingRequestId}`);
       const approveBtn = detailScope(page, vp).getByRole('button', { name: /تأیید/ });
       // Use keyboard navigation to trigger the :focus-visible
       // pseudo-class. MUI's Button only renders its visible focus

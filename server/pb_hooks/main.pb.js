@@ -169,6 +169,67 @@ onRecordAuthRefreshRequest((e) => {
   e.next();
 }, 'fep_users');
 
+// --- Staff: staff_admins lifecycle ---
+//
+// The collection rules (all null) already restrict writes to superusers.
+// These hooks add the operational semantics:
+//   - a record created without an explicit `is_active` is inactive by
+//     default (safe default; the bootstrap command sets it explicitly);
+//   - inactive or unverified Staff cannot authenticate or refresh a
+//     session, so a disabled account stops working immediately and a
+//     superuser-created record cannot silently become usable.
+
+onRecordCreate((e) => {
+  var collection = e.record && e.record.collection ? e.record.collection() : null;
+  if (!collection || collection.name !== 'staff_admins') {
+    e.next();
+    return;
+  }
+  var name = e.record.get('display_name');
+  e.record.set('display_name', typeof name === 'string' ? name.trim() : name);
+  if (typeof e.record.get('is_active') !== 'boolean') {
+    e.record.set('is_active', false);
+  }
+  e.next();
+}, 'staff_admins');
+
+onRecordAuthRequest((e) => {
+  if (!e.collection || e.collection.name !== 'staff_admins') {
+    e.next();
+    return;
+  }
+  if (e.record) {
+    var active = e.record.get('is_active') === true;
+    var verified = e.record.get('verified') === true;
+    if (!active || !verified) {
+      throw new BadRequestError('Failed to authenticate.', {
+        code: 'staff_inactive',
+      });
+    }
+  }
+  e.next();
+}, 'staff_admins');
+
+onRecordAuthRefreshRequest((e) => {
+  if (!e.collection || e.collection.name !== 'staff_admins') {
+    e.next();
+    return;
+  }
+  if (e.record) {
+    var active = e.record.get('is_active') === true;
+    var verified = e.record.get('verified') === true;
+    if (!active || !verified) {
+      if (e.client && e.client.authStore) {
+        e.client.authStore.clear();
+      }
+      throw new BadRequestError('Failed to authenticate.', {
+        code: 'staff_inactive',
+      });
+    }
+  }
+  e.next();
+}, 'staff_admins');
+
 // --- Payment boundary: server-only fields on payment_requests ---
 //
 // The collection has listRule/viewRule/createRule/updateRule/deleteRule
@@ -342,11 +403,86 @@ onRecordUpdate((e) => {
 // custom routes, and a blanket rejection would break the placement
 // routes. The collection-level null rules are the authoritative defense.
 
-// --- P3-S1: Publishing invariants for topics ---
+// --- Podcast Slice 2: publishing invariants for categories ---
+//
+// Auto-set published_at / archived_at on status transitions and enforce
+// the published-Category invariants (valid title, valid slug, non-empty
+// Persian description) on every save of a published Category. Collection
+// rules (null) block all direct public CRUD; superuser tooling is the
+// only writer.
+//
+// The module (podcast_domain.pb.js) is loaded through globalThis with a
+// fail-closed fallback: when the helpers are unavailable the save is
+// rejected rather than silently accepted.
+
+onRecordCreate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'categories') { e.next(); return; }
+  var key = e.record.get('key');
+  if (typeof key === 'string') { e.record.set('key', key.replace(/^\s+|\s+$/g, '')); }
+  var slug = e.record.get('slug');
+  if (typeof slug === 'string') { e.record.set('slug', slug.replace(/^\s+|\s+$/g, '')); }
+  var status = e.record.get('publication_status');
+  if (typeof status !== 'string' || status === '') {
+    e.record.set('publication_status', 'draft');
+    status = 'draft';
+  }
+  if (typeof e.record.get('sort_order') !== 'number') {
+    e.record.set('sort_order', 0);
+  }
+  if (status === 'published' && !e.record.get('published_at')) {
+    e.record.set('published_at', new Date().toISOString());
+  }
+  if (status === 'archived' && !e.record.get('archived_at')) {
+    e.record.set('archived_at', new Date().toISOString());
+  }
+  if (status === 'published') {
+    var titleFa = String(e.record.get('title_fa') || '');
+    if (!titleFa) { throw new BadRequestError('Published Category requires a Persian title.', { code: 'invalid_category' }); }
+    var catSlug = String(e.record.get('slug') || '');
+    if (!catSlug) { throw new BadRequestError('Published Category requires a slug.', { code: 'invalid_category' }); }
+    var descFa = String(e.record.get('description_fa') || '');
+    if (!descFa) { throw new BadRequestError('Published Category requires a Persian description.', { code: 'invalid_category' }); }
+  }
+  e.next();
+}, 'categories');
+
+onRecordUpdate((e) => {
+  var c = e.record && e.record.collection ? e.record.collection() : null;
+  if (!c || c.name !== 'categories') { e.next(); return; }
+  var originalStatus = e.originalRecord ? e.originalRecord.get('publication_status') : null;
+  var newStatus = e.record.get('publication_status');
+  if (newStatus !== originalStatus) {
+    if (newStatus === 'published' && !e.record.get('published_at')) {
+      e.record.set('published_at', new Date().toISOString());
+    }
+    if (newStatus === 'archived' && !e.record.get('archived_at')) {
+      e.record.set('archived_at', new Date().toISOString());
+    }
+  }
+  if (newStatus === 'published') {
+    var titleFa2 = String(e.record.get('title_fa') || '');
+    if (!titleFa2) { throw new BadRequestError('Published Category requires a Persian title.', { code: 'invalid_category' }); }
+    var catSlug2 = String(e.record.get('slug') || '');
+    if (!catSlug2) { throw new BadRequestError('Published Category requires a slug.', { code: 'invalid_category' }); }
+    var descFa2 = String(e.record.get('description_fa') || '');
+    if (!descFa2) { throw new BadRequestError('Published Category requires a Persian description.', { code: 'invalid_category' }); }
+  }
+  e.next();
+}, 'categories');
+
+// --- P3-S1 + Podcast Slice 2: publishing invariants for topics ---
 //
 // Auto-set published_at / archived_at when status transitions.
 // The collection-level rules (null) already block direct API access;
 // this hook normalises dates when superuser dashboard saves a record.
+//
+// Podcast Slice 2 adds the canonical-Episode invariants for NEW publishes
+// and REPUBLISHES only (create-with-published or transition into
+// published): published Category, stable content key, valid slug, title,
+// Persian title, Persian description, positive content version and
+// artwork. Already-published legacy content without the new fields keeps
+// working (grandfathering; see docs/PODCAST_DOMAIN.md).
 
 onRecordCreate((e) => {
   var c = e.record && e.record.collection ? e.record.collection() : null;
@@ -358,13 +494,27 @@ onRecordCreate((e) => {
   if (status === 'archived' && !e.record.get('archived_at')) {
     e.record.set('archived_at', new Date().toISOString());
   }
+  if (status === 'published') {
+    var pd = null;
+    try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+    if (!pd || !pd.requirePublishedTopic) {
+      throw new BadRequestError('Podcast domain helpers unavailable.', { code: 'internal_error' });
+    }
+    var check = pd.requirePublishedTopic($app, e.record);
+    if (!check.ok) {
+      throw new BadRequestError(check.reason || 'Published Episode invariants not met.', { code: 'invalid_topic' });
+    }
+  }
   e.next();
 }, 'topics');
 
 onRecordUpdate((e) => {
   var c = e.record && e.record.collection ? e.record.collection() : null;
   if (!c || c.name !== 'topics') { e.next(); return; }
-  var originalStatus = e.originalRecord ? e.originalRecord.get('status') : null;
+  // Migration/import saves have no originalRecord; transition logic (and
+  // the new publish invariants) applies only to real API updates.
+  if (!e.originalRecord) { e.next(); return; }
+  var originalStatus = e.originalRecord.get('status');
   var newStatus = e.record.get('status');
   if (newStatus !== originalStatus) {
     if (newStatus === 'published' && !e.record.get('published_at')) {
@@ -374,13 +524,25 @@ onRecordUpdate((e) => {
       e.record.set('archived_at', new Date().toISOString());
     }
   }
+  if (newStatus === 'published' && newStatus !== originalStatus) {
+    var pd2 = null;
+    try { pd2 = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd2 = null; }
+    if (!pd2 || !pd2.requirePublishedTopic) {
+      throw new BadRequestError('Podcast domain helpers unavailable.', { code: 'internal_error' });
+    }
+    var check2 = pd2.requirePublishedTopic($app, e.record);
+    if (!check2.ok) {
+      throw new BadRequestError(check2.reason || 'Published Episode invariants not met.', { code: 'invalid_topic' });
+    }
+  }
   e.next();
 }, 'topics');
 
-// --- P3-S1: Publishing invariants for lessons ---
+// --- P3-S1 + Podcast Slice 2: Publishing invariants for lessons ---
 //
 // Enforce:
 //   - Published lesson requires a published Topic.
+//   - Published lesson requires a published parent Category.
 //   - Published lesson requires title, body, level, audio, and a valid
 //     audio_duration_seconds (server-authoritative duration denominator).
 //   - published_at is server-controlled.
@@ -390,6 +552,12 @@ onRecordUpdate((e) => {
 //   - Topic/level uniqueness cannot be bypassed (enforced by unique index).
 //   - Public sample must also be published.
 //   - Audio replacement/removal cannot leave a Published lesson invalid.
+//
+// Podcast Slice 2 additions:
+//   - NEW publishes / republishes (create-with-published or transition
+//     into published) require summary_fa and a positive content_version
+//     (grandfathering for already-published legacy content — see
+//     docs/PODCAST_DOMAIN.md).
 
 onRecordCreate((e) => {
   var c = e.record && e.record.collection ? e.record.collection() : null;
@@ -413,11 +581,24 @@ onRecordCreate((e) => {
   // Published lesson validation (inlined because PB 0.39 JSVM does not
   // share top-level function declarations with hook scopes).
   if (status === 'published') {
+    var pd = null;
+    try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+    if (!pd || !pd.requireNewVariantInvariants) {
+      throw new BadRequestError('Podcast domain helpers unavailable.', { code: 'internal_error' });
+    }
+    var newCheck = pd.requireNewVariantInvariants($app, e.record);
+    if (!newCheck.ok) {
+      throw new BadRequestError(newCheck.reason || 'Published Variant invariants not met.', { code: 'invalid_lesson' });
+    }
     var pubTopicId = e.record.get('topic');
     var pubTopic = null;
     try { if (pubTopicId) { pubTopic = $app.findRecordById('topics', String(typeof pubTopicId === 'object' && pubTopicId ? pubTopicId.id || '' : pubTopicId)); } } catch (_) {}
     if (!pubTopic || pubTopic.get('status') !== 'published') {
       throw new BadRequestError('Published lesson requires a published Topic.', { code: 'invalid_lesson' });
+    }
+    var catCheck = pd.requirePublishedCategory($app, pubTopic.get('category'));
+    if (!catCheck.ok) {
+      throw new BadRequestError(catCheck.reason || 'Published lesson requires a published Category.', { code: 'invalid_lesson' });
     }
     var pTitle = e.record.get('title');
     if (!pTitle || String(pTitle).trim() === '') {
@@ -458,8 +639,10 @@ onRecordUpdate((e) => {
   }
 
   // Auto-set timestamps
+  // Migration/import saves have no originalRecord; transition logic (and
+  // the new publish invariants) applies only to real API updates.
   var originalStatus = e.originalRecord ? e.originalRecord.get('status') : null;
-  if (status !== originalStatus) {
+  if (e.originalRecord && status !== originalStatus) {
     if (status === 'published' && !e.record.get('published_at')) {
       e.record.set('published_at', new Date().toISOString());
     }
@@ -470,11 +653,26 @@ onRecordUpdate((e) => {
 
   // Published lesson validation (inlined)
   if (status === 'published') {
+    var pd2 = null;
+    try { pd2 = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd2 = null; }
+    if (!pd2 || !pd2.requireNewVariantInvariants) {
+      throw new BadRequestError('Podcast domain helpers unavailable.', { code: 'internal_error' });
+    }
+    if (e.originalRecord && status !== originalStatus) {
+      var newCheck2 = pd2.requireNewVariantInvariants($app, e.record);
+      if (!newCheck2.ok) {
+        throw new BadRequestError(newCheck2.reason || 'Published Variant invariants not met.', { code: 'invalid_lesson' });
+      }
+    }
     var pubTopicId2 = e.record.get('topic');
     var pubTopic2 = null;
     try { if (pubTopicId2) { pubTopic2 = $app.findRecordById('topics', String(typeof pubTopicId2 === 'object' && pubTopicId2 ? pubTopicId2.id || '' : pubTopicId2)); } } catch (_) {}
     if (!pubTopic2 || pubTopic2.get('status') !== 'published') {
       throw new BadRequestError('Published lesson requires a published Topic.', { code: 'invalid_lesson' });
+    }
+    var catCheck2 = pd2.requirePublishedCategory($app, pubTopic2.get('category'));
+    if (!catCheck2.ok) {
+      throw new BadRequestError(catCheck2.reason || 'Published lesson requires a published Category.', { code: 'invalid_lesson' });
     }
     var pTitle2 = e.record.get('title');
     if (!pTitle2 || String(pTitle2).trim() === '') {

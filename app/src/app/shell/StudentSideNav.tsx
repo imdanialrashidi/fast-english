@@ -1,7 +1,3 @@
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded';
 import {
   Box,
   Drawer,
@@ -14,15 +10,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
-import { Brand } from '../brand/Brand';
-import { layout } from '../theme/tokens/spacing';
-
-const items = [
-  { label: 'خانه', value: '/dashboard', icon: <HomeRoundedIcon /> },
-  { label: 'درس‌ها', value: '/lessons', icon: <MenuBookRoundedIcon /> },
-  { label: 'پیشرفت', value: '/placement', icon: <TimelineRoundedIcon /> },
-  { label: 'حساب', value: '/account', icon: <PersonRoundedIcon /> },
-] as const;
+import { Brand } from '../../../../shared/ui/brand/Brand';
+import { layout } from '../../../../shared/ui/tokens/spacing';
+import { currentNavValue, studentNavItems } from './StudentBottomNav';
 
 // Tablet and desktop navigation:
 //   - md–lg (tablet): a compact Navigation Rail — icons only, tonal selected
@@ -32,7 +22,7 @@ const items = [
 export function StudentSideNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const current = items.find((i) => location.pathname.startsWith(i.value))?.value ?? items[0].value;
+  const current = currentNavValue(location.pathname);
 
   return (
     <Drawer
@@ -58,7 +48,7 @@ export function StudentSideNav() {
           <Brand variant="compact" size="sm" />
         </Box>
         <List sx={{ px: 1.5, flex: 1 }} aria-label="ناوبری اصلی">
-          {items.map((item) => {
+          {studentNavItems.map((item) => {
             const selected = current === item.value;
             return (
               <ListItem key={item.value} disablePadding sx={{ mb: 0.5, justifyContent: 'center' }}>
