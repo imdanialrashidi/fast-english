@@ -73,8 +73,8 @@ an approved support channel exists.
 # 1. secrets file FIRST (names only — see deploy/env.production.example)
 install -d -m 0700 /opt/fast-english/shared/secrets
 install -m 0600 /dev/stdin /opt/fast-english/shared/secrets/pocketbase.env <<'EOF'
-FEP_SUPERUSER_EMAIL=...
-FEP_SUPERUSER_PASSWORD=...
+FEP_SUPERUSER_EMAIL=<fill-at-install>
+FEP_SUPERUSER_PASSWORD=<fill-at-install>
 EOF
 
 # 2. bootstrap + configure + first release

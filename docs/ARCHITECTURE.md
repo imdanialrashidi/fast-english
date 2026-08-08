@@ -16,7 +16,7 @@ Durable constraints only. Not a diary.
   - `vite.app.config.ts` → builds `app/` → `dist-app/` (MUI only).
 - Shared: small `shared/brand.ts` brand constants + CSS variables only. No shared cross-surface component framework.
 - Capacitor `webDir = "dist-app"` only.
-- Commands (defined at Phase 0): `pnpm dev:landing`, `pnpm dev:app`, `pnpm build:landing`, `pnpm build:app`, `pnpm build` (both), `pnpm typecheck`, `pnpm check` (Biome), `pnpm test` (Vitest), `pnpm smoke` (Playwright + PocketBase), `scripts/verify.sh`.
+- Commands (confirmed current set): `pnpm dev:landing|dev:app|dev:admin`, `pnpm build:landing` (incl. prerender) | `build:app` | `build:admin` | `build` (all three), `pnpm typecheck`, `pnpm check` (Biome), `pnpm test` (Vitest), `pnpm verify:fast` / `verify:feature` / `verify:full` (canonical gates, see `docs/QUALITY.md`), `pnpm test:e2e:fast` (PW_FAST low-resource lane) / `test:e2e:full` (CI=1), the `pnpm smoke:*` family (14 real-PocketBase suites), `pnpm setup:pocketbase`, `pnpm staff:bootstrap`, `pnpm content:new|validate|plan|import`. `scripts/verify.sh` is the CI/release compatibility entry that delegates to the full gate.
 
 ## API and environment topology
 - Browser/PWA production: same-origin `https://app.fastenglishpodcast.com/api/*`; Caddy reverse-proxies `/api/*` → PocketBase `127.0.0.1:8090`.
@@ -56,7 +56,7 @@ Durable constraints only. Not a diary.
 | Auth identity | PB auth collection, `phone` as `PasswordAuth.IdentityFields` | Native password auth, no custom crypto | PB changes identity field semantics |
 | Migrations | `pb_migrations/` JS files committed | Reproducible schema | PB major version bump |
 | Server logic | PB hooks (JS) for authz/transaction/grading | Single backend, no custom Node | Logic exceeds PB hook limits |
-| Remote state | TanStack Query | Server state only | Local state needs grow |
+| Remote state | Direct typed wrappers over the PocketBase SDK (`app/src/lib/pocketbase.ts` singleton) + `fetch` for custom routes; React context/local state (e.g. `app/src/lib/auth.tsx`); no query library | Server state only, no hidden cache layer | Server-state complexity exceeds what explicit refetch/context handling can support |
 | Forms | React Hook Form + Zod | Validation at boundaries | — |
 | Icons | MUI icons only (no Lucide) | Avoid second icon set | MUI icons insufficient (justify) |
 | Routing | React Router declarative SPA | Simple, stable | SSR needs (rejected for MVP) |

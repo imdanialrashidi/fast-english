@@ -21,7 +21,9 @@
       "!fast_english_logo_assets",
       "!shared/assets/brand",
       "!dist-landing-apk",
-      "!dist-admin"
+      "!dist-admin",
+      "!.pi",
+      "!.mcp.json"
     ]
   },
   "formatter": {
