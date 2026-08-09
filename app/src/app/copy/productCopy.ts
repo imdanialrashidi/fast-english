@@ -76,6 +76,46 @@ export const productCopy = {
     checkConnection: 'اتصال اینترنت را بررسی کن و دوباره تلاش کن.',
     progressFailed: 'پیشرفت بارگیری نشد.',
   },
+
+  // Podcast Slice 6 — Library & Discovery surface copy.
+  library: {
+    subtitle: 'موضوع مورد علاقه‌ات را پیدا کن و اپیزود بعدی‌ات را انتخاب کن.',
+    searchLabel: 'جستجو در اپیزودها',
+    searchClear: 'پاک کردن جستجو',
+    allTopics: 'همه موضوع‌ها',
+    topicsLabel: 'موضوع‌ها',
+    levelFilterLabel: 'سطح',
+    suggestedForMe: 'پیشنهادی برای من',
+    allLevels: 'همه سطح‌ها',
+    progressFilterLabel: 'وضعیت پیشرفت',
+    progressAll: 'همه',
+    progressFilters: {
+      all: 'همه',
+      not_started: 'شروع‌نشده',
+      in_progress: 'در حال گوش‌دادن',
+      completed: 'کامل‌شده',
+    },
+    sortLabel: 'مرتب‌سازی',
+    sortSuggested: 'پیشنهادی',
+    sortLatest: 'تازه‌ترین',
+    resultsCount: (n: number) => `${n} اپیزود`,
+    loadMore: 'اپیزودهای بیشتر',
+    availableLevels: (levels: string) => `سطح‌ها: ${levels}`,
+    continueSection: 'ادامه گوش‌دادن',
+    refreshing: 'در حال به‌روزرسانی کتابخانه…',
+    empty: {
+      libraryTitle: 'هنوز اپیزودی در کتابخانه منتشر نشده است.',
+      libraryDescription: 'به‌زودی اپیزودهای جدید اضافه می‌شوند.',
+      searchTitle: 'برای این جستجو اپیزودی پیدا نشد.',
+      searchDescription: 'کلمات دیگری را امتحان کن یا جستجو را پاک کن.',
+      categoryTitle: 'در این موضوع هنوز اپیزودی منتشر نشده است.',
+      categoryDescription: 'موضوع دیگری را انتخاب کن یا همهٔ موضوع‌ها را ببین.',
+      levelTitle: (level: string) => `برای سطح ${level} هنوز اپیزود منتشرشده‌ای وجود ندارد.`,
+      levelDescription: 'سطح دیگری را انتخاب کن یا همهٔ سطح‌ها را ببین.',
+      progressTitle: 'با این فیلتر اپیزودی پیدا نشد.',
+      progressDescription: 'هیچ اپیزودی با این وضعیت پیشرفت وجود ندارد؛ فیلتر را به «همه» برگردان.',
+    },
+  },
 } as const;
 
 export type ProductCopy = typeof productCopy;

@@ -234,3 +234,87 @@ Category so Category archival hides child content from counts.
 - **Preview policy:** Draft content stays inaccessible to Students (404/
   403); Staff preview uses a dedicated authenticated API and never marks
   Draft content Published.
+
+## Library & Discovery (Podcast Slice 6)
+
+Production Student Podcast Library at `/library`, served by the dedicated
+route `GET /api/fast-english/library` (`server/pb_hooks/library_routes.pb.js`).
+A dedicated endpoint is justified because the discovery contract (canonical
+Episode grouping, per-Student Variant resolution, per-Variant Progress merge,
+filters, deterministic ordering and pagination) is distinct from the
+level-scoped lesson list.
+
+### Contract
+
+```
+GET /api/fast-english/library?q&category&level&progress&sort&page&perPage
+```
+
+Query parameters (all bounded; enums validated with 400 on garbage):
+
+| Param | Values | Meaning |
+| --- | --- | --- |
+| `q` | ≤ 60 chars (trimmed) | Search over `title`, `title_fa`, `description_fa` (PB `~` bound params — no raw filter construction). Empty → normal discovery. |
+| `category` | published Category id | Only Episodes of that Category. Unknown/archived id → empty result (never 400, never listed). |
+| `level` | `preferred` \| `all` \| A1–C2 | Explicit A1–C2 → that published Variant only. `preferred`/`all`/omitted → the canonical chain over the full catalog. |
+| `progress` | `all` \| `not_started` \| `in_progress` \| `completed` | State of the **resolved** Variant's Progress (existing Progress semantics; no new state machine). |
+| `sort` | `suggested` \| `latest` | `suggested`: featured → preferred-level compatibility → `sort_order` → `published_at` → `content_key`. `latest`: `published_at` desc → `content_key`. Deterministic. |
+| `page` | 1–50 (clamped) | Page number. |
+| `perPage` | 1–50 (clamped), default 20 | Page size. |
+
+Response (sanitized; `private, no-store`; per-user rate limit 120/5 min):
+
+```
+categories:        [{ id, key, slug, titleFa, episodeCount }]  (published only,
+                    sort_order asc then title_fa asc; counts = published Episodes)
+items:             one canonical Episode result per published Topic whose parent
+                    Category is published and that has >= 1 published Variant
+                    matching the level filter. Publication filtering happens
+                    BEFORE pagination (hidden records never consume slots or
+                    inflate totalItems).
+  episode:         { id, slug, contentKey, title, titleFa, descriptionFa,
+                     category, artwork (proxy path, resolved for the Variant),
+                     featured }
+  availableLevels: every published Variant of the Episode in canonical CEFR
+                    order with variantId + isRecommended/isPreferred —
+                    independent of the level filter (Level Switcher data)
+  resolvedVariant: { id, level, durationSeconds, isRecommended, isPreferred,
+                     progress: { state, percent, positionSeconds, completed } }
+continueListening: ≤ 3 real resumable items (in-progress, never completed;
+                    any published level; last_played_at desc; archived content
+                    never resumable)
+page, perPage, totalItems, recommendedLevel, preferredLevel
+```
+
+### Variant resolution (A3)
+
+```
+explicit level filter  -> that published Variant
+preferred / all / none  -> 1. preferredLevel when published
+                           2. recommendedLevel when published
+                           3. first published Variant in canonical CEFR order
+```
+
+Browsing/filtering is read-only: it never modifies `recommendedLevel`
+(Placement result), `preferredLevel` (`selected_level`), Placement attempts
+or Progress of other levels. `پیشنهادی برای من` and `همه سطحها` share the
+same resolution chain (the brief defines no distinct semantics for the
+neutral option); explicit A1–C2 filters to that Variant and excludes
+Episodes without one.
+
+### Progress semantics
+
+Per-Variant Progress stays fully independent: the payload's `progress` is
+always the **resolved** Variant's state (B1 Progress never leaks into A1/B2).
+The action copy derives from the same deterministic state used by the
+Episode cards (not started → شروع گوش‌دادن; in progress → ادامه از HH:MM;
+completed → مرور دوباره).
+
+### Security boundary
+
+Same entitlement contract as the lesson routes (Student role via
+`guards.pb.js`, active non-suspended account, completed Placement, active
+Subscription window). Staff Admin and legacy Staff tokens stay denied.
+Responses never expose lesson bodies, audio file names, storage paths,
+internal/Staff import metadata, Draft/Archived content or raw Category
+cover fields.

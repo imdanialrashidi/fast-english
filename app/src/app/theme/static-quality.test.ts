@@ -212,9 +212,11 @@ describe('static quality rules (Product App)', () => {
 
   it('finds no global overflow hiding (documented exceptions)', () => {
     // Exceptions (must not be used to conceal layout defects):
-    //  - text truncation: textOverflow ellipsis in the same style block;
+    //  - text truncation: textOverflow ellipsis or WebkitLineClamp in the
+    //    same style block (single- and multi-line clamping);
     //  - image containment: maxHeight-bounded preview/crop boxes;
-    //  - visually-hidden screen-reader inputs: `clip: rect(...)`.
+    //  - visually-hidden screen-reader inputs: `clip: rect(...)`;
+    //  - image fitting: objectFit cover/contain.
     const offenders: string[] = [];
     for (const file of appFiles) {
       const content = readFileSync(file, 'utf8');
@@ -224,6 +226,7 @@ describe('static quality rules (Product App)', () => {
         const block = lines.slice(i, i + 12).join('\n');
         const allowed =
           /textOverflow\s*:\s*['"`]ellipsis['"`]/.test(block) ||
+          /WebkitLineClamp\s*:/.test(block) ||
           /\bmaxHeight\s*:/.test(block) ||
           /clip\s*:\s*['"`]rect\(0,0,0,0\)/.test(block) ||
           /\bobjectFit\s*:/.test(block);

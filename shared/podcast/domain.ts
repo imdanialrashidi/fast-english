@@ -51,6 +51,29 @@ export function getPreferredLevel(
 }
 
 /**
+ * Default Variant resolution for an Episode (Podcast Slice 6 Library rule,
+ * mirror of the server hook):
+ *   1. preferredLevel when published for the Episode;
+ *   2. recommendedLevel when published;
+ *   3. first published Variant in canonical CEFR order.
+ * `availableLevels` must be the Episode's published levels. The server
+ * route remains authoritative; this pure mirror is what unit tests and
+ * the Library contract build on.
+ */
+export function resolveVariantLevel(
+  preferredLevel: CefrLevel | '',
+  recommendedLevel: CefrLevel | '',
+  availableLevels: readonly string[],
+): CefrLevel | '' {
+  if (preferredLevel && availableLevels.includes(preferredLevel)) return preferredLevel;
+  if (recommendedLevel && availableLevels.includes(recommendedLevel)) return recommendedLevel;
+  for (const level of CEFR_ORDER) {
+    if (availableLevels.includes(level)) return level;
+  }
+  return '';
+}
+
+/**
  * Deterministic vocabulary term normalization: trim, collapse repeated
  * whitespace, lowercase for uniqueness. No stemming or linguistic
  * transformation; the original display term is stored separately.

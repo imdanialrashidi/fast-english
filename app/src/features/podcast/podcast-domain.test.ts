@@ -15,6 +15,7 @@ import {
   normalizeVocabularyTerm,
   publicStatusOf,
   resolveArtworkUrl,
+  resolveVariantLevel,
 } from '../../../../shared/podcast/domain';
 
 describe('CEFR ordering', () => {
@@ -78,6 +79,35 @@ describe('recommended / preferred fallback', () => {
     expect(
       getPreferredLevel({ selected_level: '' }, getRecommendedLevel({ suggested_level: '' })),
     ).toBe('');
+  });
+});
+
+describe('resolveVariantLevel (Slice 6 default Variant resolution)', () => {
+  it('preferred wins when published for the Episode', () => {
+    expect(resolveVariantLevel('A1', 'C2', ['A1', 'B1', 'C1'])).toBe('A1');
+    expect(resolveVariantLevel('B2', 'A1', ['A1', 'B2'])).toBe('B2');
+  });
+
+  it('recommended wins when preferred is not published', () => {
+    expect(resolveVariantLevel('A1', 'C2', ['B1', 'C2'])).toBe('C2');
+    expect(resolveVariantLevel('A1', 'B1', ['B1'])).toBe('B1');
+  });
+
+  it('falls back to the first published Variant in canonical CEFR order', () => {
+    expect(resolveVariantLevel('A1', 'C2', ['B1', 'C1'])).toBe('B1');
+    expect(resolveVariantLevel('A1', 'B2', ['C2', 'A2', 'B1'])).toBe('A2');
+    expect(resolveVariantLevel('B2', 'B1', ['C1'])).toBe('C1');
+  });
+
+  it('returns empty when nothing is published (no Variant to resolve)', () => {
+    expect(resolveVariantLevel('A1', 'B1', [])).toBe('');
+    expect(resolveVariantLevel('', '', ['A1'])).toBe('A1');
+  });
+
+  it('never mutates the levels (pure)', () => {
+    const available = ['A1', 'B1'];
+    expect(resolveVariantLevel('B1', 'A1', available)).toBe('B1');
+    expect(available).toEqual(['A1', 'B1']);
   });
 });
 

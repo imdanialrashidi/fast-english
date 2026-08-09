@@ -60,7 +60,8 @@
     "content:plan": "node scripts/content/cli.mjs plan",
     "content:import": "node scripts/content/cli.mjs import",
     "smoke:content-import": "PB_SMOKE_PLACEMENT_PORT=18096 bash scripts/smoke-placement.sh node scripts/smoke-content-import.mjs",
-    "smoke:content-admin": "PB_SMOKE_PLACEMENT_PORT=18097 bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs"
+    "smoke:content-admin": "PB_SMOKE_PLACEMENT_PORT=18097 bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs",
+    "smoke:library": "PB_SMOKE_PLACEMENT_PORT=18098 bash scripts/smoke-placement.sh node scripts/smoke-library.mjs"
   },
   "dependencies": {
     "@capacitor/core": "8.4.2",

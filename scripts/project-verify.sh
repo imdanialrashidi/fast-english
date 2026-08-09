@@ -96,6 +96,14 @@ run bash scripts/smoke-placement.sh node scripts/smoke-content-import.mjs
 #      publish/archive, draft preview, ZIP ingestion, stale plans, audit).
 run bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs
 
+# 13f. Library & Discovery smoke (Podcast Slice 6; the 27-scenario Library
+#      contract: canonical Episode grouping, published Categories/Episodes/
+#      Variants only, publication filtering before pagination, search,
+#      Category/Level/Progress filters, preferred/recommended fallback,
+#      CEFR availableLevels order, deterministic pagination, Continue
+#      rail, entitlement denial, bounds, sanitization, read-only browsing).
+run bash scripts/smoke-placement.sh node scripts/smoke-library.mjs
+
 # 13d. Content Package Schema validation (Podcast Slice 3): the committed
 #      JSON Schema must be parseable JSON, the committed example package
 #      must validate, and the generated template must fail as designed.

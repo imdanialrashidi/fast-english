@@ -26,11 +26,26 @@ const REDESIGNED_FILES = [
   'app/src/features/home/logic.ts',
   'app/src/features/home/routes/HomeRoute.tsx',
   'app/src/features/library/routes/LibraryRoute.tsx',
+  'app/src/features/library/api.ts',
+  'app/src/features/library/types.ts',
+  'app/src/features/library/logic.ts',
+  'app/src/features/library/queryState.ts',
+  'app/src/features/library/components/OptionChips.tsx',
+  'app/src/features/library/components/SearchField.tsx',
+  'app/src/features/library/components/ContinueStrip.tsx',
+  'app/src/features/library/components/LibrarySkeleton.tsx',
+  'app/src/features/library/components/EmptyPanel.tsx',
   'app/src/features/progress/routes/ProgressRoute.tsx',
   'app/src/app/copy/productCopy.ts',
 ];
 
 const OUTDATED_TERMS = ['درس', 'اپراتور', 'پنل', 'record', 'PocketBase', 'operator'];
+
+// Infrastructure identifiers that legitimately embed a backend term but
+// are never user-facing copy (the SDK singleton import name). The guard
+// still covers every other occurrence of the terms in the scanned files.
+// Documented in app/src/app/copy/copy-guidelines.md.
+const ALLOWED_IDENTIFIERS = ['getPocketBase'];
 
 function read(rel: string): string {
   return readFileSync(join(ROOT, rel), 'utf8');
@@ -42,7 +57,15 @@ describe('Podcast Slice 5 — Product copy and structure gates', () => {
     for (const file of REDESIGNED_FILES) {
       const content = read(file);
       for (const term of OUTDATED_TERMS) {
-        if (content.includes(term)) offenders.push(`${file}: ${term}`);
+        if (!content.includes(term)) continue;
+        for (const line of content.split('\n')) {
+          if (!line.includes(term)) continue;
+          if (ALLOWED_IDENTIFIERS.some((name) => new RegExp(`\\b${name}\\b`).test(line))) {
+            continue;
+          }
+          offenders.push(`${file}: ${term}`);
+          break;
+        }
       }
     }
     expect(offenders).toEqual([]);
@@ -104,11 +127,20 @@ describe('Podcast Slice 5 — Product copy and structure gates', () => {
     expect(app).not.toMatch(/path="\/staff/);
   });
 
-  it('the Library route is transitional and uses the real Episode list API', () => {
+  it('the Library route is the production discovery surface', () => {
     const lib = read('app/src/features/library/routes/LibraryRoute.tsx');
-    expect(lib).toContain('getLessonList');
+    // Server-side discovery: the UI never fetches the full Episode list
+    // and filters in React.
+    expect(lib).toContain('getLibrary');
+    expect(lib).not.toContain('getLessonList');
+    // Reuses the Slice 5 EpisodeCard foundation (no parallel card system).
     expect(lib).toContain('EpisodeCard');
-    expect(lib).not.toContain('پایان‌نامه');
+    // URL-backed discovery state (refresh/back preserve the journey).
+    expect(lib).toContain('useSearchParams');
+    expect(lib).toContain('libraryQueryToSearch');
+    // Browsing is read-only: no level mutation anywhere in the route.
+    expect(lib).not.toContain('selected_level');
+    expect(lib).not.toContain('suggested_level');
   });
 
   it('the Progress route stays level-aware (server-scoped summary)', () => {

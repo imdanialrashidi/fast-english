@@ -25,9 +25,20 @@ export interface EpisodeArtworkProps {
   'data-testid'?: string;
   /** Size/ratio overrides for the artwork box (defaults to 1:1). */
   sx?: BoxProps['sx'];
+  /**
+   * Lazy loading policy. Defaults to 'lazy' (below-the-fold friendly);
+   * first-viewport artwork may pass 'eager' so it is not deferred.
+   */
+  loading?: 'lazy' | 'eager';
 }
 
-export function EpisodeArtwork({ src, alt, 'data-testid': testId, sx }: EpisodeArtworkProps) {
+export function EpisodeArtwork({
+  src,
+  alt,
+  'data-testid': testId,
+  sx,
+  loading = 'lazy',
+}: EpisodeArtworkProps) {
   const [failed, setFailed] = useState(false);
   const url = src && src.length > 0 ? src : FALLBACK_ARTWORK_URL;
   const resolvedUrl = resolveMediaUrl(failed ? FALLBACK_ARTWORK_URL : url);
@@ -47,7 +58,7 @@ export function EpisodeArtwork({ src, alt, 'data-testid': testId, sx }: EpisodeA
       <img
         src={resolvedUrl}
         alt={alt}
-        loading="lazy"
+        loading={loading}
         onError={() => setFailed(true)}
         style={{
           display: 'block',

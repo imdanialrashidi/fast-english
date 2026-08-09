@@ -33,6 +33,16 @@ export interface EpisodeCardProps {
   /** Real progress when the caller has it (Home hero/lesson lists). */
   progress?: LessonProgressResponse;
   layout?: EpisodeCardLayout;
+  /**
+   * Optional caption of the Episode's other published levels (e.g.
+   * «سطح‌ها: A1 · B1 · C1»). Rendered only when provided.
+   */
+  availableLevelsCaption?: string | null;
+  /**
+   * Lazy loading policy for the artwork. First-viewport cards may pass
+   * 'eager' so artwork is not deferred (default 'lazy').
+   */
+  artworkLoading?: 'lazy' | 'eager';
   'data-testid'?: string;
 }
 
@@ -57,6 +67,8 @@ export function EpisodeCard({
   lesson,
   progress,
   layout = 'auto',
+  availableLevelsCaption,
+  artworkLoading = 'lazy',
   'data-testid': testId,
 }: EpisodeCardProps) {
   const { status, position, percent } = lessonCardState(progress);
@@ -86,6 +98,7 @@ export function EpisodeCard({
         <EpisodeArtwork
           src={episode?.artwork}
           alt={primaryTitle || productCopy.episode.entity}
+          loading={artworkLoading}
           sx={{ width: { xs: 88, md: layout === 'row' ? 96 : '100%' }, aspectRatio: '1 / 1' }}
         />
         <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
@@ -130,6 +143,16 @@ export function EpisodeCard({
             <Typography variant="caption" color="text.secondary">
               {episodeDurationText(lesson)}
             </Typography>
+            {availableLevelsCaption ? (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontWeight: 600 }}
+                data-testid="episode-card-levels"
+              >
+                {availableLevelsCaption}
+              </Typography>
+            ) : null}
           </Stack>
 
           {status === 'in_progress' || status === 'completed' ? (
