@@ -19,7 +19,7 @@ import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { semanticColors } from '../shared/ui/tokens/colors';
-import { createStaff } from './fixtures';
+import { createStaff, listOwnedRecords } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
@@ -29,7 +29,12 @@ function randId(): string {
 }
 let phoneCounter = 0;
 function nextPhone(): string {
-  return `0912${String(3456789 + phoneCounter++).slice(-7)}`;
+  // Random base + monotonic tail: unique per creation even when a retried
+  // worker re-runs this file's beforeAll (counter-only generators collide
+  // on re-entry and silently reuse an earlier Student's identity).
+  const tail = String(phoneCounter++).padStart(2, '0');
+  const r = randomBytes(4).readUInt32BE(0) % 10_000_000;
+  return `09${String(r).padStart(7, '0')}${tail}`.slice(0, 11);
 }
 
 async function jsonFetch(url: string, init: RequestInit = {}) {
@@ -67,8 +72,14 @@ const TRANSCRIPT_B2 = `This is the second Variant of the same Episode. Its trans
 // Seeding
 // ---------------------------------------------------------------------------
 const state: {
+  // Student A — Record Jacket identity + CTA-state tests (1-3).
   token: string;
   userId: string;
+  // Student B — Variant-switch + neighbors tests (4-5).
+  tokenB: string;
+  // Student C — interactive/state tests (6-11) and the responsive suite.
+  tokenC: string;
+  userIdC: string;
   su: string;
   aB1: string;
   aB2: string;
@@ -78,6 +89,9 @@ const state: {
 } = {
   token: '',
   userId: '',
+  tokenB: '',
+  tokenC: '',
+  userIdC: '',
   su: '',
   aB1: '',
   aB2: '',
@@ -105,145 +119,195 @@ test.beforeAll(async () => {
   state.su = su;
   const staff = await createStaff(su);
 
-  // Student journey: signup → payment → approve → placement → level B1.
-  const phone = nextPhone();
-  const password = 'Test1234!';
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
-    method: 'POST',
-    body: JSON.stringify({ name: 'دانشجوی نمایشی', phone, password, passwordConfirm: password }),
-  });
-  const login = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
-    method: 'POST',
-    body: JSON.stringify({ identity: `+98${phone.slice(1)}`, password }),
-  });
-  const token = login.body.token as string;
-
-  const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      name: 'E2E Episode',
-      slug: `ep-${randId()}`,
-      duration_days: 30,
-      price_toman: 100000,
-      is_active: true,
-      display_order: 0,
-      description: 'disposable',
-    }),
-  });
-  await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      card_number: '1111222233334444',
-      card_holder_name: 'E2E HOLDER',
-      bank_name: 'E2E BANK',
-      instructions: 'انتقال کارت به کارت',
-      is_active: true,
-    }),
-  });
-  const boundary = `--FB${randId()}`;
-  const prBody = Buffer.concat([
-    Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${plan.body?.id}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
-    ),
-    PNG_FIXTURE,
-    Buffer.from(`\r\n--${boundary}--\r\n`),
-  ]);
-  const prRes = await fetch(`${PB_URL}/api/fast-english/payment-requests`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': `multipart/form-data; boundary=${boundary}`,
-    },
-    body: prBody,
-  });
-  const prj = (await prRes.json()) as { request?: { id?: string } };
-  await jsonFetch(
-    `${PB_URL}/api/fast-english/operator/payment-requests/${prj.request?.id}/approve`,
-    {
+  // Owned plan + destination: re-entry reuses the existing records (fixed
+  // ownership markers) instead of multiplying them in the shared PB.
+  let planId = '';
+  const existingPlans = await listOwnedRecords(su, 'plans', "slug='ep-e2e-plan'");
+  if (existingPlans[0]?.id) {
+    planId = String(existingPlans[0].id);
+  } else {
+    const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
       method: 'POST',
-      headers: { authorization: `Bearer ${staff.token}` },
-      body: JSON.stringify({}),
-    },
-  );
-  const refresh = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-refresh`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${token}` },
-  });
-  state.token = (refresh.body?.token as string) ?? token;
-  state.userId = (refresh.body?.record?.id as string) ?? '';
-
-  // Placement.
-  const existingQ = await jsonFetch(`${PB_URL}/api/collections/placement_questions/records`, {
-    headers: { authorization: `Bearer ${su}` },
-  });
-  if (!(existingQ.body?.items as unknown[])?.length) {
-    for (let i = 0; i < 20; i++) {
-      await jsonFetch(`${PB_URL}/api/collections/placement_questions/records`, {
-        method: 'POST',
-        headers: { authorization: `Bearer ${su}` },
-        body: JSON.stringify({
-          question_key: `epq${String(i).padStart(2, '0')}`,
-          version: 1,
-          position: i + 1,
-          prompt: `Q${i + 1}`,
-          options: [
-            { id: 'a', text: 'A' },
-            { id: 'b', text: 'B' },
-            { id: 'c', text: 'C' },
-            { id: 'd', text: 'D' },
-          ],
-          options_text: JSON.stringify([
-            { id: 'a', text: 'A' },
-            { id: 'b', text: 'B' },
-            { id: 'c', text: 'C' },
-            { id: 'd', text: 'D' },
-          ]),
-          correct_option_id: 'a',
-          is_active: true,
-        }),
-      });
-    }
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({
+        name: 'E2E Episode',
+        slug: 'ep-e2e-plan',
+        duration_days: 30,
+        price_toman: 100000,
+        is_active: true,
+        display_order: 0,
+        description: 'disposable',
+      }),
+    });
+    planId = (plan.body?.id as string) || '';
   }
-  const start = await jsonFetch(`${PB_URL}/api/fast-english/placement/attempts/start`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${state.token}` },
-  });
-  const attemptId = (start.body as { attempt?: { id: string } })?.attempt?.id;
-  let rev = (start.body as { attempt?: { revision: number } })?.attempt?.revision || 0;
-  for (const q of (start.body as { questions?: Array<{ id: string }> })?.questions || []) {
-    const ans = await jsonFetch(
-      `${PB_URL}/api/fast-english/placement/attempts/${attemptId}/answer`,
+  const existingDests = await listOwnedRecords(
+    su,
+    'payment_destination',
+    "card_number='1111222233334444'",
+  );
+  if (!existingDests[0]?.id) {
+    await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({
+        card_number: '1111222233334444',
+        card_holder_name: 'E2E HOLDER',
+        bank_name: 'E2E BANK',
+        instructions: 'انتقال کارت به کارت',
+        is_active: true,
+      }),
+    });
+  }
+  if (!planId) throw new Error('owned plan missing');
+
+  // Three owned Students: the lesson-detail route enforces a production
+  // per-Student rate window (30 calls / 5 min, smoke-tested). The suite
+  // legitimately makes ~50 detail calls per run — ONE identity would trip
+  // that window in the fast full lane (every call lands inside the same
+  // window), making the failing test order-dependent. Three identities
+  // keep every Student comfortably under the budget. Progress seeds are
+  // applied to all three below so each identity sees the same CTA states.
+  async function createEntitledStudent(): Promise<{ token: string; userId: string }> {
+    const sPhone = nextPhone();
+    const sPassword = 'Test1234!';
+    await jsonFetch(`${PB_URL}/api/collections/fep_users/records`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: 'دانشجوی نمایشی',
+        phone: sPhone,
+        password: sPassword,
+        passwordConfirm: sPassword,
+      }),
+    });
+    const sLogin = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-with-password`, {
+      method: 'POST',
+      body: JSON.stringify({ identity: `+98${sPhone.slice(1)}`, password: sPassword }),
+    });
+    const sToken = sLogin.body.token as string;
+
+    const boundary = `--FB${randId()}`;
+    const prBody = Buffer.concat([
+      Buffer.from(
+        `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
+      ),
+      PNG_FIXTURE,
+      Buffer.from(`\r\n--${boundary}--\r\n`),
+    ]);
+    const prRes = await fetch(`${PB_URL}/api/fast-english/payment-requests`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${sToken}`,
+        'content-type': `multipart/form-data; boundary=${boundary}`,
+      },
+      body: prBody,
+    });
+    if (prRes.status !== 201) throw new Error(`PR: ${prRes.status}`);
+    const prj = (await prRes.json()) as { request?: { id?: string } };
+    await jsonFetch(
+      `${PB_URL}/api/fast-english/operator/payment-requests/${prj.request?.id}/approve`,
       {
-        method: 'PUT',
-        headers: { authorization: `Bearer ${state.token}` },
-        body: JSON.stringify({ questionId: q.id, optionId: 'a', expectedRevision: rev }),
+        method: 'POST',
+        headers: { authorization: `Bearer ${staff.token}` },
+        body: JSON.stringify({}),
       },
     );
-    rev = (ans.body as { attempt?: { revision: number } })?.attempt?.revision || rev + 1;
-  }
-  await jsonFetch(`${PB_URL}/api/fast-english/placement/attempts/${attemptId}/submit`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${state.token}` },
-    body: JSON.stringify({ expectedRevision: rev }),
-  });
-  await jsonFetch(`${PB_URL}/api/fast-english/placement/selected-level`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${state.token}` },
-    body: JSON.stringify({ selectedLevel: 'B1' }),
-  });
+    const refresh = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-refresh`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${sToken}` },
+    });
+    let refreshed = (refresh.body?.token as string) ?? sToken;
+    const userId = (refresh.body?.record?.id as string) ?? '';
 
-  // Marker semantics need recommended ≠ preferred: the superuser (the
-  // server-side authority) sets the Placement result to B2 while the
-  // student's preferred level stays B1.
-  await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${state.userId}`, {
-    method: 'PATCH',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({ suggested_level: 'B2' }),
-  });
+    // Placement (questions seeded once, idempotently).
+    const existingQ = await jsonFetch(`${PB_URL}/api/collections/placement_questions/records`, {
+      headers: { authorization: `Bearer ${su}` },
+    });
+    if (!(existingQ.body?.items as unknown[])?.length) {
+      for (let i = 0; i < 20; i++) {
+        await jsonFetch(`${PB_URL}/api/collections/placement_questions/records`, {
+          method: 'POST',
+          headers: { authorization: `Bearer ${su}` },
+          body: JSON.stringify({
+            question_key: `epq${String(i).padStart(2, '0')}`,
+            version: 1,
+            position: i + 1,
+            prompt: `Q${i + 1}`,
+            options: [
+              { id: 'a', text: 'A' },
+              { id: 'b', text: 'B' },
+              { id: 'c', text: 'C' },
+              { id: 'd', text: 'D' },
+            ],
+            options_text: JSON.stringify([
+              { id: 'a', text: 'A' },
+              { id: 'b', text: 'B' },
+              { id: 'c', text: 'C' },
+              { id: 'd', text: 'D' },
+            ]),
+            correct_option_id: 'a',
+            is_active: true,
+          }),
+        });
+      }
+    }
+    const start = await jsonFetch(`${PB_URL}/api/fast-english/placement/attempts/start`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${refreshed}` },
+    });
+    const attemptId = (start.body as { attempt?: { id: string } })?.attempt?.id;
+    let rev = (start.body as { attempt?: { revision: number } })?.attempt?.revision || 0;
+    for (const q of (start.body as { questions?: Array<{ id: string }> })?.questions || []) {
+      const ans = await jsonFetch(
+        `${PB_URL}/api/fast-english/placement/attempts/${attemptId}/answer`,
+        {
+          method: 'PUT',
+          headers: { authorization: `Bearer ${refreshed}` },
+          body: JSON.stringify({ questionId: q.id, optionId: 'a', expectedRevision: rev }),
+        },
+      );
+      rev = (ans.body as { attempt?: { revision: number } })?.attempt?.revision || rev + 1;
+    }
+    await jsonFetch(`${PB_URL}/api/fast-english/placement/attempts/${attemptId}/submit`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${refreshed}` },
+      body: JSON.stringify({ expectedRevision: rev }),
+    });
+    await jsonFetch(`${PB_URL}/api/fast-english/placement/selected-level`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${refreshed}` },
+      body: JSON.stringify({ selectedLevel: 'B1' }),
+    });
+
+    // Marker semantics need recommended ≠ preferred: the superuser (the
+    // server-side authority) sets the Placement result to B2 while the
+    // student's preferred level stays B1.
+    await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${userId}`, {
+      method: 'PATCH',
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({ suggested_level: 'B2' }),
+    });
+
+    const refresh2 = await jsonFetch(`${PB_URL}/api/collections/fep_users/auth-refresh`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${refreshed}` },
+    });
+    refreshed = (refresh2.body?.token as string) ?? refreshed;
+    return { token: refreshed, userId };
+  }
+
+  const studentA = await createEntitledStudent();
+  state.token = studentA.token;
+  state.userId = studentA.userId;
+  const studentB = await createEntitledStudent();
+  state.tokenB = studentB.token;
+  const studentC = await createEntitledStudent();
+  state.tokenC = studentC.token;
+  state.userIdC = studentC.userId;
 
   // Content: Topic A (B1 + B2 variants), Topic B (B1), Topic C (B1).
+  // Idempotent owned upserts: topics are keyed by fixed slugs; Variants
+  // reuse the (topic, level) unique index; vocabulary by (lesson, term).
   const cat = (
     await jsonFetch(
       `${PB_URL}/api/collections/categories/records?filter=(key='general')&perPage=1`,
@@ -252,13 +316,13 @@ test.beforeAll(async () => {
   ).body as { items?: Array<{ id: string }> };
   const catId = cat?.items?.[0]?.id as string;
 
-  async function makeTopic(sortOrder: number, titleFa: string, title: string) {
+  async function makeTopic(sortOrder: number, titleFa: string, title: string, slug: string) {
     const cr = await jsonFetch(`${PB_URL}/api/collections/topics/records`, {
       method: 'POST',
       headers: { authorization: `Bearer ${su}` },
       body: JSON.stringify({
         title,
-        slug: `ep-${randId()}`,
+        slug,
         description: 'd',
         sort_order: sortOrder,
         status: 'draft',
@@ -296,6 +360,17 @@ test.beforeAll(async () => {
       }),
     });
     return id;
+  }
+
+  async function ensureTopic(
+    sortOrder: number,
+    titleFa: string,
+    title: string,
+    slug: string,
+  ): Promise<string> {
+    const existing = await listOwnedRecords(su, 'topics', `slug='${slug}'`);
+    if (existing[0]?.id) return String(existing[0].id);
+    return makeTopic(sortOrder, titleFa, title, slug);
   }
 
   async function makeLesson(
@@ -349,6 +424,22 @@ test.beforeAll(async () => {
     return id;
   }
 
+  async function ensureLesson(
+    topicId: string,
+    level: string,
+    title: string,
+    summaryFa: string,
+    body: string,
+  ): Promise<string> {
+    const existing = await listOwnedRecords(
+      su,
+      'lessons',
+      `topic='${topicId}' && level='${level}'`,
+    );
+    if (existing[0]?.id) return String(existing[0].id);
+    return makeLesson(topicId, level, title, summaryFa, body);
+  }
+
   async function makeVocab(lessonId: string, term: string, withPron: boolean) {
     const cr = await jsonFetch(`${PB_URL}/api/collections/lesson_vocabulary/records`, {
       method: 'POST',
@@ -388,36 +479,53 @@ test.beforeAll(async () => {
     return id;
   }
 
-  const topicA = await makeTopic(1, 'اپیزود الف', 'Episode Alpha');
-  state.aB1 = await makeLesson(topicA, 'B1', 'Alpha B1', 'خلاصه بی‌وان', TRANSCRIPT_B1);
-  state.aB2 = await makeLesson(topicA, 'B2', 'Alpha B2', 'خلاصه بی‌تو', TRANSCRIPT_B2);
-  state.aB1Vocab = [
-    await makeVocab(state.aB1, 'listen', true),
-    await makeVocab(state.aB1, 'repeat', false),
-  ];
-  await makeVocab(state.aB2, 'focus', false);
-  const topicB = await makeTopic(2, 'اپیزود ب', 'Episode Bravo');
-  state.bB1 = await makeLesson(topicB, 'B1', 'Bravo B1', 'خلاصه بی‌بی', 'Bravo transcript.');
-  const topicC = await makeTopic(3, 'اپیزود ج', 'Episode Charlie');
-  state.cB1 = await makeLesson(topicC, 'B1', 'Charlie B1', 'خلاصه بی‌سی', 'Charlie transcript.');
+  async function ensureVocab(lessonId: string, term: string, withPron: boolean): Promise<string> {
+    const existing = await listOwnedRecords(
+      su,
+      'lesson_vocabulary',
+      `lesson='${lessonId}' && term='${term}'`,
+    );
+    if (existing[0]?.id) return String(existing[0].id);
+    return makeVocab(lessonId, term, withPron);
+  }
 
-  // Progress: A@B1 in progress at 150s (resume), C@B1 completed.
-  await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-    method: 'PUT',
-    headers: { authorization: `Bearer ${state.token}` },
-    body: JSON.stringify({ positionSeconds: 150, expectedRevision: 0 }),
-  });
-  await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.cB1}/progress`, {
-    method: 'PUT',
-    headers: { authorization: `Bearer ${state.token}` },
-    body: JSON.stringify({ positionSeconds: 600, expectedRevision: 0 }),
-  });
+  const topicA = await ensureTopic(1, 'اپیزود الف', 'Episode Alpha', 'ep-e2e-topic-alpha');
+  state.aB1 = await ensureLesson(topicA, 'B1', 'Alpha B1', 'خلاصه بی‌وان', TRANSCRIPT_B1);
+  state.aB2 = await ensureLesson(topicA, 'B2', 'Alpha B2', 'خلاصه بی‌تو', TRANSCRIPT_B2);
+  state.aB1Vocab = [
+    await ensureVocab(state.aB1, 'listen', true),
+    await ensureVocab(state.aB1, 'repeat', false),
+  ];
+  await ensureVocab(state.aB2, 'focus', false);
+  const topicB = await ensureTopic(2, 'اپیزود ب', 'Episode Bravo', 'ep-e2e-topic-bravo');
+  state.bB1 = await ensureLesson(topicB, 'B1', 'Bravo B1', 'خلاصه بی‌بی', 'Bravo transcript.');
+  const topicC = await ensureTopic(3, 'اپیزود ج', 'Episode Charlie', 'ep-e2e-topic-charlie');
+  state.cB1 = await ensureLesson(topicC, 'B1', 'Charlie B1', 'خلاصه بی‌سی', 'Charlie transcript.');
+
+  // Progress seeds (per-Variant, independent) for EVERY owned Student: the
+  // CTA-state tests run under different identities by design (rate budget).
+  for (const t of [state.token, state.tokenB, state.tokenC]) {
+    await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${t}` },
+      body: JSON.stringify({ positionSeconds: 150, expectedRevision: 0 }),
+    });
+    await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.cB1}/progress`, {
+      method: 'PUT',
+      headers: { authorization: `Bearer ${t}` },
+      body: JSON.stringify({ positionSeconds: 600, expectedRevision: 0 }),
+    });
+  }
 });
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-async function setAuthAndGo(page: import('@playwright/test').Page, path: string) {
+async function setAuthAndGo(
+  page: import('@playwright/test').Page,
+  path: string,
+  token = state.token,
+) {
   await page.goto('/');
   await page.evaluate(
     ({ t }) => {
@@ -426,7 +534,7 @@ async function setAuthAndGo(page: import('@playwright/test').Page, path: string)
         JSON.stringify({ token: t, model: { id: '', phone: '' } }),
       );
     },
-    { t: state.token },
+    { t: token },
   );
   await page.goto(path);
 }
@@ -719,7 +827,7 @@ test.describe('Episode surface — Record Jacket', () => {
 
   test('4. atomic Variant switch: one state, never mixed, read-only levels', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenB);
     await expect(page.getByTestId('deck-primary-cta')).toHaveText('ادامه از 2:30', {
       timeout: 20_000,
     });
@@ -766,7 +874,7 @@ test.describe('Episode surface — Record Jacket', () => {
 
     // B2 is fresh → its own progress, not B1's.
     const progress = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB2}/progress`, {
-      headers: { authorization: `Bearer ${state.token}` },
+      headers: { authorization: `Bearer ${state.tokenB}` },
     });
     expect((progress.body as { positionSeconds?: number }).positionSeconds ?? 0).toBe(0);
 
@@ -778,7 +886,7 @@ test.describe('Episode surface — Record Jacket', () => {
     await expect(page.getByText('خلاصه بی‌وان')).toBeVisible();
 
     // Browsing never mutated recommended/preferred Level.
-    const user = await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${state.userId}`, {
+    const user = await jsonFetch(`${PB_URL}/api/collections/fep_users/records/${state.userIdC}`, {
       headers: { authorization: `Bearer ${state.su}` },
     });
     expect((user.body as { selected_level?: string }).selected_level).toBe('B1');
@@ -795,7 +903,7 @@ test.describe('Episode surface — Record Jacket', () => {
     const neighborMap = await deriveNeighbors();
 
     for (const [variantId, expected] of Object.entries(neighborMap)) {
-      await setAuthAndGo(page, `/lessons/${variantId}`);
+      await setAuthAndGo(page, `/lessons/${variantId}`, state.tokenB);
       await expect(page.getByTestId('episode-jacket')).toBeVisible({ timeout: 20_000 });
       const previous = page.getByTestId('prevnext-previous');
       const next = page.getByTestId('prevnext-next');
@@ -817,7 +925,7 @@ test.describe('Episode surface — Record Jacket', () => {
     // switch) — the target comes from the server-derived neighbors.
     const alphaExpected = neighborMap[state.aB1];
     expect(alphaExpected.next).toBeTruthy();
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenB);
     await page.getByTestId('prevnext-next').click();
     await expect(page).toHaveURL(new RegExp(`/lessons/${alphaExpected.next.variantId}$`), {
       timeout: 10_000,
@@ -829,7 +937,7 @@ test.describe('Episode surface — Record Jacket', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const row = page.getByTestId(`vocab-expander-${state.aB1Vocab[0]}`);
     await expect(row).toBeVisible({ timeout: 20_000 });
     await expect(row).toHaveAttribute('aria-expanded', 'false');
@@ -854,7 +962,7 @@ test.describe('Episode surface — Record Jacket', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const cta = page.getByTestId('deck-primary-cta');
     await expect(cta).toHaveText('ادامه از 2:30', { timeout: 20_000 });
     // Start the Episode first.
@@ -894,7 +1002,7 @@ test.describe('Episode surface — Record Jacket', () => {
     // No Episode progress regression: the authoritative furthest position
     // (monotonic, server-side) is unchanged.
     const progress = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-      headers: { authorization: `Bearer ${state.token}` },
+      headers: { authorization: `Bearer ${state.tokenC}` },
     });
     const body = progress.body as { furthestSeconds?: number };
     expect(Math.round(body.furthestSeconds ?? 0)).toBe(150);
@@ -907,7 +1015,7 @@ test.describe('Episode surface — Record Jacket', () => {
 
   test('8. pronunciation without a file: honest TTS/unavailable fallback', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const row = page.getByTestId(`vocab-expander-${state.aB1Vocab[1]}`);
     await expect(row).toBeVisible({ timeout: 20_000 });
     await row.click();
@@ -933,7 +1041,7 @@ test.describe('Episode surface — Record Jacket', () => {
 
   test('9. keyboard: Edition Rail is a navigable radiogroup', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const b1 = page.getByTestId('edition-plate-B1');
     await expect(b1).toBeVisible({ timeout: 20_000 });
     await b1.focus();
@@ -954,19 +1062,19 @@ test.describe('Episode surface — Record Jacket', () => {
     // Self-contained: reset aB1 to the 150s resume seed first (earlier
     // tests may have moved it), then replay the journey.
     const seed = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-      headers: { authorization: `Bearer ${state.token}` },
+      headers: { authorization: `Bearer ${state.tokenC}` },
     });
     const seedBody = seed.body as { revision?: number };
     const seedRev = Number(seedBody.revision ?? 0);
     const reset = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
       method: 'PUT',
-      headers: { authorization: `Bearer ${state.token}` },
+      headers: { authorization: `Bearer ${state.tokenC}` },
       body: JSON.stringify({ positionSeconds: 150, expectedRevision: seedRev }),
     });
     expect(reset.status).toBe(200);
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const cta = page.getByTestId('deck-primary-cta');
     await expect(cta).toHaveText('ادامه از 2:30', { timeout: 20_000 });
     await cta.click();
@@ -990,7 +1098,7 @@ test.describe('Episode surface — Record Jacket', () => {
       .poll(
         async () => {
           const p = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-            headers: { authorization: `Bearer ${state.token}` },
+            headers: { authorization: `Bearer ${state.tokenC}` },
           });
           return Number((p.body as { positionSeconds?: number }).positionSeconds ?? -1);
         },
@@ -1001,7 +1109,7 @@ test.describe('Episode surface — Record Jacket', () => {
       .poll(
         async () => {
           const p = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-            headers: { authorization: `Bearer ${state.token}` },
+            headers: { authorization: `Bearer ${state.tokenC}` },
           });
           return Number((p.body as { positionSeconds?: number }).positionSeconds ?? -1);
         },
@@ -1021,7 +1129,7 @@ test.describe('Episode surface — Record Jacket', () => {
       .poll(
         async () => {
           const p = await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-            headers: { authorization: `Bearer ${state.token}` },
+            headers: { authorization: `Bearer ${state.tokenC}` },
           });
           return Number((p.body as { positionSeconds?: number }).positionSeconds ?? -1);
         },
@@ -1032,7 +1140,7 @@ test.describe('Episode surface — Record Jacket', () => {
       (
         (
           await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
-            headers: { authorization: `Bearer ${state.token}` },
+            headers: { authorization: `Bearer ${state.tokenC}` },
           })
         ).body as { positionSeconds?: number }
       ).positionSeconds ?? -1,
@@ -1064,7 +1172,7 @@ test.describe('Episode surface — Record Jacket', () => {
         await route.continue();
       }
     });
-    await setAuthAndGo(page, `/lessons/${state.aB2}`);
+    await setAuthAndGo(page, `/lessons/${state.aB2}`, state.tokenC);
 
     // Stage 1: recoverable source absence — honest line + inline retry
     // (Slice 7 review finding 5: the retry control clears 44px).
@@ -1074,10 +1182,15 @@ test.describe('Episode surface — Record Jacket', () => {
     expect((await unavailableRetry.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
 
     // Stage 2: the URL builds now, but the audio stream is still broken →
-    // the deck's honest error state (no raw media errors).
+    // the deck's honest error state (no raw media errors). Scoped to the
+    // deck error — the PWA offline-ready toast is also an alert and may
+    // be visible on the same page.
     tokenBlocked = false;
     await unavailableRetry.click();
-    await expect(page.getByRole('alert')).toContainText('خطا در پخش صوت', { timeout: 15_000 });
+    await expect(page.getByRole('alert').filter({ hasText: 'خطا در پخش صوت' })).toContainText(
+      'خطا در پخش صوت',
+      { timeout: 15_000 },
+    );
     const retryButton = page.getByRole('button', { name: 'تلاش مجدد' });
     expect((await retryButton.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
 
@@ -1100,7 +1213,7 @@ test.describe('Episode surface — Record Jacket', () => {
     // raw server message must never surface to Students.
     await page.route('**/api/fast-english/lessons/*', (route) => route.abort());
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     await expect(page.getByRole('heading', { name: 'خطا در بارگذاری اپیزود' })).toBeVisible({
       timeout: 20_000,
     });
@@ -1120,7 +1233,7 @@ test.describe('Episode surface — Record Jacket', () => {
       headers: { authorization: `Bearer ${state.su}` },
     });
     const own = (subs.body?.items as Array<{ id: string; user: string }>)?.find(
-      (s) => s.user === state.userId,
+      (s) => s.user === state.userIdC,
     );
     expect(own).toBeTruthy();
     await jsonFetch(`${PB_URL}/api/collections/subscriptions/records/${own?.id}`, {
@@ -1129,7 +1242,7 @@ test.describe('Episode surface — Record Jacket', () => {
       body: JSON.stringify({ expires_at: new Date(Date.now() - 60_000).toISOString() }),
     });
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB2}`);
+    await setAuthAndGo(page, `/lessons/${state.aB2}`, state.tokenC);
     await expect(page.getByText('دسترسی محدود')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('button', { name: 'رفتن به کتابخانه' })).toBeVisible();
 
@@ -1155,7 +1268,7 @@ test.describe('Episode surface — responsive and states', () => {
   for (const viewport of VIEWPORTS) {
     test(`12. no horizontal overflow at ${viewport.name} (light + dark)`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      await setAuthAndGo(page, `/lessons/${state.aB1}`);
+      await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
       await expect(page.getByTestId('deck-primary-cta')).toBeVisible({ timeout: 20_000 });
       expect(await noHorizontalOverflow(page)).toBe(true);
       await page.evaluate(() => {
@@ -1170,7 +1283,7 @@ test.describe('Episode surface — responsive and states', () => {
 
   test('13. deck budget and bounded reading measure (mobile + desktop)', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const deck = page.getByTestId('audio-player');
     await expect(deck).toBeVisible({ timeout: 20_000 });
     // Accepted budget (DESIGN.md): the Deck is ~220px tall at 390px
@@ -1204,7 +1317,7 @@ test.describe('Episode surface — responsive and states', () => {
     // Desktop: the two-column composition has a pinned jacket column and a
     // bounded reading column.
     await page.setViewportSize({ width: 1440, height: 900 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const jacket = page.getByTestId('episode-jacket');
     await expect(jacket).toBeVisible({ timeout: 20_000 });
     const jacketBox = await jacket.boundingBox();
@@ -1235,7 +1348,7 @@ test.describe('Episode surface — responsive and states', () => {
     // reuse Alpha with its long English caption and assert no overflow at
     // the narrowest QA width.
     await page.setViewportSize({ width: 360, height: 800 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     const h1 = page.getByRole('heading', { level: 1 });
     await expect(h1).toBeVisible({ timeout: 20_000 });
     const h1Box = await h1.boundingBox();
@@ -1246,7 +1359,7 @@ test.describe('Episode surface — responsive and states', () => {
 
   test('15. 200% text zoom stays contained', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, `/lessons/${state.aB1}`);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
     await expect(page.getByTestId('deck-primary-cta')).toBeVisible({ timeout: 20_000 });
     await page.evaluate(() => {
       document.documentElement.style.fontSize = '32px';
@@ -1272,7 +1385,7 @@ test.describe('Episode surface — responsive and states', () => {
     for (const shot of shots) {
       await page.setViewportSize({ width: shot.width, height: shot.height });
       await page.emulateMedia({ colorScheme: shot.scheme });
-      await setAuthAndGo(page, `/lessons/${state.aB1}`);
+      await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenC);
       await expect(page.getByTestId('deck-primary-cta')).toBeVisible({ timeout: 20_000 });
       await expect(page.getByTestId('episode-jacket')).toBeVisible();
       mkdirSync(`${out}/${shot.scheme}`, { recursive: true });

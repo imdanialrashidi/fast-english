@@ -132,6 +132,28 @@ export function planRadio(page: Page, planId: string) {
   return page.getByTestId(`plan-${planId}`).getByRole('radio');
 }
 
+// --- Owned-record listing helper (shared idempotent seeding) --------------
+// The full-lane Playwright run shares ONE disposable PocketBase across all
+// spec files, and a failing test's retry re-runs its file's beforeAll in a
+// fresh worker. Fixture seeding must therefore be idempotent: specs list
+// their owned records by a deterministic ownership marker (fixed slug/key/
+// title) and REUSE the existing record instead of creating a duplicate.
+// This is the same ownership discipline as ensureOwnedPlan above, for the
+// content fixtures (categories/topics/lessons) of the podcast suites.
+export async function listOwnedRecords(
+  suToken: string,
+  collection: string,
+  filter: string,
+): Promise<Array<Record<string, unknown>>> {
+  const params = new URLSearchParams({ filter, perPage: '200' });
+  const r = await fetch(`${PB_URL}/api/collections/${collection}/records?${params}`, {
+    headers: { authorization: suToken },
+  });
+  if (!r.ok) throw new Error(`owned fixture list failed (${collection}): ${r.status}`);
+  const body = (await r.json()) as { items?: Array<Record<string, unknown>> };
+  return body.items ?? [];
+}
+
 // --- Staff Administrator fixture (Podcast Slice 1) ------------------------
 // The single backstage identity lives in `staff_admins`. Every spec that
 // needs to approve/reject a payment request creates its own active +

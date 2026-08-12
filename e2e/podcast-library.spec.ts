@@ -12,7 +12,7 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
-import { createStaff } from './fixtures';
+import { createStaff, ensureOwnedDestination, listOwnedRecords } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 
@@ -104,14 +104,20 @@ async function multipartPatch(
 
 async function makeCategory(
   su: string,
-  overrides: { titleFa?: string; publicationStatus?: string; sortOrder?: number } = {},
+  overrides: {
+    key?: string;
+    slug?: string;
+    titleFa?: string;
+    publicationStatus?: string;
+    sortOrder?: number;
+  } = {},
 ) {
   const r = await jsonFetch(`${PB_URL}/api/collections/categories/records`, {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      key: `lib-cat-${randId()}`,
-      slug: `lib-cat-${randId()}`,
+      key: overrides.key ?? `lib-cat-${randId()}`,
+      slug: overrides.slug ?? overrides.key ?? `lib-cat-${randId()}`,
       title_fa: overrides.titleFa ?? 'دسته',
       description_fa: 'توضیح دسته',
       sort_order: overrides.sortOrder ?? 0,
@@ -123,11 +129,24 @@ async function makeCategory(
   return r.body as { id: string };
 }
 
+// Idempotent owned upsert: a retried worker re-runs this file's beforeAll
+// against the SAME shared PocketBase; owned Categories are keyed by a fixed
+// marker so re-entry reuses the existing record instead of multiplying it.
+async function ensureOwnedCategory(
+  su: string,
+  marker: { key: string; titleFa: string; sortOrder: number; publicationStatus?: string },
+): Promise<{ id: string }> {
+  const existing = await listOwnedRecords(su, 'categories', `key='${marker.key}'`);
+  if (existing[0]?.id) return { id: String(existing[0].id) };
+  return makeCategory(su, marker);
+}
+
 async function makeTopic(
   su: string,
   categoryId: string,
   overrides: {
     title?: string;
+    slug?: string;
     titleFa?: string;
     sortOrder?: number;
     publishedAt?: string;
@@ -140,7 +159,7 @@ async function makeTopic(
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
       title: overrides.title ?? `T ${randId()}`,
-      slug: `lib-t-${randId()}`,
+      slug: overrides.slug ?? `lib-t-${randId()}`,
       description: 'd',
       sort_order: overrides.sortOrder ?? 99,
       status: 'draft',
@@ -176,6 +195,26 @@ async function makeTopic(
   });
   if (pr.status !== 200) throw new Error(`topic publish: ${pr.status}`);
   return { id };
+}
+
+// Idempotent owned upsert keyed by a fixed slug: re-entry reuses the
+// existing Topic (same published_at / sort_order / title_fa) instead of
+// duplicating it into the shared PocketBase.
+async function ensureOwnedTopic(
+  su: string,
+  categoryId: string,
+  marker: {
+    slug: string;
+    titleFa: string;
+    sortOrder: number;
+    publishedAt?: string;
+    featured?: boolean;
+    keepDraft?: boolean;
+  },
+): Promise<{ id: string }> {
+  const existing = await listOwnedRecords(su, 'topics', `slug='${marker.slug}'`);
+  if (existing[0]?.id) return { id: String(existing[0].id) };
+  return makeTopic(su, categoryId, marker);
 }
 
 async function makeLesson(
@@ -219,6 +258,42 @@ async function makeLesson(
     }),
   });
   if (pr.status !== 200) throw new Error(`lesson publish: ${pr.status}`);
+  return { id };
+}
+
+// Idempotent owned upsert: `lessons` enforces a unique (topic, level)
+// index, so a re-run can reuse the existing Variant by that key instead of
+// creating a duplicate.
+async function ensureLessonVariant(su: string, topicId: string, level: string): Promise<string> {
+  const existing = await listOwnedRecords(su, 'lessons', `topic='${topicId}' && level='${level}'`);
+  if (existing[0]?.id) return String(existing[0].id);
+  return (await makeLesson(su, topicId, { level })).id;
+}
+
+// Draft Variant for the owned draft Topic (never published).
+async function ensureOwnedLessonDraft(su: string, topicId: string): Promise<string> {
+  const existing = await listOwnedRecords(su, 'lessons', `topic='${topicId}' && level='A1'`);
+  if (existing[0]?.id) return String(existing[0].id);
+  return (await makeLesson(su, topicId, { level: 'A1', keepDraft: true })).id;
+}
+
+// Idempotent owned plan: one plan per fixed slug in the shared PB.
+async function ensureOwnedPlan(): Promise<{ id: string }> {
+  const existing = await listOwnedRecords(su, 'plans', "slug='p-lib-e2e'");
+  if (existing[0]?.id) return { id: String(existing[0].id) };
+  const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({
+      name: 'اشتراک کتابخانه',
+      slug: 'p-lib-e2e',
+      duration_days: 90,
+      price_toman: 100000,
+      is_active: true,
+    }),
+  });
+  const id = (plan.body?.id as string) || '';
+  if (!id) throw new Error(`plan create failed: ${JSON.stringify(plan.body).slice(0, 200)}`);
   return { id };
 }
 
@@ -405,32 +480,32 @@ test.beforeAll(async () => {
   su = await getSuperuserToken();
   expect(su).toBeTruthy();
 
-  await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { authorization: su },
-    body: JSON.stringify({
-      card_number: '0000000000000000',
-      card_holder_name: 'T',
-      bank_name: 'T',
-      is_active: true,
-    }),
-  });
-  const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      name: 'اشتراک کتابخانه',
-      slug: `p-lib-${randId()}`,
-      duration_days: 90,
-      price_toman: 100000,
-      is_active: true,
-    }),
-  });
-  PLAN_ID = (plan.body?.id as string) || '';
+  // Owned upserts: re-entry (retried worker re-runs this beforeAll) reuses
+  // the existing records instead of multiplying them in the shared PB.
+  await ensureOwnedDestination(su);
+  const plan = await ensureOwnedPlan();
+  PLAN_ID = plan.id;
 
-  catA = (await makeCategory(su, { titleFa: 'دسته آلفا', sortOrder: 1 })).id;
-  catB = (await makeCategory(su, { titleFa: 'دسته بتا', sortOrder: 2 })).id;
-  await makeCategory(su, { titleFa: 'دسته پیشنویس', publicationStatus: 'draft' });
+  catA = (
+    await ensureOwnedCategory(su, {
+      key: 'lib-e2e-cat-alpha',
+      titleFa: 'دسته آلفا',
+      sortOrder: 1,
+    })
+  ).id;
+  catB = (
+    await ensureOwnedCategory(su, {
+      key: 'lib-e2e-cat-beta',
+      titleFa: 'دسته بتا',
+      sortOrder: 2,
+    })
+  ).id;
+  await ensureOwnedCategory(su, {
+    key: 'lib-e2e-cat-draft',
+    titleFa: 'دسته پیشنویس',
+    sortOrder: 3,
+    publicationStatus: 'draft',
+  });
 
   const pub = (iso: string) => `${iso}T00:00:00.000Z`;
 
@@ -444,6 +519,7 @@ test.beforeAll(async () => {
     featured?: boolean;
     keepDraft?: boolean;
     titleFa?: string;
+    slug: string;
   }> = [
     {
       key: 'multi',
@@ -452,6 +528,7 @@ test.beforeAll(async () => {
       sort: 1,
       date: '2026-01-13',
       titleFa: EPISODE_TITLES.multi,
+      slug: 'lib-e2e-topic-multi',
     },
     {
       key: 'beta',
@@ -460,6 +537,7 @@ test.beforeAll(async () => {
       sort: 2,
       date: '2026-01-12',
       titleFa: EPISODE_TITLES.beta,
+      slug: 'lib-e2e-topic-beta',
     },
     {
       key: 'gamma',
@@ -468,6 +546,7 @@ test.beforeAll(async () => {
       sort: 3,
       date: '2026-01-11',
       titleFa: EPISODE_TITLES.gamma,
+      slug: 'lib-e2e-topic-gamma',
     },
     {
       key: 'featured',
@@ -477,6 +556,7 @@ test.beforeAll(async () => {
       date: '2026-01-10',
       featured: true,
       titleFa: EPISODE_TITLES.featured,
+      slug: 'lib-e2e-topic-featured',
     },
     {
       key: 'search',
@@ -485,6 +565,7 @@ test.beforeAll(async () => {
       sort: 5,
       date: '2026-01-09',
       titleFa: EPISODE_TITLES.search,
+      slug: 'lib-e2e-topic-search',
     },
   ];
   for (let i = 0; i < 8; i++) {
@@ -495,29 +576,40 @@ test.beforeAll(async () => {
       sort: 6 + i,
       date: `2026-01-0${8 - i}`,
       titleFa: `اپیزود ساده ${i + 1}`,
+      slug: `lib-e2e-topic-plain${i}`,
     });
   }
 
   for (const spec of specs) {
-    const topic = await makeTopic(su, spec.cat, {
-      titleFa: spec.titleFa,
+    const topic = await ensureOwnedTopic(su, spec.cat, {
+      slug: spec.slug,
+      titleFa: spec.titleFa ?? 'عنوان اپیزود',
       sortOrder: spec.sort,
       publishedAt: pub(spec.date),
       featured: spec.featured,
     });
     topics[spec.key] = {};
     for (const level of spec.levels) {
-      const lesson = await makeLesson(su, topic.id, { level });
-      topics[spec.key][level] = lesson.id;
-      VARIANT_IDS.push(lesson.id);
+      const lessonId = await ensureLessonVariant(su, topic.id, level);
+      topics[spec.key][level] = lessonId;
+      VARIANT_IDS.push(lessonId);
     }
   }
 
   // Draft + archived Episodes: never visible anywhere.
-  const draftTopic = await makeTopic(su, catA, { titleFa: 'اپیزود پیشنویس', keepDraft: true });
-  await makeLesson(su, draftTopic.id, { level: 'A1', keepDraft: true });
-  const archTopic = await makeTopic(su, catA, { titleFa: 'اپیزود بایگانیشده' });
-  await makeLesson(su, archTopic.id, { level: 'A1' });
+  const draftTopic = await ensureOwnedTopic(su, catA, {
+    slug: 'lib-e2e-topic-draft',
+    titleFa: 'اپیزود پیشنویس',
+    sortOrder: 99,
+    keepDraft: true,
+  });
+  await ensureOwnedLessonDraft(su, draftTopic.id);
+  const archTopic = await ensureOwnedTopic(su, catA, {
+    slug: 'lib-e2e-topic-archived',
+    titleFa: 'اپیزود بایگانیشده',
+    sortOrder: 98,
+  });
+  await ensureLessonVariant(su, archTopic.id, 'A1');
   await jsonFetch(`${PB_URL}/api/collections/topics/records/${archTopic.id}`, {
     method: 'PATCH',
     headers: { authorization: `Bearer ${su}` },
@@ -546,7 +638,11 @@ test.beforeAll(async () => {
  * level; otherwise any published Variant via the resolution fallback).
  * Mirrors the deriveNeighbors precedent in podcast-episode.spec.ts.
  */
-async function deriveVisibleCount(suToken: string, level: 'preferred' | string): Promise<number> {
+async function deriveVisibleCount(
+  suToken: string,
+  level: 'preferred' | string,
+  categoryId?: string,
+): Promise<number> {
   const topics = await jsonFetch(
     `${PB_URL}/api/collections/topics/records?filter=${encodeURIComponent("status='published'")}&perPage=200`,
     { headers: { authorization: `Bearer ${suToken}` } },
@@ -579,6 +675,7 @@ async function deriveVisibleCount(suToken: string, level: 'preferred' | string):
   }
   return topicItems.filter((t) => {
     const catId = String((t.category as Record<string, unknown>)?.id ?? t.category ?? '');
+    if (categoryId && catId !== categoryId) return false;
     if (!publishedCatIds.has(catId)) return false;
     const variants = variantsByTopic.get(String(t.id)) ?? [];
     if (level === 'preferred') return variants.length > 0;
@@ -586,8 +683,8 @@ async function deriveVisibleCount(suToken: string, level: 'preferred' | string):
   }).length;
 }
 
-async function visibleCountText(level: 'preferred' | string): Promise<string> {
-  return `${await deriveVisibleCount(await getSuperuserToken(), level)} اپیزود`;
+async function visibleCountText(level: 'preferred' | string, categoryId?: string): Promise<string> {
+  return `${await deriveVisibleCount(await getSuperuserToken(), level, categoryId)} اپیزود`;
 }
 
 test.describe('podcast library scenarios', () => {
@@ -624,7 +721,10 @@ test.describe('podcast library scenarios', () => {
   test('2. draft and archived content is absent from the Library', async ({ page }) => {
     await setAuthAndGo(page, student.token, '/library');
     await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
-    const body = await page.locator('body').innerText();
+    // Scope to the Library surface: the PWA offline-ready toast (a
+    // separate, accepted product surface) mentions "درس‌ها" and must not
+    // affect the Library-content assertions.
+    const body = await page.getByRole('main').innerText();
     expect(body).not.toContain('پیشنویس');
     expect(body).not.toContain('بایگانیشده');
     expect(body).not.toContain('درس');
@@ -634,9 +734,14 @@ test.describe('podcast library scenarios', () => {
   test('3. selecting a Category narrows the discovery and updates the URL', async ({ page }) => {
     await setAuthAndGo(page, student.token, '/library');
     await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
-    await page.getByTestId('library-categories').getByText('دسته آلفا').click();
+    // Owned Category chip selected by record id — never by display text
+    // (strict-mode safe even with other specs' fixtures in the shared PB).
+    await page.getByTestId(`library-categories-${catA}`).click();
     await expect(page).toHaveURL(/category=/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('7 اپیزود', { timeout: 10_000 });
+    const catACount = await deriveVisibleCount(await getSuperuserToken(), 'preferred', catA);
+    await expect(page.getByTestId('library-count')).toContainText(`${catACount} اپیزود`, {
+      timeout: 10_000,
+    });
     // Every visible card belongs to catA (all catA Episodes: multi, beta,
     // featured, plain0, plain2, plain4, plain6 = 7).
     await expect(page.locator(`[data-testid="episode-card-${topics.multi.A1}"]`)).toBeVisible();
@@ -817,7 +922,6 @@ test.describe('podcast library scenarios', () => {
     } else {
       await expect(page.getByTestId('library-load-more')).toHaveCount(0);
     }
-    await expect(page.getByTestId('library-load-more')).toHaveCount(0);
   });
 
   test('12. opening a card opens the correct default Variant', async ({ page }) => {
@@ -832,9 +936,12 @@ test.describe('podcast library scenarios', () => {
   test('13. Back from an Episode returns to the filtered Library state', async ({ page }) => {
     await setAuthAndGo(page, student.token, '/library');
     await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
-    await page.getByTestId('library-categories').getByText('دسته آلفا').click();
+    await page.getByTestId(`library-categories-${catA}`).click();
     await expect(page).toHaveURL(/category=/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('7 اپیزود', { timeout: 10_000 });
+    const catACount = await deriveVisibleCount(await getSuperuserToken(), 'preferred', catA);
+    await expect(page.getByTestId('library-count')).toContainText(`${catACount} اپیزود`, {
+      timeout: 10_000,
+    });
     await page
       .locator(`[data-testid="episode-card-${topics.multi.A1}"]`)
       .getByTestId('episode-card-title')
@@ -842,7 +949,9 @@ test.describe('podcast library scenarios', () => {
     await expect(page).toHaveURL(/\/lessons\//, { timeout: 10_000 });
     await page.goBack();
     await expect(page).toHaveURL(/category=/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('7 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(`${catACount} اپیزود`, {
+      timeout: 10_000,
+    });
   });
 
   test('14. refresh preserves the discovery state', async ({ page }) => {
@@ -928,8 +1037,11 @@ test.describe('podcast library scenarios', () => {
 
     await setAuthAndGo(page, student.token, '/library');
     await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
-    await page.getByTestId('library-categories').getByText('دسته آلفا').click();
-    await expect(page.getByTestId('library-count')).toContainText('7 اپیزود', { timeout: 10_000 });
+    await page.getByTestId(`library-categories-${catA}`).click();
+    await expect(page.getByTestId('library-count')).toContainText(
+      `${await deriveVisibleCount(await getSuperuserToken(), 'preferred', catA)} اپیزود`,
+      { timeout: 10_000 },
+    );
     // Combined search + Category: the search Episode lives in catB, so
     // this combination is honestly empty -> clear-search restores the 7.
     await page.getByTestId('library-search').locator('input').fill('جستجوی ویژه');
@@ -938,7 +1050,10 @@ test.describe('podcast library scenarios', () => {
       timeout: 10_000,
     });
     await page.getByTestId('library-search-clear').click();
-    await expect(page.getByTestId('library-count')).toContainText('7 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      `${await deriveVisibleCount(await getSuperuserToken(), 'preferred', catA)} اپیزود`,
+      { timeout: 10_000 },
+    );
     await page.getByTestId('library-categories-').click();
     await expect(page.getByTestId('library-count')).toContainText(
       await visibleCountText('preferred'),
@@ -1064,7 +1179,11 @@ test.describe('podcast library scenarios', () => {
     // Force the discovery request to fail, then recover.
     await page.route('**/api/fast-english/library**', (route) => route.abort());
     await page.getByTestId('library-levels-B1').click();
-    await expect(page.getByRole('alert')).toBeVisible({ timeout: 10_000 });
+    // Scoped to the Library error alert — the PWA offline-ready toast is a
+    // separate surface and may also be present.
+    await expect(
+      page.getByRole('alert').filter({ hasText: 'اپیزودها بارگیری نشدند.' }),
+    ).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText('اپیزودها بارگیری نشدند.')).toBeVisible();
     const body = await page.locator('body').innerText();
     expect(body).not.toContain('PocketBase');

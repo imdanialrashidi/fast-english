@@ -45,7 +45,7 @@ import { randomBytes } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
-import { createStaff } from './fixtures';
+import { createStaff, listOwnedRecords } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
@@ -58,7 +58,12 @@ function randId(): string {
 }
 let phoneCounter = 0;
 function nextPhone(): string {
-  return `0912${String(3456789 + phoneCounter++).slice(-7)}`;
+  // Random base + monotonic tail: unique per creation even when a retried
+  // worker re-runs this file's beforeAll (counter-only generators collide
+  // on re-entry and silently reuse an earlier Student's identity).
+  const tail = String(phoneCounter++).padStart(2, '0');
+  const r = randomBytes(4).readUInt32BE(0) % 10_000_000;
+  return `09${String(r).padStart(7, '0')}${tail}`.slice(0, 11);
 }
 
 async function jsonFetch(url: string, init: RequestInit = {}) {
@@ -176,34 +181,50 @@ test.beforeAll(async () => {
   });
   const token = login.body.token as string;
 
-  const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      name: 'E2E Lifecycle',
-      slug: `lc-${randId()}`,
-      duration_days: 30,
-      price_toman: 100000,
-      is_active: true,
-      display_order: 0,
-      description: 'disposable',
-    }),
-  });
-  await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      card_number: '1111222233334444',
-      card_holder_name: 'E2E HOLDER',
-      bank_name: 'E2E BANK',
-      instructions: 'انتقال کارت به کارت',
-      is_active: true,
-    }),
-  });
+  // Owned plan + destination (idempotent: re-entry reuses the fixed markers).
+  let planId = '';
+  const existingPlans = await listOwnedRecords(su, 'plans', "slug='lc-e2e-plan'");
+  if (existingPlans[0]?.id) {
+    planId = String(existingPlans[0].id);
+  } else {
+    const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({
+        name: 'E2E Lifecycle',
+        slug: 'lc-e2e-plan',
+        duration_days: 30,
+        price_toman: 100000,
+        is_active: true,
+        display_order: 0,
+        description: 'disposable',
+      }),
+    });
+    planId = (plan.body?.id as string) || '';
+  }
+  const existingDests = await listOwnedRecords(
+    su,
+    'payment_destination',
+    "card_number='1111222233334444'",
+  );
+  if (!existingDests[0]?.id) {
+    await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({
+        card_number: '1111222233334444',
+        card_holder_name: 'E2E HOLDER',
+        bank_name: 'E2E BANK',
+        instructions: 'انتقال کارت به کارت',
+        is_active: true,
+      }),
+    });
+  }
+  if (!planId) throw new Error('owned plan missing');
   const boundary = `--FB${randId()}`;
   const prBody = Buffer.concat([
     Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${plan.body?.id}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
+      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
     ),
     PNG_FIXTURE,
     Buffer.from(`\r\n--${boundary}--\r\n`),
@@ -324,7 +345,7 @@ test.beforeAll(async () => {
       headers: { authorization: `Bearer ${su}` },
       body: JSON.stringify({
         title: 'Lifecycle Alpha',
-        slug: `lc-${randId()}`,
+        slug: 'lc-e2e-topic-alpha',
         description: 'd',
         sort_order: 1,
         status: 'draft',
@@ -447,10 +468,44 @@ test.beforeAll(async () => {
     return id;
   }
 
-  const topicA = await makeTopic();
-  state.aB1 = await makeLesson(topicA, 'B1', 'Alpha B1', 'خلاصه بی‌وان');
-  state.aB2 = await makeLesson(topicA, 'B2', 'Alpha B2', 'خلاصه بی‌تو');
-  state.aB1Vocab = await makeVocab(state.aB1, 'listen');
+  // Idempotent owned upserts: re-entry reuses the Topic by its fixed slug
+  // and Variants via the (topic, level) unique index; a retried worker
+  // re-running this beforeAll must not multiply fixtures in the shared PB.
+  async function ensureTopic(): Promise<string> {
+    const existing = await listOwnedRecords(su, 'topics', "slug='lc-e2e-topic-alpha'");
+    if (existing[0]?.id) return String(existing[0].id);
+    return makeTopic();
+  }
+
+  async function ensureLesson(
+    topicId: string,
+    level: string,
+    title: string,
+    summaryFa: string,
+  ): Promise<string> {
+    const existing = await listOwnedRecords(
+      su,
+      'lessons',
+      `topic='${topicId}' && level='${level}'`,
+    );
+    if (existing[0]?.id) return String(existing[0].id);
+    return makeLesson(topicId, level, title, summaryFa);
+  }
+
+  async function ensureVocab(lessonId: string, term: string): Promise<string> {
+    const existing = await listOwnedRecords(
+      su,
+      'lesson_vocabulary',
+      `lesson='${lessonId}' && term='${term}'`,
+    );
+    if (existing[0]?.id) return String(existing[0].id);
+    return makeVocab(lessonId, term);
+  }
+
+  const topicA = await ensureTopic();
+  state.aB1 = await ensureLesson(topicA, 'B1', 'Alpha B1', 'خلاصه بی‌وان');
+  state.aB2 = await ensureLesson(topicA, 'B2', 'Alpha B2', 'خلاصه بی‌تو');
+  state.aB1Vocab = await ensureVocab(state.aB1, 'listen');
 
   // Progress: A@B1 in progress at 150s (resume at 2:30).
   await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
@@ -1128,7 +1183,22 @@ test.describe('Player lifecycle reliability', () => {
 
     // The practical position the student reaches before the failure:
     // seek to 30s (inside the streamed data — no fetch needed) so the
-    // restore target is a meaningful resume point.
+    // restore target is a meaningful resume point. The honest
+    // precondition for the seek is that the streamed range already
+    // covers 30s — under full-suite load the buffer can lag the playhead,
+    // and a seek beyond the live buffered range stalls until data
+    // arrives (order-dependent in the shared lane). Wait for coverage
+    // first, then seek: the element applies the seek immediately.
+    await expect
+      .poll(
+        async () =>
+          page.evaluate(() => {
+            const a = document.querySelector<HTMLAudioElement>('audio[preload="metadata"]');
+            return a && a.buffered.length > 0 ? a.buffered.end(a.buffered.length - 1) : 0;
+          }),
+        { timeout: 20_000 },
+      )
+      .toBeGreaterThanOrEqual(30);
     await page.evaluate(() => {
       const audio = document.querySelector<HTMLAudioElement>('audio[preload="metadata"]');
       if (audio) audio.currentTime = 30;
@@ -1165,8 +1235,12 @@ test.describe('Player lifecycle reliability', () => {
     });
 
     // Honest deck error state (no raw media errors), and the element
-    // really fired the error event.
-    await expect(page.getByRole('alert')).toContainText('خطا در پخش صوت', { timeout: 20_000 });
+    // really fired the error event. Scoped to the deck error — the PWA
+    // offline-ready toast is also an alert and may be visible.
+    await expect(page.getByRole('alert').filter({ hasText: 'خطا در پخش صوت' })).toContainText(
+      'خطا در پخش صوت',
+      { timeout: 20_000 },
+    );
     await expect(page.getByRole('button', { name: 'تلاش مجدد' })).toBeVisible();
     const errorFired = await page.evaluate(
       () => (window as unknown as { __errorPos?: number | null }).__errorPos ?? null,
@@ -1194,7 +1268,7 @@ test.describe('Player lifecycle reliability', () => {
     expect(oldSrc).toContain('token=');
     await page.unroute('**/api/fast-english/lessons/*/audio*');
     await page.getByRole('button', { name: 'تلاش مجدد' }).click();
-    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.getByRole('alert').filter({ hasText: 'خطا در پخش صوت' })).toHaveCount(0);
     await expect(deckCta(page)).toBeVisible({ timeout: 20_000 });
     // The CTA derives from the SAVED practical position (30s) — the
     // deck offers the honest resume point, never a fresh start.

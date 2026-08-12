@@ -21,7 +21,7 @@
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
-import { createStaff } from './fixtures';
+import { createStaff, listOwnedRecords } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const SCREENSHOTS_DIR = process.env.VISUAL_SLICE_2_OUT ?? '/tmp/opencode/fep-visual-slice-2';
@@ -493,6 +493,14 @@ const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
 // ---------------------------------------------------------------------------
 let su: string;
 let student: { token: string; phone: string; userId: string };
+// The /lessons list page reads progress for EVERY published lesson at the
+// Student's level. In the shared-PB composition that list holds ~17 A1
+// lessons (mostly the podcast-library fixtures), so a single visit consumes
+// most of the per-Student progress-read budget (30 calls / 5 min). The
+// suite's lesson-list visitors are therefore spread across dedicated owned
+// Students so every identity stays under the budget in any fixture order.
+let studentB: { token: string; phone: string; userId: string };
+let studentC: { token: string; phone: string; userId: string };
 let noLessonStudent: { token: string };
 let doneStudent: { token: string };
 
@@ -508,28 +516,41 @@ test.beforeAll(async () => {
   expect(su).toBeTruthy();
 
   // Payment destination (singleton) + plan, created once for the fixture flow.
-  await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { authorization: su },
-    body: JSON.stringify({
-      card_number: '0000000000000000',
-      card_holder_name: 'T',
-      bank_name: 'T',
-      is_active: true,
-    }),
-  });
-  const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      name: 'اشتراک آزمون بصری',
-      slug: `p-vs2-${randId()}`,
-      duration_days: 90,
-      price_toman: 100000,
-      is_active: true,
-    }),
-  });
-  PLAN_ID = (plan.body?.id as string) || '';
+  // Owned upserts: re-entry reuses the existing records (fixed markers).
+  const existingDest = await listOwnedRecords(
+    su,
+    'payment_destination',
+    "card_number='0000000000000000'",
+  );
+  if (!existingDest[0]?.id) {
+    await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
+      method: 'POST',
+      headers: { authorization: su },
+      body: JSON.stringify({
+        card_number: '0000000000000000',
+        card_holder_name: 'T',
+        bank_name: 'T',
+        is_active: true,
+      }),
+    });
+  }
+  const existingPlans = await listOwnedRecords(su, 'plans', "slug='p-vs2-e2e'");
+  if (existingPlans[0]?.id) {
+    PLAN_ID = String(existingPlans[0].id);
+  } else {
+    const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({
+        name: 'اشتراک آزمون بصری',
+        slug: 'p-vs2-e2e',
+        duration_days: 90,
+        price_toman: 100000,
+        is_active: true,
+      }),
+    });
+    PLAN_ID = (plan.body?.id as string) || '';
+  }
 
   // One topic per lesson: `lessons` enforces a unique (topic, level) index.
   // States covered: not-started, in-progress, completed and a long-title
@@ -591,6 +612,13 @@ test.beforeAll(async () => {
   student = await createActiveStudent(su, 'A1');
   await saveProgress(student.token, lessonIds.inProgress, 150);
   await saveProgress(student.token, lessonIds.completed, 600);
+  // Dedicated identities for the /lessons-list visitors (rate budget, see
+  // the declaration comment). studentB carries the same state seeds as
+  // `student`; studentC stays seed-free (not-started cards only).
+  studentB = await createActiveStudent(su, 'A1');
+  await saveProgress(studentB.token, lessonIds.inProgress, 150);
+  await saveProgress(studentB.token, lessonIds.completed, 600);
+  studentC = await createActiveStudent(su, 'A1');
   noLessonStudent = await createActiveStudent(su, 'C2');
   doneStudent = await createActiveStudent(su, 'A1');
   // "All completed" requires completing EVERY published Variant at the
@@ -884,7 +912,7 @@ test.describe('lesson list states', () => {
   });
 
   test('completed lessons remain interactive', async ({ page }) => {
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, studentB.token, record, '/lessons');
     await page.getByRole('link', { name: 'مرور مجدد' }).click();
     await expect(page).toHaveURL(new RegExp(`/lessons/${lessonIds.completed}`), {
       timeout: 10_000,
@@ -893,7 +921,7 @@ test.describe('lesson list states', () => {
 
   test('long Persian/English titles wrap inside their card at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, studentC.token, record, '/lessons');
     const heading = page.getByRole('heading', { name: /عنوان بسیار بلند/ });
     await expect(heading).toBeVisible({ timeout: 15_000 });
     const card = heading.locator('xpath=ancestor::div[contains(@class, "MuiCard-root")]');
@@ -1088,6 +1116,12 @@ test.describe('theme on redesigned pages', () => {
   // which runs after module evaluation.
   const routeFor = (key: string): string =>
     key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'dashboard' ? '/' : `/${key}`;
+  // Per-route identity: the legacy /lessons list reads progress for every
+  // published lesson at the Student's level (~17 in the shared-PB
+  // composition); empty-level and dedicated Students keep every identity
+  // inside the per-Student progress-read budget.
+  const tokenForRoute = (key: string): string =>
+    key === 'lessons' ? noLessonStudent.token : key === 'detail' ? studentB.token : student.token;
 
   for (const key of ['home', 'library', 'progress', 'lessons', 'account', 'detail'] as const) {
     test(`route renders in Light and Dark without overflow: ${key}`, {
@@ -1096,7 +1130,7 @@ test.describe('theme on redesigned pages', () => {
       const route = routeFor(key);
       await page.setViewportSize({ width: 390, height: 844 });
       await page.emulateMedia({ colorScheme: 'light' });
-      await setAuthAndGo(page, student.token, record, route);
+      await setAuthAndGo(page, tokenForRoute(key), record, route);
       expect(await noHorizontalOverflow(page), `${route} light`).toBe(true);
       // The display preference lives only in Account settings (Podcast
       // Slice 1): switch there, then re-check the target route in Dark.
@@ -1107,7 +1141,7 @@ test.describe('theme on redesigned pages', () => {
         .click();
       await page.waitForTimeout(80);
       await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
-      await setAuthAndGo(page, student.token, record, route);
+      await setAuthAndGo(page, tokenForRoute(key), record, route);
       expect(await noHorizontalOverflow(page), `${route} dark`).toBe(true);
       // Semantic surfaces actually changed.
       const bg = await page.evaluate(() =>
@@ -1185,6 +1219,10 @@ test.describe('responsive geometry', () => {
   const publicRoutes = ['/', '/login', '/signup'];
   const authRouteFor = (key: string): string =>
     key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'home' ? '/' : `/${key}`;
+  // Per-route identity: see the theme sweep — the legacy /lessons list
+  // burns the per-Student progress-read budget in the shared-PB composition.
+  const tokenForRoute = (key: string): string =>
+    key === 'lessons' ? noLessonStudent.token : key === 'detail' ? studentB.token : student.token;
 
   for (const viewport of VIEWPORTS) {
     for (const route of publicRoutes) {
@@ -1207,7 +1245,7 @@ test.describe('responsive geometry', () => {
       test(`authenticated ${key} at ${viewport.name}`, async ({ page }) => {
         const route = authRouteFor(key);
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
-        await setAuthAndGo(page, student.token, record, route);
+        await setAuthAndGo(page, tokenForRoute(key), record, route);
         expect(await noHorizontalOverflow(page), `${route} ${viewport.name}`).toBe(true);
         // Per-element check: same scrollable-row carve-out as the public
         // sweep; the page-level no-overflow guarantee is asserted above.
