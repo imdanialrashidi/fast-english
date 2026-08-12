@@ -1,5 +1,14 @@
 # Current Implementation Plan — Fast English Podcast MVP
 
+> Status note: this file is the historical slice-by-slice implementation log.
+> The "Facts, constraints, and assumptions" section describes the starting
+> scaffold and is deliberately not rewritten as slices land. For the current
+> authoritative state, use `docs/PRODUCT.md` (product contract),
+> `docs/ARCHITECTURE.md` (boundaries/invariants), `docs/DESIGN.md` (accepted
+> visual direction), and `docs/QUALITY.md` (verification lanes and gates).
+> `scripts/project-verify.sh` is the executable full backend gate; the
+> canonical entry is `pnpm verify:full`.
+
 ## Goal and non-goals
 - Goal: deliver the most complete verifiable MVP in five phases (0–4) by end of 2026-07-30: Persian-first English-learning product with manual payment, operator review, placement, lessons+audio, PWA + APK, static landing.
 - Non-goals: CEFR certification, SMS OTP, email verification, self-service password recovery, payment/landing crossover, CMS, SSR, GraphQL, microservices, Docker, Next.js/Astro.

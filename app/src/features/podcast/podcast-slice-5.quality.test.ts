@@ -37,6 +37,13 @@ const REDESIGNED_FILES = [
   'app/src/features/library/components/EmptyPanel.tsx',
   'app/src/features/progress/routes/ProgressRoute.tsx',
   'app/src/app/copy/productCopy.ts',
+  'app/src/features/episode/logic.ts',
+  'app/src/features/episode/components/EditionRail.tsx',
+  'app/src/features/episode/components/EpisodeJacket.tsx',
+  'app/src/features/episode/components/VariantDeck.tsx',
+  'app/src/features/episode/components/VocabularyList.tsx',
+  'app/src/features/episode/components/PrevNextFooter.tsx',
+  'app/src/features/lessons/routes/LessonDetailRoute.tsx',
 ];
 
 const OUTDATED_TERMS = ['درس', 'اپراتور', 'پنل', 'record', 'PocketBase', 'operator'];
@@ -84,6 +91,12 @@ describe('Podcast Slice 5 — Product copy and structure gates', () => {
       'کلمات کلیدی',
       'متن اپیزود',
       'پیشرفت',
+      // Slice 7 canonical additions (Episode surface).
+      'خلاصهٔ اپیزود',
+      'اپیزود قبلی',
+      'اپیزود بعدی',
+      'تلفظ',
+      'نسخهٔ سطح',
     ]) {
       expect(copy, term).toContain(term);
     }

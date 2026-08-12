@@ -100,8 +100,18 @@ describe('design tokens', () => {
     expect(typeScale.audioTime.fontVariantNumeric).toBe('tabular-nums');
     expect(typeScale.numericMetric.fontVariantNumeric).toBe('tabular-nums');
     // Audio time is LTR-isolated so "12:34" keeps its order in RTL.
-    expect(typeScale.audioTime.direction).toBe('ltr');
-    expect(typeScale.englishReading.direction).toBe('ltr');
+    // The isolation is provided by `unicodeBidi` + `dir="ltr"` attributes
+    // on the consuming elements, NOT by a CSS `direction` declaration: the
+    // RTL Stylis pipeline (cssjanus) flips `direction: ltr` to `rtl` and
+    // would override the attributes (Slice 7 review finding 1). If a
+    // future change re-adds direction here, the rendered LTR surface
+    // regresses to right-aligned English — the assertion below is the
+    // token-level regression proof.
+    expect('direction' in typeScale.audioTime).toBe(false);
+    expect('direction' in typeScale.englishReading).toBe(false);
+    expect('direction' in typeScale.englishMetadata).toBe(false);
+    expect(typeScale.audioTime.unicodeBidi).toBe('isolate');
+    expect(typeScale.englishReading.unicodeBidi).toBe('isolate');
   });
 
   it('uses only the self-hosted font stacks (no remote families)', () => {

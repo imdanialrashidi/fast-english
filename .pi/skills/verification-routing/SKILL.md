@@ -15,13 +15,15 @@ Prefer:
 
 1. exact affected test;
 2. exact affected test file;
-3. changed or related unit tests;
-4. affected workspace typecheck or static check;
-5. repository fast-verification script.
+3. the configured affected-change plan (`node scripts/verify-affected.mjs --file <changed-path> --plan`);
+4. changed or dependency-related unit tests;
+5. affected workspace typecheck or static check;
+6. repository fast-verification script.
 
 Recognize common interfaces when they exist:
 
 - `scripts/verify-fast.sh`
+- `node scripts/verify-affected.mjs --file <changed-path>`
 - `pnpm verify:fast`
 - `npm run verify:fast`
 - `yarn verify:fast`
@@ -37,6 +39,9 @@ Rules:
 - rerun only failed browser tests while debugging;
 - prefer unit tests for pure logic;
 - never claim unexecuted checks passed.
+- review the affected plan before first use when a route changed; command arrays come from repository code and must be code-reviewed;
+- if a changed file matches no configured route, use the router's full-gate fallback rather than silently skipping it;
+- treat route maps as conservative dependency evidence, not proof that unlisted runtime dependencies do not exist.
 
 ## Lane 2: feature
 
@@ -54,6 +59,8 @@ Recognize:
 
 - `scripts/verify-feature.sh`
 - package-manager `verify:feature`
+
+Generated tests must also satisfy `test-design`: parsing/passing is insufficient when the test cannot detect the pre-fix or missing behavior.
 
 ## Lane 3: full
 
@@ -86,6 +93,19 @@ For routine local execution:
 - pass a specific spec or grep whenever possible.
 
 Full CI may use production builds, required projects, at most one retry, screenshots on failure, and trace on first retry. Keep video disabled unless explicitly justified.
+
+## Visual evidence adjunct
+
+For a material UI change, visual proof supplements rather than replaces the normal lane:
+
+- during implementation, rerun only the affected journey/state/viewport;
+- at feature completion, exercise the critical journey and capture named desktop/mobile/demanding-state evidence;
+- run accessibility structure/interaction checks before aesthetic screenshot review;
+- use deterministic fixtures or seeded state for comparisons;
+- record lab performance separately from field/RUM performance;
+- do not approve from static source, a component story, or a single happy-path screenshot when the acceptance contract covers responsive behavior or other states.
+
+Load `frontend-design` for the final hard-gate and craft verdict.
 
 ## Evidence
 

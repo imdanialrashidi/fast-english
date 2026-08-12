@@ -2,6 +2,16 @@ import { Box, Typography } from '@mui/material';
 import type { CefrLevel } from '../../../../shared/ui/tokens/cefr';
 import { cefr } from '../../../../shared/ui/tokens/cefr';
 
+/** Persian display names of the CEFR levels (shared by badge + Episode jacket). */
+export const cefrLevelNames: Record<CefrLevel, string> = {
+  A1: 'مبتدی',
+  A2: 'پایه',
+  B1: 'متوسط',
+  B2: 'میانی بالا',
+  C1: 'پیشرفته',
+  C2: 'تسلط',
+};
+
 // CEFR level badge that combines color, label text, and a level name so the
 // level is never communicated by color alone.
 export function LevelBadge({
@@ -14,14 +24,7 @@ export function LevelBadge({
   size?: 'sm' | 'md';
 }) {
   const palette = cefr[level];
-  const names: Record<CefrLevel, string> = {
-    A1: 'مبتدی',
-    A2: 'پایه',
-    B1: 'متوسط',
-    B2: 'میانی بالا',
-    C1: 'پیشرفته',
-    C2: 'تسلط',
-  };
+  const names = cefrLevelNames;
   const padY = size === 'sm' ? 0.25 : 0.5;
   const padX = size === 'sm' ? 0.75 : 1;
   return (

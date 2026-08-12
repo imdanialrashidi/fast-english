@@ -55,11 +55,14 @@ describe('Visual Slice 2 — deterministic design consistency', () => {
       'features/home/routes/HomeRoute.tsx',
       'features/library/routes/LibraryRoute.tsx',
       'features/progress/routes/ProgressRoute.tsx',
-      'features/lessons/routes/LessonDetailRoute.tsx',
       'app/routes/AccountRoute.tsx',
     ]) {
       expect(read(file), file).toContain('maxWidth="md"');
     }
+    // Slice 7 (Episode surface): the two-column jacket + liner-notes
+    // desktop composition needs the lg container; the reading column is
+    // bounded by layout.readingMaxWidth inside the grid (asserted below).
+    expect(read('features/lessons/routes/LessonDetailRoute.tsx')).toContain('maxWidth="lg"');
     // LessonsRoute uses the PageContainer default (md).
     expect(read('features/lessons/routes/LessonsRoute.tsx')).toContain('<PageContainer>');
     for (const file of ['app/routes/LoginRoute.tsx', 'app/routes/SignupRoute.tsx']) {

@@ -2,7 +2,12 @@
 // Typed API wrappers for lesson custom routes.
 
 import { getPocketBase } from '../../lib/pocketbase';
-import type { LessonDetailResponse, LessonListResponse, PublicSampleResponse } from './types';
+import type {
+  LessonDetailResponse,
+  LessonListResponse,
+  PublicSampleResponse,
+  VocabularyResponse,
+} from './types';
 
 const API_BASE = '/api/fast-english';
 
@@ -55,6 +60,18 @@ export async function getLessonDetail(lessonId: string): Promise<LessonDetailRes
     method: 'GET',
   });
   return raw as unknown as LessonDetailResponse;
+}
+
+/**
+ * Slice 7 — per-Variant Student vocabulary (ordered by the authoritative
+ * server sort order; pronunciation paths are the protected proxy routes).
+ */
+export async function getLessonVocabulary(lessonId: string): Promise<VocabularyResponse> {
+  const raw = await pb().send<Record<string, unknown>>(
+    `${API_BASE}/lessons/${lessonId}/vocabulary`,
+    { method: 'GET' },
+  );
+  return raw as unknown as VocabularyResponse;
 }
 
 export async function getPublicSample(): Promise<PublicSampleResponse> {

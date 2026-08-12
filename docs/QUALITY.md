@@ -49,6 +49,30 @@ For rendered interfaces:
 - do not add explanatory copy that merely restates obvious UI;
 - visual polish cannot compensate for missing interaction depth or broken behavior.
 
+## Visual excellence (frontend design contract)
+
+For visually significant work, the rendered interface is judged against the accepted product/design contract in `docs/DESIGN.md` and the full rubric in `.pi/skills/frontend-design/references/visual-quality-rubric.md` — never against generic taste or template defaults.
+
+Hard gates (any failure ⇒ `NOT READY` regardless of craft):
+
+1. The critical journey is functional; no accepted control is decorative or display-only.
+2. No material overflow, clipping, unreadable overlap, broken media, or unexpected layout shift in required states (Fast English sweep: 360/375/390/430/768/1440, light and dark).
+3. Keyboard order, visible focus, accessible names, semantic controls, and error identification work; RTL directionality is correct in pages and portals (dialogs/menus/popovers).
+4. Color is never the only carrier of meaning; WCAG 2.2 AA contrast/reflow/zoom targets are met (Fast English: machine-verified by `shared/ui/palette.contrast.test.ts` — text ≥ 4.5:1, UI components ≥ 3:1, disabled ≥ 1.5:1).
+5. Motion respects `prefers-reduced-motion` (Fast English: theme-level collapse verified in-browser; no `transition: all`, no raw durations — scanned by `static-quality.test.ts`).
+6. Loading, empty, error, success, disabled, selected, and permission states required by the flow are coherent (Fast English: `StatePanel` variants + per-flow states).
+7. No uncaught console error or failed critical request remains (browser console/network evidence required).
+8. Accepted pre-release performance budgets are met: LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1 at p75 as production targets; before field data exists, a repeatable lab baseline plus RUM instrumentation is required — never claim field performance from Lighthouse alone.
+
+Craft score: each of the eight rubric dimensions (brief fidelity, hierarchy, typography, color/material, system coherence, interaction/motion, content/state design, finish/responsiveness) is scored 0–4.
+
+- Ordinary production UI: all hard gates pass, average ≥ 2.75, no dimension below 2, and brief fidelity, hierarchy, and system coherence each ≥ 3.
+- Flagship/launch/high-aesthetic surface (the Fast English Student App is treated as one): all hard gates pass, average ≥ 3.25/4, no dimension below 3, and the accepted signature element scores 3 or 4 on both specificity and execution.
+
+Anti-template review: flag any choice not justified by the Fast English brief — interchangeable gradient/glow/glass effects, a generic hero plus statistic cards, a wall of equally rounded floating cards, decorative numbering/badges, fashionable type pairings without a subject rationale, or animation everywhere instead of one composed moment. For the Student App specifically, the accepted language is the calm midnight/ice M3-inspired semantic system in `shared/ui/tokens/` with restrained elevation, self-hosted Vazirmatn, and honest Persian copy (`docs/DESIGN.md`, `app/src/app/copy/productCopy.ts`).
+
+Findings use the rubric's severity format (BLOCKER/MAJOR/MINOR/NIT) with route/state/viewport evidence, the violated dimension, the user-visible consequence, the smallest coherent fix, and the proof needed to close it.
+
 ## Reliability and performance
 
 Apply only where relevant to the changed path:
@@ -103,7 +127,7 @@ Confirmed from `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, the verification scrip
 
 - `pnpm verify:fast` — everyday gate: `tsc --noEmit` + `biome check .` + Vitest. No PocketBase, no builds, no browser.
 - `pnpm verify:feature [auth|payment|placement|lessons|progress|all] [app|landing|all]` — fast + the mapped real-Backend smoke group + `@critical` Playwright tests + affected build.
-- `pnpm verify:full` — the canonical full application gate: `scripts/project-verify.sh` (fast + all 15 real-PB smoke suites + deterministic three-surface builds + topology/boundary checks + PWA output checks + Android version/signing fail-safe + deploy redaction proofs) followed by the full Playwright suite. `scripts/verify.sh` is the compatibility entry that delegates here for CI and release tooling; `scripts/verify-full.sh` is the executable gate.
+- `pnpm verify:full` — the canonical full application gate: `scripts/project-verify.sh` (fast + all 16 real-PB smoke suites + deterministic three-surface builds + topology/boundary checks + PWA output checks + Android version/signing fail-safe + deploy redaction proofs) followed by the full Playwright suite. `scripts/verify.sh` is the compatibility entry that delegates here for CI and release tooling; `scripts/verify-full.sh` is the executable gate.
 - `pnpm test:e2e:fast [spec]` / `test:e2e:smoke` / `test:e2e:failed` — the low-resource local lane (`PW_FAST=1` via `scripts/playwright-fast.sh`): Vite dev servers only (no builds, no landing), one worker, zero retries, stop at first failure, list reporter, no video/trace/screenshots/HTML report; the disposable PocketBase setup is preserved. Never set `CI=1` locally.
 - `pnpm test:e2e:full` — production-like lane (`CI=1`): built app + landing (pre-rendered) + admin served by `vite preview`, at most one retry, trace on first retry, screenshots on failure only.
 - Smoke suites (`pnpm smoke:*`) start their own disposable PocketBase in a fresh `/tmp` data dir and never touch `server/pb_data/`; `scripts/pb-test-helper.sh` creates a throwaway superuser whose credentials never appear in output. The `server/pocketbase` binary is pinned by `server/VERSION` and installed via `pnpm setup:pocketbase`.
@@ -124,7 +148,7 @@ Confirmed from `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, the verification scrip
 6. **Premium entitlement.** Pending/rejected/expired/suspended users are denied premium body/audio/artwork even via direct API; the audio proxy re-validates entitlement on every request (leaked file tokens grant nothing). Enforced by `smoke-lessons`, `smoke-progress`, `smoke-podcast-domain`.
 7. **PWA cache boundary.** The Service Worker precaches app-shell/public assets only — never `/api/`, `/files/`, or tokenized URLs. Enforced by the precache scan in `project-verify.sh` (step 18) and `e2e/p4-s2-pwa.spec.ts`.
 8. **Content pipeline integrity.** `schemas/episode-package.schema.json` (strict, `additionalProperties: false`); CLI validation mirrors server re-validation; zero-mutation dry-run plan; fingerprint idempotency; locked audit. Enforced by `smoke-content-import` + the schema step in `project-verify.sh`.
-9. **Design-token discipline.** No raw hex colors, raw durations, or `transition: all` in components; tokens live in `app/src/app/theme/tokens/`; WCAG AA contrast is machine-verified. Enforced by `static-quality.test.ts`, `palette.contrast.test.ts`, and the visual-slice quality gates.
+9. **Design-token discipline.** No raw hex colors, raw durations, or `transition: all` in components; tokens live in `shared/ui/tokens/` (colors, typography, spacing, shape, elevation, motion, focus, cefr); WCAG AA contrast is machine-verified. Enforced by `static-quality.test.ts`, `palette.contrast.test.ts`, `tokens.test.ts`, and the visual-slice quality gates.
 10. **Product copy discipline.** Canonical Persian vocabulary (`اپیزود`, `کتابخانه`, `سطح پیشنهادی`, …) is centralized in `app/src/app/copy/productCopy.ts`; Staff terminology never appears in the Student surface. Enforced by the `podcast-slice-5.quality.test.ts` scanner.
 11. **No secrets in the tree.** `.env.example` documents names only; Android signing keys come from `FEP_ANDROID_*` env vars and the release gate fails safely with `Production signing material: REQUIRED` when absent; `server/pb_data/`, keystores, and `releases/` are git-ignored; smoke wrappers suppress credentials.
 

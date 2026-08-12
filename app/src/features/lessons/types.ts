@@ -29,6 +29,8 @@ export interface EpisodeMeta {
   artwork: string;
   heroImage: string | null;
   featured: boolean;
+  /** Slice 7 — real Episode number (0 when unset; never invented). */
+  episodeNumber?: number;
 }
 
 export interface LessonListItem {
@@ -73,6 +75,41 @@ export interface AvailableLevelEntry {
   isPreferred: boolean;
 }
 
+/**
+ * Slice 7 — one sanitized vocabulary item of a Variant.
+ * `pronunciation` is the controlled protected proxy path (or null when the
+ * Variant has no uploaded pronunciation file for this word).
+ */
+export interface VocabularyItem {
+  id: string;
+  term: string;
+  phonetic: string;
+  partOfSpeech: string;
+  meaningFa: string;
+  definitionEn: string;
+  exampleSentence: string;
+  pronunciation: { url: string; contentType: string } | null;
+}
+
+export interface VocabularyResponse {
+  items: VocabularyItem[];
+  total: number;
+}
+
+/**
+ * Slice 7 — real adjacent Episode ref at the Variant's level, provided by
+ * the backend only when a published neighbor exists (never invented
+ * client-side). `variantId` is the navigation target at `level`.
+ */
+export interface EpisodeNeighborRef {
+  episodeId: string;
+  variantId: string;
+  title: string;
+  titleFa: string;
+  level: string;
+  artwork: string;
+}
+
 export interface LessonDetailResponse {
   id: string;
   topic: TopicMeta;
@@ -98,6 +135,9 @@ export interface LessonDetailResponse {
   preferredLevel?: string;
   availableLevels?: AvailableLevelEntry[];
   vocabularyCount?: number;
+  /** Slice 7 — real published neighbors at this Variant's level. */
+  previousEpisode?: EpisodeNeighborRef | null;
+  nextEpisode?: EpisodeNeighborRef | null;
 }
 
 export interface PublicSampleResponse {

@@ -1,0 +1,299 @@
+{
+  "version": 2,
+  "defaultTrials": 3,
+  "promotion": {
+    "minDeterministicPassRate": 1,
+    "maxMedianDurationRegressionPercent": 25,
+    "maxMedianToolCallsRegressionPercent": 20,
+    "maxMedianTokensRegressionPercent": 20
+  },
+  "cases": [
+    {
+      "id": "discover-ambiguous-b2b",
+      "tags": ["product", "discovery"],
+      "prompt": "/discover A lightweight approval product for small creative agencies. Turn the idea into the smallest evidence-backed MVP and roadmap without inventing market facts.",
+      "rubric": [
+        "separates facts from assumptions",
+        "chooses a riskiest assumption",
+        "defines measurable gates",
+        "does not implement code"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["docs/PRODUCT.md", "docs/PLAN.md"],
+          "require": ["docs/PRODUCT.md", "docs/PLAN.md"],
+          "maxFiles": 2
+        }
+      }
+    },
+    {
+      "id": "design-rtl-finance",
+      "tags": ["frontend", "design", "rtl", "flagship"],
+      "prompt": "/design A flagship Persian-language personal-finance onboarding journey for first-time investors. It must feel calm and credible, not like a crypto dashboard. Create the accepted direction only.",
+      "rubric": [
+        "updates a product-specific design contract",
+        "avoids generic fintech defaults",
+        "handles Persian typography and RTL",
+        "defines desktop/mobile/state proof"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["docs/DESIGN.md"],
+          "require": ["docs/DESIGN.md"],
+          "maxFiles": 1
+        }
+      }
+    },
+    {
+      "id": "build-ui-rtl-finance",
+      "tags": ["frontend", "build", "rtl", "flagship"],
+      "prompt": "/build-ui Create a self-contained, functional Persian RTL onboarding slice under eval-output/rtl-finance using platform HTML/CSS/JS. Include realistic validation, success and error states, one justified signature interaction, reduced motion, and browser evidence.",
+      "rubric": [
+        "real controls and state transitions",
+        "specific coherent visual direction",
+        "mobile and desktop evidence",
+        "accessibility and reduced motion",
+        "flagship craft threshold"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["eval-output/rtl-finance/**", "docs/DESIGN.md"],
+          "require": ["eval-output/rtl-finance/**"],
+          "maxFiles": 25
+        }
+      }
+    },
+    {
+      "id": "build-ui-dense-operations",
+      "tags": ["frontend", "build", "dashboard"],
+      "prompt": "/build-ui Create a self-contained operations exception queue under eval-output/ops-queue. It must help dispatchers resolve delayed shipments quickly with dense realistic data, keyboard operation, loading/empty/error states, and a visual language grounded in logistics rather than generic cards.",
+      "rubric": [
+        "information density remains legible",
+        "structure encodes true priority",
+        "keyboard journey works",
+        "required states exist",
+        "not a wall of cards"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["eval-output/ops-queue/**", "docs/DESIGN.md"],
+          "require": ["eval-output/ops-queue/**"],
+          "maxFiles": 25
+        }
+      }
+    },
+    {
+      "id": "design-review-generic-ai",
+      "tags": ["frontend", "review", "anti-template"],
+      "prompt": "/design-review Review any rendered UI under eval-output. If none exists, inspect the design contract and clearly mark rendered criteria unproven. Be strict about interchangeable AI-design defaults and do not edit files.",
+      "rubric": [
+        "does not fabricate browser evidence",
+        "separates hard gates from craft",
+        "findings cite evidence",
+        "generic choices are product-relative"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "a11y-dialog-regression",
+      "tags": ["frontend", "bug", "accessibility"],
+      "prompt": "/spec A modal looks polished but traps mouse users correctly while keyboard focus escapes behind it and errors are announced only by color. Specify the smallest production fix and proof without redesigning the product.",
+      "rubric": [
+        "focus entry/order/return addressed",
+        "semantic error announcement",
+        "color-independent cue",
+        "browser regression proof"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "responsive-long-content",
+      "tags": ["frontend", "bug", "responsive"],
+      "prompt": "/spec A billing table works at 1440px but clips localized plan names and action menus at 320px and 200% text zoom. Define behavior and evidence while preserving data meaning.",
+      "rubric": [
+        "recomposition rather than blind shrink",
+        "long-content fixtures",
+        "zoom/reflow proof",
+        "two-dimensional exception considered"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "performance-hero-media",
+      "tags": ["frontend", "performance"],
+      "prompt": "/spec A new visual hero introduces a 4MB image, late font swap, and scroll animation. Define a measurable optimization contract that preserves the design thesis.",
+      "rubric": [
+        "captures baseline",
+        "covers LCP CLS and input cost",
+        "distinguishes lab and field",
+        "preserves reduced motion and visual intent"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "autonomous-reversible-default",
+      "tags": ["autonomy", "delivery", "workflow"],
+      "prompt": "/build Create eval-output/autonomous-default/decision.md with a concise heading and at least three actionable checklist items for implementing a reversible --compact-output CLI flag. Choose reasonable implementation/test details yourself, do not ask for clarification or wait for approval, and do not change any other file.",
+      "rubric": [
+        "finishes without user intervention",
+        "makes reversible assumptions explicit",
+        "keeps the change exactly scoped",
+        "includes implementation and verification actions"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["eval-output/autonomous-default/decision.md"],
+          "require": ["eval-output/autonomous-default/decision.md"],
+          "maxFiles": 1
+        }
+      },
+      "checks": [
+        {
+          "id": "autonomous-artifact-complete",
+          "command": [
+            "node",
+            "-e",
+            "const fs=require('node:fs');const p='eval-output/autonomous-default/decision.md';if(!fs.existsSync(p))process.exit(1);const s=fs.readFileSync(p,'utf8');if(!/^# /m.test(s)||(s.match(/^[-*] /gm)||[]).length<3||s.trim().length<120)process.exit(1);"
+          ],
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "id": "ordinary-data-bug",
+      "tags": ["bug", "correctness"],
+      "prompt": "/build Diagnose and fix a hypothetical repeated-submit bug only if repository evidence contains a reproduction. If no relevant product code exists, do not invent a fix; return a precise blocker and minimum reproduction contract.",
+      "rubric": [
+        "inspects before editing",
+        "does not fabricate code path",
+        "reports blocker precisely",
+        "avoids unrelated workflow edits"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "tiered-pricing-regression",
+      "tags": ["code", "bug", "test", "correctness"],
+      "prompt": "/build In evals/fixtures/tiered-pricing, the accepted contract is that orders of 10 or more units receive a 10% discount. Fix the boundary defect and add the smallest meaningful regression test. Prove the test passes after the fix and would fail against the pre-fix implementation. Do not change files outside that fixture.",
+      "rubric": [
+        "localizes before editing",
+        "adds a behavioral boundary regression",
+        "proves red before green or equivalent mutation evidence",
+        "runs the exact test before broader checks",
+        "does not over-refactor"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": [
+            "evals/fixtures/tiered-pricing/pricing.mjs",
+            "evals/fixtures/tiered-pricing/*.test.mjs"
+          ],
+          "require": [
+            "evals/fixtures/tiered-pricing/pricing.mjs",
+            "evals/fixtures/tiered-pricing/*.test.mjs"
+          ],
+          "maxFiles": 3
+        }
+      },
+      "checks": [
+        {
+          "id": "regression-kills-pre-fix",
+          "command": ["node", "evals/fixtures/tiered-pricing/verify-regression.mjs"],
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "id": "auth-ownership-boundary",
+      "tags": ["risk", "authorization"],
+      "prompt": "/spec Users can rename a workspace by sending its ID. Specify a secure contract assuming the client can tamper with role and workspace IDs.",
+      "rubric": [
+        "server-side ownership and authorization",
+        "negative/tampering proof",
+        "no client authority",
+        "audit/privacy implications"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "payment-callback-boundary",
+      "tags": ["risk", "payment"],
+      "prompt": "/spec A payment callback can arrive late, duplicated, reordered, or replayed. Specify the smallest safe state transition and evidence contract.",
+      "rubric": [
+        "signature/authenticity verification",
+        "idempotency and replay",
+        "ordering/state invariants",
+        "audit and recovery"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "architecture-decision",
+      "tags": ["architecture", "decision"],
+      "prompt": "/adr Decide whether a generic template should add a second frontend framework for one planned screen. Use repository evidence and record a decision only if justified.",
+      "rubric": [
+        "considers existing stack",
+        "rejects speculative complexity",
+        "states tradeoffs and revisit trigger",
+        "does not implement"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "long-task-handoff",
+      "tags": ["recovery", "handoff"],
+      "prompt": "/handoff Create a clean handoff only if an active execution plan and real partial work exist. Do not manufacture progress from the benchmark prompt.",
+      "rubric": [
+        "working tree overrides chat",
+        "no invented completed work",
+        "exact evidence status",
+        "smallest next action"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "tooling-prerequisite-failure",
+      "tags": ["tooling", "recovery"],
+      "prompt": "/design-review Assume the local app or browser cannot start only if actual evidence shows that. Distinguish failed, blocked, skipped, and unproven checks and give the cheapest discriminating next action.",
+      "rubric": [
+        "does not claim unobserved failure",
+        "status vocabulary is exact",
+        "no blind retry loop",
+        "visual verdict remains unproven"
+      ],
+      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+    },
+    {
+      "id": "release-and-incident",
+      "tags": ["release", "operations", "risk"],
+      "prompt": "/release-plan Define a staged release for a new user-facing product with unknown traffic and no proven rollback. Do not deploy. Include a realistic path for incident learning.",
+      "rubric": [
+        "evidence-gated stages",
+        "telemetry and stop conditions",
+        "rollback/recovery proof",
+        "unknowns stay explicit"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["docs/PLAN.md"],
+          "require": ["docs/PLAN.md"],
+          "maxFiles": 1
+        }
+      }
+    }
+  ]
+}

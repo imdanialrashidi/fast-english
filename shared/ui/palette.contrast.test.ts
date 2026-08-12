@@ -7,6 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { contrastRatio } from './contrast';
+import { cefrLevels, deckStripeColor } from './tokens/cefr';
 import { semanticColors } from './tokens/colors';
 
 type Role = keyof typeof semanticColors.light;
@@ -122,4 +123,27 @@ describe('semantic color contrast (WCAG)', () => {
   it('covers at least 40 required pairs per scheme', () => {
     expect(REQUIRED_PAIRS.length).toBeGreaterThanOrEqual(40);
   });
+});
+
+describe('edition stripe (Slice 7 contract)', () => {
+  // DESIGN.md QA budget: "the edition stripe is non-text, checked ≥3:1
+  // against the Deck surface". The Deck surface is `surfaceContainerHigh`;
+  // every CEFR level stripe must clear 3:1 in BOTH schemes (the Stripe is
+  // theme-aware: pair fg in Light, pair bg in Dark). This is the durable
+  // regression proof for the accepted contract — a stripe color that falls
+  // below 3:1 (e.g. the pale pair bg on the light Deck surface, ~1.1:1)
+  // fails here.
+  for (const scheme of ['light', 'dark'] as const) {
+    it(`${scheme}: every CEFR level stripe clears 3:1 on the Deck surface`, () => {
+      const deck = semanticColors[scheme].surfaceContainerHigh;
+      for (const level of cefrLevels) {
+        const stripe = deckStripeColor(level, scheme);
+        const ratio = contrastRatio(stripe, deck);
+        expect(
+          ratio,
+          `${scheme}/${level}: stripe ${stripe} on Deck surface ${deck} = ${ratio.toFixed(2)}:1 — نیاز ≥3:1`,
+        ).toBeGreaterThanOrEqual(3);
+      }
+    });
+  }
 });

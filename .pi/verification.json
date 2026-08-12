@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "id": "harness-workflow",
+      "include": [
+        "AGENTS.md",
+        ".mcp.json",
+        ".pi/**",
+        "p",
+        "Dockerfile.pi",
+        ".dockerignore",
+        "*.md",
+        "docs/**",
+        "evals/**",
+        ".github/**",
+        "scripts/pi-doctor.sh",
+        "scripts/pi-sandbox.sh",
+        "scripts/verify-package-integrity.mjs",
+        "scripts/secret-scan-filter.mjs",
+        "scripts/secret-scan-allowlist.json",
+        "scripts/run-workflow-evals.mjs",
+        "scripts/lib/**",
+        "scripts/verify-affected.mjs",
+        "tests/**"
+      ],
+      "commands": [
+        ["bash", "scripts/pi-doctor.sh", "--ci", "--static"],
+        [
+          "node",
+          "--test",
+          "tests/workflow-evals.test.mjs",
+          "tests/verify-affected.test.mjs",
+          "tests/safety-guard.test.mjs",
+          "tests/launcher.test.mjs",
+          "tests/secret-scan.test.mjs"
+        ]
+      ]
+    },
+    {
+      "id": "frontend-fast",
+      "include": [
+        "app/**",
+        "shared/**",
+        "landing/**",
+        "admin/**",
+        "biome.json",
+        "tsconfig.json",
+        "vitest.config.ts"
+      ],
+      "commands": [
+        ["bash", "scripts/verify-fast.sh"]
+      ]
+    },
+    {
+      "id": "backend-feature",
+      "include": [
+        "server/**",
+        "schemas/**",
+        "content-packages/**",
+        "scripts/smoke-*.mjs",
+        "scripts/smoke-*.sh",
+        "scripts/pb-test-helper.sh",
+        "scripts/staff-*.mjs",
+        "scripts/content/**"
+      ],
+      "commands": [
+        ["bash", "scripts/verify-feature.sh", "all", "app"]
+      ]
+    },
+    {
+      "id": "browser-e2e",
+      "include": [
+        "e2e/**",
+        "playwright.config.ts",
+        "scripts/playwright-fast.sh"
+      ],
+      "commands": [
+        ["bash", "scripts/playwright-fast.sh"]
+      ]
+    },
+    {
+      "id": "verification-scripts",
+      "include": [
+        "scripts/verify-fast.sh",
+        "scripts/verify-feature.sh",
+        "scripts/verify-full.sh",
+        "scripts/verify.sh",
+        "scripts/project-verify.sh"
+      ],
+      "commands": [
+        ["bash", "scripts/verify-full.sh"]
+      ]
+    },
+    {
+      "id": "dependency-root",
+      "include": [
+        "package.json",
+        "pnpm-lock.yaml",
+        ".nvmrc",
+        "capacitor.config.json",
+        "vite.app.config.ts",
+        "vite.landing.config.ts",
+        "vite.admin.config.ts"
+      ],
+      "commands": [
+        ["bash", "scripts/verify-full.sh"]
+      ]
+    }
+  ],
+  "fallback": [
+    ["bash", "scripts/verify-full.sh"]
+  ]
+}

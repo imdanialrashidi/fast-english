@@ -536,6 +536,60 @@ test.beforeAll(async () => {
 // ---------------------------------------------------------------------------
 // Library journey
 // ---------------------------------------------------------------------------
+/**
+ * The shared disposable PB also carries published Episodes seeded by OTHER
+ * specs (e.g. p3-s2, visual-slice-2, player-lifecycle), so visible counts
+ * can never be hard-coded — they are DERIVED from the live server data with
+ * the same deterministic rule the Library route uses: one discovery item
+ * per published Topic whose parent Category is published and that has >= 1
+ * published Variant matching the level filter (explicit level → that
+ * level; otherwise any published Variant via the resolution fallback).
+ * Mirrors the deriveNeighbors precedent in podcast-episode.spec.ts.
+ */
+async function deriveVisibleCount(suToken: string, level: 'preferred' | string): Promise<number> {
+  const topics = await jsonFetch(
+    `${PB_URL}/api/collections/topics/records?filter=${encodeURIComponent("status='published'")}&perPage=200`,
+    { headers: { authorization: `Bearer ${suToken}` } },
+  );
+  const topicItems = (topics.body?.items ?? []) as Array<Record<string, unknown>>;
+  const catIds = new Set(
+    topicItems.map((t) => String((t.category as Record<string, unknown>)?.id ?? t.category ?? '')),
+  );
+  const cats: Array<Record<string, unknown>> = [];
+  for (const cid of catIds) {
+    const c = await jsonFetch(`${PB_URL}/api/collections/categories/records/${cid}`, {
+      headers: { authorization: `Bearer ${suToken}` },
+    });
+    if (c.body?.id) cats.push(c.body as Record<string, unknown>);
+  }
+  const publishedCatIds = new Set(
+    cats.filter((c) => c.publication_status === 'published').map((c) => String(c.id)),
+  );
+  const lessons = await jsonFetch(
+    `${PB_URL}/api/collections/lessons/records?filter=${encodeURIComponent("status='published'")}&perPage=300`,
+    { headers: { authorization: `Bearer ${suToken}` } },
+  );
+  const variantsByTopic = new Map<string, Array<Record<string, unknown>>>();
+  for (const l of (lessons.body?.items ?? []) as Array<Record<string, unknown>>) {
+    const tid = String(l.topic ?? '');
+    if (!tid) continue;
+    const arr = variantsByTopic.get(tid) ?? [];
+    arr.push(l);
+    variantsByTopic.set(tid, arr);
+  }
+  return topicItems.filter((t) => {
+    const catId = String((t.category as Record<string, unknown>)?.id ?? t.category ?? '');
+    if (!publishedCatIds.has(catId)) return false;
+    const variants = variantsByTopic.get(String(t.id)) ?? [];
+    if (level === 'preferred') return variants.length > 0;
+    return variants.some((v) => String(v.level ?? '') === level);
+  }).length;
+}
+
+async function visibleCountText(level: 'preferred' | string): Promise<string> {
+  return `${await deriveVisibleCount(await getSuperuserToken(), level)} اپیزود`;
+}
+
 test.describe('podcast library scenarios', () => {
   test('1. Library opens with heading, search, categories and one card per Episode', {
     tag: '@critical',
@@ -550,13 +604,17 @@ test.describe('podcast library scenarios', () => {
     await expect(page.getByTestId('library-categories').getByText('دسته آلفا')).toBeVisible();
     await expect(page.getByTestId('library-categories').getByText('دسته بتا')).toBeVisible();
     await expect(page.getByTestId('library-categories').getByText('پیشنویس')).toHaveCount(0);
-    // First page: 12 of the 13 visible Episodes.
+    // First page: 12 of the visible Episodes (perPage budget); the total
+    // is DERIVED from the live server (the shared disposable PB also
+    // carries other specs' published fixtures).
+    const visibleCount = await deriveVisibleCount(await getSuperuserToken(), 'preferred');
+    expect(visibleCount).toBeGreaterThanOrEqual(13);
     await expect(
       page.locator(
         '[data-testid^="episode-card-"]:not([data-testid="episode-card-title"]):not([data-testid="episode-card-cta"]):not([data-testid="episode-card-levels"])',
       ),
     ).toHaveCount(12);
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود');
+    await expect(page.getByTestId('library-count')).toContainText(`${visibleCount} اپیزود`);
     // The multi-level Episode renders ONE card.
     const multiCard = page.locator(`[data-testid="episode-card-${topics.multi.A1}"]`);
     await expect(multiCard).toHaveCount(1);
@@ -586,7 +644,12 @@ test.describe('podcast library scenarios', () => {
     // Back to all Topics.
     await page.getByTestId('library-categories-').click();
     await expect(page).not.toHaveURL(/category=/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      await visibleCountText('preferred'),
+      {
+        timeout: 10_000,
+      },
+    );
   });
 
   test('4. search narrows to real Episode metadata and can be cleared', async ({ page }) => {
@@ -599,7 +662,12 @@ test.describe('podcast library scenarios', () => {
     // Clear action restores the full discovery.
     await page.getByTestId('library-search-clear').click();
     await expect(page).not.toHaveURL(/q=/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      await visibleCountText('preferred'),
+      {
+        timeout: 10_000,
+      },
+    );
   });
 
   test('5. search empty state names the query and offers clear-search', async ({ page }) => {
@@ -612,7 +680,12 @@ test.describe('podcast library scenarios', () => {
     });
     await expect(page.getByText('چیزی برای نمایش نیست')).toHaveCount(0);
     await page.getByTestId('library-empty-clear').click();
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      await visibleCountText('preferred'),
+      {
+        timeout: 10_000,
+      },
+    );
   });
 
   test('6. Level filter resolves the explicit Variant and updates the URL', async ({ page }) => {
@@ -620,8 +693,11 @@ test.describe('podcast library scenarios', () => {
     await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
     await page.getByTestId('library-levels-B1').click();
     await expect(page).toHaveURL(/level=B1/, { timeout: 10_000 });
-    // B1-published Episodes: multi + gamma.
-    await expect(page.getByTestId('library-count')).toContainText('2 اپیزود', { timeout: 10_000 });
+    // B1-published Episodes: the library's own multi + gamma, plus any B1
+    // fixtures other specs seeded into the shared disposable PB.
+    await expect(page.getByTestId('library-count')).toContainText(await visibleCountText('B1'), {
+      timeout: 10_000,
+    });
     const multiCard = page.locator(`[data-testid="episode-card-${topics.multi.B1}"]`);
     await expect(multiCard).toBeVisible();
     await expect(multiCard.getByTestId('episode-card-levels')).toContainText('A1 · B1 · C1');
@@ -641,7 +717,12 @@ test.describe('podcast library scenarios', () => {
     await expect(page.getByText('چیزی برای نمایش نیست')).toHaveCount(0);
     await page.getByTestId('library-empty-levels').click();
     await expect(page).toHaveURL(/level=all/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      await visibleCountText('preferred'),
+      {
+        timeout: 10_000,
+      },
+    );
   });
 
   test('8. Progress filter reflects the resolved Variant and never leaks across levels', {
@@ -722,11 +803,20 @@ test.describe('podcast library scenarios', () => {
     ).toHaveCount(12);
     await page.getByTestId('library-load-more').click();
     await expect(page).toHaveURL(/page=2/, { timeout: 10_000 });
+    // After one load-more click the accumulated cards are the first TWO
+    // pages (min(total, 2×12)); the load-more affordance remains exactly
+    // when the DERIVED visible total still exceeds what is loaded.
+    const total = await deriveVisibleCount(await getSuperuserToken(), 'preferred');
     await expect(
       page.locator(
         '[data-testid^="episode-card-"]:not([data-testid="episode-card-title"]):not([data-testid="episode-card-cta"]):not([data-testid="episode-card-levels"])',
       ),
-    ).toHaveCount(13);
+    ).toHaveCount(Math.min(total, 24));
+    if (total > 24) {
+      await expect(page.getByTestId('library-load-more')).toBeVisible();
+    } else {
+      await expect(page.getByTestId('library-load-more')).toHaveCount(0);
+    }
     await expect(page.getByTestId('library-load-more')).toHaveCount(0);
   });
 
@@ -760,10 +850,11 @@ test.describe('podcast library scenarios', () => {
     await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
     await page.getByTestId('library-levels-B1').click();
     await expect(page).toHaveURL(/level=B1/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('2 اپیزود', { timeout: 10_000 });
+    const b1Count = await visibleCountText('B1');
+    await expect(page.getByTestId('library-count')).toContainText(b1Count, { timeout: 10_000 });
     await page.reload();
     await expect(page).toHaveURL(/level=B1/, { timeout: 10_000 });
-    await expect(page.getByTestId('library-count')).toContainText('2 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(b1Count, { timeout: 10_000 });
     await expect(page.getByTestId('library-levels-B1')).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -849,7 +940,12 @@ test.describe('podcast library scenarios', () => {
     await page.getByTestId('library-search-clear').click();
     await expect(page.getByTestId('library-count')).toContainText('7 اپیزود', { timeout: 10_000 });
     await page.getByTestId('library-categories-').click();
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      await visibleCountText('preferred'),
+      {
+        timeout: 10_000,
+      },
+    );
     await page.getByTestId('library-levels-B1').click();
     await page.getByTestId('library-levels-preferred').click();
     await page.getByTestId('library-progress-completed').click();
@@ -857,15 +953,19 @@ test.describe('podcast library scenarios', () => {
     await expect(page.getByTestId('library-count')).toContainText('1 اپیزود', { timeout: 10_000 });
     await page.getByTestId('library-progress-all').click();
     await page.getByTestId('library-sort').selectOption('latest');
-    await expect(page.getByTestId('library-count')).toContainText('13 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(
+      await visibleCountText('preferred'),
+      {
+        timeout: 10_000,
+      },
+    );
     await page.getByTestId('library-load-more').click();
     await expect(page).toHaveURL(/page=2/, { timeout: 10_000 });
 
     expect(
       consoleErrors.filter(
         (text) =>
-          !(sawArtwork429 && text.includes('429')) &&
-          !(sawFallback404 && text.includes('404')),
+          !(sawArtwork429 && text.includes('429')) && !(sawFallback404 && text.includes('404')),
       ),
       `sawArtwork429=${sawArtwork429} sawFallback404=${sawFallback404} | failed=${failedRequests.join(' | ')} | ${consoleErrors.join('\n')}`,
     ).toEqual([]);
@@ -970,7 +1070,9 @@ test.describe('podcast library scenarios', () => {
     expect(body).not.toContain('PocketBase');
     await page.unroute('**/api/fast-english/library**');
     await page.getByTestId('library-retry').click();
-    await expect(page.getByTestId('library-count')).toContainText('2 اپیزود', { timeout: 10_000 });
+    await expect(page.getByTestId('library-count')).toContainText(await visibleCountText('B1'), {
+      timeout: 10_000,
+    });
   });
 });
 
@@ -998,16 +1100,19 @@ test.describe('library responsive quality', () => {
 
       // 2. Artwork stays bounded inside the card.
       const card = page.locator(`[data-testid="episode-card-${topics.multi.A1}"]`);
-      const cardBox = (await card.boundingBox())!;
+      const cardBox = await card.boundingBox();
+      if (!cardBox) throw new Error(`episode card not visible at ${viewport.width}`);
       const art = card.locator('img').first();
-      const artBox = (await art.boundingBox())!;
+      const artBox = await art.boundingBox();
+      if (!artBox) throw new Error(`episode artwork not visible at ${viewport.width}`);
       expect(artBox.x).toBeGreaterThanOrEqual(cardBox.x - 1);
       expect(artBox.x + artBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 1);
       expect(artBox.width).toBeLessThanOrEqual(viewport.width);
 
       // 3. The card CTA stays inside the viewport.
       const cta = card.getByTestId('episode-card-cta');
-      const ctaBox = (await cta.boundingBox())!;
+      const ctaBox = await cta.boundingBox();
+      if (!ctaBox) throw new Error(`episode card CTA not visible at ${viewport.width}`);
       expect(ctaBox.x + ctaBox.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(ctaBox.width).toBeGreaterThan(0);
 
@@ -1025,14 +1130,16 @@ test.describe('library responsive quality', () => {
 
       // 5. Filters stay on-screen (chips scroll horizontally, no clip).
       const levels = page.getByTestId('library-levels');
-      const levelsBox = (await levels.boundingBox())!;
+      const levelsBox = await levels.boundingBox();
+      if (!levelsBox) throw new Error(`library level filters not visible at ${viewport.width}`);
       expect(levelsBox.x).toBeGreaterThanOrEqual(-1);
       expect(levelsBox.x + levelsBox.width).toBeLessThanOrEqual(viewport.width + 1);
       expect(levelsBox.width).toBeGreaterThan(0);
 
       // 6. Long titles wrap inside the card.
       const title = card.getByTestId('episode-card-title');
-      const titleBox = (await title.boundingBox())!;
+      const titleBox = await title.boundingBox();
+      if (!titleBox) throw new Error(`episode card title not visible at ${viewport.width}`);
       expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width + 1);
     });
   }

@@ -17,7 +17,7 @@ When information conflicts, use this order:
 1. Current user request and explicitly accepted acceptance criteria
 2. Active execution plan when the user/task explicitly points to one
 3. `docs/PRODUCT.md`
-4. `docs/ARCHITECTURE.md` and accepted public contracts
+4. `docs/ARCHITECTURE.md`, `docs/DESIGN.md` for user-facing experience, and accepted public contracts
 5. `docs/QUALITY.md`
 6. Existing implementation and tests
 7. Version-matched official documentation
@@ -32,11 +32,15 @@ Read only what the current decision needs:
 - `docs/HARNESS.md` — non-trivial work, repeated failure, multi-session work, evaluator loop, handoff/recovery
 - `docs/QUALITY.md` — user-facing work, meaningful feature work, review, and release readiness
 - `docs/PRODUCT.md` — product intent and scope
+- `docs/DESIGN.md` — accepted visual direction, tokens, interaction language, and screen-level proof
 - `docs/ARCHITECTURE.md` — boundaries, data flow, dependencies, and architectural invariants
 - `docs/PLAN.md` — current project plan when relevant
+- `docs/EVALUATION.md` — harness changes, regression benchmarks, and baseline/candidate promotion evidence
 - `docs/exec-plans/active/` — only when a complex task explicitly has an active execution plan
 - `verification-routing` skill — tests, builds, browser checks, CI, release gates
+- `test-design` skill — behavior-oriented regression tests, defect sensitivity, reliability, and test execution
 - `browser-qa` skill — rendered UI, interaction, responsive behavior, accessibility, visual evidence
+- `frontend-design` skill — distinctive visual direction, implementation craft, and aesthetic evaluation
 - `risk-review` skill — security, money, data integrity, migration, operational or release risk
 
 ## Task classes
@@ -76,7 +80,7 @@ For Standard, Complex, and High-risk work, define before implementation:
 - 3–7 observable acceptance criteria;
 - the proof expected for each criterion.
 
-For a bug, reproduce or characterize the failing behavior before fixing it when practical. For performance work, capture a baseline metric before optimizing. For user-facing work, include the critical user journey and relevant error/empty/permission states.
+For a bug, reproduce or characterize the failing behavior before fixing it when practical. For performance work, capture a baseline metric before optimizing. For user-facing work, include the critical user journey and relevant error/empty/permission states. For visually significant work, include the accepted design thesis/signature plus rendered desktop/mobile proof.
 
 Keep the contract transient in the todo state for ordinary tasks. Persist it in an active execution plan only for complex or multi-session work.
 
@@ -92,7 +96,7 @@ Do not silently broaden the contract while implementing.
 - Never expose secrets in source, logs, screenshots, fixtures, prompts, or committed artifacts.
 - Never weaken, skip, delete, or falsify a valid security control or test to obtain green status.
 - Do not add speculative infrastructure or refactor unrelated code.
-- Do not commit, push, merge, publish, release, deploy, rotate credentials, or mutate production without explicit authorization.
+- When repository delivery is in scope, finish autonomously through a scoped task-branch commit, push, and PR. Direct protected-branch pushes, merge, release, deployment, credential rotation, and production mutation require explicit scope.
 - Subagent findings are evidence to evaluate, not proof that checks passed.
 
 ## Context discipline
@@ -107,18 +111,20 @@ Do not silently broaden the contract while implementing.
 
 ## Autonomy and hard stops
 
-Continue autonomously through routine, reversible engineering decisions. Choose the smallest safe option consistent with the accepted contract and architecture.
+Continue autonomously through routine, reversible engineering work, including edits, local dependency setup, tests, browser QA, repair, workflow maintenance, and task-branch delivery. Choose the smallest safe interpretation consistent with the request and record material assumptions instead of asking about ordinary implementation details.
+
+If the requested outcome includes repository delivery and an authenticated remote is available, create or reuse a task branch, commit the scoped diff, push it, and open or update a PR without another confirmation. Never stop at advice or an uncommitted patch when the accepted outcome is implementation.
 
 Stop only when:
 
-1. A required credential, account, or external service is unavailable.
-2. The next action affects production, real users, real money, or external infrastructure.
+1. A required credential, account, or external service is unavailable and no local/reversible fallback can complete the criterion.
+2. The next action directly changes production, real users, real money, or shared external infrastructure and that action is not already explicit in the accepted outcome.
 3. The next action is destructive or practically irreversible.
 4. Accepted requirements conflict with no safe reversible interpretation.
 5. A security or data-integrity boundary cannot be implemented safely.
 6. A legal, compliance, or product-policy decision is required.
 
-Report the exact blocker and minimum user action. Do not ask the user to decide ordinary implementation details.
+Complete every unblocked criterion first, preserve exact continuation state, then report the blocker and minimum required user action. Do not ask the user to decide ordinary implementation details.
 
 ## Definition of done
 
@@ -128,6 +134,7 @@ A task is complete only when:
 - relevant targeted checks passed;
 - the appropriate feature/full gate ran when required;
 - meaningful user-facing behavior was exercised through the real browser when browser behavior matters;
+- visually significant work satisfies `docs/DESIGN.md` and the `frontend-design` hard gates/craft bar using rendered evidence;
 - the final diff contains no accidental or unrelated changes;
 - no unresolved BLOCKER or MAJOR finding remains for required independent review;
 - security, data, migration, accessibility, reliability, performance, recovery, and rollback implications were handled where relevant;

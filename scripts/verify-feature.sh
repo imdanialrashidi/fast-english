@@ -37,9 +37,9 @@ case "$SMOKE_GROUP" in
   auth)      SMOKES="smoke:auth" ;;
   payment)   SMOKES="smoke:payment smoke:payment-preview smoke:operator" ;;
   placement) SMOKES="smoke:placement smoke:placement-levels smoke:placement-race smoke:placement-capacity" ;;
-  lessons)   SMOKES="smoke:lessons" ;;
+  lessons)   SMOKES="smoke:lessons smoke:episode" ;;
   progress)  SMOKES="smoke:progress" ;;
-  all)       SMOKES="smoke:auth smoke:payment smoke:payment-preview smoke:placement smoke:placement-levels smoke:operator smoke:placement-race smoke:placement-capacity smoke:lessons smoke:progress" ;;
+  all)       SMOKES="smoke:auth smoke:payment smoke:payment-preview smoke:placement smoke:placement-levels smoke:operator smoke:placement-race smoke:placement-capacity smoke:lessons smoke:episode smoke:progress smoke:staff smoke:podcast-domain smoke:content-import smoke:content-admin smoke:library" ;;
   *) echo "unknown smoke group '$SMOKE_GROUP' (auth|payment|placement|lessons|progress|all)" >&2; exit 1 ;;
 esac
 
