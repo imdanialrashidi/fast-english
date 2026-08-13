@@ -81,7 +81,7 @@ export function SignupRoute() {
     <PageContainer maxWidth="sm">
       <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
         <Box sx={{ pt: 2 }}>
-          <Brand variant="full" size="md" />
+          <Brand variant="header" maxWidth={180} />
         </Box>
 
         <Card sx={{ width: '100%' }}>

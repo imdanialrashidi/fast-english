@@ -568,7 +568,7 @@ test.describe('podcast home scenarios', () => {
     const start = page.getByTestId('home-start');
     await expect(start).toBeVisible({ timeout: 15_000 });
     await expect(start.getByText('اولین اپیزودت را شروع کن')).toBeVisible();
-    await expect(start.getByText(/چند اپیزود مناسب سطح C1 برای شروع آماده است/)).toBeVisible();
+    await expect(start.getByText(/اپیزودهای سطح C1 برای شروع آماده‌اند/)).toBeVisible();
     await expect(page.getByTestId('home-continue')).toHaveCount(0);
     const cta = page.getByTestId('home-start-cta');
     await cta.click();

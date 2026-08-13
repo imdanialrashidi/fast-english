@@ -94,7 +94,7 @@ function Swatch({ name, value }: { name: string; value: string }) {
       <Box
         sx={{
           height: 48,
-          borderRadius: radius.radiusControl,
+          borderRadius: `${radius.radiusControl}px`,
           backgroundColor: value,
           border: '1px solid',
           borderColor: 'outlineVariant',

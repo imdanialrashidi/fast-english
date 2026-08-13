@@ -19,7 +19,7 @@ import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import { Box, IconButton, LinearProgress, Paper, Typography } from '@mui/material';
 import { useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { duration, easing, layout } from '../../../../shared/ui/tokens';
+import { duration, easing, layout, radius } from '../../../../shared/ui/tokens';
 import { usePlayer } from './PlayerProvider';
 
 const MINI_PLAYER_HEIGHT = 56;
@@ -60,15 +60,23 @@ export function MiniPlayer() {
       aria-label={`درس فعال: ${session.title}`}
       sx={{
         position: 'fixed',
-        insetInlineStart: 0,
-        insetInlineEnd: 0,
         bottom: {
           xs: `calc(${layout.bottomNavigationHeight}px + env(safe-area-inset-bottom, 0px))`,
           md: 16,
         },
+        // Keep the desktop player inside the content region instead of
+        // spanning underneath the permanent navigation. On phones it still
+        // owns the full width above the bottom navigation.
+        insetInlineStart: {
+          xs: 0,
+          md: `${layout.navigationRailWidth}px`,
+          lg: `${layout.desktopNavigationWidth}px`,
+        },
+        insetInlineEnd: { xs: 0, md: 24 },
+        borderRadius: { xs: 0, md: `${radius.radiusCard}px` },
         zIndex: (t) => t.zIndex.appBar,
-        borderTop: 1,
-        borderColor: 'divider',
+        border: { xs: 'none', md: '1px solid' },
+        borderColor: 'outlineVariant',
         backgroundColor: 'surfaceContainerHigh',
         color: 'onSurface',
         animation: `fep-mini-player-enter ${duration.durationEmphasized}ms ${easing.easingEmphasized} both`,

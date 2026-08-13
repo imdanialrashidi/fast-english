@@ -95,7 +95,7 @@ export function LessonListSkeleton() {
             <Stack spacing={1.5}>
               {[0, 1].map((card) => (
                 <Card key={card}>
-                  <Stack spacing={1.5} sx={{ p: 2.5 }}>
+                  <Stack spacing={1.5} sx={{ p: `${layout.cardPaddingCompact}px` }}>
                     <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                       <Skeleton variant="text" width="40%" height={20} />
                       <Skeleton variant="rounded" width={64} height={24} />

@@ -208,7 +208,7 @@ export function LibraryRoute() {
 
   if (showSkeleton) {
     return (
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <LibrarySkeleton />
       </PageContainer>
     );
@@ -216,7 +216,7 @@ export function LibraryRoute() {
 
   if (phase === 'error') {
     return (
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <StatePanel
           variant="error"
           title={productCopy.errors.episodesFailed}
@@ -244,17 +244,14 @@ export function LibraryRoute() {
   ];
 
   return (
-    <PageContainer maxWidth="md">
-      <Box component="header" sx={{ mb: 3 }}>
+    <PageContainer maxWidth="lg">
+      <Box component="header" sx={{ mb: { xs: 4, sm: 5 } }}>
         <Typography component="h1" variant="h2" sx={{ overflowWrap: 'anywhere' }}>
           {productCopy.nav.library}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-          {productCopy.library.subtitle}
-        </Typography>
       </Box>
 
-      <Stack spacing={{ xs: 2.5, sm: 3 }}>
+      <Stack spacing={{ xs: 3, sm: 4 }}>
         <SearchField
           value={searchInput}
           onChange={setSearchInput}
@@ -327,7 +324,7 @@ export function LibraryRoute() {
                 onChange={(event) => applyQuery({ sort: event.target.value as LibrarySort })}
                 sx={{
                   minHeight: 40,
-                  borderRadius: '999px',
+                  borderRadius: '10px',
                   border: '1px solid',
                   borderColor: 'outlineVariant',
                   backgroundColor: 'surfaceContainerLow',

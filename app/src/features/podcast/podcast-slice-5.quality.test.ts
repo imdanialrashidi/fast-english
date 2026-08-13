@@ -124,7 +124,7 @@ describe('Podcast Slice 5 — Product copy and structure gates', () => {
     expect(home).toContain('EpisodeArtwork');
     expect(home).toContain('continue-cta');
     expect(home).toContain('سلام');
-    expect(home).toContain('امروز چی گوش می‌دی؟');
+    expect(home).toContain('شنیدن بعدی‌ات را از همین‌جا ادامه بده.');
     // One H1 greeting, section headings are h2.
     expect(home).toContain('component="h1"');
   });

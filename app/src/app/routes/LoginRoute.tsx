@@ -28,7 +28,7 @@ import { PageContainer } from '../../../../shared/ui/PageContainer';
 import { StatePanel } from '../../../../shared/ui/StatePanel';
 import { useAuth } from '../../lib/auth';
 import { AuthError } from '../../lib/authErrors';
-import { formatIranianPhoneForDisplay, normalizeIranianPhone } from '../../lib/phone';
+import { normalizeIranianPhone } from '../../lib/phone';
 import { type LoginValues, loginSchema } from '../../lib/schemas';
 
 // Focuses the first invalid field after a failed submit (keyboard-first:
@@ -62,9 +62,6 @@ export function LoginRoute() {
   });
 
   const phoneValue = watch('phone');
-  const canonicalPreview = normalizeIranianPhone(phoneValue);
-  const phoneDisplay = canonicalPreview ? formatIranianPhoneForDisplay(canonicalPreview) : null;
-
   const onSubmit = handleSubmit(
     async (values) => {
       setServerError(null);
@@ -84,7 +81,7 @@ export function LoginRoute() {
     <PageContainer maxWidth="sm">
       <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
         <Box sx={{ pt: 2 }}>
-          <Brand variant="full" size="md" />
+          <Brand variant="header" maxWidth={180} />
         </Box>
 
         <Card sx={{ width: '100%' }}>
@@ -123,9 +120,7 @@ export function LoginRoute() {
                   // run while labels/help stay RTL.
                   slotProps={{ htmlInput: { dir: 'ltr', inputMode: 'tel' } }}
                   error={Boolean(errors.phone)}
-                  helperText={
-                    errors.phone?.message ?? (phoneDisplay ? `شکل ذخیره‌شده: ${phoneDisplay}` : ' ')
-                  }
+                  helperText={errors.phone?.message}
                 />
                 <TextField
                   label="رمز عبور"
@@ -133,7 +128,7 @@ export function LoginRoute() {
                   autoComplete="current-password"
                   {...register('password')}
                   error={Boolean(errors.password)}
-                  helperText={errors.password?.message ?? ' '}
+                  helperText={errors.password?.message}
                   slotProps={{
                     input: {
                       endAdornment: (

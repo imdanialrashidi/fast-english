@@ -79,8 +79,12 @@ export function EditionRail({
       data-testid={testId ?? 'edition-rail'}
       sx={{
         display: 'flex',
-        flexWrap: 'wrap',
-        gap: 1,
+        // The six CEFR plates are one rail, not a wrapping chip group. A
+        // fixed plate width keeps the edition language legible at 360px and
+        // prevents a partial second row in RTL.
+        flexWrap: 'nowrap',
+        gap: 0.5,
+        pb: 2,
         mt: 1.5,
         opacity: disabled ? 0.55 : 1,
         pointerEvents: disabled ? 'none' : 'auto',
@@ -107,7 +111,15 @@ export function EditionRail({
           return (
             <Box
               key={entry.level}
-              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}
+              sx={{
+                position: 'relative',
+                width: PLATE_SIZE,
+                flexShrink: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 0.5,
+              }}
             >
               <Box
                 component="button"
@@ -144,7 +156,15 @@ export function EditionRail({
         return (
           <Box
             key={entry.level}
-            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}
+            sx={{
+              position: 'relative',
+              width: PLATE_SIZE,
+              flexShrink: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 0.5,
+            }}
           >
             <Box
               component="button"
@@ -191,6 +211,12 @@ export function EditionRail({
                 variant="caption"
                 component="span"
                 sx={{
+                  position: 'absolute',
+                  top: 48,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 'max-content',
+                  whiteSpace: 'nowrap',
                   fontSize: '0.6875rem',
                   lineHeight: 1.4,
                   color: 'text.secondary',

@@ -11,6 +11,10 @@ const sideNav = readFileSync(
   resolve(repoRoot, 'app', 'src', 'app', 'shell', 'StudentSideNav.tsx'),
   'utf8',
 );
+const appHeader = readFileSync(
+  resolve(repoRoot, 'app', 'src', 'app', 'shell', 'AppHeader.tsx'),
+  'utf8',
+);
 
 // Final Student destinations (Podcast Slice 5): خانه / کتابخانه / پیشرفت / حساب.
 const requiredLabels = ['خانه', 'کتابخانه', 'پیشرفت', 'حساب'];
@@ -37,5 +41,10 @@ describe('student navigation', () => {
 
   it('side nav is hidden on mobile and shown on tablet and up', () => {
     expect(sideNav).toMatch(/display.*xs.*none.*md.*block/);
+  });
+
+  it('mobile and tablet header keep the official brand lockup', () => {
+    expect(appHeader).toContain('<Brand variant="header" maxWidth={144} />');
+    expect(appHeader).not.toContain('<Brand variant="compact" size="sm" />');
   });
 });

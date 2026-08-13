@@ -450,7 +450,7 @@ export function LessonDetailRoute() {
                       sx={{
                         width: 128,
                         height: 56,
-                        borderRadius: radius.radiusPill,
+                        borderRadius: `${radius.radiusPill}px`,
                         backgroundColor: 'surfaceContainerHighest',
                       }}
                     />

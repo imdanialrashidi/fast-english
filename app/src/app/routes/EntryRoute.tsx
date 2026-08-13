@@ -27,7 +27,7 @@ export function EntryRoute() {
     >
       <PageContainer maxWidth="sm" disableGutter>
         <Stack spacing={3} sx={{ alignItems: 'center', textAlign: 'center' }}>
-          <Brand variant="full" size="md" />
+          <Brand variant="header" maxWidth={190} />
 
           <Stack spacing={1.5}>
             <Typography component="h1" variant="h1" sx={{ textWrap: 'balance' }}>
@@ -46,10 +46,6 @@ export function EntryRoute() {
               ورود
             </Button>
           </Stack>
-
-          <Typography variant="caption" color="text.secondary" sx={{ pt: 1 }}>
-            ورود، پرداخت و فعال‌سازی اشتراک از داخل همین برنامه انجام می‌شود.
-          </Typography>
         </Stack>
       </PageContainer>
     </Box>

@@ -49,7 +49,7 @@ export function EpisodeArtwork({
       sx={{
         aspectRatio: '1 / 1',
         width: '100%',
-        borderRadius: radius.radiusCard,
+        borderRadius: `${radius.radiusCard}px`,
         backgroundColor: 'surfaceContainerHighest',
         flexShrink: 0,
         ...sx,
@@ -65,7 +65,7 @@ export function EpisodeArtwork({
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          borderRadius: radius.radiusCard,
+          borderRadius: `${radius.radiusCard}px`,
         }}
       />
     </Box>

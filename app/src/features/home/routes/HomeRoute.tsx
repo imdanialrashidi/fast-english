@@ -67,7 +67,7 @@ export function HomeRoute() {
 
   if (phase === 'loading') {
     return (
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <HomeSkeleton />
       </PageContainer>
     );
@@ -75,7 +75,7 @@ export function HomeRoute() {
 
   if (phase === 'error' || !data) {
     return (
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <StatePanel
           variant="error"
           title={productCopy.errors.episodesFailed}
@@ -94,13 +94,13 @@ export function HomeRoute() {
   const { recommended, latest } = deriveSections(data.episodes);
 
   return (
-    <PageContainer maxWidth="md">
-      <Box component="header" sx={{ mb: 3 }}>
+    <PageContainer maxWidth="lg">
+      <Box component="header" sx={{ mb: { xs: 4, sm: 5 } }}>
         <Typography component="h1" variant="h2" sx={{ overflowWrap: 'anywhere' }}>
           {greetingFor(user?.name ?? '')}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-          امروز چی گوش می‌دی؟
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
+          شنیدن بعدی‌ات را از همین‌جا ادامه بده.
         </Typography>
       </Box>
 
@@ -132,7 +132,10 @@ export function HomeRoute() {
                 gridTemplateColumns: {
                   xs: '1fr',
                   sm: 'repeat(2, minmax(0, 1fr))',
-                  lg: 'repeat(3, minmax(0, 1fr))',
+                  // Two columns keep a single real Episode from becoming a
+                  // tiny card stranded beside a large desktop void.
+                  lg: 'repeat(2, minmax(0, 1fr))',
+                  xl: 'repeat(3, minmax(0, 1fr))',
                 },
                 gap: 2,
               }}
@@ -153,7 +156,9 @@ export function HomeRoute() {
                 gridTemplateColumns: {
                   xs: '1fr',
                   sm: 'repeat(2, minmax(0, 1fr))',
-                  lg: 'repeat(3, minmax(0, 1fr))',
+                  // Keep the same rhythm as the preferred-level section.
+                  lg: 'repeat(2, minmax(0, 1fr))',
+                  xl: 'repeat(3, minmax(0, 1fr))',
                 },
                 gap: 2,
               }}
@@ -198,20 +203,26 @@ function ContinueHero({
   const position = progress.positionSeconds ?? 0;
   const percent = Math.min(100, Math.max(0, progress.percent ?? 0));
 
-  // Remaining time only from authoritative duration + saved position.
-  const duration = progress.durationSeconds ?? 0;
-  let remainingMinutes: number | null = null;
-  if (duration > 0 && position > 0) {
-    const remaining = duration - position;
-    if (remaining > 30) remainingMinutes = Math.max(1, Math.ceil(remaining / 60));
-  }
-
   return (
     <Card
       data-testid="home-continue"
-      sx={{ borderRadius: radius.radiusHero, backgroundColor: 'primaryContainer' }}
+      sx={{
+        border: 'none',
+        borderRadius: `${radius.radiusHero}px`,
+        backgroundColor: 'primaryContainer',
+        borderInlineStart: '4px solid',
+        borderInlineStartColor: 'primary.main',
+      }}
     >
-      <Stack spacing={2} sx={{ p: { xs: 2.5, sm: 3 } }}>
+      <Stack
+        spacing={2}
+        sx={{
+          p: {
+            xs: `${layout.cardPaddingComfortable}px`,
+            sm: `${layout.cardPaddingComfortable + 8}px`,
+          },
+        }}
+      >
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <PlayCircleRoundedIcon sx={{ color: 'onPrimaryContainer' }} />
           <Typography
@@ -227,7 +238,7 @@ function ContinueHero({
           <EpisodeArtwork
             src={episode?.artwork}
             alt={title || productCopy.episode.entity}
-            sx={{ width: { xs: 96, sm: 120 }, borderRadius: radius.radiusHero }}
+            sx={{ width: { xs: 104, sm: 144 }, borderRadius: `${radius.radiusCard}px` }}
             data-testid="continue-artwork"
           />
           <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
@@ -274,7 +285,7 @@ function ContinueHero({
               <Typography variant="caption" sx={{ color: 'onPrimaryContainer' }}>
                 {lesson.audioDurationSeconds && lesson.audioDurationSeconds > 0
                   ? formatClock(lesson.audioDurationSeconds)
-                  : formatClock(duration)}
+                  : formatClock(progress.durationSeconds ?? 0)}
               </Typography>
             </Stack>
           </Stack>
@@ -306,14 +317,6 @@ function ContinueHero({
               ? productCopy.actions.continueFrom(formatClock(position))
               : productCopy.actions.startListening}
           </Button>
-          {remainingMinutes !== null ? (
-            <Typography
-              variant="caption"
-              sx={{ color: 'onPrimaryContainer', display: 'block', textAlign: 'center', mt: 1 }}
-            >
-              حدود {remainingMinutes} دقیقه باقی‌مانده
-            </Typography>
-          ) : null}
         </Box>
       </Stack>
     </Card>
@@ -336,15 +339,23 @@ function FirstUsePanel({
   return (
     <Card
       data-testid="home-start"
-      sx={{ borderRadius: radius.radiusHero, backgroundColor: 'secondaryContainer' }}
+      sx={{ borderRadius: `${radius.radiusHero}px`, backgroundColor: 'secondaryContainer' }}
     >
-      <Stack spacing={1.5} sx={{ p: { xs: 2.5, sm: 3 } }}>
+      <Stack
+        spacing={1.5}
+        sx={{
+          p: {
+            xs: `${layout.cardPaddingCompact}px`,
+            sm: `${layout.cardPaddingComfortable}px`,
+          },
+        }}
+      >
         <Typography component="h2" variant="headlineSmall" sx={{ color: 'onSecondaryContainer' }}>
           اولین اپیزودت را شروع کن
         </Typography>
         <Typography variant="body1" sx={{ color: 'onSecondaryContainer' }}>
           {hasEpisodes && level
-            ? `چند اپیزود مناسب سطح ${level} برای شروع آماده است.`
+            ? `اپیزودهای سطح ${level} برای شروع آماده‌اند.`
             : productCopy.empty.noEpisodesForLevel}
         </Typography>
         <Box>
@@ -371,9 +382,17 @@ function CompletedPanel({ onOpenLibrary }: { onOpenLibrary: () => void }) {
   return (
     <Card
       data-testid="home-completed"
-      sx={{ borderRadius: radius.radiusHero, backgroundColor: 'successContainer' }}
+      sx={{ borderRadius: `${radius.radiusHero}px`, backgroundColor: 'successContainer' }}
     >
-      <Stack spacing={1.5} sx={{ p: { xs: 2.5, sm: 3 } }}>
+      <Stack
+        spacing={1.5}
+        sx={{
+          p: {
+            xs: `${layout.cardPaddingCompact}px`,
+            sm: `${layout.cardPaddingComfortable}px`,
+          },
+        }}
+      >
         <Typography component="h2" variant="headlineSmall" sx={{ color: 'onSuccessContainer' }}>
           همهٔ اپیزودهای این سطح را گوش کردی
         </Typography>
@@ -403,7 +422,15 @@ function CompletedPanel({ onOpenLibrary }: { onOpenLibrary: () => void }) {
 function UnavailablePanel({ onOpenLibrary }: { onOpenLibrary: () => void }) {
   return (
     <Card data-testid="home-unavailable">
-      <Stack spacing={1.5} sx={{ p: { xs: 2.5, sm: 3 } }}>
+      <Stack
+        spacing={1.5}
+        sx={{
+          p: {
+            xs: `${layout.cardPaddingCompact}px`,
+            sm: `${layout.cardPaddingComfortable}px`,
+          },
+        }}
+      >
         <Typography component="h2" variant="headlineSmall">
           اپیزودها فعلاً در دسترس نیستند
         </Typography>
@@ -441,7 +468,15 @@ function ProgressPanel({
 
   return (
     <Card data-testid="progress-card">
-      <Stack spacing={1.5} sx={{ p: { xs: 2.5, sm: 3 } }}>
+      <Stack
+        spacing={1.5}
+        sx={{
+          p: {
+            xs: `${layout.cardPaddingCompact}px`,
+            sm: `${layout.cardPaddingComfortable}px`,
+          },
+        }}
+      >
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
           <AutoStoriesRoundedIcon color="action" />
           <Typography component="h2" variant="titleMedium" sx={{ flex: 1 }}>
@@ -568,7 +603,7 @@ function SubscriptionLine({
         flexWrap: 'wrap',
         px: 2,
         py: 1.5,
-        borderRadius: radius.radiusCard,
+        borderRadius: `${radius.radiusCard}px`,
         border: '1px solid',
         borderColor: 'outlineVariant',
         backgroundColor: 'surfaceContainerLow',

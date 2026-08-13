@@ -13,6 +13,7 @@ import { getRecommendedLevel } from '../../../../../shared/podcast/domain';
 import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import type { CefrLevel } from '../../../../../shared/ui/tokens/cefr';
+import { layout } from '../../../../../shared/ui/tokens/spacing';
 import { productCopy } from '../../../app/copy/productCopy';
 import { LevelBadge } from '../../../app/shell/LevelBadge';
 import { useAuth } from '../../../lib/auth';
@@ -43,13 +44,10 @@ export function ProgressRoute() {
 
   if (phase === 'loading') {
     return (
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <Box component="header" sx={{ mb: 3 }}>
           <Typography component="h1" variant="h2">
             {productCopy.sections.progress}
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-            در حال بارگذاری پیشرفت…
           </Typography>
         </Box>
         <Stack spacing={1.5}>
@@ -67,7 +65,7 @@ export function ProgressRoute() {
 
   if (phase === 'error' || !summary) {
     return (
-      <PageContainer maxWidth="md">
+      <PageContainer maxWidth="lg">
         <Box component="header" sx={{ mb: 3 }}>
           <Typography component="h1" variant="h2">
             {productCopy.sections.progress}
@@ -91,15 +89,15 @@ export function ProgressRoute() {
   const showRecommended = recommended && recommended !== summary.selectedLevel;
 
   return (
-    <PageContainer maxWidth="md">
-      <Box component="header" sx={{ mb: 3 }}>
+    <PageContainer maxWidth="lg">
+      <Box component="header" sx={{ mb: { xs: 4, sm: 5 } }}>
         <Typography component="h1" variant="h2">
           {productCopy.sections.progress}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
           {summary.publishedLessonCount > 0
-            ? `خلاصهٔ اپیزودهای سطح ${summary.selectedLevel}`
-            : 'خلاصهٔ پیشرفت تو'}
+            ? `اپیزودهای سطح ${summary.selectedLevel}`
+            : 'پیشرفت شنیداری تو'}
         </Typography>
       </Box>
 
@@ -108,7 +106,10 @@ export function ProgressRoute() {
           data-testid="progress-summary-card"
           sx={{
             px: { xs: 2, sm: 3 },
-            py: { xs: 2.5, sm: 3 },
+            py: {
+              xs: `${layout.cardPaddingCompact}px`,
+              sm: `${layout.cardPaddingComfortable}px`,
+            },
             borderRadius: '16px',
             border: '1px solid',
             borderColor: 'outlineVariant',

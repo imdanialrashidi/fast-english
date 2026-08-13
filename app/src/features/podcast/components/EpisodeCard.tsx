@@ -90,8 +90,8 @@ export function EpisodeCard({
       <Stack
         spacing={1.5}
         sx={{
-          p: { xs: 1.5, sm: 2 },
-          flexDirection: { xs: 'row', md: layout === 'row' ? 'row' : 'column' },
+          p: { xs: 2, sm: 2.5 },
+          flexDirection: 'row',
           alignItems: 'flex-start',
         }}
       >
@@ -99,7 +99,7 @@ export function EpisodeCard({
           src={episode?.artwork}
           alt={primaryTitle || productCopy.episode.entity}
           loading={artworkLoading}
-          sx={{ width: { xs: 88, md: layout === 'row' ? 96 : '100%' }, aspectRatio: '1 / 1' }}
+          sx={{ width: { xs: 88, md: layout === 'row' ? 96 : 148 }, aspectRatio: '1 / 1' }}
         />
         <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
           {episode?.category?.titleFa ? (
