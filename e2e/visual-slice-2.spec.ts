@@ -494,13 +494,16 @@ const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
 let su: string;
 let student: { token: string; phone: string; userId: string };
 // The /lessons list page reads progress for EVERY published lesson at the
-// Student's level. In the shared-PB composition that list holds ~17 A1
+// Student's level. In the shared-PB composition that list holds ~17-20 A1
 // lessons (mostly the podcast-library fixtures), so a single visit consumes
-// most of the per-Student progress-read budget (30 calls / 5 min). The
-// suite's lesson-list visitors are therefore spread across dedicated owned
-// Students so every identity stays under the budget in any fixture order.
+// most of the per-Student progress-read budget (30 calls / 5 min). Every
+// /lessons-list visitor therefore gets a DEDICATED owned identity (the
+// lesson-detail tests share `student`), so no identity can exceed the
+// budget in any fixture order — even on slower runners where the browser
+// may not coalesce duplicate in-flight fetches.
 let studentB: { token: string; phone: string; userId: string };
 let studentC: { token: string; phone: string; userId: string };
+let studentD: { token: string; phone: string; userId: string };
 let noLessonStudent: { token: string };
 let doneStudent: { token: string };
 
@@ -613,11 +616,14 @@ test.beforeAll(async () => {
   await saveProgress(student.token, lessonIds.inProgress, 150);
   await saveProgress(student.token, lessonIds.completed, 600);
   // Dedicated identities for the /lessons-list visitors (rate budget, see
-  // the declaration comment). studentB carries the same state seeds as
-  // `student`; studentC stays seed-free (not-started cards only).
+  // the declaration comment). studentB and studentD carry the same state
+  // seeds as `student`; studentC stays seed-free (not-started cards only).
   studentB = await createActiveStudent(su, 'A1');
   await saveProgress(studentB.token, lessonIds.inProgress, 150);
   await saveProgress(studentB.token, lessonIds.completed, 600);
+  studentD = await createActiveStudent(su, 'A1');
+  await saveProgress(studentD.token, lessonIds.inProgress, 150);
+  await saveProgress(studentD.token, lessonIds.completed, 600);
   studentC = await createActiveStudent(su, 'A1');
   noLessonStudent = await createActiveStudent(su, 'C2');
   doneStudent = await createActiveStudent(su, 'A1');
@@ -889,7 +895,7 @@ test.describe('lesson list states', () => {
 
   test('all three real progress states render with text + CTA', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, studentB.token, record, '/lessons');
     await expect(page.getByRole('heading', { name: 'A Fresh Start', exact: true })).toBeVisible({
       timeout: 15_000,
     });
@@ -912,7 +918,7 @@ test.describe('lesson list states', () => {
   });
 
   test('completed lessons remain interactive', async ({ page }) => {
-    await setAuthAndGo(page, studentB.token, record, '/lessons');
+    await setAuthAndGo(page, studentD.token, record, '/lessons');
     await page.getByRole('link', { name: 'مرور مجدد' }).click();
     await expect(page).toHaveURL(new RegExp(`/lessons/${lessonIds.completed}`), {
       timeout: 10_000,
@@ -1094,7 +1100,7 @@ test.describe('lesson detail and player', () => {
   });
 
   test('mini player is hidden when no lesson is active', async ({ page }) => {
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, noLessonStudent.token, record, '/lessons');
     await expect(page.getByTestId('mini-player')).toHaveCount(0);
   });
 
@@ -1121,11 +1127,11 @@ test.describe('theme on redesigned pages', () => {
   const routeFor = (key: string): string =>
     key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'dashboard' ? '/' : `/${key}`;
   // Per-route identity: the legacy /lessons list reads progress for every
-  // published lesson at the Student's level (~17 in the shared-PB
-  // composition); empty-level and dedicated Students keep every identity
-  // inside the per-Student progress-read budget.
+  // published lesson at the Student's level (~17-20 in the shared-PB
+  // composition); the empty-level Student keeps the list visits at zero
+  // reads so `student` stays inside the per-Student progress-read budget.
   const tokenForRoute = (key: string): string =>
-    key === 'lessons' ? noLessonStudent.token : key === 'detail' ? studentB.token : student.token;
+    key === 'lessons' ? noLessonStudent.token : student.token;
 
   for (const key of ['home', 'library', 'progress', 'lessons', 'account', 'detail'] as const) {
     test(`route renders in Light and Dark without overflow: ${key}`, {
@@ -1226,7 +1232,7 @@ test.describe('responsive geometry', () => {
   // Per-route identity: see the theme sweep — the legacy /lessons list
   // burns the per-Student progress-read budget in the shared-PB composition.
   const tokenForRoute = (key: string): string =>
-    key === 'lessons' ? noLessonStudent.token : key === 'detail' ? studentB.token : student.token;
+    key === 'lessons' ? noLessonStudent.token : student.token;
 
   for (const viewport of VIEWPORTS) {
     for (const route of publicRoutes) {
