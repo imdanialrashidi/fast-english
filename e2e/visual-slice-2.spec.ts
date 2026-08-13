@@ -1068,8 +1068,12 @@ test.describe('lesson detail and player', () => {
     const mini = page.getByTestId('mini-player');
     await expect(mini).toBeVisible({ timeout: 10_000 });
     await expect(mini.getByText('روتین روزانه')).toBeVisible();
-    // Exactly one audio element exists — never two simultaneous players.
-    expect(await page.locator('audio').count()).toBe(1);
+    // Exactly one authoritative PLAYER element exists — never two
+    // simultaneous players. Scoped to audio[preload="metadata"]: the
+    // vocabulary pronunciation host (preload="none") is a separate,
+    // never-playing surface, and the route transition may briefly keep
+    // the previous route mounted on slower runners.
+    expect(await page.locator('audio[preload="metadata"]').count()).toBe(1);
     // No overlap with the bottom navigation.
     const miniBox = (await mini.boundingBox())!;
     const navBox = (await page.getByTestId('student-bottom-nav').boundingBox())!;

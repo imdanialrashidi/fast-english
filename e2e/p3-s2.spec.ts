@@ -824,7 +824,9 @@ test.describe('P3-S2 Progress and Audio Player', () => {
       await expect(cta).toBeVisible();
       const ctaBox = await cta.boundingBox();
       if (!ctaBox) throw new Error('deck CTA has no bounding box');
-      expect(ctaBox.height).toBe(56);
+      // The 56px slot survives sub-pixel renderer rounding (CI measured
+      // 55.999969482421875 on one run — the contract is the 56px slot).
+      expect(Math.round(ctaBox.height)).toBe(56);
       expect(ctaBox.width).toBeGreaterThanOrEqual(56);
       for (const name of ['۱۰ ثانیه به عقب', '۱۰ ثانیه به جلو', 'قطع صدا']) {
         const box = await player.getByRole('button', { name }).boundingBox();

@@ -75,10 +75,14 @@ const state: {
   // Student A — Record Jacket identity + CTA-state tests (1-3).
   token: string;
   userId: string;
-  // Student B — Variant-switch + neighbors tests (4-5).
+  // Student B — Variant-switch tests (4).
   tokenB: string;
   // Student C — interactive/state tests (6-11) and the responsive suite.
   tokenC: string;
+  // Student D — neighbors walk (5): the walk + the variant-switch suite
+  // together ride the lesson-detail rate edge on slower runners, where
+  // the browser may not coalesce duplicate in-flight fetches.
+  tokenD: string;
   userIdC: string;
   su: string;
   aB1: string;
@@ -91,6 +95,7 @@ const state: {
   userId: '',
   tokenB: '',
   tokenC: '',
+  tokenD: '',
   userIdC: '',
   su: '',
   aB1: '',
@@ -301,6 +306,8 @@ test.beforeAll(async () => {
   state.userId = studentA.userId;
   const studentB = await createEntitledStudent();
   state.tokenB = studentB.token;
+  const studentD = await createEntitledStudent();
+  state.tokenD = studentD.token;
   const studentC = await createEntitledStudent();
   state.tokenC = studentC.token;
   state.userIdC = studentC.userId;
@@ -504,7 +511,7 @@ test.beforeAll(async () => {
 
   // Progress seeds (per-Variant, independent) for EVERY owned Student: the
   // CTA-state tests run under different identities by design (rate budget).
-  for (const t of [state.token, state.tokenB, state.tokenC]) {
+  for (const t of [state.token, state.tokenB, state.tokenC, state.tokenD]) {
     await jsonFetch(`${PB_URL}/api/fast-english/lessons/${state.aB1}/progress`, {
       method: 'PUT',
       headers: { authorization: `Bearer ${t}` },
@@ -903,7 +910,7 @@ test.describe('Episode surface — Record Jacket', () => {
     const neighborMap = await deriveNeighbors();
 
     for (const [variantId, expected] of Object.entries(neighborMap)) {
-      await setAuthAndGo(page, `/lessons/${variantId}`, state.tokenB);
+      await setAuthAndGo(page, `/lessons/${variantId}`, state.tokenD);
       await expect(page.getByTestId('episode-jacket')).toBeVisible({ timeout: 20_000 });
       const previous = page.getByTestId('prevnext-previous');
       const next = page.getByTestId('prevnext-next');
@@ -925,7 +932,7 @@ test.describe('Episode surface — Record Jacket', () => {
     // switch) — the target comes from the server-derived neighbors.
     const alphaExpected = neighborMap[state.aB1];
     expect(alphaExpected.next).toBeTruthy();
-    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenB);
+    await setAuthAndGo(page, `/lessons/${state.aB1}`, state.tokenD);
     await page.getByTestId('prevnext-next').click();
     await expect(page).toHaveURL(new RegExp(`/lessons/${alphaExpected.next.variantId}$`), {
       timeout: 10_000,

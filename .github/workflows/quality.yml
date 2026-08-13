@@ -37,6 +37,12 @@ jobs:
       - name: Install dependencies
         run: bash scripts/ci-install.sh
 
+      # The player-lifecycle suite generates its 600s audio fixture with
+      # ffmpeg and FAILS LOUDLY when it is absent (never silently falls
+      # back to a shorter clip). ubuntu-latest does not ship ffmpeg.
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Provision PocketBase test binary
         run: bash scripts/setup-pocketbase.sh
 
