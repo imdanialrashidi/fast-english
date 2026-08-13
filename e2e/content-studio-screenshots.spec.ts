@@ -5,6 +5,10 @@
 // the repository (/tmp/opencode/fep-content-studio/). They are generated
 // for a human reviewer and are NOT proof of anything; the automated
 // contracts live in content-studio.spec.ts and the smoke suites.
+//
+// Opt-in like the other evidence specs: run with FEP_SCREENSHOTS=1 to
+// generate the artifacts (CI and the default `pnpm test:e2e:full` skip it,
+// so evidence capture never adds mandatory release-gate runtime).
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -129,7 +133,10 @@ const VIEWPORTS = [
   { width: 1440, height: 900 },
 ];
 
+const ENV_FLAG = process.env.FEP_SCREENSHOTS === '1';
+
 test('generate uninspected content-studio screenshots', async ({ page }) => {
+  test.skip(!ENV_FLAG, 'opt-in: set FEP_SCREENSHOTS=1 to generate human-review artifacts');
   const shots: Array<{ path: string; setup: () => Promise<void> }> = [
     { path: '01-content-overview', setup: async () => auth(page, '/content') },
     { path: '02-episode-list', setup: async () => auth(page, '/content/episodes') },

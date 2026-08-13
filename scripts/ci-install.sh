@@ -10,7 +10,11 @@ if [[ -f package.json ]]; then
     corepack enable
     pnpm install --frozen-lockfile
     # Full verification runs the Playwright suite; install the browser.
-    pnpm exec playwright install chromium
+    # Non-browser lanes (CI_SKIP_PLAYWRIGHT=1) skip the browser download
+    # because they never run the e2e suite.
+    if [[ "${CI_SKIP_PLAYWRIGHT:-0}" != "1" ]]; then
+      pnpm exec playwright install chromium
+    fi
   elif [[ -f yarn.lock ]]; then
     command -v corepack >/dev/null || { echo "yarn lockfile found but corepack is unavailable" >&2; exit 1; }
     corepack enable

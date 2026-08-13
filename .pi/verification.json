@@ -16,6 +16,7 @@
         ".github/**",
         "scripts/pi-doctor.sh",
         "scripts/pi-sandbox.sh",
+        "scripts/ci-install.sh",
         "scripts/verify-package-integrity.mjs",
         "scripts/secret-scan-filter.mjs",
         "scripts/secret-scan-allowlist.json",
@@ -86,7 +87,8 @@
         "scripts/verify-feature.sh",
         "scripts/verify-full.sh",
         "scripts/verify.sh",
-        "scripts/project-verify.sh"
+        "scripts/project-verify.sh",
+        "scripts/verify-smokes-parallel.sh"
       ],
       "commands": [
         ["bash", "scripts/verify-full.sh"]

@@ -5,6 +5,11 @@
 # Does not install or modify dependencies. Does not auto-format.
 # Fails on the first real failure. Preserves readable command output.
 #
+# CI backend lane: set FEP_VERIFY_PARALLEL_SMOKES=1 to run the 16 smoke
+# suites concurrently (each on its own disposable PocketBase; see
+# scripts/verify-smokes-parallel.sh). The default serial order below is
+# unchanged for local/review runs.
+#
 # Steps:
 #   1. Strict typecheck
 #   2. Biome lint/format check (no auto-fix)
@@ -57,67 +62,76 @@ run npx biome check .
 # 3. Test command (passWithNoTests is acceptable for topology-only slices).
 run npx vitest run --passWithNoTests
 
-# 4. Auth smoke against disposable PB.
-run bash scripts/smoke-auth.sh node scripts/smoke-auth.mjs
+# 4-13f. Real Backend smoke suites against disposable PocketBases (one PB
+# per suite). The CI backend lane sets FEP_VERIFY_PARALLEL_SMOKES=1 to
+# overlap the independent suites on dedicated ports; the canonical serial
+# order below stays the default for local/review runs so output remains
+# deterministic and readable.
+if [[ "${FEP_VERIFY_PARALLEL_SMOKES:-0}" == "1" ]]; then
+  run bash scripts/verify-smokes-parallel.sh
+else
+  # 4. Auth smoke against disposable PB.
+  run bash scripts/smoke-auth.sh node scripts/smoke-auth.mjs
 
-# 5. Payment smoke against disposable PB (23/23).
-run bash scripts/smoke-payment.sh node scripts/smoke-payment.mjs
+  # 5. Payment smoke against disposable PB (23/23).
+  run bash scripts/smoke-payment.sh node scripts/smoke-payment.mjs
 
-# 6. Payment-preview smoke against disposable PB (12/12).
-run bash scripts/smoke-payment.sh node scripts/smoke-payment-preview.mjs
+  # 6. Payment-preview smoke against disposable PB (12/12).
+  run bash scripts/smoke-payment.sh node scripts/smoke-payment-preview.mjs
 
-# 7. Placement smoke (Phase 2; 40+ assertions).
-run bash scripts/smoke-placement.sh node scripts/smoke-placement.mjs
+  # 7. Placement smoke (Phase 2; 40+ assertions).
+  run bash scripts/smoke-placement.sh node scripts/smoke-placement.mjs
 
-# 8. Placement-levels smoke (Phase 2; level selection + dashboard).
-run bash scripts/smoke-placement.sh node scripts/smoke-placement-levels.mjs
+  # 8. Placement-levels smoke (Phase 2; level selection + dashboard).
+  run bash scripts/smoke-placement.sh node scripts/smoke-placement-levels.mjs
 
-# 9. Operator smoke (Phase 2; Staff approval + management).
-run bash scripts/smoke-payment.sh node scripts/smoke-operator.mjs
+  # 9. Operator smoke (Phase 2; Staff approval + management).
+  run bash scripts/smoke-payment.sh node scripts/smoke-operator.mjs
 
-# 9b. Staff Auth smoke (Podcast Slice 1; schema, locked rules, cross-token
-#     authorization matrix, bootstrap fail-safes, legacy diagnostic).
-run bash scripts/smoke-payment.sh node scripts/smoke-staff.mjs
+  # 9b. Staff Auth smoke (Podcast Slice 1; schema, locked rules, cross-token
+  #     authorization matrix, bootstrap fail-safes, legacy diagnostic).
+  run bash scripts/smoke-payment.sh node scripts/smoke-staff.mjs
 
-# 10. Multi-tab race smoke (Phase 2 closure; atomic answer save proof).
-run bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs
+  # 10. Multi-tab race smoke (Phase 2 closure; atomic answer save proof).
+  run bash scripts/smoke-placement.sh node scripts/smoke-placement-race.mjs
 
-# 11. Snapshot capacity smoke (Phase 2 closure; max-content proof).
-run bash scripts/smoke-placement.sh node scripts/smoke-placement-capacity.mjs
+  # 11. Snapshot capacity smoke (Phase 2 closure; max-content proof).
+  run bash scripts/smoke-placement.sh node scripts/smoke-placement-capacity.mjs
 
-# 12. Lessons smoke (P3-S1; 25+ assertions for topics, publishing, entitlement, protected audio).
-run bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
+  # 12. Lessons smoke (P3-S1; 25+ assertions for topics, publishing, entitlement, protected audio).
+  run bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
 
-# 12b. Episode smoke (Podcast Slice 7; per-Variant vocabulary + protected
-#      pronunciation audio with authorization/revalidation/Range/prev-next
-#      regressions — part of the canonical full gate).
-run bash scripts/smoke-placement.sh node scripts/smoke-episode.mjs
+  # 12b. Episode smoke (Podcast Slice 7; per-Variant vocabulary + protected
+  #      pronunciation audio with authorization/revalidation/Range/prev-next
+  #      regressions — part of the canonical full gate).
+  run bash scripts/smoke-placement.sh node scripts/smoke-episode.mjs
 
-# 13. Progress smoke (P3-S2; 30+ assertions for progress persistence, entitlement, concurrency).
-run bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs
+  # 13. Progress smoke (P3-S2; 30+ assertions for progress persistence, entitlement, concurrency).
+  run bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs
 
-# 13b. Podcast domain smoke (Podcast Slice 2; categories, Episode/Variant
-#      domain, vocabulary, cross-level entitlement, migration backfill proof,
-#      Progress integrity, archival semantics).
-run bash scripts/smoke-placement.sh node scripts/smoke-podcast-domain.mjs
+  # 13b. Podcast domain smoke (Podcast Slice 2; categories, Episode/Variant
+  #      domain, vocabulary, cross-level entitlement, migration backfill proof,
+  #      Progress integrity, archival semantics).
+  run bash scripts/smoke-placement.sh node scripts/smoke-podcast-domain.mjs
 
-# 13c. Content-import smoke (Podcast Slice 3; the 28-scenario importer suite:
-#      validation, template failure, zero-mutation plan, Draft import,
-#      idempotency, conflicts, version rules, rollback, audit, authz).
-run bash scripts/smoke-placement.sh node scripts/smoke-content-import.mjs
+  # 13c. Content-import smoke (Podcast Slice 3; the 28-scenario importer suite:
+  #      validation, template failure, zero-mutation plan, Draft import,
+  #      idempotency, conflicts, version rules, rollback, audit, authz).
+  run bash scripts/smoke-placement.sh node scripts/smoke-content-import.mjs
 
-# 13e. Content-admin smoke (Podcast Slice 4; the 28-scenario Staff Content
-#      Studio suite: categories, episodes, variants, vocabulary, readiness,
-#      publish/archive, draft preview, ZIP ingestion, stale plans, audit).
-run bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs
+  # 13e. Content-admin smoke (Podcast Slice 4; the 28-scenario Staff Content
+  #      Studio suite: categories, episodes, variants, vocabulary, readiness,
+  #      publish/archive, draft preview, ZIP ingestion, stale plans, audit).
+  run bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs
 
-# 13f. Library & Discovery smoke (Podcast Slice 6; the 27-scenario Library
-#      contract: canonical Episode grouping, published Categories/Episodes/
-#      Variants only, publication filtering before pagination, search,
-#      Category/Level/Progress filters, preferred/recommended fallback,
-#      CEFR availableLevels order, deterministic pagination, Continue
-#      rail, entitlement denial, bounds, sanitization, read-only browsing).
-run bash scripts/smoke-placement.sh node scripts/smoke-library.mjs
+  # 13f. Library & Discovery smoke (Podcast Slice 6; the 27-scenario Library
+  #      contract: canonical Episode grouping, published Categories/Episodes/
+  #      Variants only, publication filtering before pagination, search,
+  #      Category/Level/Progress filters, preferred/recommended fallback,
+  #      CEFR availableLevels order, deterministic pagination, Continue
+  #      rail, entitlement denial, bounds, sanitization, read-only browsing).
+  run bash scripts/smoke-placement.sh node scripts/smoke-library.mjs
+fi
 
 # 13d. Content Package Schema validation (Podcast Slice 3): the committed
 #      JSON Schema must be parseable JSON, the committed example package

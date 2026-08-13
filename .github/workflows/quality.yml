@@ -12,13 +12,27 @@ concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Canonical release gate, split into independent lanes so unrelated work
+# runs concurrently:
+#
+#   static   — Pi harness validation + typecheck + Biome + Vitest (cheap,
+#              high-signal checks fail first).
+#   backend  — the real full backend/operations gate: all 16 real-PocketBase
+#              smoke suites (each on its own disposable PocketBase, run
+#              concurrently via scripts/verify-smokes-parallel.sh) + the
+#              deterministic three-surface builds + topology/boundary/PWA/
+#              Android/deploy checks (scripts/project-verify.sh).
+#   e2e      — the full Playwright suite sharded across independent runners.
+#              Every shard owns its disposable PocketBase + preview servers
+#              (no cross-shard fixture/state sharing), keeps CI retries and
+#              failure traces, and uploads failure artifacts keyed by shard.#   verify   — merge gate: green only when every lane is green.
+#
+# The local full gate (pnpm verify:full / scripts/verify-full.sh) is
+# unchanged and remains the canonical serial model for review-time runs.
 jobs:
-  verify:
+  static:
     runs-on: ubuntu-latest
-    # Full gate = typecheck + Biome + Vitest + all 15 real-PocketBase smoke
-    # suites + three deterministic builds + PWA/Android/deploy checks + the
-    # full Playwright suite (scripts/verify.sh delegates to `pnpm verify:full`).
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
         with:
@@ -35,6 +49,65 @@ jobs:
         run: bash scripts/pi-doctor.sh --ci
 
       - name: Install dependencies
+        env:
+          CI_SKIP_PLAYWRIGHT: '1'
+        run: bash scripts/ci-install.sh
+
+      # Everyday gate: typecheck + Biome + Vitest (743 unit tests).
+      - name: Fast verification (typecheck + Biome + Vitest)
+        run: bash scripts/verify-fast.sh
+
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: static
+    env:
+      CI_SKIP_PLAYWRIGHT: '1'
+      FEP_VERIFY_PARALLEL_SMOKES: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bash scripts/ci-install.sh
+
+      - name: Provision PocketBase test binary
+        run: bash scripts/setup-pocketbase.sh
+
+      # The real Fast English backend + operations gate: typecheck + Biome +
+      # Vitest + all 16 real-PocketBase smoke suites (concurrent, isolated) +
+      # deterministic three-surface builds + topology/boundary checks + PWA
+      # output checks + Android version/signing fail-safes + deploy
+      # token-redaction proofs. Never replaced by a generic or fast lane.
+      - name: Verify (backend release gate)
+        run: bash scripts/project-verify.sh
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: static
+    strategy:
+      fail-fast: false
+      matrix:
+        # 5 shards: the largest file (visual-slice-2, 69 tests) gets its own
+        # shard and the remaining files spread to ~88 max, balancing the
+        # critical path far better than 4 shards (max 129).
+        shard: [1/5, 2/5, 3/5, 4/5, 5/5]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install dependencies
         run: bash scripts/ci-install.sh
 
       # The player-lifecycle suite generates its 600s audio fixture with
@@ -46,7 +119,36 @@ jobs:
       - name: Provision PocketBase test binary
         run: bash scripts/setup-pocketbase.sh
 
-      # The real Fast English full application gate (project-verify.sh +
-      # the full Playwright suite). Never replaced by a generic or fast lane.
-      - name: Verify (full release gate)
-        run: bash scripts/verify.sh
+      # Full Playwright suite (critical + visual + responsive coverage) on
+      # this shard. Each shard runs its own global-setup PocketBase and its
+      # own built preview servers; fixture ownership is per-shard by design.
+      - name: Run Playwright shard ${{ matrix.shard }}
+        run: CI=1 npx playwright test --shard=${{ matrix.shard }}
+
+      # Failure artifacts: per-shard traces/screenshots/error contexts +
+      # the HTML report so the failing shard is identifiable by name.
+      - name: Upload failure artifacts (shard ${{ matrix.shard }})
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-artifacts-${{ matrix.shard }}
+          path: |
+            test-results/e2e/
+            playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  verify:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [static, backend, e2e]
+    timeout-minutes: 5
+    steps:
+      - name: All quality lanes passed
+        run: |
+          if [[ "${{ needs.static.result }}" == "success" && "${{ needs.backend.result }}" == "success" && "${{ needs.e2e.result }}" == "success" ]]; then
+            echo "static, backend, and e2e (all shards) passed."
+          else
+            echo "one or more quality lanes failed: static=${{ needs.static.result }} backend=${{ needs.backend.result }} e2e=${{ needs.e2e.result }}" >&2
+            exit 1
+          fi
