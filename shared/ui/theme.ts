@@ -21,8 +21,8 @@ import {
   fontStacks,
   layout,
   motion,
+  muiSpacing,
   radius,
-  spacingSteps,
   typeScale,
   zIndex,
 } from './tokens';
@@ -62,7 +62,7 @@ export const appTheme = createTheme({
     },
   },
   shape: { borderRadius: radius.radiusInput },
-  spacing: [...spacingSteps],
+  spacing: muiSpacing,
   breakpoints: { values: breakpoints },
   zIndex: {
     appBar: zIndex.stickyHeader,

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # scripts/dev.sh
-# Start PocketBase with disposable data for local development.
-# Never touches server/pb_data. Stops on Ctrl-C and cleans up.
+# Start PocketBase with persistent data for local development.
+# The default data directory is server/pb_data and survives app/PocketBase
+# restarts. Disposable data is opt-in with PB_DEV_EPHEMERAL=1 (smoke suites
+# use their own wrappers and are always disposable).
 set -Eeuo pipefail
 
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -12,13 +14,33 @@ if [[ ! -x server/pocketbase ]]; then
   exit 1
 fi
 
-DATA_DIR="$(mktemp -d -t pb-dev-XXXXXX)"
 PORT="${PB_PORT:-8090}"
 HTTP="http://127.0.0.1:${PORT}"
 
-# Create a disposable test superuser so PB does not open the browser installer.
+# Local development must not silently discard Student accounts when the
+# PocketBase process restarts. Use an explicit disposable mode only when a
+# clean fixture database is intended (the smoke wrappers already do this).
+EPHEMERAL=0
+if [[ "${PB_DEV_EPHEMERAL:-0}" == "1" || "${PB_DEV_EPHEMERAL:-}" == "true" ]]; then
+  DATA_DIR="$(mktemp -d -t pb-dev-XXXXXX)"
+  EPHEMERAL=1
+else
+  DATA_DIR="${PB_DATA_DIR:-$REPO_ROOT/server/pb_data}"
+  mkdir -p "$DATA_DIR"
+fi
+
+# Create/update a development-only superuser so PB does not open the browser
+# installer. This never changes the application Student records.
 source "$REPO_ROOT/scripts/pb-test-helper.sh"
 pb_create_superuser "$DATA_DIR"
+
+# Settings encryption is opt-in like production (--encryptionEnv names an env
+# var holding the key). Without PB_DEV_ENCRYPTION_KEY the dev settings are
+# stored unencrypted in the persistent data dir — documented, never silent.
+ENCRYPTION_ARGS=()
+if [[ -n "${PB_DEV_ENCRYPTION_KEY:-}" ]]; then
+  ENCRYPTION_ARGS=(--encryptionEnv=PB_DEV_ENCRYPTION_KEY)
+fi
 # Dev-only CORS allowlist. Includes:
 #   - Vite dev server on localhost / 127.0.0.1
 #   - Capacitor's default https://localhost (debug APK bundled assets)
@@ -34,11 +56,17 @@ cleanup() {
     kill "$PID" 2>/dev/null || true
     wait "$PID" 2>/dev/null || true
   fi
-  rm -rf "$DATA_DIR"
+  if [[ "$EPHEMERAL" -eq 1 ]]; then
+    rm -rf "$DATA_DIR"
+  fi
 }
 trap cleanup EXIT INT TERM
 
-echo "Starting PocketBase (data: $DATA_DIR, port: $PORT) ..."
+if [[ "$EPHEMERAL" -eq 1 ]]; then
+  echo "Starting PocketBase (DISPOSABLE data: $DATA_DIR, port: $PORT) ..."
+else
+  echo "Starting PocketBase (PERSISTENT data: $DATA_DIR, port: $PORT) ..."
+fi
 
 # Disable telemetry/usage to avoid network calls during local dev.
 PB_TELEMETRY=0 \
@@ -50,7 +78,7 @@ server/pocketbase serve \
   --hooksDir server/pb_hooks \
   --origins "$CORS_ORIGINS" \
   --publicDir server/pb_public \
-  --encryptionEnv "${PB_ENCRYPTION:-dev-encryption-key-not-for-prod}" \
+  "${ENCRYPTION_ARGS[@]}" \
   > "$DATA_DIR/pb.log" 2>&1 &
 PID=$!
 

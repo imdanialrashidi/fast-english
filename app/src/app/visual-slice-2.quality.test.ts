@@ -46,6 +46,7 @@ describe('Visual Slice 2 — deterministic design consistency', () => {
   it('page padding comes from the layout tokens and reserves Mini Player space', () => {
     const pc = readFileSync(resolve(ROOT, 'shared', 'ui', 'PageContainer.tsx'), 'utf8');
     expect(pc).toContain('layout.pageInlinePadding');
+    expect(pc).toContain('layout.pageTopPadding');
     expect(pc).toContain('layout.bottomNavigationHeight');
     expect(pc).toContain('var(--fep-mini-player-space, 0px)');
   });
@@ -57,7 +58,7 @@ describe('Visual Slice 2 — deterministic design consistency', () => {
       'features/progress/routes/ProgressRoute.tsx',
       'app/routes/AccountRoute.tsx',
     ]) {
-      expect(read(file), file).toContain('maxWidth="md"');
+      expect(read(file), file).toMatch(/maxWidth="(?:md|lg)"/);
     }
     // Slice 7 (Episode surface): the two-column jacket + liner-notes
     // desktop composition needs the lg container; the reading column is

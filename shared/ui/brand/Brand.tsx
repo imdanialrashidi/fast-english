@@ -6,8 +6,8 @@
 //     `fill="currentColor"` so the mark is theme-aware and never renders
 //     as an invisible black mark on a dark surface.
 //   - fastenglish_header_logo.png   → full header wordmark (black artwork
-//     on transparent; documented: only rendered on Light surfaces, where
-//     the artwork is legible; Dark surfaces get the monochrome treatment).
+//     on transparent; rendered on Light surfaces, where the artwork is
+//     legible; Dark surfaces get the matching monochrome/English treatment).
 //   - fast_english_app_favicon.png  → browser metadata favicon only
 //     (app/public/favicon.png), not rendered by this component.
 //
@@ -55,12 +55,51 @@ function MonochromeMark({ size }: { size: number }) {
       }}
       data-testid="brand-mark-svg"
     >
-      <g fill="currentColor" stroke="none">
+      <g
+        fill="currentColor"
+        stroke="none"
+        // The approved SVG stores its paths in a 10× coordinate system;
+        // preserve that geometry transform when rendering the inline mark.
+        transform="translate(0 1024) scale(0.1 -0.1)"
+      >
         <path d={logoPaths.p0} />
         <path d={logoPaths.p1} />
         <path d={logoPaths.p2} />
       </g>
     </svg>
+  );
+}
+
+function EnglishWordmark() {
+  return (
+    <Box sx={{ direction: 'ltr', textAlign: 'start' }} data-testid="brand-english-wordmark">
+      <Typography
+        component="span"
+        variant="titleMedium"
+        sx={{
+          display: 'block',
+          color: 'primary.main',
+          fontWeight: 800,
+          letterSpacing: '0.08em',
+          lineHeight: 1,
+        }}
+      >
+        FAST
+      </Typography>
+      <Typography
+        component="span"
+        variant="labelMedium"
+        sx={{
+          display: 'block',
+          color: 'onSurface',
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          lineHeight: 1.15,
+        }}
+      >
+        ENGLISH
+      </Typography>
+    </Box>
   );
 }
 
@@ -91,9 +130,9 @@ function WordmarkText({ size }: { size: 'sm' | 'md' }) {
  * - `mark`: the monochrome vector mark alone (any surface, any mode).
  * - `compact`: small mark + Persian wordmark (any surface, any mode).
  * - `full`: larger mark + Persian wordmark (any surface, any mode).
- * - `header`: the approved header PNG wordmark — Light surfaces only.
- *   On Dark surfaces the black PNG artwork is illegible, so the variant
- *   falls back to the monochrome mark + wordmark (documented treatment).
+ * - `header`: the approved header PNG wordmark on Light surfaces; on Dark
+ *   surfaces it uses the same mark/wordmark relationship with theme-aware
+ *   monochrome and English text so the lockup stays legible.
  */
 export function Brand({
   variant = 'full',
@@ -109,7 +148,7 @@ export function Brand({
   'data-testid'?: string;
 }) {
   const { colorScheme } = useColorScheme();
-  const markSize = variant === 'mark' ? 48 : size === 'md' ? 40 : 32;
+  const markSize = variant === 'mark' ? 48 : size === 'md' ? 48 : 36;
   const isDark = colorScheme === 'dark';
 
   if (variant === 'header' && !isDark) {
@@ -125,6 +164,18 @@ export function Brand({
         }}
       >
         <img src={headerLogoUrl} alt="فست انگلیش" width={697} height={197} loading="eager" />
+      </Box>
+    );
+  }
+
+  if (variant === 'header' && isDark) {
+    return (
+      <Box
+        data-testid={testId ?? 'brand-header'}
+        sx={{ direction: 'rtl', display: 'inline-flex', alignItems: 'center', gap: 1.5, maxWidth }}
+      >
+        <MonochromeMark size={56} />
+        <EnglishWordmark />
       </Box>
     );
   }
@@ -145,7 +196,7 @@ export function Brand({
         display: 'inline-flex',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 1.5,
+        gap: size === 'md' ? 2 : 1.5,
         minWidth: 0,
         maxWidth,
       }}

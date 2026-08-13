@@ -360,7 +360,7 @@ export function VariantDeck({
                 sx={{
                   minHeight: 56,
                   height: 56,
-                  borderRadius: radius.radiusPill,
+                  borderRadius: `${radius.radiusControl}px`,
                   px: 2.5,
                   minWidth: 128,
                   fontSize: '0.9375rem',

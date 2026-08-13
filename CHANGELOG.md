@@ -28,3 +28,9 @@ All notable workflow changes are documented here. This project follows the spiri
 - Raised browser QA, accessibility, responsive, and Core Web Vitals requirements for visual work.
 - Made the canonical full verification gate validate the template before product source is bootstrapped.
 - Reduced duplicate always-loaded policy and added a combined context-size ratchet.
+
+### Changed
+
+- Parallelized the canonical CI gate (`.github/workflows/quality.yml`): independent `static` / `backend` / `e2e` (5 Playwright shards) lanes plus a `verify` merge gate, cutting measured green-run wall-clock from ~17 min to ~6–7 min. The 16 real-PocketBase smoke suites now run concurrently on dedicated ports (`scripts/verify-smokes-parallel.sh`; opt-in via `FEP_VERIFY_PARALLEL_SMOKES=1` in `scripts/project-verify.sh`), and the full Playwright suite is sharded across runners with per-shard PocketBase isolation and per-shard failure artifacts. Local `pnpm verify:fast` / `verify:feature` / `verify:full` serial model is unchanged.
+- Made the last un-gated evidence-screenshot spec (`e2e/content-studio-screenshots.spec.ts`) opt-in via `FEP_SCREENSHOTS=1`, matching its three sibling evidence specs.
+- `scripts/ci-install.sh` skips the Chromium download when `CI_SKIP_PLAYWRIGHT=1` (non-browser CI lanes).

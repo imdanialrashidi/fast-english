@@ -249,7 +249,7 @@ Committed deterministic gates (mirroring `visual-slice-2`): new `e2e/podcast-epi
 
 ## Decisions intentionally deferred
 
-- Final logo / app icons / brand polish (open input; placeholder assets flagged).
+- Final app icons remain deferred; the Student App now uses the approved header logo asset as its Light-mode lockup and a matching theme-aware monochrome/English lockup in Dark mode, with the same treatment integrated into entry and shell chrome.
 - Landing redesign (documented record: not started).
 - Payment and Operator redesigns are complete; Audio reliability, Performance, Monitoring remain not started (see `docs/PLAN.md` slice records).
 
@@ -263,3 +263,4 @@ Committed deterministic gates (mirroring `visual-slice-2`): new `e2e/podcast-epi
 | 2026-08-03 | Payment journey as 5 explicit stages with honest manual-review copy | Payment Experience Redesign record | Operator/payment flow change |
 | 2026-08-06+ | Podcast-first Home + Library vocabulary (اپیزود/کتابخانه/…) centralized in `productCopy.ts` | Podcast Slice 5/6 records; copy scanner | New product language |
 | 2026-08-09 | Episode Experience (Slice 7): record-jacket composition — artwork-led jacket, Edition Rail (CEFR plates + level stripe on the Deck), resume merged into the player, typographic learning layer (خلاصه/کلمات کلیدی/متن), two-column desktop; one-Variant swap semantics; pronunciation exclusivity contract | Slice 7 design decision (this document); rendered geometry of the current surface (deck 288px with 5 speed chips → ≤220px with zero chips; chip walls → Edition Rail + speed menu; artwork enters the listening surface) | Implementation opens a different composition or changes level semantics |
+| 2026-08-13 | Student shell visual rework: responsive page frame with deliberate top/bottom breathing room, wider desktop content ceilings, official Light brand lockup plus a matching Dark lockup, single-surface Account settings, editorial Home hero/card proportions, calmer Library filter rows, and bounded desktop MiniPlayer | Native-vision review at phone/desktop widths in Light/Dark plus Home/Library/Episode/Progress/Account browser journeys; targeted visual/contract tests | A future accepted brand direction or navigation/IA change |

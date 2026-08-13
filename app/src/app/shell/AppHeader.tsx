@@ -1,5 +1,5 @@
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import { AppBar, Box, IconButton, Toolbar, Typography, useScrollTrigger } from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar, useScrollTrigger } from '@mui/material';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router';
 import { Brand } from '../../../../shared/ui/brand/Brand';
 import { duration, easing } from '../../../../shared/ui/tokens';
@@ -41,6 +41,10 @@ export function AppHeader() {
       position="sticky"
       data-scrolled={scrolled ? 'true' : 'false'}
       sx={{
+        // The desktop Side Navigation already owns the brand and route
+        // identity. Keep the top bar for phone + tablet chrome only so the
+        // wide shell does not spend a full row on an empty strip.
+        display: { xs: 'block', lg: 'none' },
         // Notched devices: extend the bar into the status bar area.
         paddingTop: 'env(safe-area-inset-top, 0px)',
         transition: `box-shadow ${duration.durationFast}ms ${easing.easingStandard}`,
@@ -59,32 +63,36 @@ export function AppHeader() {
           </IconButton>
         ) : null}
 
-        <Box sx={{ display: { xs: 'none', md: 'block' }, flexShrink: 0 }}>
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            flexShrink: 0,
+            marginInlineStart: 1,
+          }}
+        >
           <RouterLink
             to="/"
             aria-label="فست انگلیش — صفحهٔ اصلی"
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            <Brand variant="compact" size="sm" />
+            <Brand variant="header" maxWidth={144} />
           </RouterLink>
         </Box>
 
-        <Typography
+        <Box
           component={RouterLink}
           to="/"
-          variant="titleMedium"
+          aria-label="فست انگلیش — صفحهٔ اصلی"
           sx={{
-            fontWeight: 700,
             color: 'onSurface',
             textDecoration: 'none',
-            display: { xs: 'block', md: 'none' },
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            display: { xs: 'inline-flex', md: 'none' },
+            minWidth: 0,
+            marginInlineStart: 2,
           }}
         >
-          فست انگلیش
-        </Typography>
+          <Brand variant="header" maxWidth={144} />
+        </Box>
 
         <Box sx={{ flex: 1 }} />
       </Toolbar>

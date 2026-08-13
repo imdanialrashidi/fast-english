@@ -17,15 +17,36 @@ export const spacingScale = {
   huge: 64,
 } as const;
 
-// MUI spacing multiplier array (px). Keep in sync with spacingScale.
+// Reference values for token tests and documentation. MUI's spacing prop is
+// backed by `muiSpacing` below because Student components intentionally pass
+// both scale factors (`2` = 8px) and semantic pixel tokens (`16` = 16px).
 export const spacingSteps = [2, 4, 8, 12, 16, 24, 32, 48, 64] as const;
 
+/**
+ * A tolerant 4px spacing function for MUI's sx system.
+ *
+ * Most MUI spacing values are scale factors, while the shared layout roles
+ * are already expressed in pixels. Supporting both at the theme boundary
+ * keeps components readable and, importantly, prevents MUI v9 from silently
+ * dropping larger semantic values or emitting console errors for fractional
+ * factors such as 1.5.
+ */
+export function muiSpacing(factor: number): string {
+  if (factor === 0) return '0px';
+  const absolute = Math.abs(factor);
+  return `${absolute <= 8 ? factor * 4 : factor}px`;
+}
+
 export const layout = {
-  // Page gutters (inline) and block padding.
-  pageInlinePadding: { xs: spacingScale.lg, sm: spacingScale.xl, md: spacingScale.xl },
+  // Responsive page frame. The top role is deliberately larger than the
+  // inline gutter: content should begin as a composed page, not under chrome.
+  pageInlinePadding: { xs: spacingScale.lg, sm: spacingScale.xl, md: spacingScale.xxl },
+  pageTopPadding: { xs: spacingScale.xxl, sm: spacingScale.xxxl, md: spacingScale.huge },
+  pageBottomPadding: { xs: spacingScale.xxl, sm: spacingScale.xxxl, md: spacingScale.xxxl },
+  // Kept as a named compatibility role for non-shell surfaces and tests.
   pageBlockPadding: { xs: spacingScale.lg, sm: spacingScale.xl, md: spacingScale.xl },
   // Vertical rhythm between page sections.
-  sectionGap: { xs: spacingScale.xl, sm: spacingScale.xxl },
+  sectionGap: { xs: spacingScale.xxl, sm: spacingScale.xxxl },
   // Card paddings.
   cardPaddingCompact: spacingScale.lg,
   cardPaddingComfortable: spacingScale.xl,

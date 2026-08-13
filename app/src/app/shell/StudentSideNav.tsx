@@ -7,7 +7,6 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  Typography,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router';
 import { Brand } from '../../../../shared/ui/brand/Brand';
@@ -44,8 +43,14 @@ export function StudentSideNav() {
       }}
     >
       <Stack sx={{ height: '100%' }} role="navigation" aria-label="ناوبری اصلی">
-        <Box sx={{ p: 2.5, pb: 2, display: { md: 'none', lg: 'flex' } }}>
-          <Brand variant="compact" size="sm" />
+        <Box
+          sx={{
+            p: `${layout.cardPaddingComfortable}px`,
+            pb: `${layout.cardPaddingCompact}px`,
+            display: { md: 'none', lg: 'flex' },
+          }}
+        >
+          <Brand variant="header" maxWidth={180} />
         </Box>
         <List sx={{ px: 1.5, flex: 1 }} aria-label="ناوبری اصلی">
           {studentNavItems.map((item) => {
@@ -90,18 +95,6 @@ export function StudentSideNav() {
             );
           })}
         </List>
-        <Box
-          sx={{
-            p: 2,
-            borderTop: 1,
-            borderColor: 'divider',
-            display: { md: 'none', lg: 'block' },
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            یادگیری، پرداخت و پشتیبانی در همین برنامه
-          </Typography>
-        </Box>
       </Stack>
     </Drawer>
   );

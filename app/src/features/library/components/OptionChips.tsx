@@ -8,6 +8,7 @@
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { Box, Chip, Typography } from '@mui/material';
 import { useId } from 'react';
+import { radius } from '../../../../../shared/ui/tokens';
 
 export interface OptionChip {
   value: string;
@@ -44,15 +45,16 @@ export function OptionChips({
         aria-labelledby={groupId}
         sx={{
           display: 'flex',
+          flexWrap: { xs: 'nowrap', sm: 'wrap' },
           gap: 1,
-          overflowX: 'auto',
+          overflowX: { xs: 'auto', sm: 'visible' },
           pb: 0.5,
-          scrollbarWidth: 'thin',
-          '&::-webkit-scrollbar': { height: 4 },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'outlineVariant',
-            borderRadius: '999px',
-          },
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' },
+          // Filter rows remain one calm scan line on phones. They are still
+          // native buttons with keyboard focus and can be scrolled without
+          // widening the document or turning the page into a control wall.
+          alignItems: 'center',
         }}
       >
         {options.map((option) => {
@@ -71,7 +73,7 @@ export function OptionChips({
               sx={{
                 flexShrink: 0,
                 minHeight: 40,
-                borderRadius: '999px',
+                borderRadius: `${radius.radiusPill}px`,
                 fontWeight: selected ? 700 : 500,
                 '& .MuiChip-icon': { marginInlineStart: '4px', marginInlineEnd: '-4px' },
               }}

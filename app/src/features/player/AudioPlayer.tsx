@@ -108,7 +108,7 @@ export function AudioPlayer({
           p: 2,
           textAlign: 'center',
           bgcolor: 'action.hover',
-          borderRadius: radius.radiusCard,
+          borderRadius: `${radius.radiusCard}px`,
         }}
       >
         <Typography variant="body2" color="text.secondary">
@@ -130,7 +130,7 @@ export function AudioPlayer({
       sx={{
         p: 2,
         bgcolor: 'background.paper',
-        borderRadius: radius.radiusCard,
+        borderRadius: `${radius.radiusCard}px`,
         border: 1,
         borderColor: 'divider',
       }}
