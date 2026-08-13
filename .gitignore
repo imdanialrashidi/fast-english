@@ -52,3 +52,6 @@ server/pocketbase.exe
 .idea/
 .vscode/
 .DS_Store
+
+# Pi harness local package cache (replaced by .pi/package-integrity.json)
+.pi/npm/

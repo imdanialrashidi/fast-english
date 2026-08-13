@@ -45,21 +45,26 @@ export const typeScale = {
     fontVariantNumeric: 'tabular-nums',
   },
   // Audio timers ("12:34"): LTR-isolated so the colon order is stable in RTL.
+  // NOTE: `direction` is deliberately NOT set here — the RTL Stylis pipeline
+  // (stylis-plugin-rtl → cssjanus) flips a CSS `direction: ltr` declaration
+  // to `rtl`, overriding the intended `dir="ltr"` attributes and breaking
+  // LTR alignment (Slice 7 design review finding 1). LTR isolation is
+  // provided by `dir="ltr"` attributes on the consuming elements and by
+  // `unicodeBidi: isolate` below.
   audioTime: {
     fontSize: '0.8125rem',
     lineHeight: 1.5,
     fontWeight: 600,
     fontVariantNumeric: 'tabular-nums',
-    direction: 'ltr',
     unicodeBidi: 'isolate',
   },
   // English reading body: Latin stack, LTR, bounded measure handled by the
-  // consuming container (layout.readingMaxWidth).
+  // consuming container (layout.readingMaxWidth). Same direction note as
+  // audioTime: `dir="ltr"` attributes own the direction; CSS does not.
   englishReading: {
     fontSize: '1.125rem',
     lineHeight: 1.8,
     fontWeight: 400,
-    direction: 'ltr',
     unicodeBidi: 'isolate',
     maxWidth: '40rem',
   },
@@ -68,7 +73,6 @@ export const typeScale = {
     fontSize: '0.8125rem',
     lineHeight: 1.5,
     fontWeight: 500,
-    direction: 'ltr',
     unicodeBidi: 'isolate',
   },
 } as const;

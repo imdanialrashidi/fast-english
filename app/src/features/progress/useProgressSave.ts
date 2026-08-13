@@ -314,28 +314,45 @@ export function useProgressSave({
     flush();
   }, [enabled, lessonId, flush]);
 
-  // Save before unload
+  // Save before unload / hide: the newest REAL position is flushed when
+  // the tab is backgrounded, page-hidden or unloaded. Clearing a timer
+  // never loses the payload (it lives in pendingRef, drained by the
+  // unmount flush); the write itself cannot be awaited during unload
+  // (documented limitation) — the last acknowledged position is already
+  // on the server. Backgrounding never fabricates a position: only the
+  // position actually reached by playback is ever queued.
   useEffect(() => {
     if (!enabled || !lessonId) return;
 
-    const handleBeforeUnload = () => {
+    const drainTimer = () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
-      // Clearing the timer never loses the payload: it lives in pendingRef,
-      // which the unmount flush below drains. The write itself still cannot
-      // be awaited during unload (documented limitation); the last
-      // acknowledged position is already on the server.
+      drainPending();
     };
 
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden') drainTimer();
+    };
+    const handleBeforeUnload = () => {
+      drainTimer();
+    };
+    const handlePageHide = () => {
+      drainTimer();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
       // Flush on unmount (also runs on lesson change, against the old lesson)
       flush();
     };
-  }, [enabled, lessonId, flush]);
+  }, [enabled, lessonId, flush, drainPending]);
 
   return {
     loadProgress,

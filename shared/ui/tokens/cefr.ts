@@ -12,3 +12,18 @@ export const cefr = {
 
 export type CefrLevel = keyof typeof cefr;
 export const cefrLevels: readonly CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+export type ColorScheme = 'light' | 'dark';
+
+/**
+ * Edition-stripe color for a CEFR level on the Deck surface
+ * (`surfaceContainerHigh`). Scheme-aware: the pair's dark foreground in
+ * Light (clears ≥3:1 on the light Deck surface) and the pair's pale
+ * background in Dark (clears ≥3:1 on the dark Deck surface). Uses only the
+ * existing CEFR pair colors — no arbitrary tones. The contract requires
+ * the stripe to clear 3:1 against the Deck surface in both schemes;
+ * `shared/ui/palette.contrast.test.ts` enforces it durably.
+ */
+export function deckStripeColor(level: CefrLevel, scheme: ColorScheme): string {
+  return scheme === 'light' ? cefr[level].fg : cefr[level].bg;
+}

@@ -849,13 +849,16 @@ test.describe('Staff workspace redesign (Admin Console)', () => {
     // indicator bar (not color alone).
     const selected = page.getByTestId(`operator-request-item-${fx.pendStable.requestId}`);
     await expect(selected).toHaveAttribute('aria-current', 'true');
-    const indicator = await selected.evaluate((el) => {
-      const before = window.getComputedStyle(el, '::before');
-      return before.opacity;
-    });
     // The route entrance animation may still be settling; require the
-    // indicator to be effectively opaque.
-    expect(Number(indicator)).toBeGreaterThan(0.9);
+    // indicator to be effectively opaque (polled — a single-shot read
+    // races the entrance animation on slower runners).
+    await expect
+      .poll(
+        async () =>
+          selected.evaluate((el) => Number(window.getComputedStyle(el, '::before').opacity)),
+        { timeout: 5_000 },
+      )
+      .toBeGreaterThan(0.9);
     const noOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
     );

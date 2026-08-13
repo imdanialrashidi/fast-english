@@ -17,8 +17,18 @@
 #   9. Operator smoke (Phase 2)
 #  10. Multi-tab race smoke (Phase 2 closure; atomic answer save proof)
 #  11. Snapshot capacity smoke (Phase 2 closure; max-content proof)
-#  12. Build both surfaces deterministically
-#  13. Topology output verification
+#  12. Lessons smoke (P3-S1; 25+ assertions for topics, publishing, entitlement, protected audio)
+#  12b. Episode smoke (Podcast Slice 7; per-Variant vocabulary, pronunciation authorization,
+#       live entitlement revalidation, protected media, Range behavior, prev/next refs)
+#  13. Progress smoke (P3-S2; 30+ assertions for progress persistence, entitlement, concurrency)
+#  13b. Podcast domain smoke (Podcast Slice 2; categories, Episode/Variant domain, vocabulary,
+#       cross-level entitlement, migration backfill proof, Progress integrity, archival semantics)
+#  13c. Content-import smoke (Podcast Slice 3; 28-scenario importer suite)
+#  13e. Content-admin smoke (Podcast Slice 4; 28-scenario Staff Content Studio suite)
+#  13f. Library & Discovery smoke (Podcast Slice 6; 27-scenario Library contract)
+#  13d. Content Package Schema validation (Podcast Slice 3)
+#  14. Build all surfaces deterministically
+#  15. Topology output verification
 #
 # Playwright E2E is run separately via `pnpm test:e2e` so that
 # review-time runs of `scripts/verify.sh` stay fast and offline.
@@ -77,6 +87,11 @@ run bash scripts/smoke-placement.sh node scripts/smoke-placement-capacity.mjs
 
 # 12. Lessons smoke (P3-S1; 25+ assertions for topics, publishing, entitlement, protected audio).
 run bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
+
+# 12b. Episode smoke (Podcast Slice 7; per-Variant vocabulary + protected
+#      pronunciation audio with authorization/revalidation/Range/prev-next
+#      regressions — part of the canonical full gate).
+run bash scripts/smoke-placement.sh node scripts/smoke-episode.mjs
 
 # 13. Progress smoke (P3-S2; 30+ assertions for progress persistence, entitlement, concurrency).
 run bash scripts/smoke-placement.sh node scripts/smoke-progress.mjs

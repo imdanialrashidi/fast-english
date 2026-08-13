@@ -18,7 +18,7 @@
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { createStaff } from './fixtures';
+import { createStaff, listOwnedRecords } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 
@@ -95,7 +95,7 @@ async function makeTopic(su: string, overrides: Record<string, unknown> = {}) {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
-      title: `T ${randId()}`,
+      title: (overrides.title as string) || `T ${randId()}`,
       slug,
       description: 'd',
       sort_order: overrides.sort_order ?? 0,
@@ -128,7 +128,7 @@ async function makeTopic(su: string, overrides: Record<string, unknown> = {}) {
     category: await getDefaultCategoryId(su),
     content_key: `fx-${randId()}`,
     content_version: 1,
-    title_fa: 'عنوان اپیزود',
+    title_fa: (overrides.title_fa as string) || 'عنوان اپیزود',
     description_fa: 'توضیح اپیزود',
   };
   const pr = await jsonFetch(`${PB_URL}/api/collections/topics/records/${id}`, {
@@ -138,6 +138,16 @@ async function makeTopic(su: string, overrides: Record<string, unknown> = {}) {
   });
   if (pr.status !== 200) throw new Error(`topic publish: ${pr.status}`);
   return cr.body;
+}
+
+// Idempotent owned upsert: re-entry reuses the Topic by its fixed slug.
+async function ensureOwnedTopic(
+  su: string,
+  marker: { slug: string; title: string; titleFa: string; sortOrder?: number; keepDraft?: boolean },
+) {
+  const existing = await listOwnedRecords(su, 'topics', `slug='${marker.slug}'`);
+  if (existing[0]?.id) return existing[0];
+  return makeTopic(su, marker);
 }
 
 async function makeLesson(su: string, topicId: string, overrides: Record<string, unknown> = {}) {
@@ -154,6 +164,16 @@ async function makeLesson(su: string, topicId: string, overrides: Record<string,
       status: 'draft',
     }),
   });
+  if (cr.status >= 400) {
+    // Unique (topic, level) index: a re-run must reuse the existing Variant.
+    const existing = await listOwnedRecords(
+      su,
+      'lessons',
+      `topic='${topicId}' && level='${overrides.level || 'B1'}'`,
+    );
+    if (existing[0]?.id) return { id: String(existing[0].id) };
+    throw new Error(`lesson create: ${cr.status} ${JSON.stringify(cr.body).slice(0, 200)}`);
+  }
   const id = cr.body?.id as string;
   if (!id) throw new Error(`lesson create: ${JSON.stringify(cr.body).slice(0, 200)}`);
   const boundary = `--FB${randId()}`;
@@ -213,33 +233,46 @@ async function createFullStudent(su: string, level = 'B1') {
   });
   const token = (login.body as { token?: string })?.token || '';
 
-  await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { authorization: su },
-    body: JSON.stringify({
-      card_number: '0000000000000000',
-      card_holder_name: 'T',
-      bank_name: 'T',
-      is_active: true,
-    }),
-  });
+  const existingDest = await listOwnedRecords(
+    su,
+    'payment_destination',
+    "card_number='0000000000000000'",
+  );
+  if (!existingDest[0]?.id) {
+    await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
+      method: 'POST',
+      headers: { authorization: su },
+      body: JSON.stringify({
+        card_number: '0000000000000000',
+        card_holder_name: 'T',
+        bank_name: 'T',
+        is_active: true,
+      }),
+    });
+  }
   const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
     method: 'POST',
     headers: { authorization: `Bearer ${su}` },
     body: JSON.stringify({
       name: 'P',
-      slug: `p-${randId()}`,
+      slug: 'ps2-e2e-plan',
       duration_days: 90,
       price_toman: 100000,
       is_active: true,
     }),
   });
-  const planId = plan.body?.id as string;
+  const planId = (plan.body?.id as string) || '';
+  let planIdSafe = planId;
+  if (!planIdSafe) {
+    const existingPlans = await listOwnedRecords(su, 'plans', "slug='ps2-e2e-plan'");
+    planIdSafe = String(existingPlans[0]?.id ?? '');
+  }
+  if (!planIdSafe) throw new Error('owned plan missing');
 
   const boundary = `--FB${randId()}`;
   const prBody = Buffer.concat([
     Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
+      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planIdSafe}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
     ),
     PNG_FIXTURE,
     Buffer.from(`\r\n--${boundary}--\r\n`),
@@ -344,6 +377,9 @@ async function createFullStudent(su: string, level = 'B1') {
 // ---------------------------------------------------------------------------
 // Suite
 // ---------------------------------------------------------------------------
+// The accepted Episode surface (Slice 7) leads with the Persian title (H1).
+const MAIN_EPISODE_TITLE_FA = 'اپیزود اصلی پیاس‌دو';
+
 test.describe('Podcast domain (Slice 2)', () => {
   let su: string;
   let student: { token: string; userId: string; phone: string; password: string };
@@ -357,10 +393,22 @@ test.describe('Podcast domain (Slice 2)', () => {
     su = await getSuperuserToken();
     expect(su).toBeTruthy();
 
+    // Idempotent owned fixtures: a retried worker re-runs this beforeAll
+    // against the same shared PB; topics/categories are keyed by fixed
+    // markers and Variants reuse the (topic, level) unique index, so
+    // re-entry never multiplies records.
+    //
     // Main Episode with published B1/B2/C2 + draft C1 variants.
     // Distinctive titles so afterAll can own-and-clean every fixture even
-    // if a worker restart duplicated them.
-    const topic = await makeTopic(su, { sort_order: 1, title: 'PS2 Main Episode' });
+    // if a worker restart duplicated them. The accepted Episode surface
+    // (Slice 7) leads with the Persian title (H1), so the fixtures carry
+    // realistic per-Episode Persian titles.
+    const topic = await ensureOwnedTopic(su, {
+      slug: 'ps2-e2e-main',
+      title: 'PS2 Main Episode',
+      title_fa: 'اپیزود اصلی پیاس‌دو',
+      sort_order: 1,
+    });
     const topicId = topic.id as string;
     recLevelVariantId = (
       await makeLesson(su, topicId, { level: 'C2', title: 'PS2 Recommended C2 Episode' })
@@ -374,20 +422,30 @@ test.describe('Podcast domain (Slice 2)', () => {
     ).id;
 
     // Archived Category with a published Variant (archival + republish proof).
-    const cat = await jsonFetch(`${PB_URL}/api/collections/categories/records`, {
-      method: 'POST',
-      headers: { authorization: `Bearer ${su}` },
-      body: JSON.stringify({
-        key: `ps2-arch-${randId()}`,
-        slug: `ps2-arch-${randId()}`,
-        title_fa: 'دسته',
-        description_fa: 'توضیح دسته',
-        publication_status: 'published',
-        sort_order: 1,
-      }),
+    const existingCat = await listOwnedRecords(su, 'categories', "key='ps2-arch-e2e'");
+    archCatId = String(existingCat[0]?.id ?? '');
+    if (!archCatId) {
+      const cat = await jsonFetch(`${PB_URL}/api/collections/categories/records`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${su}` },
+        body: JSON.stringify({
+          key: 'ps2-arch-e2e',
+          slug: 'ps2-arch-e2e',
+          title_fa: 'دسته',
+          description_fa: 'توضیح دسته',
+          publication_status: 'published',
+          sort_order: 1,
+        }),
+      });
+      archCatId = (cat.body?.id as string) ?? '';
+    }
+    if (!archCatId) throw new Error('archived category missing');
+    const archTopic = await ensureOwnedTopic(su, {
+      slug: 'ps2-e2e-archived',
+      title: 'PS2 Archive Episode',
+      title_fa: 'اپیزود بایگانی پیاس‌دو',
+      sort_order: 2,
     });
-    archCatId = cat.body?.id as string;
-    const archTopic = await makeTopic(su, { sort_order: 2, title: 'PS2 Archive Episode' });
     const archTopicId = archTopic.id as string;
     // Retarget the archived-category Episode to its own Category.
     await jsonFetch(`${PB_URL}/api/collections/topics/records/${archTopicId}`, {
@@ -462,13 +520,13 @@ test.describe('Podcast domain (Slice 2)', () => {
   test('1 - eligible Student opens an Episode at the recommended Level', async ({ page }) => {
     await injectToken(page);
     await page.goto(`/lessons/${recLevelVariantId}`);
-    await expect(
-      page.getByRole('heading', { name: 'PS2 Recommended C2 Episode' }).first(),
-    ).toBeVisible({
+    // The accepted Episode surface (Slice 7) leads with the Persian title
+    // as the H1; the English title renders as the secondary line.
+    await expect(page.getByRole('heading', { level: 1, name: MAIN_EPISODE_TITLE_FA })).toBeVisible({
       timeout: 10_000,
     });
-    // The C2 level badge renders (recommended level content opened).
-    await expect(page.getByTestId('lesson-meta')).toContainText('C2', { timeout: 10_000 });
+    // The C2 level line renders (recommended level content opened).
+    await expect(page.getByText('سطح C2 · تسلط')).toBeVisible({ timeout: 10_000 });
   });
 
   test('2 - available-level control data includes another Published Level', async ({ page }) => {
@@ -493,12 +551,11 @@ test.describe('Podcast domain (Slice 2)', () => {
   test('3 - Student opens another Level through the existing Lesson route', async ({ page }) => {
     await injectToken(page);
     await page.goto(`/lessons/${otherLevelVariantId}`);
-    await expect(
-      page.getByRole('heading', { name: 'PS2 Other Level B2 Episode' }).first(),
-    ).toBeVisible({
+    await expect(page.getByRole('heading', { level: 1, name: MAIN_EPISODE_TITLE_FA })).toBeVisible({
       timeout: 10_000,
     });
-    await expect(page.getByTestId('lesson-meta')).toContainText('B2', { timeout: 10_000 });
+    // The B2 level line renders (another published Level opened).
+    await expect(page.getByText('سطح B2 · میانی بالا')).toBeVisible({ timeout: 10_000 });
   });
 
   test('4+5 - Placement result and preferred level remain unchanged after browsing', async ({
@@ -556,10 +613,14 @@ test.describe('Podcast domain (Slice 2)', () => {
     // Per-Variant isolation: each Variant keeps its own position.
     expect((r1.body as { positionSeconds?: number }).positionSeconds).toBe(111);
     expect((r2.body as { positionSeconds?: number }).positionSeconds).toBe(222);
-    // And the browser UI for the B2 episode shows the B2 progress percent.
+    // And the browser UI for the B2 episode shows the B2 progress: the
+    // accepted surface derives the resume CTA from the saved position
+    // (222s = 3:42), never from the B1 position.
     await injectToken(page);
     await page.goto(`/lessons/${otherLevelVariantId}`);
-    await expect(page.getByTestId('lesson-meta')).toContainText('٪', { timeout: 10_000 });
+    await expect(page.getByTestId('deck-primary-cta')).toContainText('ادامه از 3:42', {
+      timeout: 10_000,
+    });
   });
 
   test('7 - wrong-role and expired access remain denied', async ({ page }) => {
@@ -611,9 +672,7 @@ test.describe('Podcast domain (Slice 2)', () => {
   test('9 - no raw Backend error appears in the UI', async ({ page }) => {
     await injectToken(page);
     await page.goto(`/lessons/${recLevelVariantId}`);
-    await expect(
-      page.getByRole('heading', { name: 'PS2 Recommended C2 Episode' }).first(),
-    ).toBeVisible({
+    await expect(page.getByRole('heading', { level: 1, name: MAIN_EPISODE_TITLE_FA })).toBeVisible({
       timeout: 10_000,
     });
     await page.goto('/lessons');

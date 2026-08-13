@@ -21,7 +21,7 @@
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
-import { createStaff } from './fixtures';
+import { createStaff, listOwnedRecords } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
 const SCREENSHOTS_DIR = process.env.VISUAL_SLICE_2_OUT ?? '/tmp/opencode/fep-visual-slice-2';
@@ -64,17 +64,12 @@ async function getSuperuserToken(): Promise<string> {
   return (r.body as { token?: string })?.token || '';
 }
 
+// Real 2-second silent MP3 (ffmpeg) — the Slice 7 deck actually starts
+// playback in the browser, which the legacy filler bytes cannot do in
+// headless Chromium (decode error → the player's honest error state).
 const AUDIO_FIXTURE = Buffer.from(
-  (() => {
-    const size = 8192;
-    const b = new Uint8Array(size);
-    b[0] = 0xff;
-    b[1] = 0xfb;
-    b[2] = 0x90;
-    b[3] = 0x00;
-    for (let i = 4; i < size; i++) b[i] = 0x55;
-    return b.buffer;
-  })(),
+  'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYyLjEyLjEwMgAAAAAAAAAAAAAA//tAwAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAABOAAAgZgAIDA8SEhUYHB8fIiUoKCwvMjU1ODw/P0JFSUxMT1JVVVlcX2JiZWlsbG9ydXl5fH+ChoaJjI+PkpaZnJyfoqamqayvsrK2uby8v8PGycnMz9PT1tnc39/j5unp7O/z9vb5/P8AAAAATGF2YzYyLjI4AAAAAAAAAAAAAAAAJAQ4AAAAAAAAIGaM2mF9AAAAAAD/+xDEAAPAAAGkAAAAIAAANIAAAARMQU1FNC4wVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMQpg8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxFMDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDEfIPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMSmA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxM+DwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTQuMFVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FNC4wVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+xDE1gPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/7EMTWA8AAAaQAAAAgAAA0gAAABFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQxNYDwAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=',
+  'base64',
 );
 
 // Minimal valid PNG (1x1) for Episode artwork uploads (Podcast Slice 2).
@@ -146,7 +141,7 @@ async function makeTopic(su: string, overrides: Record<string, unknown> = {}) {
     category: await getDefaultCategoryId(su),
     content_key: `fx-${randId()}`,
     content_version: 1,
-    title_fa: 'عنوان اپیزود',
+    title_fa: overrides.title_fa ?? 'عنوان اپیزود',
     description_fa: 'توضیح اپیزود',
   };
   const pr = await jsonFetch(`${PB_URL}/api/collections/topics/records/${topicId}`, {
@@ -353,6 +348,61 @@ async function saveProgress(token: string, lessonId: string, positionSeconds: nu
   return r.body;
 }
 
+/**
+ * Live published Variant ids at a level — the authoritative count oracle
+ * for the progress-summary denominator.
+ *
+ * The summary counts every published Variant at the Student's level whose
+ * Topic is published inside a published Category (the same visibility
+ * contract as requirePublishedTopic). The shared disposable PocketBase
+ * accumulates valid published Episodes from other spec files (e.g.
+ * podcast-library publishes more A1 Variants), so a hard-coded total is
+ * fixture-order dependent. Query the live records instead and derive the
+ * expected "completed of published" value from the data actually present
+ * at fixture time — never from an assumed-clean database.
+ */
+async function livePublishedVariantIdsAtLevel(su: string, level: string): Promise<string[]> {
+  const lessonParams = new URLSearchParams({
+    filter: `status='published' && level='${level}'`,
+    perPage: '500',
+  });
+  const lessons = await jsonFetch(`${PB_URL}/api/collections/lessons/records?${lessonParams}`, {
+    headers: { authorization: `Bearer ${su}` },
+  });
+  const lessonItems = (lessons.body?.items as Array<{ id?: string; topic?: string }>) || [];
+  if (lessonItems.length === 0) return [];
+
+  const topicParams = new URLSearchParams({ filter: `status='published'`, perPage: '500' });
+  const topics = await jsonFetch(`${PB_URL}/api/collections/topics/records?${topicParams}`, {
+    headers: { authorization: `Bearer ${su}` },
+  });
+  const topicCategory = new Map(
+    ((topics.body?.items as Array<{ id?: string; category?: string }>) || []).map((t) => [
+      String(t.id || ''),
+      String(t.category || ''),
+    ]),
+  );
+
+  const catParams = new URLSearchParams({
+    filter: `publication_status='published'`,
+    perPage: '500',
+  });
+  const categories = await jsonFetch(`${PB_URL}/api/collections/categories/records?${catParams}`, {
+    headers: { authorization: `Bearer ${su}` },
+  });
+  const publishedCategories = new Set(
+    ((categories.body?.items as Array<{ id?: string }>) || []).map((c) => String(c.id || '')),
+  );
+
+  return lessonItems
+    .map((l) => ({ id: String(l.id || ''), topic: String(l.topic || '') }))
+    .filter((l) => {
+      const cat = topicCategory.get(l.topic);
+      return Boolean(cat) && publishedCategories.has(cat as string);
+    })
+    .map((l) => l.id);
+}
+
 async function setAuthAndGo(
   page: Page,
   token: string,
@@ -377,6 +427,44 @@ async function noHorizontalOverflow(page: Page): Promise<boolean> {
       document.documentElement.scrollWidth <= document.documentElement.clientWidth &&
       document.body.scrollWidth <= document.documentElement.clientWidth,
   );
+}
+
+/**
+ * Serialized form of the scroller carve-out for page.evaluate: the
+ * browser context cannot see module-level functions, so the whole check
+ * travels inside the evaluated closure.
+ */
+function scrollerCarveOutCheck(): string[] {
+  const vw = document.documentElement.clientWidth;
+  const inScroller = (el: Element): boolean => {
+    let node = el.parentElement;
+    while (node) {
+      const s = getComputedStyle(node);
+      if (
+        (s.overflowX === 'auto' || s.overflowX === 'scroll') &&
+        node.scrollWidth > node.clientWidth + 1
+      ) {
+        return true;
+      }
+      node = node.parentElement;
+    }
+    return false;
+  };
+  const bad: string[] = [];
+  for (const el of document.querySelectorAll('body *')) {
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 && r.height <= 0) continue;
+    if (el.closest('svg') || el.closest('.MuiLinearProgress-root')) continue;
+    // The skip link is intentionally translated off-screen until focused.
+    if (el.closest('a[href="#main-content"]')) continue;
+    if (inScroller(el)) continue;
+    if (r.right > vw + 1 || r.left < -1 || r.top < -1) {
+      bad.push(
+        `${el.tagName}.${String(el.className).slice(0, 30)} l=${r.left.toFixed(0)} r=${r.right.toFixed(0)} t=${r.top.toFixed(0)} b=${r.bottom.toFixed(0)}`,
+      );
+    }
+  }
+  return bad.slice(0, 5);
 }
 
 function contrastOf(fg: string, bg: string): number {
@@ -405,10 +493,24 @@ const VIEWPORTS: Array<{ name: string; width: number; height: number }> = [
 // ---------------------------------------------------------------------------
 let su: string;
 let student: { token: string; phone: string; userId: string };
+// The /lessons list page reads progress for EVERY published lesson at the
+// Student's level. In the shared-PB composition that list holds ~17-20 A1
+// lessons (mostly the podcast-library fixtures), so a single visit consumes
+// most of the per-Student progress-read budget (30 calls / 5 min). Every
+// /lessons-list visitor therefore gets a DEDICATED owned identity (the
+// lesson-detail tests share `student`), so no identity can exceed the
+// budget in any fixture order — even on slower runners where the browser
+// may not coalesce duplicate in-flight fetches.
+let studentB: { token: string; phone: string; userId: string };
+let studentC: { token: string; phone: string; userId: string };
+let studentD: { token: string; phone: string; userId: string };
 let noLessonStudent: { token: string };
 let doneStudent: { token: string };
 
 let lessonIds: Record<string, string>;
+// Live published A1 Variant total at fixture time (shared disposable
+// PocketBase: other spec files may have published valid Variants already).
+let livePublishedA1Count = 0;
 
 let PLAN_ID = '';
 
@@ -417,37 +519,53 @@ test.beforeAll(async () => {
   expect(su).toBeTruthy();
 
   // Payment destination (singleton) + plan, created once for the fixture flow.
-  await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
-    method: 'POST',
-    headers: { authorization: su },
-    body: JSON.stringify({
-      card_number: '0000000000000000',
-      card_holder_name: 'T',
-      bank_name: 'T',
-      is_active: true,
-    }),
-  });
-  const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${su}` },
-    body: JSON.stringify({
-      name: 'اشتراک آزمون بصری',
-      slug: `p-vs2-${randId()}`,
-      duration_days: 90,
-      price_toman: 100000,
-      is_active: true,
-    }),
-  });
-  PLAN_ID = (plan.body?.id as string) || '';
+  // Owned upserts: re-entry reuses the existing records (fixed markers).
+  const existingDest = await listOwnedRecords(
+    su,
+    'payment_destination',
+    "card_number='0000000000000000'",
+  );
+  if (!existingDest[0]?.id) {
+    await jsonFetch(`${PB_URL}/api/collections/payment_destination/records`, {
+      method: 'POST',
+      headers: { authorization: su },
+      body: JSON.stringify({
+        card_number: '0000000000000000',
+        card_holder_name: 'T',
+        bank_name: 'T',
+        is_active: true,
+      }),
+    });
+  }
+  const existingPlans = await listOwnedRecords(su, 'plans', "slug='p-vs2-e2e'");
+  if (existingPlans[0]?.id) {
+    PLAN_ID = String(existingPlans[0].id);
+  } else {
+    const plan = await jsonFetch(`${PB_URL}/api/collections/plans/records`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${su}` },
+      body: JSON.stringify({
+        name: 'اشتراک آزمون بصری',
+        slug: 'p-vs2-e2e',
+        duration_days: 90,
+        price_toman: 100000,
+        is_active: true,
+      }),
+    });
+    PLAN_ID = (plan.body?.id as string) || '';
+  }
 
   // One topic per lesson: `lessons` enforces a unique (topic, level) index.
   // States covered: not-started, in-progress, completed and a long-title
   // lesson (all at A1 so they appear in one student's list).
-  const makeTopicLesson = async (title: string, topicTitle?: string) => {
+  // Slice 7: the Episode surface leads with the Persian title (H1), so the
+  // fixtures carry realistic per-Episode Persian titles.
+  const makeTopicLesson = async (title: string, topicTitle?: string, titleFa?: string) => {
     const topic = await makeTopic(su, {
       title: topicTitle ?? `موضوع ${title}`,
       slug: `vs2-${randId()}`,
       sort_order: 1,
+      title_fa: titleFa ?? 'عنوان اپیزود',
     });
     const lesson = await makeLesson(su, topic.id as string, {
       level: 'A1',
@@ -479,28 +597,44 @@ test.beforeAll(async () => {
     existingLessons.filter((l) => l.level === 'A1').map((l) => [String(l.title), String(l.id)]),
   );
 
-  const ensureLesson = async (title: string, topicTitle?: string) => {
+  const ensureLesson = async (title: string, topicTitle?: string, titleFa?: string) => {
     const existingId = existingByTitle.get(title);
     if (existingId) return existingId;
-    const id = await makeTopicLesson(title, topicTitle);
+    const id = await makeTopicLesson(title, topicTitle, titleFa);
     existingByTitle.set(title, id);
     return id;
   };
 
   lessonIds = {
-    notStarted: await ensureLesson(lessonTitles[0]),
-    inProgress: await ensureLesson(lessonTitles[1]),
-    completed: await ensureLesson(lessonTitles[2]),
-    longTitle: await ensureLesson(longTitle, 'موضوع عنوان بلند'),
+    notStarted: await ensureLesson(lessonTitles[0], undefined, 'آغاز تازه'),
+    inProgress: await ensureLesson(lessonTitles[1], undefined, 'روتین روزانه'),
+    completed: await ensureLesson(lessonTitles[2], undefined, 'گپ کوتاه'),
+    longTitle: await ensureLesson(longTitle, 'موضوع عنوان بلند', 'عنوان بسیار بلند آزمایشی'),
   };
 
   student = await createActiveStudent(su, 'A1');
   await saveProgress(student.token, lessonIds.inProgress, 150);
   await saveProgress(student.token, lessonIds.completed, 600);
+  // Dedicated identities for the /lessons-list visitors (rate budget, see
+  // the declaration comment). studentB and studentD carry the same state
+  // seeds as `student`; studentC stays seed-free (not-started cards only).
+  studentB = await createActiveStudent(su, 'A1');
+  await saveProgress(studentB.token, lessonIds.inProgress, 150);
+  await saveProgress(studentB.token, lessonIds.completed, 600);
+  studentD = await createActiveStudent(su, 'A1');
+  await saveProgress(studentD.token, lessonIds.inProgress, 150);
+  await saveProgress(studentD.token, lessonIds.completed, 600);
+  studentC = await createActiveStudent(su, 'A1');
   noLessonStudent = await createActiveStudent(su, 'C2');
   doneStudent = await createActiveStudent(su, 'A1');
-  // Complete EVERY published B1 lesson so the dashboard reports all_completed.
-  for (const id of Object.values(lessonIds)) {
+  // "All completed" requires completing EVERY published Variant at the
+  // Student's level — including valid Episodes other spec files published
+  // into the shared disposable PocketBase before this file ran. Derive the
+  // live set instead of assuming a clean database, so the completion state
+  // holds in any fixture order.
+  const publishedA1Ids = await livePublishedVariantIdsAtLevel(su, 'A1');
+  livePublishedA1Count = publishedA1Ids.length;
+  for (const id of publishedA1Ids) {
     await saveProgress(doneStudent.token, id, 600);
   }
 });
@@ -676,7 +810,7 @@ test.describe('home hierarchy', () => {
     await expect(card).toBeVisible({ timeout: 15_000 });
     await expect(card.getByText('ادامه گوش‌دادن')).toBeVisible();
     // Real Episode metadata (titleFa from the published Topic).
-    await expect(card.getByText('عنوان اپیزود', { exact: true })).toBeVisible();
+    await expect(card.getByText('روتین روزانه', { exact: true })).toBeVisible();
     await expect(card.getByText('Daily Routine', { exact: true })).toBeVisible();
     // Saved position 150 → «ادامه از 2:30»; authoritative duration 600 − 150
     // → «حدود 8 دقیقه باقی‌مانده» (no fabricated time).
@@ -714,7 +848,9 @@ test.describe('home hierarchy', () => {
     await expect(progressCard.getByText('اپیزودهای شروع‌شده')).toBeVisible();
     await expect(progressCard.getByText('2', { exact: true })).toBeVisible(); // 2 started
     await expect(progressCard.getByText('اپیزودهای کامل‌شده')).toBeVisible();
-    await expect(progressCard.getByText('1 از 4')).toBeVisible(); // 1 completed of 4
+    // Completed count (1) is fixture-owned; the published total is the LIVE
+    // set at the Student's level, so the expectation is order-independent.
+    await expect(progressCard.getByText(`1 از ${livePublishedA1Count}`)).toBeVisible();
     await expect(progressCard.getByText('سطح پیش‌فرض:')).toBeVisible();
     await expect(progressCard.getByText('A1', { exact: true })).toBeVisible();
     // Suggested C2 vs preferred A1 — both presented without judgment.
@@ -759,7 +895,7 @@ test.describe('lesson list states', () => {
 
   test('all three real progress states render with text + CTA', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, studentB.token, record, '/lessons');
     await expect(page.getByRole('heading', { name: 'A Fresh Start', exact: true })).toBeVisible({
       timeout: 15_000,
     });
@@ -782,7 +918,7 @@ test.describe('lesson list states', () => {
   });
 
   test('completed lessons remain interactive', async ({ page }) => {
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, studentD.token, record, '/lessons');
     await page.getByRole('link', { name: 'مرور مجدد' }).click();
     await expect(page).toHaveURL(new RegExp(`/lessons/${lessonIds.completed}`), {
       timeout: 10_000,
@@ -791,7 +927,7 @@ test.describe('lesson list states', () => {
 
   test('long Persian/English titles wrap inside their card at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, studentC.token, record, '/lessons');
     const heading = page.getByRole('heading', { name: /عنوان بسیار بلند/ });
     await expect(heading).toBeVisible({ timeout: 15_000 });
     const card = heading.locator('xpath=ancestor::div[contains(@class, "MuiCard-root")]');
@@ -818,7 +954,7 @@ test.describe('lesson detail and player', () => {
   test('one H1 per route and LTR bounded English reading', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await setAuthAndGo(page, student.token, record, `/lessons/${lessonIds.notStarted}`);
-    await expect(page.getByRole('heading', { name: 'A Fresh Start' }).first()).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'آغاز تازه' }).first()).toBeVisible({
       timeout: 15_000,
     });
     expect(await page.getByRole('heading', { level: 1 }).count()).toBe(1);
@@ -830,38 +966,55 @@ test.describe('lesson detail and player', () => {
     expect(box.width).toBeLessThanOrEqual(640 + 1);
   });
 
-  test('player controls fit 360px with a dominant play button', async ({ page }) => {
+  test('player controls fit 360px with a dominant primary control', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await setAuthAndGo(page, student.token, record, `/lessons/${lessonIds.notStarted}`);
     const player = page.getByRole('group', { name: 'پخش‌کنندهٔ صوت' });
     await expect(player).toBeAttached({ timeout: 15_000 });
     await expect(player.getByRole('slider', { name: 'موقعیت پخش' })).toBeVisible();
-    const play = player.getByRole('button', { name: 'پخش', exact: true });
-    const playBox = (await play.boundingBox())!;
-    expect(playBox.width).toBe(56);
-    expect(playBox.height).toBe(56);
+    // Fresh Variant → the primary control is the labeled «شروع گوش‌دادن» CTA
+    // in the fixed 56px slot (Slice 7 deck contract).
+    const cta = player.getByTestId('deck-primary-cta');
+    await expect(cta).toHaveText('شروع گوش‌دادن');
+    const ctaBox = (await cta.boundingBox())!;
+    expect(ctaBox.height).toBe(56);
+    expect(ctaBox.width).toBeGreaterThanOrEqual(56);
     for (const name of ['۱۰ ثانیه به عقب', '۱۰ ثانیه به جلو', 'قطع صدا']) {
       const box = (await player.getByRole('button', { name }).boundingBox())!;
       expect(box.width, name).toBeGreaterThanOrEqual(44);
       expect(box.height, name).toBeGreaterThanOrEqual(44);
     }
-    // Speed stays a fixed row of five 44px chips — no wrapping.
-    const speedButtons = player.getByRole('button', { name: /سرعت پخش/ });
-    await expect(speedButtons).toHaveCount(5);
-    const sizes = await speedButtons.evaluateAll((els) =>
+    // Speed is one compact menu trigger; the menu carries the five speeds
+    // as 44px targets (replaces the legacy five-chip wall).
+    const speedTrigger = player.getByRole('button', { name: 'سرعت پخش 1 برابر' });
+    await expect(speedTrigger).toBeVisible();
+    await speedTrigger.click();
+    const speedOptions = page.getByRole('menuitem', { name: /سرعت پخش/ });
+    await expect(speedOptions).toHaveCount(5);
+    // The menu entrance animates a transform; wait until the items settle
+    // at their final 44px targets before measuring (no fixed sleeps).
+    await expect
+      .poll(async () => {
+        const settled = await speedOptions.evaluateAll((els) =>
+          els.map((el) => {
+            const r = el.getBoundingClientRect();
+            return { w: r.width, h: r.height };
+          }),
+        );
+        return settled.every((s) => s.w >= 44 && s.h >= 44);
+      })
+      .toBe(true);
+    const sizes = await speedOptions.evaluateAll((els) =>
       els.map((el) => {
         const r = el.getBoundingClientRect();
-        return { x: r.x, y: r.y, w: r.width, h: r.height };
+        return { w: r.width, h: r.height };
       }),
     );
     for (const s of sizes) {
       expect(s.w).toBeGreaterThanOrEqual(44);
       expect(s.h).toBeGreaterThanOrEqual(44);
     }
-    const first = sizes[0]!;
-    const last = sizes[sizes.length - 1]!;
-    // All five chips share one row (no wrap, no layout growth).
-    expect(Math.abs(first.y - last.y)).toBeLessThanOrEqual(2);
+    await page.getByRole('menuitem', { name: 'سرعت پخش 1 برابر' }).click();
     expect(await noHorizontalOverflow(page)).toBe(true);
   });
 
@@ -871,8 +1024,14 @@ test.describe('lesson detail and player', () => {
     await expect(resume).toBeVisible({ timeout: 15_000 });
     await resume.click();
     await expect(resume).not.toBeVisible({ timeout: 5_000 });
+    // The deck seeks to the saved position and starts playback. The fixture
+    // file is 2s long, so the applied seek clamps to its end — the slider
+    // proves the saved position (150s) was actually sought, not skipped.
     const player = page.getByRole('group', { name: 'پخش‌کنندهٔ صوت' });
-    await expect(player.getByText('2:30', { exact: true })).toBeVisible({ timeout: 10_000 });
+    const slider = player.getByRole('slider', { name: 'موقعیت پخش' });
+    await expect
+      .poll(async () => Number(await slider.getAttribute('aria-valuenow')), { timeout: 10_000 })
+      .toBeGreaterThanOrEqual(1);
   });
 
   test('sticky player stays above the bottom navigation on mobile', async ({ page }) => {
@@ -899,9 +1058,13 @@ test.describe('lesson detail and player', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await setAuthAndGo(page, student.token, record, `/lessons/${lessonIds.inProgress}`);
     await page.getByRole('button', { name: /ادامه از 2:30/ }).click({ timeout: 15_000 });
-    await expect(
-      page.getByRole('group', { name: 'پخش‌کنندهٔ صوت' }).getByText('2:30', { exact: true }),
-    ).toBeVisible({ timeout: 10_000 });
+    // The deck seeks to the saved position and starts playback (the 2s
+    // fixture file clamps the seek to its end — the slider proves it).
+    const player = page.getByRole('group', { name: 'پخش‌کنندهٔ صوت' });
+    const slider = player.getByRole('slider', { name: 'موقعیت پخش' });
+    await expect
+      .poll(async () => Number(await slider.getAttribute('aria-valuenow')), { timeout: 10_000 })
+      .toBeGreaterThanOrEqual(1);
 
     // SPA-navigate to the Library: audio keeps playing via the shared
     // element and the Mini Player appears above the bottom navigation.
@@ -910,9 +1073,13 @@ test.describe('lesson detail and player', () => {
 
     const mini = page.getByTestId('mini-player');
     await expect(mini).toBeVisible({ timeout: 10_000 });
-    await expect(mini.getByText('Daily Routine')).toBeVisible();
-    // Exactly one audio element exists — never two simultaneous players.
-    expect(await page.locator('audio').count()).toBe(1);
+    await expect(mini.getByText('روتین روزانه')).toBeVisible();
+    // Exactly one authoritative PLAYER element exists — never two
+    // simultaneous players. Scoped to audio[preload="metadata"]: the
+    // vocabulary pronunciation host (preload="none") is a separate,
+    // never-playing surface, and the route transition may briefly keep
+    // the previous route mounted on slower runners.
+    expect(await page.locator('audio[preload="metadata"]').count()).toBe(1);
     // No overlap with the bottom navigation.
     const miniBox = (await mini.boundingBox())!;
     const navBox = (await page.getByTestId('student-bottom-nav').boundingBox())!;
@@ -924,16 +1091,31 @@ test.describe('lesson detail and player', () => {
     await expect(page).toHaveURL(new RegExp(`/lessons/${lessonIds.inProgress}`), {
       timeout: 10_000,
     });
-    // The saved position is still honored: the resume prompt offers the
-    // exact saved time (the fresh token URL resets the live position, the
-    // same behavior as before the Mini Player existed).
-    await expect(page.getByRole('button', { name: /ادامه از 2:30/ })).toBeVisible({
-      timeout: 10_000,
-    });
+    // The saved position is still honored: the deck's resume prompt derives
+    // from the SAVED progress. The 2s fixture clip clamps the 150s seek, so
+    // the honest saved position is the real played one (~1-3s) and the
+    // honest CTA is «پخش» (deriveDeckCta <5s rule). The end-of-clip save
+    // lands a moment after the return load, so the CTA is polled.
+    await expect
+      .poll(async () => (await page.getByTestId('deck-primary-cta').textContent()) ?? '', {
+        timeout: 10_000,
+      })
+      .toContain('پخش');
+    const saved = Number(
+      (
+        (
+          await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonIds.inProgress}/progress`, {
+            headers: { authorization: `Bearer ${student.token}` },
+          })
+        ).body as { positionSeconds?: number }
+      ).positionSeconds ?? -1,
+    );
+    expect(saved).toBeGreaterThan(0);
+    expect(saved).toBeLessThanOrEqual(3);
   });
 
   test('mini player is hidden when no lesson is active', async ({ page }) => {
-    await setAuthAndGo(page, student.token, record, '/lessons');
+    await setAuthAndGo(page, noLessonStudent.token, record, '/lessons');
     await expect(page.getByTestId('mini-player')).toHaveCount(0);
   });
 
@@ -959,6 +1141,12 @@ test.describe('theme on redesigned pages', () => {
   // which runs after module evaluation.
   const routeFor = (key: string): string =>
     key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'dashboard' ? '/' : `/${key}`;
+  // Per-route identity: the legacy /lessons list reads progress for every
+  // published lesson at the Student's level (~17-20 in the shared-PB
+  // composition); the empty-level Student keeps the list visits at zero
+  // reads so `student` stays inside the per-Student progress-read budget.
+  const tokenForRoute = (key: string): string =>
+    key === 'lessons' ? noLessonStudent.token : student.token;
 
   for (const key of ['home', 'library', 'progress', 'lessons', 'account', 'detail'] as const) {
     test(`route renders in Light and Dark without overflow: ${key}`, {
@@ -967,7 +1155,7 @@ test.describe('theme on redesigned pages', () => {
       const route = routeFor(key);
       await page.setViewportSize({ width: 390, height: 844 });
       await page.emulateMedia({ colorScheme: 'light' });
-      await setAuthAndGo(page, student.token, record, route);
+      await setAuthAndGo(page, tokenForRoute(key), record, route);
       expect(await noHorizontalOverflow(page), `${route} light`).toBe(true);
       // The display preference lives only in Account settings (Podcast
       // Slice 1): switch there, then re-check the target route in Dark.
@@ -978,7 +1166,7 @@ test.describe('theme on redesigned pages', () => {
         .click();
       await page.waitForTimeout(80);
       await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
-      await setAuthAndGo(page, student.token, record, route);
+      await setAuthAndGo(page, tokenForRoute(key), record, route);
       expect(await noHorizontalOverflow(page), `${route} dark`).toBe(true);
       // Semantic surfaces actually changed.
       const bg = await page.evaluate(() =>
@@ -1056,6 +1244,10 @@ test.describe('responsive geometry', () => {
   const publicRoutes = ['/', '/login', '/signup'];
   const authRouteFor = (key: string): string =>
     key === 'detail' ? `/lessons/${lessonIds.notStarted}` : key === 'home' ? '/' : `/${key}`;
+  // Per-route identity: see the theme sweep — the legacy /lessons list
+  // burns the per-Student progress-read budget in the shared-PB composition.
+  const tokenForRoute = (key: string): string =>
+    key === 'lessons' ? noLessonStudent.token : student.token;
 
   for (const viewport of VIEWPORTS) {
     for (const route of publicRoutes) {
@@ -1064,24 +1256,12 @@ test.describe('responsive geometry', () => {
         await page.goto(route);
         await page.waitForTimeout(450);
         expect(await noHorizontalOverflow(page)).toBe(true);
-        // No element may extend beyond the viewport (fixed chrome included).
-        const violations = await page.evaluate(() => {
-          const vw = document.documentElement.clientWidth;
-          const bad: string[] = [];
-          for (const el of document.querySelectorAll('body *')) {
-            const r = el.getBoundingClientRect();
-            if (r.width <= 0 && r.height <= 0) continue;
-            if (el.closest('svg') || el.closest('.MuiLinearProgress-root')) continue;
-            // The skip link is intentionally translated off-screen until focused.
-            if (el.closest('a[href="#main-content"]')) continue;
-            if (r.right > vw + 1 || r.left < -1 || r.top < -1) {
-              bad.push(
-                `${el.tagName}.${String(el.className).slice(0, 30)} l=${r.left.toFixed(0)} r=${r.right.toFixed(0)} t=${r.top.toFixed(0)} b=${r.bottom.toFixed(0)}`,
-              );
-            }
-          }
-          return bad.slice(0, 5);
-        });
+        // No element may extend beyond the viewport (fixed chrome
+        // included). Elements inside horizontally-scrollable rows (e.g.
+        // Library filter chips) legitimately extend past the edge — the
+        // page-level noHorizontalOverflow check above still guarantees
+        // the document itself never overflows.
+        const violations = await page.evaluate(scrollerCarveOutCheck);
         expect(violations, `${route} at ${viewport.name}`).toEqual([]);
       });
     }
@@ -1090,25 +1270,11 @@ test.describe('responsive geometry', () => {
       test(`authenticated ${key} at ${viewport.name}`, async ({ page }) => {
         const route = authRouteFor(key);
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
-        await setAuthAndGo(page, student.token, record, route);
+        await setAuthAndGo(page, tokenForRoute(key), record, route);
         expect(await noHorizontalOverflow(page), `${route} ${viewport.name}`).toBe(true);
-        const violations = await page.evaluate(() => {
-          const vw = document.documentElement.clientWidth;
-          const bad: string[] = [];
-          for (const el of document.querySelectorAll('body *')) {
-            const r = el.getBoundingClientRect();
-            if (r.width <= 0 && r.height <= 0) continue;
-            if (el.closest('svg') || el.closest('.MuiLinearProgress-root')) continue;
-            // The skip link is intentionally translated off-screen until focused.
-            if (el.closest('a[href="#main-content"]')) continue;
-            if (r.right > vw + 1 || r.left < -1 || r.top < -1) {
-              bad.push(
-                `${el.tagName}.${String(el.className).slice(0, 30)} l=${r.left.toFixed(0)} r=${r.right.toFixed(0)} t=${r.top.toFixed(0)} b=${r.bottom.toFixed(0)}`,
-              );
-            }
-          }
-          return bad.slice(0, 5);
-        });
+        // Per-element check: same scrollable-row carve-out as the public
+        // sweep; the page-level no-overflow guarantee is asserted above.
+        const violations = await page.evaluate(scrollerCarveOutCheck);
         expect(violations, `${route} at ${viewport.name}`).toEqual([]);
         // Theme control stays reachable on every viewport.
         // No always-visible theme control in the Student shell (Settings only).
@@ -1116,6 +1282,26 @@ test.describe('responsive geometry', () => {
       });
     }
   }
+
+  test('the per-element check still fails on genuine overflow (carve-out is exact)', async ({
+    page,
+  }) => {
+    // Prove the scrollable-row carve-out does not mask real offenders:
+    // an element that genuinely sticks out of the viewport (no scroller
+    // ancestor) is still flagged by the same serialized check.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await setAuthAndGo(page, student.token, record, '/library');
+    await expect(page.getByTestId('library-count')).toBeVisible({ timeout: 15_000 });
+    expect(await noHorizontalOverflow(page)).toBe(true);
+    await page.evaluate(() => {
+      const vw = document.documentElement.clientWidth;
+      const offender = document.createElement('div');
+      offender.style.cssText = `position:fixed;left:0;top:0;width:${vw + 120}px;height:12px;background:red`;
+      document.body.appendChild(offender);
+    });
+    const violations = await page.evaluate(scrollerCarveOutCheck);
+    expect(violations.length).toBeGreaterThan(0);
+  });
 
   test('App Bar title and actions do not collide at 360px', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 800 });

@@ -120,32 +120,41 @@ export function LessonListSkeleton() {
   );
 }
 
-/** Lesson detail loading state: metadata, player card, reading lines. */
+/** Episode loading state (Slice 7 Record Jacket): artwork, rail plates,
+ *  identity lines, Deck skeleton, then the reading-column sections. */
 export function LessonDetailSkeleton() {
   return (
-    <LoadingRegion label="در حال بارگذاری درس…">
-      <Stack spacing={2}>
-        <Stack spacing={1}>
-          <Skeleton variant="text" width="60%" height={32} />
-          <Skeleton variant="text" width="35%" height={18} />
-        </Stack>
-        <Card>
-          <Stack spacing={1.5} sx={{ p: 2.5 }}>
-            <Skeleton variant="rounded" height={4} />
-            <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-              <Skeleton variant="text" width="15%" height={16} />
-              <Skeleton variant="text" width="15%" height={16} />
+    <LoadingRegion label="در حال بارگذاری اپیزود…">
+      <Stack spacing={3}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={3}
+          sx={{ alignItems: 'flex-start' }}
+        >
+          <Box sx={{ width: { xs: 200, md: 200, lg: 280 }, flexShrink: 0 }}>
+            <Skeleton variant="rounded" width="100%" height={200} />
+            <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
+              {[0, 1, 2, 3].map((i) => (
+                <Skeleton key={i} variant="rounded" width={44} height={44} />
+              ))}
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'center', gap: 2 }}>
-              <Skeleton variant="circular" width={44} height={44} />
-              <Skeleton variant="circular" width={56} height={56} />
-              <Skeleton variant="circular" width={44} height={44} />
-            </Stack>
-            <Skeleton variant="rounded" height={44} />
+          </Box>
+          <Stack spacing={1} sx={{ flex: 1, minWidth: 0, pt: { md: 0.5 } }}>
+            <Skeleton variant="text" width="30%" height={16} />
+            <Skeleton variant="text" width="70%" height={32} />
+            <Skeleton variant="text" width="45%" height={18} />
+            <Skeleton variant="text" width="25%" height={16} />
           </Stack>
-        </Card>
-        <Box sx={{ maxWidth: layout.readingMaxWidth, mx: 'auto', width: '100%' }}>
-          <Skeleton variant="text" width="50%" height={26} sx={{ mb: 2 }} />
+        </Stack>
+        <Box data-testid="player-surface">
+          <DeckSkeleton />
+        </Box>
+        <Box sx={{ maxWidth: layout.readingMaxWidth, width: '100%' }}>
+          <Skeleton variant="text" width="30%" height={24} sx={{ mb: 1.5 }} />
+          <Skeleton variant="text" height={18} />
+          <Skeleton variant="text" height={18} />
+          <Skeleton variant="text" width="80%" height={18} sx={{ mb: 3 }} />
+          <Skeleton variant="text" width="30%" height={24} sx={{ mb: 1.5 }} />
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <Skeleton key={i} variant="text" height={18} sx={{ mb: 1 }} />
           ))}
@@ -155,5 +164,27 @@ export function LessonDetailSkeleton() {
   );
 }
 
-// The loading region's label is announced by the live region; the hidden
-// box above holds the actual text.
+/** Deck-shaped loading block (used by first load + Variant switches). */
+export function DeckSkeleton() {
+  return (
+    <Box
+      role="status"
+      aria-live="polite"
+      data-testid="deck-skeleton"
+      sx={{
+        backgroundColor: 'surfaceContainerHigh',
+        borderRadius: '16px',
+        p: 2,
+      }}
+    >
+      <Skeleton variant="rounded" height={4} sx={{ mb: 1.5 }} />
+      <Skeleton variant="text" width="30%" height={16} />
+      <Skeleton variant="rounded" height={14} sx={{ my: 1.5 }} />
+      <Stack direction="row" sx={{ justifyContent: 'center', gap: 2, mt: 1 }}>
+        <Skeleton variant="circular" width={44} height={44} />
+        <Skeleton variant="rounded" width={128} height={56} sx={{ borderRadius: '999px' }} />
+        <Skeleton variant="circular" width={44} height={44} />
+      </Stack>
+    </Box>
+  );
+}

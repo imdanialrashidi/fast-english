@@ -1,45 +1,58 @@
 // app/src/features/lessons/routes/LessonDetailRoute.tsx
-// Visual Slice 2 — focused reading and listening environment.
+// Slice 7 — the Episode surface (Record Jacket), evolved from the Visual
+// Slice 2 lesson-detail route (accepted design: docs/DESIGN.md).
 //
-// Required order: contextual back action (Top App Bar) → topic/level
-// metadata → lesson title → Audio Player → progress/resume state → English
-// lesson content. One H1 per route (the PageHeader); the English article
-// heading is an H2. The article is LTR with a bounded measure and the
-// `englishReading` typography. On md+ the Player stays sticky within safe
-// bounds; while the article is being read the metadata row quiets down
-// (presentation-only). No fixed element ever covers text.
+// Composition (three real tiers):
+//   phone:    artwork → Edition Rail → identity → Deck → learning sections
+//   tablet:   jacket-front (artwork beside identity), sticky Deck while reading
+//   desktop:  two-column jacket + liner-notes (pinned jacket column; bounded
+//             reading column)
+//
+// Atomic Variant semantics:
+//   - the Edition Rail navigates between Variants of the SAME Episode via
+//     the URL (/lessons/:variantId); browsing never mutates recommended or
+//     preferred Level and there is no set-default affordance here;
+//   - a Variant switch immediately stops the previous session (shared
+//     player), keeps the Episode-level jacket rendered, disables the rail
+//     with the accepted loading line, and skeletons ONLY the
+//     variant-dependent regions (Deck, summary, vocabulary, transcript);
+//     old and new Variant content are never visible at the same time;
+//   - previous/next navigation targets a different Episode → full load;
+//   - every load uses a sequence guard: stale responses are discarded.
+//
+// States: loading / switching / ready / error / no_entitlement / not_found.
 
-import { Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Box, Button, Divider, Stack, Typography } from '@mui/material';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { PageContainer } from '../../../../../shared/ui/PageContainer';
-import { PageHeader } from '../../../../../shared/ui/PageHeader';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
-import { duration, easing, layout } from '../../../../../shared/ui/tokens';
+import { layout, radius } from '../../../../../shared/ui/tokens';
 import type { CefrLevel } from '../../../../../shared/ui/tokens/cefr';
-import { LevelBadge } from '../../../app/shell/LevelBadge';
+import { productCopy } from '../../../app/copy/productCopy';
 import { LessonDetailSkeleton } from '../../../app/shell/PageSkeletons';
-import { AudioPlayer } from '../../player';
+import { useAuth } from '../../../lib/auth';
+import { buildEditionRail, type EditionRailEntry, railEntryForVariant } from '../../episode';
+import { EpisodeJacket } from '../../episode/components/EpisodeJacket';
+import { PrevNextFooter } from '../../episode/components/PrevNextFooter';
+import { VariantDeck } from '../../episode/components/VariantDeck';
+import { VocabularyList } from '../../episode/components/VocabularyList';
+import { jacketForVariant, rememberJacket } from '../../episode/jacketCache';
+import { usePlayer } from '../../player';
 import * as progressApi from '../../progress/api';
 import type { LessonProgressResponse } from '../../progress/types';
 import { useProgressSave } from '../../progress/useProgressSave';
 import * as api from '../api';
-import type { LessonDetailResponse } from '../types';
+import type { LessonDetailResponse, VocabularyItem } from '../types';
 
-type Phase = 'loading' | 'ready' | 'error' | 'no_entitlement' | 'not_found' | 'resume_required';
+type Phase = 'loading' | 'switching' | 'ready' | 'error' | 'no_entitlement' | 'not_found';
 
-const RESUME_THRESHOLD = 5; // seconds — show resume prompt if position >= this
-
-function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  return `${m}:${String(s).padStart(2, '0')}`;
+interface ErrorInfo {
+  title: string;
+  description: string;
+  retry?: boolean;
 }
 
-/** Split the English body into paragraphs on blank lines (punctuation kept). */
 function splitParagraphs(body: string): string[] {
   return body
     .split(/\n{2,}/)
@@ -50,122 +63,201 @@ function splitParagraphs(body: string): string[] {
 export function LessonDetailRoute() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const player = usePlayer();
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [lesson, setLesson] = useState<LessonDetailResponse | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioError, setAudioError] = useState(false);
-  const [errorInfo, setErrorInfo] = useState<{
-    title: string;
-    description: string;
-    retry?: boolean;
-  } | null>(null);
+  // Raw (server) audio URL of the current Variant — needed to rebuild the
+  // protected URL when the deck retries after a build failure.
+  const rawAudioUrlRef = useRef<string | null>(null);
+  const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null);
   const [progress, setProgress] = useState<LessonProgressResponse | null>(null);
-  const [completed, setCompleted] = useState(false);
+  const [vocabItems, setVocabItems] = useState<VocabularyItem[] | null>(null);
+  const [vocabFailed, setVocabFailed] = useState(false);
   const [readingActive, setReadingActive] = useState(false);
-  // Position the player should seek to when the user chooses to resume.
-  const [resumePosition, setResumePosition] = useState<number | undefined>(undefined);
+  const [announcement, setAnnouncement] = useState<string | null>(null);
+
+  // The session-scoped Episode jacket survives the RouteTransition remount
+  // (Episode-level identity only; Variant content always loads fresh).
+  const { user } = useAuth();
+  const seqRef = useRef(0);
+  // Seq of the most recent loadLesson run — lets the deck retry rebuild the
+  // protected URL only when that load is still the current one.
+  const lastLoadSeqRef = useRef(0);
+  const wasSwitchingRef = useRef(false);
   const articleRef = useRef<HTMLElement | null>(null);
+  // The current Variant id, read through a ref so the (stable) progress
+  // callbacks always attribute their result to the CURRENT route state.
+  const idRef = useRef(id);
+  idRef.current = id;
 
-  const { handleTimeUpdate, handleSeek, handleEnded } = useProgressSave({
-    lessonId: id,
-    enabled: !!id && !!audioUrl && !audioError,
-    // Feed the already-loaded progress into the hook so the first save uses
-    // the authoritative revision (no guaranteed 409 for returning users).
-    initialProgress: progress ?? undefined,
-    onSaved: (p) => {
-      setProgress(p);
-      setCompleted(p.completed);
-    },
-    onStaleRevision: (p) => {
-      setProgress(p);
-      setCompleted(p.completed);
-    },
-  });
-
-  const buildAudioUrl = useCallback(async (audioUrl: string) => {
-    try {
-      const url = await api.buildProtectedAudioUrl(audioUrl);
-      setAudioUrl(url);
-      setAudioError(false);
-    } catch {
-      setAudioError(true);
-    }
+  // Stable callbacks: the progress hook's queue/effect chain depends on
+  // their identity — inline arrows would re-create performSave → drainPending
+  // → flush every render and flush the debounce on every re-render.
+  const handleProgressSaved = useCallback((p: LessonProgressResponse) => {
+    // A save that completes after a Variant switch belongs to the OLD
+    // Variant — it must never clobber the new Variant's progress state
+    // (a cross-Variant leak would show the old resume point in the new
+    // deck and seek the new element to the old position).
+    if (p.lessonId === idRef.current) setProgress(p);
+  }, []);
+  const handleStaleRevision = useCallback((p: LessonProgressResponse) => {
+    if (p.lessonId === idRef.current) setProgress(p);
   }, []);
 
-  const loadLesson = useCallback(async () => {
-    if (!id) {
-      setPhase('not_found');
-      return;
-    }
-    setPhase('loading');
-    setErrorInfo(null);
-    setAudioError(false);
-    setAudioUrl(null);
-    setCompleted(false);
-    setProgress(null);
-    setResumePosition(undefined);
-    try {
-      const data = await api.getLessonDetail(id);
-      setLesson(data);
-      setPhase('ready');
+  const { handleTimeUpdate, handlePause, handleSeek, handleEnded } = useProgressSave({
+    lessonId: id,
+    enabled: !!id && !!audioUrl && !audioError,
+    initialProgress: progress ?? undefined,
+    onSaved: handleProgressSaved,
+    onStaleRevision: handleStaleRevision,
+  });
 
-      // Load progress
+  const loadLesson = useCallback(
+    async (targetId: string) => {
+      // Same-Episode Variant switch (Edition Rail / Back-forward within the
+      // Episode) keeps the jacket; anything else is a full load.
+      const sameEpisode = jacketForVariant(targetId, user?.id) !== null;
+
+      // Atomicity: any session whose lesson differs from the target stops
+      // immediately — the old Variant's audio never survives a switch, and
+      // stale callbacks can never write into the new Variant.
+      if (player.session?.lessonId !== targetId) {
+        player.stop();
+      }
+
+      const seq = ++seqRef.current;
+      lastLoadSeqRef.current = seq;
+      wasSwitchingRef.current = sameEpisode;
+      setPhase(sameEpisode ? 'switching' : 'loading');
+      if (!sameEpisode) setLesson(null);
+      setAudioUrl(null);
+      setAudioError(false);
+      rawAudioUrlRef.current = null;
+      setErrorInfo(null);
+      setProgress(null);
+      setVocabItems(null);
+      setVocabFailed(false);
+
       try {
-        const prog = await progressApi.getLessonProgress(id);
-        setProgress(prog);
-        setCompleted(prog.completed);
-
-        // Show resume prompt if position is meaningful and lesson not completed
-        if (!prog.completed && prog.positionSeconds >= RESUME_THRESHOLD) {
-          setPhase('resume_required');
+        const data = await api.getLessonDetail(targetId);
+        if (seqRef.current !== seq) return;
+        rememberJacket(
+          {
+            episodeId: data.episode?.id ?? '',
+            episode: data.episode ?? null,
+            availableLevels: data.availableLevels ?? [],
+            recommendedLevel: String(data.recommendedLevel ?? ''),
+            preferredLevel: String(data.preferredLevel ?? ''),
+          },
+          user?.id,
+        );
+        setLesson(data);
+        setPhase('ready');
+        if (wasSwitchingRef.current) {
+          const level = String(data.level || '');
+          if (level) setAnnouncement(productCopy.episodeSurface.variantLoaded(level));
         }
-      } catch {
-        // Progress load failure is non-fatal
-      }
 
-      // Build audio URL asynchronously with file token
-      if (data.audio?.url) {
-        void buildAudioUrl(data.audio.url);
-      }
-    } catch (err) {
-      const errObj = err as { status?: number; data?: { code?: string; message?: string } };
-      const code = errObj?.data?.code ?? '';
-      const status = errObj?.status ?? 0;
-      if (status === 404) {
-        setPhase('not_found');
-        setErrorInfo({
-          title: 'درس یافت نشد',
-          description: 'این درس وجود ندارد یا در دسترس نیست.',
-        });
-      } else if (
-        code === 'subscription_required' ||
-        code === 'account_suspended' ||
-        code === 'access_denied'
-      ) {
-        setPhase('no_entitlement');
-        setErrorInfo({
-          title: 'دسترسی محدود',
-          description: 'شما دسترسی به این درس را ندارید.',
-        });
-      } else {
-        setPhase('error');
-        setErrorInfo({
-          title: 'خطا در بارگذاری درس',
-          description: errObj?.data?.message || 'خطایی رخ داد.',
-          retry: true,
-        });
-      }
-    }
-  }, [id, buildAudioUrl]);
+        // Progress (non-fatal — the surface stays usable without it).
+        try {
+          const prog = await progressApi.getLessonProgress(targetId);
+          if (seqRef.current !== seq) return;
+          setProgress(prog);
+        } catch {
+          // non-fatal
+        }
 
-  useEffect(() => {
-    void loadLesson();
+        // Vocabulary (non-fatal; retry is offered inline).
+        try {
+          const vocab = await api.getLessonVocabulary(targetId);
+          if (seqRef.current !== seq) return;
+          setVocabItems(vocab.items);
+        } catch {
+          if (seqRef.current !== seq) return;
+          setVocabFailed(true);
+        }
+
+        // Protected audio URL (non-fatal; the Deck offers retry).
+        if (data.audio?.url) {
+          rawAudioUrlRef.current = data.audio.url;
+          try {
+            const url = await api.buildProtectedAudioUrl(data.audio.url);
+            if (seqRef.current !== seq) return;
+            setAudioUrl(url);
+          } catch {
+            if (seqRef.current !== seq) return;
+            setAudioError(true);
+          }
+        } else {
+          rawAudioUrlRef.current = null;
+        }
+      } catch (err) {
+        if (seqRef.current !== seq) return;
+        const errObj = err as { status?: number; data?: { code?: string; message?: string } };
+        const code = errObj?.data?.code ?? '';
+        const status = errObj?.status ?? 0;
+        if (status === 404) {
+          setPhase('not_found');
+          setErrorInfo({
+            title: 'اپیزود یافت نشد',
+            description: 'این اپیزود وجود ندارد یا در دسترس نیست.',
+          });
+        } else if (
+          code === 'subscription_required' ||
+          code === 'account_suspended' ||
+          code === 'access_denied'
+        ) {
+          setPhase('no_entitlement');
+          setErrorInfo({
+            title: 'دسترسی محدود',
+            description: 'شما دسترسی به این اپیزود را ندارید.',
+          });
+        } else {
+          setPhase('error');
+          setErrorInfo({
+            title: productCopy.errors.episodeLoadFailedTitle,
+            // Never surface raw Backend/server copy to Students: the
+            // generic path shows controlled Persian product copy only.
+            description: productCopy.errors.episodeLoadFailedDescription,
+            retry: true,
+          });
+        }
+      }
+    },
+    [player],
+  );
+
+  // Layout effect: the atomic transition (stop + switching phase) applies
+  // BEFORE the browser paints the new URL, so a Variant switch can never
+  // show the old Variant's content under the new URL — not even one frame.
+  useLayoutEffect(() => {
+    if (id) void loadLesson(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Restrained focus behavior: while the English article is being read the
-  // metadata row quiets down. Presentation-only; never hides actions.
+  // Retry vocabulary for the current Variant (inline, Library-style).
+  const handleVocabRetry = useCallback(() => {
+    if (!id) return;
+    setVocabFailed(false);
+    setVocabItems(null);
+    void (async () => {
+      const seq = seqRef.current;
+      try {
+        const vocab = await api.getLessonVocabulary(id);
+        if (seqRef.current !== seq) return;
+        setVocabItems(vocab.items);
+      } catch {
+        if (seqRef.current !== seq) return;
+        setVocabFailed(true);
+      }
+    })();
+  }, [id]);
+
+  // Restrained focus behavior: while the English transcript is being read
+  // the identity block quiets (presentation-only; never hides actions).
   useEffect(() => {
     const el = articleRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
@@ -179,73 +271,51 @@ export function LessonDetailRoute() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [lesson?.id]);
+  }, [lesson?.id, phase]);
 
-  // Resume from saved position — the player seeks to the saved position once
-  // the user confirms (the audio element may not have loaded metadata yet).
-  const handleResume = useCallback(() => {
-    if (progress) {
-      setResumePosition(progress.positionSeconds);
-    }
-    setPhase('ready');
-  }, [progress]);
+  const handleSelectVariant = useCallback(
+    (variantId: string, _level: CefrLevel) => {
+      if (variantId === id) return;
+      // Atomicity at the click: the old Variant's audio stops NOW, before
+      // the route remounts (RouteTransition keys by pathname).
+      if (player.session?.lessonId !== variantId) player.stop();
+      navigate(`/lessons/${variantId}`);
+    },
+    [id, navigate],
+  );
 
-  // Start from beginning
-  const handleStartFromBeginning = useCallback(() => {
-    setResumePosition(0);
-    setPhase('ready');
+  const handleUnpublishedAttempt = useCallback((level: CefrLevel) => {
+    setAnnouncement(productCopy.episodeSurface.levelUnpublished(level));
   }, []);
 
-  const handleRetry = useCallback(() => {
-    setAudioError(false);
-    if (lesson?.audio?.url) {
-      void buildAudioUrl(lesson.audio.url);
-    }
-  }, [lesson, buildAudioUrl]);
-
-  // Override the player's onTimeUpdate to also save
-  const onPlayerTimeUpdate = useCallback(
-    (positionSeconds: number, durationSeconds: number) => {
-      handleTimeUpdate(positionSeconds, durationSeconds);
-    },
-    [handleTimeUpdate],
-  );
-
-  const onPlayerEnded = useCallback(() => {
-    handleEnded();
-  }, [handleEnded]);
-
-  const onPlayerSeek = useCallback(
-    (positionSeconds: number) => {
-      handleSeek(positionSeconds);
-    },
-    [handleSeek],
-  );
+  const handleRequirePause = useCallback(() => {
+    player.pause();
+  }, [player]);
 
   if (phase === 'loading') {
     return (
-      <PageContainer>
+      <PageContainer maxWidth="lg">
         <LessonDetailSkeleton />
       </PageContainer>
     );
   }
 
-  if (phase === 'error') {
+  if (phase === 'error' || phase === 'no_entitlement' || phase === 'not_found') {
     return (
-      <PageContainer>
+      <PageContainer maxWidth="lg">
         <StatePanel
-          variant="error"
+          variant={phase === 'error' ? 'error' : 'permission'}
           title={errorInfo?.title || 'خطا'}
           description={errorInfo?.description}
           action={
             <Stack direction="row" spacing={1}>
-              {errorInfo?.retry && (
-                <Button variant="outlined" onClick={loadLesson}>
-                  تلاش مجدد
+              {errorInfo?.retry && id ? (
+                <Button variant="outlined" onClick={() => void loadLesson(id)}>
+                  {productCopy.actions.retry}
                 </Button>
-              )}
-              <Button variant="text" onClick={() => navigate('/lessons')}>
-                بازگشت به فهرست
+              ) : null}
+              <Button variant="text" onClick={() => navigate('/library')}>
+                {productCopy.actions.goToLibrary}
               </Button>
             </Stack>
           }
@@ -254,183 +324,367 @@ export function LessonDetailRoute() {
     );
   }
 
-  if (phase === 'no_entitlement' || phase === 'not_found') {
-    return (
-      <PageContainer>
-        <StatePanel
-          variant="permission"
-          title={errorInfo?.title || 'دسترسی محدود'}
-          description={errorInfo?.description}
-          action={
-            <Button variant="text" onClick={() => navigate('/lessons')}>
-              بازگشت به فهرست
-            </Button>
-          }
-        />
-      </PageContainer>
-    );
-  }
+  // -----------------------------------------------------------------------
+  // ready / switching — jacket stays; variant regions swap atomically.
+  // -----------------------------------------------------------------------
+  const cachedJacket = phase === 'switching' ? jacketForVariant(id, user?.id) : null;
+  const jacketEpisode =
+    phase === 'switching'
+      ? (cachedJacket?.episode ?? lesson?.episode ?? null)
+      : (lesson?.episode ?? null);
+  const jacketVariant =
+    phase === 'switching'
+      ? null // variant-dependent identity lines hide during the switch
+      : (lesson?.variant ?? null);
+  const entries: EditionRailEntry[] = buildEditionRail(
+    phase === 'switching'
+      ? (cachedJacket?.availableLevels ?? lesson?.availableLevels)
+      : lesson?.availableLevels,
+  );
+  const targetEntry = phase === 'switching' ? railEntryForVariant(entries, id) : null;
+  const switchingNote =
+    phase === 'switching' && targetEntry
+      ? productCopy.episodeSurface.loadingVariant(targetEntry.level)
+      : null;
+  const railDisabled = phase === 'switching';
+  const currentLevel = phase === 'ready' && lesson ? (lesson.level as CefrLevel) : null;
+  const recommendedLevel = String(lesson?.recommendedLevel ?? cachedJacket?.recommendedLevel ?? '');
 
-  if (!lesson) return null;
-
-  const metaQuiet = readingActive ? 0.45 : 1;
+  const summaryFa = phase === 'ready' ? (lesson?.variant?.summaryFa ?? '') : '';
+  const transcript = phase === 'ready' ? (lesson?.variant?.transcript ?? '') : '';
+  const sessionTitle =
+    (jacketEpisode?.titleFa?.trim() || jacketEpisode?.title || '').trim() ||
+    productCopy.episode.entity;
+  // Resolved Episode artwork for Media Session surfaces (lock screen / OS
+  // media controls). The artwork proxy is public + cacheable (accepted
+  // artwork policy) and must be an absolute URL for OS fetching (native
+  // builds have no shared browser origin).
+  const sessionArtwork = lesson?.episode?.artwork
+    ? api.resolveMediaUrl(lesson.episode.artwork)
+    : null;
 
   return (
-    <PageContainer maxWidth="md">
-      {/* Topic + level metadata + title (one H1 per route). */}
-      <PageHeader
-        title={lesson.title}
-        subtitle={
-          <Stack
-            spacing={1.5}
-            data-testid="lesson-meta"
-            sx={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              pt: 0.5,
-              gap: 1.5,
-              flexWrap: 'wrap',
-              transition: `opacity ${duration.durationFast}ms ${easing.easingStandard}`,
-              opacity: metaQuiet,
-            }}
-          >
-            <LevelBadge level={lesson.level as CefrLevel} size="sm" />
-            <Chip
-              size="small"
-              label={lesson.topic.title}
-              variant="outlined"
-              sx={{ borderRadius: '16px' }}
-            />
-            <Typography variant="caption" color="text.secondary">
-              {lesson.estimatedMinutes} دقیقه
-            </Typography>
-            {progress && (
-              <Chip
-                size="small"
-                label={`${progress.percent}٪`}
-                color={completed ? 'success' : 'default'}
-                variant="outlined"
-              />
-            )}
-          </Stack>
-        }
-      />
-
-      {/* Resume prompt */}
-      {phase === 'resume_required' && progress && !completed && (
-        <Card sx={{ mb: 3, bgcolor: 'action.hover' }} data-testid="resume-prompt">
-          <CardContent>
-            <Typography variant="body2" sx={{ mb: 1.5 }}>
-              پیشرفت شما تا {formatTime(progress.positionSeconds)} ذخیره شده است. از کجا می‌خواهید
-              ادامه دهید؟
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={handleResume}
-                sx={{ minHeight: 44 }}
-              >
-                ادامه از {formatTime(progress.positionSeconds)}
-              </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={handleStartFromBeginning}
-                sx={{ minHeight: 44 }}
-              >
-                شروع از اول
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Audio Player — sticky within safe bounds on md+; in-flow on mobile
-          so it can never cover the Bottom Navigation. */}
-      {audioUrl && !audioError && (
-        <Box
-          data-testid="player-surface"
-          sx={{
-            mb: 3,
-            position: { md: 'sticky' },
-            top: { md: `calc(${layout.headerHeight.md}px + 16px)` },
-          }}
-        >
-          <Card>
-            <CardContent sx={{ pb: '12px !important' }}>
-              <AudioPlayer
-                src={audioUrl}
-                contentType={lesson?.audio.contentType}
-                onTimeUpdate={onPlayerTimeUpdate}
-                onEnded={onPlayerEnded}
-                onSeek={onPlayerSeek}
-                completed={completed}
-                showCompleted
-                initialPosition={resumePosition}
-                onRetry={handleRetry}
-                session={{ lessonId: lesson.id, title: lesson.title }}
-              />
-            </CardContent>
-          </Card>
-        </Box>
-      )}
-
-      {audioError && (
-        <Card sx={{ mb: 3 }} data-testid="audio-error-card">
-          <CardContent>
-            <Typography variant="body2" color="error" role="alert">
-              خطا در دریافت فایل صوتی. لطفاً دوباره تلاش کنید.
-            </Typography>
-            <Button
-              size="small"
-              variant="outlined"
-              sx={{ mt: 1, minHeight: 44 }}
-              onClick={() => {
-                setAudioError(false);
-                if (lesson?.audio?.url) {
-                  void buildAudioUrl(lesson.audio.url);
-                }
-              }}
-            >
-              تلاش مجدد برای دریافت صوت
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* English body — LTR, bounded measure, comfortable line height. */}
+    <PageContainer maxWidth="lg">
       <Box
-        component="article"
-        ref={articleRef}
-        lang="en"
-        dir="ltr"
-        data-testid="english-reading"
         sx={{
-          maxWidth: layout.readingMaxWidth,
-          mx: 'auto',
-          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: { lg: 'minmax(0, 320px) minmax(0, 1fr)' },
+          gap: { lg: 4 },
+          alignItems: 'start',
         }}
       >
-        <Typography
-          component="h2"
-          variant="h3"
-          sx={{ mb: 2.5, textAlign: 'start', fontFamily: 'inherit' }}
+        {/* ---- Jacket column (sticky on desktop; deck sticky on tablet) ---- */}
+        <Box
+          sx={{
+            gridColumn: { lg: 1 },
+            minWidth: 0,
+            position: { lg: 'sticky' },
+            top: { lg: `calc(${layout.headerHeight.md}px + 16px)` },
+            alignSelf: 'start',
+          }}
         >
-          {lesson.title}
-        </Typography>
-        {splitParagraphs(lesson.body).map((paragraph, i) => (
-          <Typography
-            key={`${i}-${paragraph.slice(0, 24)}`}
-            variant="englishReading"
-            component="p"
-            sx={{ mb: 3, textAlign: 'start' }}
+          <EpisodeJacket
+            episode={jacketEpisode}
+            variant={jacketVariant}
+            entries={entries}
+            currentLevel={currentLevel}
+            recommendedLevel={recommendedLevel}
+            railDisabled={railDisabled}
+            switchingNote={switchingNote}
+            readingActive={readingActive}
+            onSelectVariant={handleSelectVariant}
+            onUnpublishedAttempt={handleUnpublishedAttempt}
+          />
+
+          <Box
+            data-testid="player-surface"
+            sx={{
+              mt: 3,
+              position: { md: 'sticky', lg: 'static' },
+              top: { md: `calc(${layout.headerHeight.md}px + 16px)` },
+            }}
           >
-            {paragraph}
-          </Typography>
-        ))}
+            {phase === 'switching' || !lesson ? (
+              <Box data-testid="deck-switching">
+                <Box
+                  sx={{
+                    backgroundColor: 'surfaceContainerHigh',
+                    borderRadius: '16px',
+                    p: 2,
+                  }}
+                >
+                  <Box sx={{ height: 4, backgroundColor: 'surfaceContainerHighest', mb: 2 }} />
+                  <Box
+                    sx={{
+                      height: 16,
+                      width: '35%',
+                      backgroundColor: 'surfaceContainerHighest',
+                      mb: 2,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      height: 14,
+                      backgroundColor: 'surfaceContainerHighest',
+                      mb: 2,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: 2,
+                      mt: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
+                        backgroundColor: 'surfaceContainerHighest',
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: 128,
+                        height: 56,
+                        borderRadius: radius.radiusPill,
+                        backgroundColor: 'surfaceContainerHighest',
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
+                        backgroundColor: 'surfaceContainerHighest',
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Box>
+            ) : (
+              <VariantDeck
+                src={audioUrl && !audioError ? audioUrl : null}
+                session={{ lessonId: lesson.id, title: sessionTitle, artwork: sessionArtwork }}
+                progress={progress}
+                level={currentLevel}
+                retryable={audioError}
+                onTimeUpdate={handleTimeUpdate}
+                onPause={handlePause}
+                onSeek={handleSeek}
+                onEnded={handleEnded}
+                onRetry={() => {
+                  // Recoverable failure (incl. token expiry mid-playback):
+                  // ALWAYS rebuild the protected URL with a fresh file
+                  // token, sequence-guarded like every load path. Reloading
+                  // the same URL would re-use the expired token and dead-end
+                  // the retry.
+                  const rawUrl = rawAudioUrlRef.current;
+                  if (!rawUrl) return;
+                  const retrySeq = lastLoadSeqRef.current;
+                  void (async () => {
+                    try {
+                      const url = await api.buildProtectedAudioUrl(rawUrl);
+                      if (seqRef.current !== retrySeq) return;
+                      setAudioError(false);
+                      // A same-second PB file token is byte-identical to the
+                      // previous one (verified: /api/files/token returns the
+                      // same JWT within the same second — the payload has no
+                      // iat/jti). React would then bail out of the re-render
+                      // (Object.is on the state) and the rebuilt source would
+                      // never reload — the retry would dead-end. The retry
+                      // intent requires a REAL reload, so when the rebuilt
+                      // URL is unchanged, append a cache-busting nonce (the
+                      // audio proxy ignores unknown query params; the token
+                      // stays the authoritative credential).
+                      setAudioUrl((current) =>
+                        current === url
+                          ? `${url}${url.includes('?') ? '&' : '?'}_r=${Date.now()}`
+                          : url,
+                      );
+                    } catch {
+                      if (seqRef.current !== retrySeq) return;
+                      setAudioError(true);
+                    }
+                  })();
+                }}
+              />
+            )}
+          </Box>
+        </Box>
+
+        {/* ---- Reading column (liner notes) ---- */}
+        <Box
+          sx={{
+            gridColumn: { lg: 2 },
+            gridRow: { lg: 1 },
+            minWidth: 0,
+            maxWidth: { lg: layout.readingMaxWidth },
+          }}
+        >
+          <Box
+            component="section"
+            aria-labelledby="episode-summary-heading"
+            data-testid="summary-section"
+          >
+            <Typography
+              component="h2"
+              id="episode-summary-heading"
+              variant="headlineSmall"
+              sx={{ mb: 1.5 }}
+            >
+              {productCopy.episodeSurface.summarySection}
+            </Typography>
+            {phase === 'switching' || !lesson ? (
+              <Box data-testid="summary-switching">
+                <Box
+                  sx={{
+                    height: 16,
+                    width: '100%',
+                    backgroundColor: 'surfaceContainerHighest',
+                    mb: 1,
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: 16,
+                    width: '90%',
+                    backgroundColor: 'surfaceContainerHighest',
+                    mb: 1,
+                  }}
+                />
+                <Box
+                  sx={{
+                    height: 16,
+                    width: '60%',
+                    backgroundColor: 'surfaceContainerHighest',
+                  }}
+                />
+              </Box>
+            ) : (
+              <Typography variant="bodyLarge" component="p" sx={{ mb: 3 }}>
+                {summaryFa}
+              </Typography>
+            )}
+          </Box>
+
+          {phase === 'switching' || !lesson ? (
+            <Box data-testid="vocab-switching" sx={{ mb: 3 }}>
+              <Box
+                sx={{
+                  height: 24,
+                  width: '30%',
+                  backgroundColor: 'surfaceContainerHighest',
+                  mb: 1.5,
+                }}
+              />
+              {[0, 1].map((i) => (
+                <Box key={i} sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      height: 18,
+                      width: '45%',
+                      backgroundColor: 'surfaceContainerHighest',
+                      mb: 1,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      height: 14,
+                      width: '65%',
+                      backgroundColor: 'surfaceContainerHighest',
+                    }}
+                  />
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <VocabularyList
+              items={vocabItems}
+              failed={vocabFailed}
+              onRetry={handleVocabRetry}
+              // Only rendered in the ready branch — a Variant switch hides
+              // this whole region behind the switching skeleton.
+              disabled={false}
+              onRequirePause={handleRequirePause}
+            />
+          )}
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* English transcript — LTR reading surface, bounded measure,
+              plain paragraph rendering only (no arbitrary HTML). */}
+          <Box component="section" aria-labelledby="episode-transcript-heading">
+            <Typography
+              component="h2"
+              id="episode-transcript-heading"
+              variant="headlineSmall"
+              sx={{ mb: 2 }}
+            >
+              {productCopy.episodeSurface.transcriptSection}
+            </Typography>
+            {phase === 'switching' || !lesson ? (
+              <Box data-testid="transcript-switching">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      height: 16,
+                      backgroundColor: 'surfaceContainerHighest',
+                      mb: 1,
+                      width: i === 5 ? '70%' : '100%',
+                    }}
+                  />
+                ))}
+              </Box>
+            ) : (
+              <Box
+                component="article"
+                ref={articleRef}
+                lang="en"
+                dir="ltr"
+                data-testid="english-reading"
+                sx={{ maxWidth: layout.readingMaxWidth, width: '100%' }}
+              >
+                {splitParagraphs(transcript).map((paragraph, i) => (
+                  <Typography
+                    key={`${i}-${paragraph.slice(0, 24)}`}
+                    variant="englishReading"
+                    component="p"
+                    sx={{ mb: 3, textAlign: 'start' }}
+                  >
+                    {paragraph}
+                  </Typography>
+                ))}
+              </Box>
+            )}
+          </Box>
+
+          {phase === 'ready' && lesson ? (
+            <PrevNextFooter
+              previous={lesson.previousEpisode ?? null}
+              next={lesson.nextEpisode ?? null}
+            />
+          ) : null}
+        </Box>
+      </Box>
+
+      {/* Polite announcements: variant loaded / unpublished level note. */}
+      <Box role="status" aria-live="polite" data-testid="episode-live-region">
+        <Box
+          sx={{
+            position: 'absolute',
+            clip: 'rect(0,0,0,0)',
+            width: '1px',
+            height: '1px',
+            m: -1,
+          }}
+        >
+          {announcement}
+        </Box>
       </Box>
     </PageContainer>
   );

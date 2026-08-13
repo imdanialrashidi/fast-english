@@ -4,13 +4,14 @@ This document contains the detailed operating model for non-trivial Pi coding se
 
 ## Design principles
 
-1. **Humans steer; agents execute.** Convert intent into observable acceptance criteria, then give the agent room to choose reversible implementation details.
+1. **Intent steers; the agent finishes.** Convert the request into observable acceptance criteria, then execute reversible implementation and delivery decisions without intermediate approval loops.
 2. **Repository knowledge is the system of record.** Durable product, architecture, quality, decision, and execution state belongs in versioned repository artifacts rather than chat memory.
 3. **Progressive disclosure beats giant prompts.** Keep always-loaded instructions small and retrieve code, docs, skills, and external facts just in time.
 4. **The interface is part of intelligence.** High-quality tools, focused outputs, browser evidence, diagnostics, and deterministic verification materially affect coding-agent performance.
 5. **Prefer mechanical constraints over repeated prose.** If an invariant can be linted, tested, typed, validated, or blocked by tooling, encode it there.
 6. **Evaluation needs a contract.** Independent review is most useful when it judges explicit observable criteria, not vague taste.
 7. **Complexity must earn its cost.** Add agents, skills, tools, loops, or persistent artifacts only for demonstrated failure modes.
+8. **Visual quality needs an explicit direction.** Aesthetic evaluation is useful only when it judges a product-specific thesis, rendered states, and measurable usability constraints rather than generic taste.
 
 ## Execution protocol
 
@@ -43,10 +44,13 @@ Additional rules:
 - Bug: capture the failure or a precise characterization before changing code when practical.
 - Performance: capture a reproducible baseline and target.
 - UI: include the critical user journey plus important loading/error/empty/permission states.
+- Visual UI: include the accepted `docs/DESIGN.md` thesis/signature, desktop/mobile proof, accessibility/performance hard gates, and craft threshold.
 - Security/data: include rejection/tampering/idempotency/ownership evidence where relevant.
 - Do not accept placeholder buttons, stub handlers, fake persistence, TODO implementations, or display-only controls as satisfying functional criteria.
 
 Ordinary contracts may live in the todo state. Complex or multi-session contracts belong in an execution plan.
+
+The agent derives the contract from available evidence. It asks a question only when no safe reversible interpretation exists; ordinary product, implementation, naming, tooling, and test choices are agent-owned.
 
 ### 3. Discover with a context budget
 
@@ -59,7 +63,7 @@ Preferred order:
 3. focused source ranges and affected tests;
 4. LSP definitions/references/diagnostics;
 5. installed types and local dependency source;
-6. Context7 for version-sensitive official docs;
+6. `doc_search_*` for version-sensitive official docs;
 7. web search for current upstream issues, advisories, regressions, or release notes.
 
 Use `scout` when the relevant surface or cross-module flow is genuinely unclear. Do not delegate the same discovery twice.
@@ -71,6 +75,8 @@ Prefer a complete end-to-end behavior over many half-finished layers. Keep one p
 During implementation:
 
 - use the narrowest reliable verification after meaningful edits;
+- map the affected symbols/contracts/dependencies and nearest tests before editing;
+- when tests change, use `test-design` and require defect sensitivity where practical;
 - preserve existing architectural boundaries;
 - avoid speculative abstractions;
 - keep data validation at boundaries;
@@ -85,6 +91,8 @@ Use an independent `reviewer` for non-trivial user-facing, cross-module, product
 
 For browser-visible behavior, use the real application through the `browser-qa` workflow. Accessibility snapshots and interaction evidence come before screenshots; screenshots plus vision analysis are used when appearance materially matters.
 
+For visually significant work, load `frontend-design` and evaluate in two passes. The product pass proves journey, states, accessibility, responsiveness, and measurable budgets. The studio pass compares rendered evidence with `docs/DESIGN.md`, runs the anti-template review, and scores visual craft. Novelty never cancels a hard-gate failure.
+
 The evaluator should answer:
 
 - Which acceptance criterion is proven?
@@ -97,7 +105,7 @@ Default to at most **two evaluator/repair rounds**. If a BLOCKER or MAJOR issue 
 
 ### 6. Verify and report evidence
 
-Load `verification-routing` and use its targeted, feature, and full lanes. The final report maps every acceptance criterion to evidence.
+Load `verification-routing` and use its targeted, affected, feature, and full lanes. A configured affected route may narrow known changes, but an unmatched file must use the full fallback. The final report maps every acceptance criterion to evidence.
 
 Never convert these into the same status:
 
@@ -106,6 +114,12 @@ Never convert these into the same status:
 - skipped;
 - blocked by prerequisite;
 - not executed.
+
+### 7. Finish through reversible delivery
+
+Do not stop after producing a patch when the accepted outcome includes repository delivery. If credentials and a configured remote are available, create or reuse a task branch, commit only the scoped diff, push it, and create or update the PR without requesting another confirmation.
+
+Direct protected-branch mutation, merging, releasing, deploying, production/data mutation, or real-money action still requires explicit scope because those cross a shared or difficult-to-reverse boundary. A missing publishing credential does not block local implementation and verification: finish those first and leave exact continuation state.
 
 ## Failure-recovery ladder
 
@@ -193,17 +207,12 @@ Judge harness changes against realistic tasks, not toy prompts. Useful measures 
 - token/context growth;
 - unnecessary broad reads/searches;
 - regressions caught by reviewer/browser/security evaluation;
+- visual hard-gate pass rate and craft-score distribution for frontend eval cases;
+- generic-design failure rate (interchangeable palettes, type, cards, hero, copy, or motion);
 - number of user interventions required for routine reversible work.
 
 Do not keep a harness feature because it feels sophisticated. Keep it because it improves outcomes or reduces cost/risk on representative tasks.
 
 ## Research basis
 
-This playbook is informed by public work on coding-agent harnesses and agent-computer interfaces, especially:
-
-- OpenAI, **Harness engineering: leveraging Codex in an agent-first world** (repository knowledge as system of record, progressive disclosure, mechanical architecture constraints, agent-legible UI/observability, feedback loops)
-- Anthropic, **Effective context engineering for AI agents** (tight context, minimal overlapping tools, just-in-time retrieval)
-- Anthropic, **Effective harnesses for long-running agents** (structured progress artifacts, incremental work, end-to-end browser verification)
-- Anthropic, **Harness design for long-running application development** (planner/generator/evaluator separation, explicit completion criteria, evaluator feedback loops, context resets)
-- Anthropic, **Building effective agents** (start simple; add orchestration only when measurable value exists)
-- SWE-agent, **Agent-Computer Interfaces Enable Automated Software Engineering** (agent-facing interfaces materially change software-engineering performance)
+[`docs/RESEARCH.md`](RESEARCH.md) records the primary sources, the exact workflow decision derived from each, benchmark limitations, the repository audit, and the promotion protocol. Keep that evidence map current when a harness component or threshold changes.

@@ -69,7 +69,7 @@ export function mapAuthError(err: unknown): AuthError {
   const { status, code, message } = extractPocketBaseError(err);
   // Rate limit
   if (status === 429) {
-    return new AuthError(PERSIAN_MESSAGES.rate_limited!, 'rate_limited', 429);
+    return new AuthError(PERSIAN_MESSAGES.rate_limited, 'rate_limited', 429);
   }
   // Network / availability
   if (
@@ -80,12 +80,12 @@ export function mapAuthError(err: unknown): AuthError {
     code === 'unavailable' ||
     (typeof message === 'string' && /network|fetch|timeout/i.test(message))
   ) {
-    return new AuthError(PERSIAN_MESSAGES.unavailable!, 'unavailable', status || 503);
+    return new AuthError(PERSIAN_MESSAGES.unavailable, 'unavailable', status || 503);
   }
   // Direct code from PB (e.g. account_suspended) takes priority over
   // generic status-based mapping.
   if (code && PERSIAN_MESSAGES[code]) {
-    return new AuthError(PERSIAN_MESSAGES[code]!, code, status);
+    return new AuthError(PERSIAN_MESSAGES[code], code, status);
   }
   // Field-level validation from PB
   const fields = (err as { response?: { data?: { data?: unknown } } })?.response?.data?.data as
@@ -94,14 +94,14 @@ export function mapAuthError(err: unknown): AuthError {
   const fieldCode = detectCodeFromMessage(fields);
   if (fieldCode) {
     return new AuthError(
-      PERSIAN_MESSAGES[fieldCode] ?? PERSIAN_MESSAGES.unexpected!,
+      PERSIAN_MESSAGES[fieldCode] ?? PERSIAN_MESSAGES.unexpected,
       fieldCode,
       status,
     );
   }
   // Auth failure
   if (status === 400 || status === 401) {
-    return new AuthError(PERSIAN_MESSAGES.invalid_credentials!, 'invalid_credentials', status);
+    return new AuthError(PERSIAN_MESSAGES.invalid_credentials, 'invalid_credentials', status);
   }
-  return new AuthError(PERSIAN_MESSAGES.unexpected!, 'unexpected', status);
+  return new AuthError(PERSIAN_MESSAGES.unexpected, 'unexpected', status);
 }

@@ -460,6 +460,7 @@ routerAdd(
       var topicDescFa = "";
       var topicFeatured = false;
       var episodeHero = "";
+      var topicEpisodeNumber = 0;
       var categoryInfo = null;
       if (topicId) {
         try {
@@ -471,6 +472,7 @@ routerAdd(
             topicTitleFa = String(tRec.get("title_fa") || "");
             topicDescFa = String(tRec.get("description_fa") || "");
             topicFeatured = Boolean(tRec.get("is_featured"));
+            topicEpisodeNumber = Number(tRec.get("episode_number") || 0);
             if (tRec.get("hero_image_wide")) {
               episodeHero = pd.resolveHeroArtworkUrl(String(lesson.id || ""));
             }
@@ -551,6 +553,80 @@ routerAdd(
         vocabularyCount = vocabHits ? vocabHits.length : 0;
       } catch (_) {}
 
+      // ------------------------------------------------------------------
+      // Previous/next Episode refs (Slice 7): real published neighbors at
+      // the current Variant's level only. Deterministic order: Episode
+      // sort_order, then Variant published date, then content key. The
+      // current Variant is located inside the same ordered list, so prev
+      // and next are its immediate neighbors. Nothing is invented
+      // client-side: absent neighbors stay null.
+      // ------------------------------------------------------------------
+      var prevEpisode = null;
+      var nextEpisode = null;
+      try {
+        var sibRows = [];
+        try {
+          sibRows = $app.findRecordsByFilter(
+            LESSONS_C,
+            "level = {:lvl} && status = 'published'",
+            "",
+            0,
+            0,
+            { lvl: lessonLevel }
+          );
+        } catch (_) {}
+        var sibList = [];
+        var sibTopicCache = {};
+        if (sibRows && sibRows.length > 0) {
+          for (var si2 = 0; si2 < sibRows.length; si2++) {
+            var sib = sibRows[si2];
+            if (!sib) continue;
+            var sibTid = "";
+            try { sibTid = String(sib.get("topic") || ""); } catch (_) {}
+            if (!sibTid) continue;
+            var sibTopic = sibTopicCache[sibTid];
+            if (sibTopicCache[sibTid] === undefined) {
+              try { sibTopic = $app.findRecordById(TOPICS_C, sibTid); } catch (_) { sibTopic = null; }
+              sibTopicCache[sibTid] = sibTopic;
+            }
+            if (!sibTopic || String(sibTopic.get("status") || "") !== "published") continue;
+            var sibCatRes = pd.requirePublishedCategory($app, sibTopic.get("category"));
+            if (!sibCatRes.ok) continue;
+            sibList.push({ lesson: sib, topic: sibTopic });
+          }
+        }
+        sibList.sort(function (a, b) {
+          var oa = Number(a.topic.get("sort_order") || 0);
+          var ob = Number(b.topic.get("sort_order") || 0);
+          if (oa !== ob) return oa - ob;
+          var pa = String(a.lesson.get("published_at") || "");
+          var pb = String(b.lesson.get("published_at") || "");
+          if (pa !== pb) return pa < pb ? -1 : 1;
+          var ka = String(a.topic.get("content_key") || "");
+          var kb = String(b.topic.get("content_key") || "");
+          if (ka !== kb) return ka < kb ? -1 : 1;
+          return String(a.lesson.id || "") < String(b.lesson.id || "") ? -1 : 1;
+        });
+        var curIdx = -1;
+        for (var ci2 = 0; ci2 < sibList.length; ci2++) {
+          if (String(sibList[ci2].lesson.id || "") === String(lesson.id || "")) { curIdx = ci2; break; }
+        }
+        function shapeNeighbor(entry) {
+          return {
+            episodeId: String(entry.topic.id || ""),
+            variantId: String(entry.lesson.id || ""),
+            title: String(entry.topic.get("title") || ""),
+            titleFa: String(entry.topic.get("title_fa") || ""),
+            level: String(entry.lesson.get("level") || ""),
+            artwork: pd.resolveEpisodeArtwork(String(entry.lesson.id || "")),
+          };
+        }
+        if (curIdx >= 0) {
+          if (curIdx > 0) prevEpisode = shapeNeighbor(sibList[curIdx - 1]);
+          if (curIdx < sibList.length - 1) nextEpisode = shapeNeighbor(sibList[curIdx + 1]);
+        }
+      } catch (_) {}
+
       return e.json(200, {
         id: String(lesson.id || ""),
         topic: {
@@ -581,6 +657,7 @@ routerAdd(
           artwork: pd.resolveEpisodeArtwork(String(lesson.id || "")),
           heroImage: episodeHero || null,
           featured: topicFeatured,
+          episodeNumber: topicEpisodeNumber,
         },
         variant: {
           id: String(lesson.id || ""),
@@ -594,6 +671,8 @@ routerAdd(
         preferredLevel: preferredLevel,
         availableLevels: availableLevels,
         vocabularyCount: vocabularyCount,
+        previousEpisode: prevEpisode,
+        nextEpisode: nextEpisode,
       });
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
@@ -898,52 +977,56 @@ routerAdd(
       } catch (_) {}
 
       if (rangeHeader && rangeHeader.indexOf("bytes=") === 0) {
-        // Parse range
-        var rangeVal = rangeHeader.substring(6);
+        // RFC 7233 single-range parsing (sample audio): malformed units,
+        // missing dashes, suffix "-0" and multi-range requests answer 416
+        // instead of silently serving the whole file or the first range.
+        var rangeVal = rangeHeader.substring(6).trim();
         var dashIdx = rangeVal.indexOf("-");
-        var rangeStart = 0;
-        var rangeEnd = fileSize - 1;
-
-        if (dashIdx > 0) {
-          rangeStart = parseInt(rangeVal.substring(0, dashIdx), 10);
-          if (dashIdx + 1 < rangeVal.length) {
-            var re = parseInt(rangeVal.substring(dashIdx + 1), 10);
-            if (!isNaN(re)) rangeEnd = re;
-          }
-        } else if (dashIdx === 0) {
-          // suffix range: -N → last N bytes
+        var rangeStart;
+        var rangeEnd;
+        if (rangeVal.indexOf(",") >= 0 || dashIdx < 0) {
+          try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+          return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+        }
+        if (dashIdx === 0) {
           var suffixLen = parseInt(rangeVal.substring(1), 10);
-          if (!isNaN(suffixLen) && suffixLen > 0) {
-            rangeStart = Math.max(0, fileSize - suffixLen);
+          if (isNaN(suffixLen) || suffixLen <= 0) {
+            try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+            return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+          }
+          rangeStart = Math.max(0, fileSize - suffixLen);
+          rangeEnd = fileSize - 1;
+        } else {
+          rangeStart = parseInt(rangeVal.substring(0, dashIdx), 10);
+          if (isNaN(rangeStart) || rangeStart < 0) {
+            try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+            return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+          }
+          if (dashIdx + 1 < rangeVal.length) {
+            rangeEnd = parseInt(rangeVal.substring(dashIdx + 1), 10);
+            if (isNaN(rangeEnd)) {
+              try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+              return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+            }
+          } else {
+            rangeEnd = fileSize - 1;
           }
         }
-
-        // Validate
-        if (isNaN(rangeStart)) rangeStart = 0;
-        if (isNaN(rangeEnd)) rangeEnd = fileSize - 1;
         if (rangeStart > rangeEnd || rangeStart >= fileSize) {
-          try {
-            header.set("Content-Range", "bytes */" + fileSize);
-          } catch (_) {}
+          try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
           return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
         }
         if (rangeEnd >= fileSize) rangeEnd = fileSize - 1;
-
         var chunkSize = rangeEnd - rangeStart + 1;
         var chunk = [];
         for (var bi = rangeStart; bi <= rangeEnd && bi < bytes.length; bi++) {
           chunk.push(bytes[bi]);
         }
-
         try {
           header.set("Content-Range", "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
           header.set("Content-Length", String(chunkSize));
         } catch (_) {}
-
-        try {
-          e.response.writeHeader(206);
-        } catch (_) {}
-
+        try { e.response.writeHeader(206); } catch (_) {}
         try { e.response.write(chunk); } catch (_) {}
         return e;
       }
@@ -1219,43 +1302,58 @@ routerAdd(
       } catch (_) {}
 
       if (rangeHeader && rangeHeader.indexOf("bytes=") === 0) {
-        var rangeVal = rangeHeader.substring(6);
+        // RFC 7233 single-range parsing (premium audio): malformed units,
+        // missing dashes, suffix "-0" and multi-range requests answer 416
+        // instead of silently serving the whole file or the first range.
+        // (Artwork is intentionally NOT a Range consumer: published
+        // artwork is public, cacheable, full-content — see the artwork
+        // policy in docs/PODCAST_DOMAIN.md.)
+        var rangeVal = rangeHeader.substring(6).trim();
         var dashIdx = rangeVal.indexOf("-");
-        var rangeStart = 0;
-        var rangeEnd = fileSize - 1;
-
-        if (dashIdx > 0) {
-          rangeStart = parseInt(rangeVal.substring(0, dashIdx), 10);
-          if (dashIdx + 1 < rangeVal.length) {
-            var re = parseInt(rangeVal.substring(dashIdx + 1), 10);
-            if (!isNaN(re)) rangeEnd = re;
-          }
-        } else if (dashIdx === 0) {
+        var rangeStart;
+        var rangeEnd;
+        if (rangeVal.indexOf(",") >= 0 || dashIdx < 0) {
+          try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+          return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+        }
+        if (dashIdx === 0) {
           var suffixLen = parseInt(rangeVal.substring(1), 10);
-          if (!isNaN(suffixLen) && suffixLen > 0) {
-            rangeStart = Math.max(0, fileSize - suffixLen);
+          if (isNaN(suffixLen) || suffixLen <= 0) {
+            try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+            return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+          }
+          rangeStart = Math.max(0, fileSize - suffixLen);
+          rangeEnd = fileSize - 1;
+        } else {
+          rangeStart = parseInt(rangeVal.substring(0, dashIdx), 10);
+          if (isNaN(rangeStart) || rangeStart < 0) {
+            try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+            return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+          }
+          if (dashIdx + 1 < rangeVal.length) {
+            rangeEnd = parseInt(rangeVal.substring(dashIdx + 1), 10);
+            if (isNaN(rangeEnd)) {
+              try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+              return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+            }
+          } else {
+            rangeEnd = fileSize - 1;
           }
         }
-
-        if (isNaN(rangeStart)) rangeStart = 0;
-        if (isNaN(rangeEnd)) rangeEnd = fileSize - 1;
         if (rangeStart > rangeEnd || rangeStart >= fileSize) {
           try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
           return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
         }
         if (rangeEnd >= fileSize) rangeEnd = fileSize - 1;
-
         var chunkSize = rangeEnd - rangeStart + 1;
         var chunk = [];
         for (var bi = rangeStart; bi <= rangeEnd && bi < bytes.length; bi++) {
           chunk.push(bytes[bi]);
         }
-
         try {
           header.set("Content-Range", "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
           header.set("Content-Length", String(chunkSize));
         } catch (_) {}
-
         try { e.response.writeHeader(206); } catch (_) {}
         try { e.response.write(chunk); } catch (_) {}
         return e;
@@ -1444,6 +1542,519 @@ routerAdd(
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
       try { $app.logger().error("lesson_routes: HERO error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
+    }
+  }
+);
+
+// =====================================================================
+// GET /api/fast-english/lessons/{lessonId}/vocabulary
+// Slice 7 — per-Variant Student vocabulary (key words).
+//   - Requires full premium entitlement + published Variant/Episode/
+//     Category (same contract as lesson detail).
+//   - Ordered by the authoritative sort_order; sanitized items only —
+//     no normalized_term, no internal/staff fields, no raw file names.
+//   - pronunciation is a controlled proxy path (or null) — the proxy
+//     re-checks entitlement at request time.
+//   - Cache-Control: private, no-store
+// =====================================================================
+
+routerAdd(
+  "GET",
+  "/api/fast-english/lessons/{lessonId}/vocabulary",
+  function (e) {
+    var LESSONS_C = "lessons";
+    var TOPICS_C = "topics";
+    var USERS_C = "fep_users";
+    var SUBS_C = "subscriptions";
+    var VOCAB_C = "lesson_vocabulary";
+
+    // Inline per-user rate limit (same window shape as the detail route).
+    // The map is bounded with the repository's stale-entry eviction
+    // pattern: once it grows large, windows whose newest entry has left
+    // the window are deleted instead of accumulating forever.
+    if (typeof globalThis.__fepLessonVocab === "undefined") { globalThis.__fepLessonVocab = {}; }
+    var RATE_WIN = globalThis.__fepLessonVocab;
+    var RATE_MAX = 30;
+    var RATE_MS = 300000;
+
+    function checkRate(uid) {
+      if (!uid) return null;
+      var now = Date.now(); var ws = now - RATE_MS;
+      try {
+        if (Object.keys(RATE_WIN).length >= 2048) {
+          var keys = Object.keys(RATE_WIN);
+          for (var ki = 0; ki < keys.length; ki++) {
+            var w2 = RATE_WIN[keys[ki]];
+            if (!w2 || !w2.length || w2[w2.length - 1] <= ws) delete RATE_WIN[keys[ki]];
+          }
+        }
+      } catch (_) {}
+      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
+      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
+      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
+      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
+      b.push(now);
+      return null;
+    }
+
+    try {
+      // Full entitlement check (inlined — identical to lesson detail).
+      var entitlementErr = null;
+      if (!e.auth || !e.auth.id) {
+        entitlementErr = { status: 401, body: { code: "auth_required", message: "Authentication required." } };
+      } else {
+        var uid = String(e.auth.id || "");
+        var student = null;
+        try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
+        if (!student) {
+          entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
+        } else {
+          var g = null;
+          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
+          if (guardErr) {
+            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
+          } else {
+            var acct = String(student.get("account_status") || "");
+            if (acct === "suspended") {
+              entitlementErr = { status: 403, body: { code: "account_suspended", message: "Account is suspended." } };
+            } else if (acct !== "active") {
+              entitlementErr = { status: 403, body: { code: "subscription_required", message: "Active subscription required." } };
+            } else {
+              var pc = Boolean(student.get("placement_completed"));
+              var selLvl = String(student.get("selected_level") || "");
+              if (!pc || !selLvl) {
+                entitlementErr = { status: 403, body: { code: "placement_incomplete", message: "Placement must be completed first." } };
+              } else {
+                var nowMs = Date.now();
+                var hasSub = false;
+                try {
+                  var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+                  for (var si = 0; si < subs.length; si++) {
+                    var s = subs[si];
+                    var expStr = String(s.get("expires_at") || "");
+                    var startStr = String(s.get("starts_at") || "");
+                    if (!expStr || !startStr) continue;
+                    var expMs = new Date(expStr).getTime();
+                    var startMs = new Date(startStr).getTime();
+                    if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
+                      hasSub = true;
+                      break;
+                    }
+                  }
+                } catch (_) {}
+                if (!hasSub) {
+                  entitlementErr = { status: 403, body: { code: "subscription_required", message: "Active subscription required." } };
+                }
+              }
+            }
+          }
+        }
+      }
+      if (entitlementErr) return e.json(entitlementErr.status, entitlementErr.body);
+
+      var uid = String(e.auth.id || "");
+      var pd = null;
+      try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+      if (!pd) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+
+      var rateErr = checkRate(uid);
+      if (rateErr) return e.json(rateErr.status, rateErr.body);
+
+      var lessonId = "";
+      try { lessonId = String(e.request.pathValue("lessonId") || ""); } catch (_) {}
+      if (!lessonId) return e.json(400, { code: "invalid_request", message: "Missing lessonId." });
+
+      var lesson = null;
+      try { lesson = $app.findRecordById(LESSONS_C, lessonId); } catch (_) {}
+      if (!lesson) return e.json(404, { code: "not_found", message: "Lesson not found." });
+      if (String(lesson.get("status") || "") !== "published") {
+        return e.json(404, { code: "not_found", message: "Lesson not found." });
+      }
+      var topicId = "";
+      try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
+      var topicPublished = false;
+      if (topicId) {
+        try {
+          var tRec = $app.findRecordById(TOPICS_C, topicId);
+          if (tRec && tRec.get("status") === "published") {
+            var catRes = pd.requirePublishedCategory($app, tRec.get("category"));
+            if (catRes.ok) topicPublished = true;
+          }
+        } catch (_) {}
+      }
+      if (!topicPublished) {
+        return e.json(404, { code: "not_found", message: "Lesson not found." });
+      }
+
+      // Authoritative ordering by sort_order (tie-break: stable by id).
+      var rows = [];
+      try {
+        rows = $app.findRecordsByFilter(VOCAB_C, "lesson = {:lid}", "", 0, 0, { lid: String(lesson.id || "") });
+      } catch (_) {}
+      var items = [];
+      var sortable = [];
+      if (rows && rows.length > 0) {
+        for (var ri = 0; ri < rows.length; ri++) {
+          var v = rows[ri];
+          if (!v) continue;
+          sortable.push(v);
+        }
+        sortable.sort(function (a, b) {
+          var sa = Number(a.get("sort_order") || 0);
+          var sb = Number(b.get("sort_order") || 0);
+          if (sa !== sb) return sa - sb;
+          return String(a.id || "") < String(b.id || "") ? -1 : 1;
+        });
+      }
+      function pronMime(storedName) {
+        var lower = String(storedName || "").toLowerCase();
+        if (lower.indexOf(".m4a") >= 0 || lower.indexOf(".mp4") >= 0) return "audio/mp4";
+        return "audio/mpeg";
+      }
+      for (var vi = 0; vi < sortable.length; vi++) {
+        var rec = sortable[vi];
+        var pronFile = "";
+        try { pronFile = String(rec.get("pronunciation_audio") || ""); } catch (_) {}
+        items.push({
+          id: String(rec.id || ""),
+          term: String(rec.get("term") || ""),
+          phonetic: String(rec.get("phonetic") || ""),
+          partOfSpeech: String(rec.get("part_of_speech") || ""),
+          meaningFa: String(rec.get("meaning_fa") || ""),
+          definitionEn: String(rec.get("definition_en") || ""),
+          exampleSentence: String(rec.get("example_sentence") || ""),
+          pronunciation: pronFile
+            ? { url: "/api/fast-english/vocabulary/" + String(rec.id || "") + "/pronunciation", contentType: pronMime(pronFile) }
+            : null,
+        });
+      }
+
+      try { e.response.header().set("Cache-Control", "private, no-store"); } catch (_) {}
+      try { e.response.header().set("Pragma", "no-cache"); } catch (_) {}
+
+      return e.json(200, { items: items, total: items.length });
+    } catch (topErr) {
+      var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
+      try { $app.logger().error("lesson_routes: VOCAB error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
+    }
+  },
+  $apis.requireAuth("fep_users")
+);
+
+// =====================================================================
+// GET /api/fast-english/vocabulary/{vocabId}/pronunciation
+// Slice 7 — protected pronunciation audio for one vocabulary entry.
+//   - Same auth modes as the premium Episode audio proxy: Bearer token
+//     or ?token=<file_token> (for <audio> elements).
+//   - Live entitlement re-validation on EVERY request + the vocabulary
+//     entry's parent Variant must be published with a published Episode
+//     and a published parent Category.
+//   - Range/206 support; private, no-store; nosniff; 2 MB cap (the
+//     upload bound for pronunciation files).
+// =====================================================================
+
+routerAdd(
+  "GET",
+  "/api/fast-english/vocabulary/{vocabId}/pronunciation",
+  function (e) {
+    var LESSONS_C = "lessons";
+    var TOPICS_C = "topics";
+    var USERS_C = "fep_users";
+    var SUBS_C = "subscriptions";
+    var VOCAB_C = "lesson_vocabulary";
+    var MAX_PRON_BYTES = 2 * 1024 * 1024;
+
+    // Inline per-user rate limit, bounded with the repository's
+    // stale-entry eviction pattern (see the vocabulary route).
+    if (typeof globalThis.__fepPronAudio === "undefined") { globalThis.__fepPronAudio = {}; }
+    var RATE_WIN = globalThis.__fepPronAudio;
+    var RATE_MAX = 30;
+    var RATE_MS = 300000;
+
+    function checkRate(uid) {
+      if (!uid) return null;
+      var now = Date.now(); var ws = now - RATE_MS;
+      try {
+        if (Object.keys(RATE_WIN).length >= 2048) {
+          var keys = Object.keys(RATE_WIN);
+          for (var ki = 0; ki < keys.length; ki++) {
+            var w2 = RATE_WIN[keys[ki]];
+            if (!w2 || !w2.length || w2[w2.length - 1] <= ws) delete RATE_WIN[keys[ki]];
+          }
+        }
+      } catch (_) {}
+      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
+      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
+      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
+      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
+      b.push(now);
+      return null;
+    }
+
+    try {
+      // === Manual auth resolution (Bearer or file token) ===
+      var student = null;
+      var uid = "";
+      var authHdr = "";
+      try { authHdr = String(e.request.header.get("Authorization") || ""); } catch (_) {}
+      if (authHdr && authHdr.indexOf("Bearer ") === 0) {
+        var bearerToken = authHdr.substring(7);
+        if (bearerToken) {
+          try {
+            var authRec = $app.findAuthRecordByToken(bearerToken, "auth");
+            if (authRec) {
+              uid = String(authRec.id || "");
+              if (uid) { try { student = $app.findRecordById(USERS_C, uid); } catch (_) {} }
+            }
+          } catch (_) {}
+        }
+      }
+      if (!student) {
+        try {
+          var qToken = String(e.request.url.query().get("token") || "");
+          if (qToken) {
+            try {
+              var fileRec = $app.findAuthRecordByToken(qToken, "file");
+              if (fileRec) {
+                uid = String(fileRec.id || "");
+                if (uid) { try { student = $app.findRecordById(USERS_C, uid); } catch (_) {} }
+              }
+            } catch (_) {}
+          }
+        } catch (_) {}
+      }
+      if (!student) {
+        // A Bearer token can also belong to a staff account — PB resolves
+        // it into e.auth (same mechanism the shared guard uses). Deny by
+        // role (403), not as an unknown principal (401).
+        var staffColl = "";
+        try {
+          var ea = e.auth;
+          if (ea) {
+            var c2 = ea.collection();
+            if (c2 && c2.name) staffColl = String(c2.name);
+          }
+        } catch (_) { staffColl = ""; }
+        if (staffColl === "staff_admins") {
+          return e.json(403, { code: "access_denied", message: "Access denied." });
+        }
+        return e.json(401, { code: "auth_required", message: "Authentication required." });
+      }
+      var role = String(student.get("role") || "");
+      if (role !== "student") {
+        return e.json(403, { code: "access_denied", message: "Access denied." });
+      }
+      var acct = String(student.get("account_status") || "");
+      if (acct === "suspended") {
+        return e.json(403, { code: "account_suspended", message: "Account is suspended." });
+      } else if (acct !== "active") {
+        return e.json(403, { code: "subscription_required", message: "Active subscription required." });
+      }
+      var pc = Boolean(student.get("placement_completed"));
+      var selLvl = String(student.get("selected_level") || "");
+      if (!pc || !selLvl) {
+        return e.json(403, { code: "placement_incomplete", message: "Placement must be completed first." });
+      }
+      var nowMs = Date.now();
+      var hasSub = false;
+      try {
+        var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
+        for (var si = 0; si < subs.length; si++) {
+          var s = subs[si];
+          var expStr = String(s.get("expires_at") || "");
+          var startStr = String(s.get("starts_at") || "");
+          if (!expStr || !startStr) continue;
+          var expMs = new Date(expStr).getTime();
+          var startMs = new Date(startStr).getTime();
+          if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
+            hasSub = true;
+            break;
+          }
+        }
+      } catch (_) {}
+      if (!hasSub) {
+        return e.json(403, { code: "subscription_required", message: "Active subscription required." });
+      }
+
+      var rateErr = checkRate(uid);
+      if (rateErr) return e.json(rateErr.status, rateErr.body);
+
+      var vocabId = "";
+      try { vocabId = String(e.request.pathValue("vocabId") || ""); } catch (_) {}
+      if (!vocabId) return e.json(400, { code: "invalid_request", message: "Missing vocabId." });
+
+      var vocabRec = null;
+      try { vocabRec = $app.findRecordById(VOCAB_C, vocabId); } catch (_) {}
+      if (!vocabRec) return e.json(404, { code: "not_found", message: "Not found." });
+
+      // Parent Variant published + published Episode + published Category.
+      var parentLessonId = "";
+      try { parentLessonId = String(vocabRec.get("lesson") || ""); } catch (_) {}
+      if (!parentLessonId) return e.json(404, { code: "not_found", message: "Not found." });
+      var lesson = null;
+      try { lesson = $app.findRecordById(LESSONS_C, parentLessonId); } catch (_) {}
+      if (!lesson || String(lesson.get("status") || "") !== "published") {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+      var topicId = "";
+      try { topicId = String(lesson.get("topic") || ""); } catch (_) {}
+      var topicPublished = false;
+      if (topicId) {
+        try {
+          var tRec = $app.findRecordById(TOPICS_C, topicId);
+          if (tRec && tRec.get("status") === "published") {
+            var pdCat = null;
+            try { pdCat = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdCat = null; }
+            if (pdCat) {
+              var catRes = pdCat.requirePublishedCategory($app, tRec.get("category"));
+              if (catRes.ok) topicPublished = true;
+            }
+          }
+        } catch (_) {}
+      }
+      if (!topicPublished) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+
+      var storedName = "";
+      try { storedName = String(vocabRec.get("pronunciation_audio") || ""); } catch (_) {}
+      if (!storedName) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+
+      var dataDir = "";
+      try { dataDir = String($app.dataDir() || ""); } catch (_) {}
+      var basePath = "";
+      try { basePath = String(vocabRec.baseFilesPath() || ""); } catch (_) {}
+      if (!dataDir || !basePath) {
+        return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      }
+      var absPath = "";
+      try { absPath = $filepath.join(dataDir, "storage", basePath, storedName); } catch (_) {}
+      if (!absPath) {
+        return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      }
+      var baseNormalized = "";
+      try { baseNormalized = $filepath.clean($filepath.join(dataDir, "storage", basePath)); } catch (_) {}
+      var absNormalized = "";
+      try { absNormalized = $filepath.clean(absPath); } catch (_) {}
+      var prefixOk = false;
+      try {
+        var baseWithSep = baseNormalized;
+        var lastCh = baseWithSep.charAt(baseWithSep.length - 1);
+        if (lastCh !== "/" && lastCh !== "\\") { baseWithSep = baseWithSep + "/"; }
+        prefixOk = absNormalized.indexOf(baseWithSep) === 0;
+      } catch (_) { prefixOk = false; }
+      if (!prefixOk) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+
+      var raw = null;
+      try { raw = $os.readFile(absNormalized); } catch (_) { raw = null; }
+      if (!raw) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+      var bytes = null;
+      if (typeof raw === "string") {
+        var arr = [];
+        for (var si2 = 0; si2 < raw.length; si2++) { arr.push(raw.charCodeAt(si2) & 0xff); }
+        bytes = arr;
+      } else if (Array.isArray(raw)) {
+        bytes = raw;
+      } else {
+        bytes = null;
+      }
+      if (!bytes || bytes.length === 0) {
+        return e.json(404, { code: "not_found", message: "Not found." });
+      }
+      if (bytes.length > MAX_PRON_BYTES) {
+        return e.json(413, { code: "audio_too_large", message: "Audio exceeds limit." });
+      }
+      var fileSize = bytes.length;
+
+      var contentType = "audio/mpeg";
+      var lowerName = storedName.toLowerCase();
+      if (lowerName.indexOf(".m4a") >= 0 || lowerName.indexOf(".mp4") >= 0) {
+        contentType = "audio/mp4";
+      }
+
+      var rangeHeader = "";
+      try { rangeHeader = String(e.request.header.get("Range") || ""); } catch (_) {}
+      rangeHeader = rangeHeader.trim();
+
+      var header = e.response.header();
+      try {
+        header.set("Accept-Ranges", "bytes");
+        header.set("Content-Type", contentType);
+        header.set("X-Content-Type-Options", "nosniff");
+        header.set("Cache-Control", "private, no-store");
+        header.set("Pragma", "no-cache");
+      } catch (_) {}
+
+      if (rangeHeader && rangeHeader.indexOf("bytes=") === 0) {
+        // RFC 7233 single-range parsing (pronunciation): malformed units,
+        // missing dashes, suffix "-0" and multi-range requests answer 416
+        // instead of silently serving the whole file or the first range.
+        var rangeVal = rangeHeader.substring(6).trim();
+        var dashIdx = rangeVal.indexOf("-");
+        var rangeStart;
+        var rangeEnd;
+        if (rangeVal.indexOf(",") >= 0 || dashIdx < 0) {
+          try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+          return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+        }
+        if (dashIdx === 0) {
+          var suffixLen = parseInt(rangeVal.substring(1), 10);
+          if (isNaN(suffixLen) || suffixLen <= 0) {
+            try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+            return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+          }
+          rangeStart = Math.max(0, fileSize - suffixLen);
+          rangeEnd = fileSize - 1;
+        } else {
+          rangeStart = parseInt(rangeVal.substring(0, dashIdx), 10);
+          if (isNaN(rangeStart) || rangeStart < 0) {
+            try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+            return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+          }
+          if (dashIdx + 1 < rangeVal.length) {
+            rangeEnd = parseInt(rangeVal.substring(dashIdx + 1), 10);
+            if (isNaN(rangeEnd)) {
+              try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+              return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+            }
+          } else {
+            rangeEnd = fileSize - 1;
+          }
+        }
+        if (rangeStart > rangeEnd || rangeStart >= fileSize) {
+          try { header.set("Content-Range", "bytes */" + fileSize); } catch (_) {}
+          return e.json(416, { code: "range_not_satisfiable", message: "Range not satisfiable." });
+        }
+        if (rangeEnd >= fileSize) rangeEnd = fileSize - 1;
+        var chunkSize = rangeEnd - rangeStart + 1;
+        var chunk = [];
+        for (var bi = rangeStart; bi <= rangeEnd && bi < bytes.length; bi++) {
+          chunk.push(bytes[bi]);
+        }
+        try {
+          header.set("Content-Range", "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
+          header.set("Content-Length", String(chunkSize));
+        } catch (_) {}
+        try { e.response.writeHeader(206); } catch (_) {}
+        try { e.response.write(chunk); } catch (_) {}
+        return e;
+      }
+
+      try { header.set("Content-Length", String(fileSize)); } catch (_) {}
+      try { e.response.write(bytes); } catch (_) {}
+      return e;
+    } catch (topErr) {
+      var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
+      try { $app.logger().error("lesson_routes: PRON error: " + msg); } catch (_) {}
       return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   }

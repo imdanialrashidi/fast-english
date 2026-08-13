@@ -15,44 +15,38 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Full gate = typecheck + Biome + Vitest + all 15 real-PocketBase smoke
+    # suites + three deterministic builds + PWA/Android/deploy checks + the
+    # full Playwright suite (scripts/verify.sh delegates to `pnpm verify:full`).
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - name: Detect project types
-        id: detect
-        shell: bash
-        run: |
-          [[ -f package.json ]] && echo "node=true" >> "$GITHUB_OUTPUT" || true
-          [[ -f pyproject.toml || -f requirements.txt ]] && echo "python=true" >> "$GITHUB_OUTPUT" || true
-          [[ -f go.mod ]] && echo "go=true" >> "$GITHUB_OUTPUT" || true
-
       - uses: actions/setup-node@v7
-        if: steps.detect.outputs.node == 'true'
         with:
           node-version: 24
 
-      - uses: actions/setup-python@v7
-        if: steps.detect.outputs.python == 'true'
-        with:
-          python-version: '3.13'
-
-      - uses: actions/setup-go@v6
-        if: steps.detect.outputs.go == 'true'
-        with:
-          go-version-file: go.mod
+      # Pi harness validation: repository workflow contract, package pins,
+      # MCP policy, launcher policy, secret scan, harness behavior tests.
+      # `--ci` tolerates the missing Pi CLI and requires no dependencies.
+      - name: Pi harness validation
+        run: bash scripts/pi-doctor.sh --ci
 
       - name: Install dependencies
         run: bash scripts/ci-install.sh
 
+      # The player-lifecycle suite generates its 600s audio fixture with
+      # ffmpeg and FAILS LOUDLY when it is absent (never silently falls
+      # back to a shorter clip). ubuntu-latest does not ship ffmpeg.
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Provision PocketBase test binary
         run: bash scripts/setup-pocketbase.sh
 
-      # Full release gate: typecheck + Biome + Vitest + all real Backend
-      # Smoke suites + deterministic builds + PWA/Android/deploy checks +
-      # the full Playwright suite (scripts/verify.sh delegates to
-      # `pnpm verify:full`).
-      - name: Verify
+      # The real Fast English full application gate (project-verify.sh +
+      # the full Playwright suite). Never replaced by a generic or fast lane.
+      - name: Verify (full release gate)
         run: bash scripts/verify.sh

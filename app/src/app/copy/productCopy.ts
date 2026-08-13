@@ -75,6 +75,52 @@ export const productCopy = {
     episodesFailed: 'اپیزودها بارگیری نشدند.',
     checkConnection: 'اتصال اینترنت را بررسی کن و دوباره تلاش کن.',
     progressFailed: 'پیشرفت بارگیری نشد.',
+    episodeLoadFailedTitle: 'خطا در بارگذاری اپیزود',
+    episodeLoadFailedDescription: 'اپیزود بارگیری نشد. اتصال اینترنت را بررسی کن و دوباره تلاش کن.',
+  },
+
+  // Podcast Slice 7 — Episode surface (Record Jacket) copy.
+  episodeSurface: {
+    summarySection: 'خلاصهٔ اپیزود',
+    vocabularySection: (n: number) => `کلمات کلیدی · ${n}`,
+    transcriptSection: 'متن اپیزود',
+    previous: 'اپیزود قبلی',
+    next: 'اپیزود بعدی',
+    play: 'پخش',
+    pronunciation: 'تلفظ',
+    playPronunciation: 'پخش تلفظ',
+    stopPronunciation: 'توقف تلفظ',
+    recommendedMarker: 'پیشنهادی',
+    preferredMarker: 'پیش‌فرض',
+    loadingEpisode: 'در حال بارگذاری اپیزود…',
+    loadingVariant: (level: string) => `در حال بارگذاری نسخهٔ سطح ${level}…`,
+    variantLoaded: (level: string) => `نسخهٔ سطح ${level} بارگذاری شد.`,
+    levelUnpublished: (level: string) => `این اپیزود هنوز در سطح ${level} منتشر نشده است.`,
+    recommendedNote: (level: string) => `سطح پیشنهادی برای تو ${level} است.`,
+    vocabularyEmpty: 'برای این اپیزود واژه‌ای ثبت نشده است.',
+    pronunciationUnavailable: 'تلفظ صوتی برای این واژه در دسترس نیست.',
+    pronunciationRetry: 'تلاش دوبارهٔ تلفظ',
+    episodeCompleted: 'این اپیزود کامل شده است.',
+    playingNow: 'در حال پخش…',
+    inProgressPercent: (percent: number) => `در حال گوش‌دادن · ${percent}٪`,
+    audioUnavailable: 'فایل صوتی در دسترس نیست.',
+    audioPlaybackError: 'خطا در پخش صوت.',
+    definitionLabel: 'تعریف',
+    exampleLabel: 'مثال',
+    levelLabel: (level: string, name: string) => `سطح ${level} · ${name}`,
+    episodeMeta: (number?: number, minutes?: number) =>
+      number && minutes
+        ? `اپیزود ${number} · ${minutes} دقیقه`
+        : number
+          ? `اپیزود ${number}`
+          : minutes
+            ? `${minutes} دقیقه`
+            : '',
+    vocabularyFailed: 'کلمات کلیدی بارگیری نشدند.',
+    switchFailed: 'نسخهٔ سطح بارگیری نشد.',
+    levelRailLabel: 'سطح اپیزود',
+    plateLabel: (level: string) => `سطح ${level}`,
+    plateUnpublishedLabel: (level: string) => `سطح ${level} منتشر نشده`,
   },
 
   // Podcast Slice 6 — Library & Discovery surface copy.

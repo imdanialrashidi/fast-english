@@ -2,7 +2,7 @@
 
 ## Objective
 
-Optimize for high-quality, production-safe vertical slices with strong autonomy on modest local hardware.
+Optimize for high-quality, production-safe vertical slices with end-to-end autonomy on modest local hardware.
 
 The workflow deliberately avoids a large agent organization. Quality comes from acceptance clarity, agent-legible tools, focused context, independent evaluation, deterministic constraints, and executable evidence—not from maximizing the number of agents or skills.
 
@@ -19,6 +19,7 @@ intent
 → bounded repair
 → feature/full gate
 → acceptance → evidence report
+→ task-branch commit/push/PR when delivery is in scope
 ```
 
 For long-running work:
@@ -57,43 +58,58 @@ Defines evaluator-facing quality rules and project-specific quality invariants a
 
 The central rule is that accepted behavior must be functional and proven. Placeholder handlers, display-only controls, fake persistence, or TODO implementations do not satisfy an accepted functional criterion.
 
-### 4. Parent execution policy: `.pi/APPEND_SYSTEM.md`
+### 4. Product design contract: `docs/DESIGN.md`
+
+Stores the accepted product-specific visual thesis, signature element, semantic tokens, type and composition system, state language, motion, responsive transformation, content voice, and screen-level proof. It lets separate sessions implement and review the same direction instead of regenerating taste from scratch.
+
+### 5. Parent execution policy: `.pi/APPEND_SYSTEM.md`
 
 Routes the primary session without duplicating all detail:
 
 - task classification;
-- automatic Scout/Reviewer/Security delegation;
+- autonomous Scout/Reviewer/Security delegation when justified;
 - bounded evaluator/repair rounds;
 - failure-recovery trigger;
 - skill/tool routing;
 - browser workflow;
 - final evidence reporting.
 
-### 5. On-demand procedures: `.pi/skills/`
+### 6. On-demand procedures: `.pi/skills/`
 
 - `verification-routing` — targeted, feature, and full verification lanes;
+- `test-design` — behavioral or boundary-oriented tests, defect sensitivity, reliability filters, and economical execution;
 - `risk-review` — security, correctness, data integrity, reliability, performance, UX, migration, and operational review;
-- `browser-qa` — low-resource browser, interaction, accessibility, responsive, and visual verification.
+- `browser-qa` — low-resource browser, interaction, accessibility, responsive, and visual verification;
+- `frontend-design` — brief-specific visual direction, anti-template implementation, hard gates, and a scored studio review.
 
 Keep specialized procedures here only when domain fit is real. Generic advice does not deserve another skill.
 
-### 6. User workflows: `.pi/prompts/`
+### 7. User workflows: `.pi/prompts/`
 
 - `/bootstrap` — adapt the generic harness to the real project and make the app/test/runtime interfaces agent-legible;
+- `/discover` — turn an idea into a product contract, riskiest assumptions, and evidence-gated roadmap;
+- `/design` — choose and persist a distinctive visual/interaction direction before code;
+- `/spec` — turn an outcome into a bounded implementation-ready feature contract;
+- `/adr` — record one evidence-backed durable architecture decision;
 - `/build` — acceptance-driven implementation and evaluator loop;
+- `/test` — add the smallest meaningful regression coverage without mirroring implementation;
+- `/build-ui` — implement a functional, visually exceptional UI slice and prove it in the browser;
+- `/design-review` — independently grade rendered hard gates and visual craft;
 - `/plan` — bounded design or durable execution plan;
 - `/review` — independent acceptance/risk evaluation;
+- `/release-plan` — define evidence gates from current state through staged production;
 - `/ship` — final acceptance and release-readiness evidence;
+- `/incident` — structure production diagnosis, recovery proof, and corrective learning;
 - `/handoff` — write clean multi-session state before a context reset;
 - `/resume` — validate and continue from an execution plan in a fresh context.
 
-### 7. Durable complex-task state: `docs/exec-plans/`
+### 8. Durable complex-task state: `docs/exec-plans/`
 
 Execution plans are used only when todo/chat state is not durable enough. They capture accepted criteria, verified current state, decisions, evidence, risks, and the smallest next action.
 
 They are not transcripts and are not required for ordinary work.
 
-### 8. Tool interface
+### 9. Tool interface
 
 The launcher exposes a deliberately small tool surface:
 
@@ -101,16 +117,16 @@ The launcher exposes a deliberately small tool surface:
 - `subagent` for bounded independent contexts;
 - `todo` for visible multi-step state;
 - LSP for semantic code intelligence;
-- Context7 for version-sensitive docs;
+- `doc_search_*` for version-sensitive docs;
 - web search/fetch for current external evidence;
 - `mcp` as a compact lazy proxy;
 - image analysis only when visual evidence materially matters.
 
-Playwright MCP is configured lazily through `.mcp.json` for real interactive browser evidence. Repository-local Playwright Test remains the durable regression/CI layer.
+Playwright MCP is configured lazily through `.mcp.json` for localhost and public HTTP(S) browser evidence. Focused page evaluation is available when snapshots/interactions cannot expose the required state; file upload/drop and MCP scripting remain unavailable. Repository-local Playwright Test remains the durable regression/CI layer.
 
-### 9. Deterministic guardrails
+### 10. Deterministic guardrails
 
-`.pi/extensions/safety-guard.js` blocks secrets, destructive host actions, Git history/remote mutation, production/deployment actions, unsafe MCP tools, non-local browser navigation, and accidental edits to harness policy files.
+`.pi/extensions/safety-guard.js` defaults to an autonomous workspace policy: routine workflow edits, task-branch Git delivery, public HTTP(S) navigation, page evaluation, generated artifacts, and OS-temp writes are allowed. It still blocks secrets, destructive host/Git operations, force/deleting pushes, publication/deployment/production actions, and browser upload or scripting. `PI_GUARD_MODE=strict` restores workflow/Git/local-navigation locks for the optional contained launcher. Its behavior is regression-tested, but it is not a complete shell/interpreter parser or security boundary.
 
 Prompt instructions shape behavior; guardrails limit blast radius. Pi project trust is not an operating-system sandbox.
 
@@ -121,6 +137,8 @@ For Standard or larger work, the agent defines 3–7 observable criteria and pro
 This gives planning, implementation, review, browser QA, verification, and final reporting the same target. An evaluator grades the contract rather than inventing its own adjacent scope.
 
 For a bug, prefer evidence of the failure before the fix. For performance, capture a baseline. For UI, exercise the actual critical journey.
+
+For visually significant UI, define the direction in `docs/DESIGN.md`, then evaluate in two passes: product/interaction hard gates followed by a rendered studio/craft score. This prevents a polished screenshot from hiding broken behavior and prevents functional-but-generic UI from being mislabeled exceptional.
 
 ## Evaluator-optimizer loop
 
@@ -171,7 +189,7 @@ When a defect class repeats, prefer encoding the fix in the environment:
 
 ### Targeted
 
-Repeated during implementation: exact tests, relevant type/static checks, affected browser spec.
+Repeated during implementation: exact tests, reviewed routes from `scripts/verify-affected.mjs`, relevant type/static checks, and the affected browser spec. Unknown paths use the canonical full fallback.
 
 ### Feature
 
@@ -197,14 +215,16 @@ Evaluate harness changes on realistic repository tasks using:
 - user interventions required for routine reversible work;
 - peak local resource use where relevant.
 
+The v2 RPC runner adds deterministic completion/mutation/command checks, tool/error/duplicate/repair metrics, per-case medians, and baseline regression gates. Mechanical success still requires separate qualitative rubric scoring before promotion.
+
 A sophisticated harness component that does not improve representative outcomes should be removed.
 
 ## What remains intentionally excluded
 
 - parallel write-capable agent swarms;
 - vector memory by default;
-- automatic commits, pushes, releases, or deployment;
-- unrestricted browser JavaScript/file injection;
+- direct protected-branch pushes, merge, releases, deployment, or production mutation without explicit scope;
+- browser file injection or unrestricted MCP scripting;
 - repeated full-suite testing during implementation;
 - a second specification framework;
 - marketplace-wide skill packs;

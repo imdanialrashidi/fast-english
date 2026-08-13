@@ -19,17 +19,16 @@
       "command": "npx",
       "args": [
         "-y",
-        "@playwright/mcp@0.0.78",
+        "@playwright/mcp@0.0.79",
         "--headless",
         "--isolated",
+        "--block-service-workers",
         "--image-responses",
         "omit",
         "--output-dir",
         ".artifacts/playwright",
         "--console-level",
         "warning",
-        "--allowed-origins",
-        "http://localhost:*;http://127.0.0.1:*;https://localhost:*;https://127.0.0.1:*",
         "--timeout-action",
         "10000",
         "--timeout-navigation",
@@ -58,10 +57,10 @@
         "browser_hover",
         "browser_press_key",
         "browser_select_option",
-        "browser_type"
+        "browser_type",
+        "browser_evaluate"
       ],
       "excludeTools": [
-        "browser_evaluate",
         "browser_file_upload",
         "browser_drop"
       ]
