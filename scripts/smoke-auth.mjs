@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // scripts/smoke-auth.mjs
 // Real-backend PocketBase auth smoke test. Starts a disposable PB instance,
 // exercises the auth flow end-to-end, and cleans up.
@@ -12,6 +13,7 @@
 // test user to suspended. The PocketBase process and its data dir are
 // removed on exit by the shell wrapper.
 
+import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 
 const PORT = Number(process.env.PB_SMOKE_PORT ?? 18090);
@@ -53,6 +55,99 @@ async function waitForHealth(maxMs = 20_000) {
     await new Promise((res) => setTimeout(res, 200));
   }
   return false;
+}
+
+function waitForProcessExit(pid, maxMs = 15_000) {
+  const start = Date.now();
+  return new Promise((resolve) => {
+    const tick = () => {
+      try {
+        process.kill(pid, 0); // 0 = existence probe; throws ESRCH when gone
+      } catch {
+        return resolve(true);
+      }
+      if (Date.now() - start > maxMs) return resolve(false);
+      setTimeout(tick, 150);
+    };
+    tick();
+  });
+}
+
+let restartedProc = null;
+function stopRestartedProc() {
+  if (restartedProc && restartedProc.exitCode === null) {
+    try {
+      restartedProc.kill('SIGKILL');
+    } catch (_) {
+      // already gone
+    }
+  }
+  restartedProc = null;
+}
+process.on('exit', stopRestartedProc);
+process.on('SIGINT', () => {
+  stopRestartedProc();
+  process.exit(130);
+});
+process.on('SIGTERM', () => {
+  stopRestartedProc();
+  process.exit(143);
+});
+
+async function restartPocketBase() {
+  const pid = Number(process.env.PB_SMOKE_PID ?? 0);
+  const dataDir = process.env.PB_DATA_DIR;
+  if (!pid || !dataDir) {
+    check(false, 'restart proof has the running PB pid and data directory');
+    return null;
+  }
+  try {
+    process.kill(pid, 'SIGTERM');
+  } catch {
+    check(false, 'running PocketBase can be stopped for restart proof');
+    return null;
+  }
+  // Wait until the original process is really gone (ESRCH) so the health
+  // check after the restart cannot false-positive against the still-running
+  // original and the replacement can actually bind the port.
+  const exited = await waitForProcessExit(pid);
+  check(exited, 'original PocketBase process exited before restart');
+  if (!exited) return null;
+
+  const corsOrigins =
+    process.env.PB_CORS_ORIGINS ??
+    'http://localhost:5173,http://127.0.0.1:5173,http://localhost,https://localhost';
+  const replacement = spawn(
+    'server/pocketbase',
+    [
+      'serve',
+      '--http',
+      `127.0.0.1:${PORT}`,
+      '--dir',
+      dataDir,
+      '--migrationsDir',
+      'server/pb_migrations',
+      '--hooksDir',
+      'server/pb_hooks',
+      '--origins',
+      corsOrigins,
+      '--encryptionEnv',
+      process.env.PB_ENCRYPTION ?? 'dev-encryption-key-not-for-prod',
+    ],
+    { env: { ...process.env, PB_TELEMETRY: '0', PB_FEEDBACK: '0' }, stdio: 'ignore' },
+  );
+  // A live child keeps the parent's event loop open, which would prevent
+  // this script from exiting after printing the final result. Detach it
+  // (the exit handler below still SIGKILLs it deterministically).
+  replacement.unref();
+  const ready = await waitForHealth();
+  check(ready, 'PocketBase restart keeps the same data directory healthy');
+  if (!ready) {
+    replacement.kill('SIGKILL');
+    return null;
+  }
+  restartedProc = replacement;
+  return replacement;
 }
 
 // ---- Unique phone counter ----
@@ -118,7 +213,11 @@ async function step3Signup() {
   check(r.body?.phone?.startsWith('+989'), 'phone stored canonically as +989...');
   check(r.body?.role === 'student', 'role is student');
   check(r.body?.account_status === 'pending_payment', 'account_status is pending_payment');
-  return r.body.phone;
+  // PB may omit a non-presentable email from a public create response; the
+  // server's canonical derived identity is still deterministic and is
+  // returned by auth/login. Compare against that authoritative value.
+  if (!r.body.email) r.body.email = `${r.body.phone}@fep.local`;
+  return r.body;
 }
 
 async function step4Persian() {
@@ -226,15 +325,23 @@ async function step10H1OptionalEmailLogin({ withEmail }) {
 }
 
 // ---------- 11. Login ----------
-async function step11Login(canonical) {
+function assertProfile(expected, actual, label) {
+  const fields = ['id', 'name', 'phone', 'email', 'role', 'account_status', 'placement_completed'];
+  for (const field of fields) {
+    check(actual?.[field] === expected?.[field], `${label} preserves ${field}`);
+  }
+}
+
+async function step11Login(created) {
   // Authenticate with the canonical phone directly (H1 fix).
   const r = await jsonFetch('/api/collections/fep_users/auth-with-password', {
     method: 'POST',
-    body: JSON.stringify({ identity: canonical, password: 'Test1234!' }),
+    body: JSON.stringify({ identity: created.phone, password: 'Test1234!' }),
   });
   check(r.status === 200, 'login with correct password succeeds');
   check(typeof r.body?.token === 'string' && r.body.token.length > 20, 'returns auth token');
-  return { token: r.body.token, id: r.body.record?.id, canonical };
+  assertProfile(created, r.body?.record, 'login');
+  return { token: r.body.token, id: r.body.record?.id, canonical: created.phone, created };
 }
 
 // ---------- 12. Canonical-phone login (L1) ----------
@@ -273,12 +380,17 @@ async function step13WrongPassword(canonical) {
 }
 
 // ---------- 14. Auth refresh ----------
-async function step14Refresh({ token }) {
+async function step14Refresh({ token, created }, label = 'auth-refresh') {
   const r = await jsonFetch('/api/collections/fep_users/auth-refresh', {
     method: 'POST',
     headers: { authorization: token },
   });
-  check(r.status === 200, 'auth-refresh with valid token succeeds');
+  check(r.status === 200, `${label} with valid token succeeds`);
+  check(
+    typeof r.body?.token === 'string' && r.body.token.length > 20,
+    `${label} returns auth token`,
+  );
+  assertProfile(created, r.body?.record, label);
   return r.body?.token;
 }
 
@@ -473,18 +585,22 @@ async function main() {
   }
   await step1Health();
   await step2Collection();
-  const canonical = await step3Signup();
+  const created = await step3Signup();
   await step4Persian();
-  await step5Collision(canonical);
+  await step5Collision(created.phone);
   await step6Invalid();
   await step7EmptyName();
   const emailFixture = await step8Email();
   await step9Protected();
   await step10H1OptionalEmailLogin(emailFixture);
-  const auth = await step11Login(canonical);
+  const auth = await step11Login(created);
   await step12CanonicalLogin();
-  await step13WrongPassword(canonical);
+  await step13WrongPassword(created.phone);
   await step14Refresh(auth);
+  const restarted = await restartPocketBase();
+  if (restarted) {
+    await step14Refresh(auth, 'auth-refresh after PocketBase restart');
+  }
   await step15InvalidToken();
   await step16List(auth);
   await step17UpdateLocked(auth);

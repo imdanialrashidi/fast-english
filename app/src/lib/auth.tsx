@@ -1,4 +1,4 @@
-// app/src/lib/auth.ts
+// app/src/lib/auth.tsx
 // AuthProvider, auth state, and route-guard decisions.
 import {
   createContext,
@@ -63,8 +63,37 @@ export interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function toFepUser(record: unknown): FepUser {
+export function requireAuthRecord(record: unknown, expectedId?: string): Record<string, unknown> {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    throw { status: 502, code: 'unavailable' };
+  }
   const r = record as Record<string, unknown>;
+  if (expectedId) {
+    // Signup must never fall back to its create response: the authenticated
+    // response is the authoritative record and must be the record just created.
+    if (String(r.id ?? '') !== expectedId) {
+      throw { status: 502, code: 'unavailable' };
+    }
+  } else if (typeof r.id !== 'string' || r.id.length === 0) {
+    // Every server auth response carries the record id; without it the
+    // profile cannot be authoritative.
+    throw { status: 502, code: 'unavailable' };
+  }
+  return r;
+}
+
+// An auth-level rejection (invalid/expired/suspended) means the session is
+// no longer usable and the persisted token must be cleared. Transport and
+// server-side errors (network blip, PocketBase restarting, 429) must NOT
+// destroy a still-valid session — the next load will retry the refresh.
+function isAuthRejection(err: unknown): boolean {
+  const e = err as { status?: number; response?: { status?: number } };
+  const status = e.response?.status ?? e.status ?? 0;
+  return status === 400 || status === 401 || status === 403;
+}
+
+export function toFepUser(record: unknown): FepUser {
+  const r = requireAuthRecord(record);
   return {
     id: String(r.id ?? ''),
     email: String(r.email ?? ''),
@@ -88,13 +117,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const sync = useCallback(() => {
-    if (pb.authStore.isValid && pb.authStore.record) {
-      setState({
-        user: toFepUser(pb.authStore.record),
-        isAuthenticated: true,
-        isInitializing: false,
-      });
-    } else {
+    try {
+      if (pb.authStore.isValid && pb.authStore.record) {
+        setState({
+          user: toFepUser(pb.authStore.record),
+          isAuthenticated: true,
+          isInitializing: false,
+        });
+      } else {
+        setState({ user: null, isAuthenticated: false, isInitializing: false });
+      }
+    } catch {
+      // A malformed serialized record must fail closed, never render.
+      pb.authStore.clear();
       setState({ user: null, isAuthenticated: false, isInitializing: false });
     }
   }, [pb]);
@@ -108,12 +143,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       try {
-        // Verify the token by refreshing against the record.
-        await pb.collection(COLLECTION).authRefresh();
+        // Verify the token and hydrate from the fresh server response. Do
+        // not render the record that was serialized in localStorage before
+        // refresh; it can be stale or incomplete after an older deployment.
+        const auth = await pb.collection(COLLECTION).authRefresh();
         if (cancelled) return;
-        sync();
-      } catch {
-        pb.authStore.clear();
+        const record = requireAuthRecord(auth.record);
+        setState({ user: toFepUser(record), isAuthenticated: true, isInitializing: false });
+      } catch (err) {
+        // Only auth-level rejections invalidate the persisted session;
+        // transient transport/5xx errors keep the store so a reload during a
+        // PocketBase restart recovers instead of logging the user out.
+        if (isAuthRejection(err)) pb.authStore.clear();
         if (!cancelled) setState({ user: null, isAuthenticated: false, isInitializing: false });
       }
     }
@@ -142,7 +183,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // whether the user provided an email at signup. `phone` is a
         // password identity field on the `fep_users` collection.
         const auth = await pb.collection(COLLECTION).authWithPassword(phone, input.password);
-        const user = toFepUser(auth.record ?? record);
+        const serverRecord = requireAuthRecord(auth.record, String(record.id));
+        const user = toFepUser(serverRecord);
         setState({ user, isAuthenticated: true, isInitializing: false });
         return user;
       } catch (err) {
@@ -162,7 +204,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // lookup works regardless of whether the user provided an email
         // at signup or not.
         const auth = await pb.collection(COLLECTION).authWithPassword(phone, input.password);
-        const user = toFepUser(auth.record);
+        const serverRecord = requireAuthRecord(auth.record);
+        const user = toFepUser(serverRecord);
         setState({ user, isAuthenticated: true, isInitializing: false });
         return user;
       } catch (err) {
@@ -180,12 +223,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => {
     if (!pb.authStore.isValid) return null;
     try {
-      await pb.collection(COLLECTION).authRefresh();
-      const user = pb.authStore.record ? toFepUser(pb.authStore.record) : null;
-      setState({ user, isAuthenticated: !!user, isInitializing: false });
+      const auth = await pb.collection(COLLECTION).authRefresh();
+      const serverRecord = requireAuthRecord(auth.record);
+      const user = toFepUser(serverRecord);
+      setState({ user, isAuthenticated: true, isInitializing: false });
       return user;
-    } catch {
-      pb.authStore.clear();
+    } catch (err) {
+      if (isAuthRejection(err)) pb.authStore.clear();
       setState({ user: null, isAuthenticated: false, isInitializing: false });
       return null;
     }

@@ -68,6 +68,7 @@ Durable constraints only. Not a diary.
 - Next.js/SSR/Astro, Docker, GraphQL, microservices, custom Node backend, workspace/monorepo framework, Lucide (unless justified), Capacitor native HTTP patch (unless evidenced), runtime CDN font, public receipt URLs, wildcard production CORS, SMS OTP, email verification.
 
 ## Operational baseline
+- Local development storage: `scripts/dev.sh` runs PocketBase against the **persistent** `server/pb_data` by default so Student accounts survive dev PocketBase/app restarts; disposable data is an explicit opt-in (`PB_DEV_EPHEMERAL=1`, `PB_DATA_DIR` overrides the path). The smoke/e2e wrappers always use their own disposable data dirs and never touch `server/pb_data`.
 - Configuration/secrets: `.env` git-ignored; `.env.example` documents names only; no secrets in client bundle; production secrets live in `/opt/fast-english/shared/secrets/pocketbase.env` (root:root 0600, names documented in `deploy/env.production.example`).
 - Migrations: `pb_migrations/*.js` committed; `server/VERSION` pins PocketBase binary 0.39.9; migrations+hooks are loaded from the selected release (`current` symlink) by the systemd unit; migrations run on normal startup; migrations are NOT automatically reversible (documented rollback limitation).
 - Deployment: immutable releases under `/opt/fast-english/releases/<id>`, atomic `current` symlink, `pb_data` outside releases, `deploy/deploy.sh` with pre-deployment backup + health checks + smoke + automatic rollback; previous release never deleted.

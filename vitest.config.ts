@@ -9,6 +9,7 @@ export default defineConfig({
       'shared/**/*.test.{ts,tsx}',
       'admin/**/*.test.{ts,tsx}',
       'scripts/content/**/*.test.mjs',
+      'tests/**/*.test.mjs',
     ],
   },
 });

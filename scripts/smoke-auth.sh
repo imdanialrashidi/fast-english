@@ -23,11 +23,18 @@ pb_create_superuser "$DATA_DIR"
 PID=""
 
 cleanup() {
+  # Single-shot: re-entry (e.g. an EXIT trap firing while an INT/TERM trap
+  # is already running) must not run the body twice.
+  trap - EXIT INT TERM
   local code=$?
   if [[ -n "$PID" ]] && kill -0 "$PID" 2>/dev/null; then
     kill "$PID" 2>/dev/null || true
     wait "$PID" 2>/dev/null || true
   fi
+  # Restart proofs spawn a replacement PocketBase inside the smoke script;
+  # kill any PocketBase bound to this run's unique data dir (covers the
+  # replacement even though its PID is unknown to this wrapper).
+  pkill -f "$DATA_DIR" 2>/dev/null || true
   rm -rf "$DATA_DIR"
   exit "$code"
 }
