@@ -703,6 +703,10 @@ test.describe('entry and auth hierarchy', () => {
 
   test('login keyboard flow reaches the fields in order', async ({ page }) => {
     await page.goto('/login');
+    // The login route loads as its own chunk (route-level code splitting);
+    // wait for the form before starting the keyboard sequence so the tab
+    // order is asserted against the rendered form, not the loading state.
+    await expect(page.getByLabel('شمارهٔ موبایل')).toBeVisible();
     await page.keyboard.press('Tab');
     await expect(page.getByRole('link', { name: 'پرش به محتوای اصلی' })).toBeFocused();
     await page.keyboard.press('Tab');

@@ -13,6 +13,7 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { Alert, Button, Snackbar, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { FUNNEL_EVENTS, trackFunnel } from '../lib/telemetry';
 import { isAudioBusy } from './activity';
 
 export const OFFLINE_READY_MESSAGE =
@@ -33,6 +34,16 @@ export function PwaManager() {
       // The app works without a Service Worker.
     },
   });
+
+  // Install intent (the browser-native install surface): one low-noise
+  // funnel event per installability prompt — no per-render telemetry.
+  useEffect(() => {
+    const onBeforeInstallPrompt = () => {
+      trackFunnel(FUNNEL_EVENTS.installIntent);
+    };
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+  }, []);
 
   const [deferred, setDeferred] = useState(false);
 

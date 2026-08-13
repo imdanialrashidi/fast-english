@@ -31,6 +31,7 @@ import { radius } from '../../../../../shared/ui/tokens';
 import type { CefrLevel } from '../../../../../shared/ui/tokens/cefr';
 import { deckStripeColor } from '../../../../../shared/ui/tokens/cefr';
 import { productCopy } from '../../../app/copy/productCopy';
+import { FUNNEL_EVENTS, trackFunnel } from '../../../lib/telemetry';
 import { type PlayerSession, usePlayer } from '../../player/PlayerProvider';
 import type { LessonProgressResponse } from '../../progress/types';
 import { deriveDeckCta } from '../logic';
@@ -160,6 +161,9 @@ export function VariantDeck({
     } else if (cta.kind === 'review') {
       player.applyInitialPosition(0);
     }
+    // Funnel telemetry: the student initiated Episode playback (one event
+    // per CTA press — never per play/pause tick).
+    trackFunnel(FUNNEL_EVENTS.episodeStarted, { lessonId: player.session?.lessonId ?? '' });
     player.togglePlay();
   };
 

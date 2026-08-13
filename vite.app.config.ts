@@ -1,6 +1,22 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+
+// App/build version diagnostics: injected into the bundle (define) and
+// into the served index.html (transformIndexHtml) so the deployed
+// version is readable even before JavaScript executes (deployment health
+// checks and support sessions can assert it). No secrets — the root
+// package version plus the build timestamp only.
+const pkgVersion = (() => {
+  try {
+    return JSON.parse(readFileSync(resolve(import.meta.dirname, 'package.json'), 'utf8')).version;
+  } catch {
+    return '0.0.0';
+  }
+})();
+const buildTime = new Date().toISOString();
 
 // Product application surface: builds `app/` into `dist-app/`.
 // Used for the Web App, PWA, and the Capacitor `webDir`.
@@ -95,7 +111,23 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
     }),
+    {
+      // Deployment health/version diagnostics: expose the app version and
+      // build time on the root element (readable without JS) and in the
+      // bundle (telemetry payloads).
+      name: 'fep-version-diagnostics',
+      transformIndexHtml(html) {
+        return html.replace(
+          '<div id="root"',
+          `<div id="root" data-app-version="${pkgVersion}" data-build-time="${buildTime}"`,
+        );
+      },
+    },
   ],
+  define: {
+    __APP_VERSION__: JSON.stringify(pkgVersion),
+    __BUILD_TIME__: JSON.stringify(buildTime),
+  },
   build: {
     outDir: '../dist-app',
     emptyOutDir: true,

@@ -24,6 +24,7 @@
 //      single source of truth for the newest un-sent position.
 
 import { useCallback, useEffect, useRef } from 'react';
+import { FUNNEL_EVENTS, shouldFireMilestone, trackFunnel } from '../../lib/telemetry';
 import * as progressApi from './api';
 import type { LessonProgressResponse } from './types';
 
@@ -127,6 +128,12 @@ export function useProgressSave({
   const revisionRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTimeUpdateRef = useRef(0);
+  // Listening-milestone guard: one 50%-crossing event per lesson session
+  // (funnel telemetry — see docs/OBSERVABILITY.md).
+  const milestone50FiredRef = useRef(false);
+  // Completion guard: one episode_completed event per lesson session
+  // (a replayed episode must not re-fire it).
+  const completionFiredRef = useRef(false);
 
   // Reset all save state when switching lessons (a fresh lesson starts clean).
   // Declared before the initialization effect so the reset always wins on a
@@ -140,6 +147,8 @@ export function useProgressSave({
     revisionRef.current = 0;
     lastSavedRef.current = null;
     lastTimeUpdateRef.current = 0;
+    milestone50FiredRef.current = false;
+    completionFiredRef.current = false;
   }, [lessonId]);
 
   // Seed the revision state from authoritative progress once it is known, so
@@ -265,8 +274,18 @@ export function useProgressSave({
 
   // Handle time updates from the player
   const handleTimeUpdate = useCallback(
-    (positionSeconds: number, _durationSeconds: number) => {
+    (positionSeconds: number, durationSeconds: number) => {
       if (!enabled || !lessonId) return;
+      // One-shot listening milestone (50% crossed) per lesson session
+      // (funnel telemetry — see docs/OBSERVABILITY.md).
+      if (shouldFireMilestone(positionSeconds, durationSeconds, milestone50FiredRef.current)) {
+        milestone50FiredRef.current = true;
+        trackFunnel(FUNNEL_EVENTS.listeningMilestone, {
+          lessonId,
+          milestone: '50',
+          durationSeconds: Math.round(durationSeconds),
+        });
+      }
       // Save approximately every 10-15 seconds during playback
       const elapsed = positionSeconds - lastTimeUpdateRef.current;
       lastTimeUpdateRef.current = positionSeconds;
@@ -310,6 +329,13 @@ export function useProgressSave({
   // Handle end
   const handleEnded = useCallback(() => {
     if (!enabled || !lessonId) return;
+    // Funnel telemetry: meaningful listening completion (fires once per
+    // lesson session — the element's ended event only belongs to lesson
+    // audio; pronunciation clips use their own host).
+    if (!completionFiredRef.current) {
+      completionFiredRef.current = true;
+      trackFunnel(FUNNEL_EVENTS.episodeCompleted, { lessonId });
+    }
     // Flush on end
     flush();
   }, [enabled, lessonId, flush]);
