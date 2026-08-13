@@ -1,6 +1,6 @@
 // app/src/lib/auth.test.ts
 import { describe, expect, it } from 'vitest';
-import { decideRoute, type FepUser } from './auth';
+import { decideRoute, type FepUser, requireAuthRecord, toFepUser } from './auth';
 
 const active: FepUser = {
   id: '1',
@@ -13,6 +13,54 @@ const active: FepUser = {
 };
 const pending: FepUser = { ...active, account_status: 'pending_payment' };
 const suspended: FepUser = { ...active, account_status: 'suspended' };
+describe('auth record mapping (server-authoritative profile)', () => {
+  const serverRecord = {
+    id: 'rec_123',
+    email: '+989121234567@fep.local',
+    name: 'دانشجوی ماندگار',
+    phone: '+989121234567',
+    role: 'student',
+    account_status: 'pending_payment',
+    placement_completed: false,
+    selected_level: '',
+    suggested_level: null,
+    suspended_reason: '',
+  };
+
+  it('maps every authoritative field from the server record', () => {
+    expect(toFepUser(serverRecord)).toEqual({
+      id: 'rec_123',
+      email: '+989121234567@fep.local',
+      name: 'دانشجوی ماندگار',
+      phone: '+989121234567',
+      role: 'student',
+      account_status: 'pending_payment',
+      placement_completed: false,
+      selected_level: '',
+      suggested_level: null,
+      expanded: serverRecord,
+    });
+  });
+
+  it('rejects a missing/malformed auth record (never render an empty profile)', () => {
+    expect(() => toFepUser(null)).toThrow();
+    expect(() => toFepUser(undefined)).toThrow();
+    expect(() => toFepUser('not-an-object')).toThrow();
+    expect(() => requireAuthRecord([1, 2])).toThrow();
+    // A record without an id cannot be authoritative either.
+    expect(() => toFepUser({ name: 'بدون شناسه' })).toThrow();
+    expect(() => toFepUser({ id: '' })).toThrow();
+  });
+
+  it('rejects an authenticated record that is not the record just created', () => {
+    // Signup must never fall back to the create response: if the server
+    // returns a different authenticated record the session is unreliable
+    // and must not be rendered as the signed-up user.
+    expect(() => requireAuthRecord({ id: 'rec_other' }, 'rec_123')).toThrow();
+    expect(() => requireAuthRecord({ id: 'rec_123' }, 'rec_123')).not.toThrow();
+  });
+});
+
 describe('decideRoute', () => {
   it('public route always allows', () => {
     expect(decideRoute('public', null, false)).toEqual({ kind: 'allow' });
