@@ -1,29 +1,95 @@
 // app/src/app/App.tsx
 import { Box } from '@mui/material';
+import { type ComponentType, lazy, type ReactNode, Suspense, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router';
 import { PageContainer } from '../../../shared/ui/PageContainer';
 import { StatePanel } from '../../../shared/ui/StatePanel';
 import { HomeRoute } from '../features/home/routes/HomeRoute';
-import { LessonDetailRoute, LessonsRoute, SampleRoute } from '../features/lessons';
-import { LibraryRoute } from '../features/library/routes/LibraryRoute';
-import { PaymentRoute, PaymentStatusRoute } from '../features/payment';
-import { LevelResultRoute, PlacementRoute } from '../features/placement';
 import { PlayerProvider } from '../features/player';
-import { ProgressRoute } from '../features/progress/routes/ProgressRoute';
 import { AuthProvider, decideRoute, type RouteKind, useAuth } from '../lib/auth';
-import { AccountRoute } from './routes/AccountRoute';
+import {
+  FUNNEL_EVENTS,
+  redactPath,
+  sanitizeMessage,
+  setSurface,
+  trackFunnel,
+} from '../lib/telemetry';
 import { CatalogRoute } from './routes/CatalogRoute';
 import { EntryRoute } from './routes/EntryRoute';
-import { LoginRoute } from './routes/LoginRoute';
 import { NotFoundRoute } from './routes/NotFoundRoute';
-import { SignupRoute } from './routes/SignupRoute';
 import { AppShell } from './shell/AppShell';
+import { RouteLoadFallback } from './shell/RouteLoadFallback';
 
-// Development-only component catalog. Registered in dev builds and when the
-// e2e build explicitly enables it (VITE_CATALOG=1); never part of the
-// production navigation (no link anywhere) and absent from production builds
-// without the flag.
+// ---------------------------------------------------------------------------
+// Route-level code splitting (production performance).
+//
+// Only the first-paint surfaces stay in the entry chunk: EntryRoute (guest
+// landing), HomeRoute (active-student landing), NotFoundRoute, the shared
+// shell chrome (AppShell) and the always-mounted PlayerProvider. Every
+// other route loads its feature chunk on first navigation, so the initial
+// payload never carries payment/placement/library/episode/lessons feature
+// code or their exclusive dependencies (e.g. react-hook-form + zod move to
+// the login/signup/payment chunks).
+//
+// `lazyNamed` maps a named export to the default export React.lazy wants;
+// the `path=` strings below stay static (App.routes.test.ts asserts them).
+// ---------------------------------------------------------------------------
+
+function lazyNamed<T extends ComponentType<unknown>>(
+  importer: () => Promise<Record<string, unknown>>,
+  name: string,
+) {
+  return lazy(() => importer().then((m) => ({ default: m[name] as T })));
+}
+
+const LoginRoute = lazyNamed(() => import('./routes/LoginRoute'), 'LoginRoute');
+const SignupRoute = lazyNamed(() => import('./routes/SignupRoute'), 'SignupRoute');
+const PaymentRoute = lazyNamed(
+  () => import('../features/payment/routes/PaymentRoute'),
+  'PaymentRoute',
+);
+const PaymentStatusRoute = lazyNamed(
+  () => import('../features/payment/routes/PaymentStatusRoute'),
+  'PaymentStatusRoute',
+);
+const PlacementRoute = lazyNamed(
+  () => import('../features/placement/routes/PlacementRoute'),
+  'PlacementRoute',
+);
+const LevelResultRoute = lazyNamed(
+  () => import('../features/placement/routes/LevelResultRoute'),
+  'LevelResultRoute',
+);
+const LessonsRoute = lazyNamed(
+  () => import('../features/lessons/routes/LessonsRoute'),
+  'LessonsRoute',
+);
+const LessonDetailRoute = lazyNamed(
+  () => import('../features/lessons/routes/LessonDetailRoute'),
+  'LessonDetailRoute',
+);
+const SampleRoute = lazyNamed(
+  () => import('../features/lessons/routes/SampleRoute'),
+  'SampleRoute',
+);
+const LibraryRoute = lazyNamed(
+  () => import('../features/library/routes/LibraryRoute'),
+  'LibraryRoute',
+);
+const ProgressRoute = lazyNamed(
+  () => import('../features/progress/routes/ProgressRoute'),
+  'ProgressRoute',
+);
+const AccountRoute = lazyNamed(() => import('./routes/AccountRoute'), 'AccountRoute');
+// Dev-only component catalog (imported eagerly; tree-shaken out of
+// production builds where `catalogEnabled` folds to false).
 const catalogEnabled = import.meta.env.DEV || import.meta.env.VITE_CATALOG === '1';
+
+/** Suspense boundary for a single lazy route element: only the route
+ *  content suspends, never the shared shell or the Player. */
+function Suspended({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<RouteLoadFallback />}>{children}</Suspense>;
+}
 
 function Guard({ kind, children }: { kind: RouteKind; children: React.ReactNode }) {
   const { user, isAuthenticated, isInitializing } = useAuth();
@@ -75,6 +141,18 @@ function RootGate() {
 }
 
 function ThemedApp() {
+  const location = useLocation();
+
+  // Route/surface context for telemetry: the redacted pathname is
+  // attached to every event; one route_change event per navigation
+  // (never per render).
+  useEffect(() => {
+    setSurface(location.pathname);
+    trackFunnel(FUNNEL_EVENTS.routeChange, {
+      path: sanitizeMessage(redactPath(location.pathname)),
+    });
+  }, [location.pathname]);
+
   return (
     <AuthProvider>
       <Box>
@@ -111,7 +189,9 @@ function ThemedApp() {
               path="/login"
               element={
                 <Guard kind="guest-only">
-                  <LoginRoute />
+                  <Suspended>
+                    <LoginRoute />
+                  </Suspended>
                 </Guard>
               }
             />
@@ -119,7 +199,9 @@ function ThemedApp() {
               path="/signup"
               element={
                 <Guard kind="guest-only">
-                  <SignupRoute />
+                  <Suspended>
+                    <SignupRoute />
+                  </Suspended>
                 </Guard>
               }
             />
@@ -129,7 +211,9 @@ function ThemedApp() {
                 path="/payment"
                 element={
                   <Guard kind="pending-only">
-                    <PaymentRoute />
+                    <Suspended>
+                      <PaymentRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -137,7 +221,9 @@ function ThemedApp() {
                 path="/payment-status"
                 element={
                   <Guard kind="pending-only">
-                    <PaymentStatusRoute />
+                    <Suspended>
+                      <PaymentStatusRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -146,7 +232,9 @@ function ThemedApp() {
                 path="/placement"
                 element={
                   <Guard kind="active-only">
-                    <PlacementRoute />
+                    <Suspended>
+                      <PlacementRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -154,7 +242,9 @@ function ThemedApp() {
                 path="/placement/result"
                 element={
                   <Guard kind="active-only">
-                    <LevelResultRoute />
+                    <Suspended>
+                      <LevelResultRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -162,7 +252,9 @@ function ThemedApp() {
                 path="/lessons"
                 element={
                   <Guard kind="active-only">
-                    <LessonsRoute />
+                    <Suspended>
+                      <LessonsRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -170,7 +262,9 @@ function ThemedApp() {
                 path="/lessons/:id"
                 element={
                   <Guard kind="active-only">
-                    <LessonDetailRoute />
+                    <Suspended>
+                      <LessonDetailRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -178,7 +272,9 @@ function ThemedApp() {
                 path="/lessons/demo"
                 element={
                   <Guard kind="active-only">
-                    <LessonDetailRoute />
+                    <Suspended>
+                      <LessonDetailRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -186,7 +282,9 @@ function ThemedApp() {
                 path="/library"
                 element={
                   <Guard kind="active-only">
-                    <LibraryRoute />
+                    <Suspended>
+                      <LibraryRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -194,7 +292,9 @@ function ThemedApp() {
                 path="/progress"
                 element={
                   <Guard kind="active-only">
-                    <ProgressRoute />
+                    <Suspended>
+                      <ProgressRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
@@ -202,14 +302,32 @@ function ThemedApp() {
                 path="/account"
                 element={
                   <Guard kind="active-only">
-                    <AccountRoute />
+                    <Suspended>
+                      <AccountRoute />
+                    </Suspended>
                   </Guard>
                 }
               />
             </Route>
 
-            <Route path="/sample" element={<SampleRoute />} />
-            {catalogEnabled ? <Route path="/dev/catalog" element={<CatalogRoute />} /> : null}
+            <Route
+              path="/sample"
+              element={
+                <Suspended>
+                  <SampleRoute />
+                </Suspended>
+              }
+            />
+            {catalogEnabled ? (
+              <Route
+                path="/dev/catalog"
+                element={
+                  <Suspended>
+                    <CatalogRoute />
+                  </Suspended>
+                }
+              />
+            ) : null}
             {/* Student-safe Not Found: legacy /operator, /admin and /staff
                 paths land here, never in the Admin application. */}
             <Route path="*" element={<NotFoundRoute />} />

@@ -24,6 +24,7 @@ import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { PageHeader } from '../../../../../shared/ui/PageHeader';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { useAuth } from '../../../lib/auth';
+import { FUNNEL_EVENTS, trackFunnel } from '../../../lib/telemetry';
 import * as api from '../api';
 import {
   PLACEMENT_INTRO_DESC,
@@ -232,6 +233,9 @@ export function PlacementRoute() {
 
     try {
       const resp = await api.submitAttempt(attemptId!, { expectedRevision: revision });
+      // Funnel telemetry: placement final submission succeeded (answers
+      // never leave the server; nothing answer-related is reported).
+      trackFunnel(FUNNEL_EVENTS.placementSubmitted);
       applyResponse(resp);
     } catch (err) {
       const mapped = mapPlacementError(err);

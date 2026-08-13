@@ -1,0 +1,289 @@
+{
+  "tag": "20260813-214333",
+  "throttled": true,
+  "profile": {
+    "latency": 150,
+    "downloadThroughput": 1677721.6,
+    "uploadThroughput": 768000,
+    "cpuRate": 4
+  },
+  "journeys": [
+    {
+      "id": "entry",
+      "lcp": 2548,
+      "cls": 0.001,
+      "clsEntries": 1,
+      "fcp": 2184,
+      "tbt": 1160,
+      "longTasks": 4,
+      "ttfb": 13,
+      "dcl": 1494,
+      "load": 1494,
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 0
+      },
+      "transferTotal": 422429,
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 359
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 155
+        }
+      ],
+      "pageErrors": [],
+      "url": "/",
+      "journeyMs": 3523,
+      "settled": true
+    },
+    {
+      "id": "login",
+      "lcp": 2940,
+      "cls": 0,
+      "clsEntries": 0,
+      "fcp": 1612,
+      "tbt": 1235,
+      "longTasks": 4,
+      "ttfb": 6,
+      "dcl": 1126,
+      "load": 1126,
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 0
+      },
+      "transferTotal": 422429,
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 345
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 158
+        }
+      ],
+      "pageErrors": [],
+      "url": "/login",
+      "journeyMs": 3265,
+      "settled": true
+    },
+    {
+      "id": "home",
+      "lcp": 4616,
+      "cls": 0,
+      "clsEntries": 1,
+      "fcp": 1960,
+      "tbt": 2521,
+      "longTasks": 9,
+      "ttfb": 8,
+      "dcl": 1254,
+      "load": 1254,
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 300,
+        "font": 111452,
+        "other": 7521
+      },
+      "transferTotal": 414693,
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 363
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 159
+        }
+      ],
+      "pageErrors": [],
+      "url": "/",
+      "journeyMs": 5497,
+      "settled": true
+    },
+    {
+      "id": "library",
+      "lcp": 4564,
+      "cls": 0,
+      "clsEntries": 0,
+      "fcp": 2676,
+      "tbt": 2005,
+      "longTasks": 6,
+      "ttfb": 4,
+      "dcl": 1201,
+      "load": 1201,
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 6326
+      },
+      "transferTotal": 428755,
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 348
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 170
+        }
+      ],
+      "pageErrors": [],
+      "url": "/library",
+      "journeyMs": 5063,
+      "settled": true
+    },
+    {
+      "id": "account",
+      "lcp": 2940,
+      "cls": 0.06,
+      "clsEntries": 1,
+      "fcp": 2068,
+      "tbt": 1333,
+      "longTasks": 5,
+      "ttfb": 5,
+      "dcl": 1260,
+      "load": 1260,
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 1764
+      },
+      "transferTotal": 424193,
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 369
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 162
+        }
+      ],
+      "pageErrors": [],
+      "url": "/account",
+      "journeyMs": 3466,
+      "settled": true
+    },
+    {
+      "id": "episode",
+      "lcp": 2720,
+      "cls": 0.072,
+      "clsEntries": 4,
+      "fcp": 1812,
+      "tbt": 1345,
+      "longTasks": 8,
+      "ttfb": 13,
+      "dcl": 1149,
+      "load": 1149,
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 27239
+      },
+      "transferTotal": 449668,
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 365
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 159
+        }
+      ],
+      "pageErrors": [],
+      "url": "/lessons/610amq5p7ariouu",
+      "journeyMs": 3935,
+      "settled": true
+    }
+  ],
+  "spaNavigations": [
+    {
+      "id": "nav:home->library",
+      "clickToSettledMs": 8038,
+      "settled": true,
+      "lcp": 2852,
+      "cls": 0,
+      "tbt": 1613,
+      "longTasks": 7,
+      "pageErrors": [],
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 355
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 155
+        }
+      ],
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15257,
+        "font": 111452,
+        "other": 9597
+      }
+    },
+    {
+      "id": "nav:library->episode",
+      "clickToSettledMs": 572,
+      "settled": true,
+      "lcp": 3764,
+      "cls": 0.002,
+      "tbt": 1221,
+      "longTasks": 8,
+      "pageErrors": [],
+      "scripts": [
+        {
+          "name": "index-S0ttX8bO.js",
+          "transfer": 291909,
+          "durationMs": 345
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 158
+        }
+      ],
+      "transfer": {
+        "js": 294423,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 12175
+      }
+    }
+  ],
+  "capturedAt": "2026-08-13T18:13:43.781Z"
+}

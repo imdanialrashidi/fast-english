@@ -23,6 +23,7 @@ import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { PageHeader } from '../../../../../shared/ui/PageHeader';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { useAuth } from '../../../lib/auth';
+import { FUNNEL_EVENTS, trackFunnel } from '../../../lib/telemetry';
 import * as api from '../api';
 import {
   CEFR_LEVEL_LABELS,
@@ -103,6 +104,9 @@ export function LevelResultRoute() {
 
     try {
       await api.selectLevel({ selectedLevel: context.suggestedLevel });
+      // Funnel telemetry: activation/placement completion — the student
+      // confirmed a level (only the level is reported, nothing personal).
+      trackFunnel(FUNNEL_EVENTS.levelSelected, { level: context.suggestedLevel });
       setSuccessMsg(LEVEL_SAVE_SUCCESS);
 
       // Auth refresh to get updated user state
@@ -142,6 +146,9 @@ export function LevelResultRoute() {
 
     try {
       await api.selectLevel({ selectedLevel: pendingLevel });
+      // Funnel telemetry: activation/placement completion — the student
+      // chose a level (only the level is reported, nothing personal).
+      trackFunnel(FUNNEL_EVENTS.levelSelected, { level: pendingLevel });
       setSuccessMsg(LEVEL_SAVE_SUCCESS);
 
       // Auth refresh
