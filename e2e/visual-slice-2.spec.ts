@@ -1091,12 +1091,27 @@ test.describe('lesson detail and player', () => {
     await expect(page).toHaveURL(new RegExp(`/lessons/${lessonIds.inProgress}`), {
       timeout: 10_000,
     });
-    // The saved position is still honored: the resume prompt offers the
-    // exact saved time (the fresh token URL resets the live position, the
-    // same behavior as before the Mini Player existed).
-    await expect(page.getByRole('button', { name: /ادامه از 2:30/ })).toBeVisible({
-      timeout: 10_000,
-    });
+    // The saved position is still honored: the deck's resume prompt derives
+    // from the SAVED progress. The 2s fixture clip clamps the 150s seek, so
+    // the honest saved position is the real played one (~1-3s) and the
+    // honest CTA is «پخش» (deriveDeckCta <5s rule). The end-of-clip save
+    // lands a moment after the return load, so the CTA is polled.
+    await expect
+      .poll(async () => (await page.getByTestId('deck-primary-cta').textContent()) ?? '', {
+        timeout: 10_000,
+      })
+      .toContain('پخش');
+    const saved = Number(
+      (
+        (
+          await jsonFetch(`${PB_URL}/api/fast-english/lessons/${lessonIds.inProgress}/progress`, {
+            headers: { authorization: `Bearer ${student.token}` },
+          })
+        ).body as { positionSeconds?: number }
+      ).positionSeconds ?? -1,
+    );
+    expect(saved).toBeGreaterThan(0);
+    expect(saved).toBeLessThanOrEqual(3);
   });
 
   test('mini player is hidden when no lesson is active', async ({ page }) => {

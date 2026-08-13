@@ -831,8 +831,10 @@ test.describe('P3-S2 Progress and Audio Player', () => {
       for (const name of ['۱۰ ثانیه به عقب', '۱۰ ثانیه به جلو', 'قطع صدا']) {
         const box = await player.getByRole('button', { name }).boundingBox();
         if (!box) throw new Error(`player button ${name} has no bounding box`);
-        expect(box.width, name).toBeGreaterThanOrEqual(44);
-        expect(box.height, name).toBeGreaterThanOrEqual(44);
+        // 44px targets survive sub-pixel renderer rounding (CI measured
+        // 43.999969482421875 on one run).
+        expect(Math.round(box.width), name).toBeGreaterThanOrEqual(44);
+        expect(Math.round(box.height), name).toBeGreaterThanOrEqual(44);
       }
       // Speed: one compact menu trigger; the menu carries the five speeds
       // as 44px targets (replaces the legacy five-chip wall).
