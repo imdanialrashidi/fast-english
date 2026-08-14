@@ -1,6 +1,6 @@
 // tests/cefr-consistency.test.mjs
 // Static guard (plan 017): the CEFR ladder A1 A2 B1 B2 C1 C2 is declared
-// in EIGHT places across two runtimes (goja hooks cannot import TS), and
+// in NINE places across two runtimes (goja hooks cannot import TS), and
 // its ORDER is behavioral — variant resolution, the Edition Rail, level
 // normalization, import validation, the library level sort, and the
 // selected-level validation all depend on it.
@@ -8,7 +8,7 @@
 // The goja files cannot share the TS constant, so the cheapest mechanical
 // enforcement is this gate: parse all declarations and assert they are
 // identical as ordered arrays to the canonical list. Adding or reordering
-// a level forces all eight files to change together.
+// a level forces all nine files to change together.
 //
 // Structural checks only (regex over source text), like the other
 // static-guard suites in this repo. This test does not parse JavaScript.

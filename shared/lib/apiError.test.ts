@@ -70,6 +70,16 @@ describe('extractApiError', () => {
     expect(extractApiError(new Error('plain'))).toEqual({ code: '', message: 'plain' });
   });
 
+  it('prefers response.data over response-as-body when both exist (documented priority)', () => {
+    // No live thrower produces this mixed shape (the PB SDK puts the
+    // custom-route body directly on `response` with no `data` key), but
+    // the priority is part of the consolidated contract: the object
+    // nested under `response.data` (raw-fetch wrapper) wins over the
+    // response-as-body read.
+    const err = { response: { code: 'outer', data: { code: 'inner', message: 'Inner' } } };
+    expect(extractApiError(err)).toEqual({ code: 'inner', message: 'Inner' });
+  });
+
   it('never throws on weird shapes', () => {
     expect(() => extractApiError(Symbol('x'))).not.toThrow();
     expect(() => extractApiError({ response: 'not an object' })).not.toThrow();
