@@ -1,6 +1,7 @@
+import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { supportUrl, webAppUrl } from '../lib/siteConfig';
+import { supportUrl } from '../lib/siteConfig';
 
 export function ContactPage() {
   const hasSupport = supportUrl !== null;
@@ -58,14 +59,12 @@ export function ContactPage() {
           <p className="mt-3 text-sm text-brand-muted leading-relaxed">
             ثبت‌نام، پرداخت، آزمون تعیین سطح و درس‌ها در داخل اپلیکیشن انجام می‌شوند.
           </p>
-          <a
-            href={webAppUrl}
-            rel="noopener noreferrer"
-            target="_blank"
+          <AppCta
+            place="contact"
             className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
           >
             باز کردن وب‌اپ
-          </a>
+          </AppCta>
         </section>
       </div>
     </SiteLayout>

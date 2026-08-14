@@ -1,6 +1,5 @@
 import { ApkButton } from '../components/ApkButton';
-import { BrandMark } from '../components/BrandMark';
-import { webAppUrl } from '../lib/siteConfig';
+import { AppCta } from '../components/AppCta';
 
 export function Hero() {
   return (
@@ -14,9 +13,6 @@ export function Hero() {
         }}
       />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-10 sm:pt-16 pb-12 sm:pb-20">
-        <div className="md:hidden mb-6">
-          <BrandMark size={36} />
-        </div>
         <div className="grid md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-7">
             <p className="text-sm font-semibold text-brand-primary mb-3">
@@ -30,14 +26,12 @@ export function Hero() {
               اپلیکیشن وب و اپلیکیشن اندروید.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <a
-                href={webAppUrl}
-                rel="noopener noreferrer"
-                target="_blank"
+              <AppCta
+                place="hero"
                 className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
               >
                 ورود به وب‌اپ
-              </a>
+              </AppCta>
               <ApkButton />
               <a
                 href="/sample"

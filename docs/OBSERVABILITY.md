@@ -100,6 +100,30 @@ No event carries phone, name, email, receipt/transfer/payment data, media
 URLs, or answer data. `lessonId`/`planId` are non-personal record ids
 already present in URLs.
 
+## Landing acquisition events (static landing surface)
+
+The landing (`landing/src/lib/telemetry/`) uses the same contract — ring
+buffer + optional beacon sink, redaction, failure isolation, no PII —
+implemented locally so the static surface stays a separate build with no
+cross-surface imports. It is initialized in `landing/src/mount.tsx`;
+events are one-shot acquisition intents (click/prompt driven, never
+per-render). Every event carries `appVersion` + `buildTime` (injected via
+`__LANDING_VERSION__` / `__BUILD_TIME__` in `vite.landing.config.ts`).
+
+| Event | Fields | Trigger |
+|---|---|---|
+| `route_change` | — (surface = redacted path) | one per page load (multi-page static site) |
+| `signup_intent` | `where` (fixed CTA id: hero/header/footer/final/install/how-it-works/about/contact/sample) | any CTA into the Student web app |
+| `install_intent` | — | browser-native `beforeinstallprompt` on the landing |
+| `download_intent` | — | Android APK download CTA (only rendered when a real release URL is configured) |
+| `collaboration_intent` | — | collaboration contact CTA (`/collaboration`) |
+
+The same `window.__fepTelemetry()` diagnostic snapshot exists on the
+landing (ring buffer only; the beacon sink is attached only when
+`VITE_TELEMETRY_ENDPOINT` is set — see `deploy/README.md` build steps).
+Campaign/referral parameters forwarded to the web app are never sent to
+telemetry (`landing/src/lib/campaign.ts` allowlist).
+
 ## Deployment health / version diagnostics
 
 - `#root` carries `data-app-version` and `data-build-time` (injected by

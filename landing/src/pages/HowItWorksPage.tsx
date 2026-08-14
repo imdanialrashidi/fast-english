@@ -1,6 +1,6 @@
+import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { webAppUrl } from '../lib/siteConfig';
 
 const steps = [
   {
@@ -51,14 +51,12 @@ export function HowItWorksPage() {
           <p className="mt-2 text-sm text-white/75 leading-relaxed">
             ثبت‌نام در وب‌اپ رایگان است؛ هزینه فقط پس از انتخاب طرح پرداخت می‌شود.
           </p>
-          <a
-            href={webAppUrl}
-            rel="noopener noreferrer"
-            target="_blank"
+          <AppCta
+            place="how-it-works"
             className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
           >
             ورود به وب‌اپ
-          </a>
+          </AppCta>
         </div>
       </div>
     </SiteLayout>

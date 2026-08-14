@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { AppCta } from '../components/AppCta';
 import { BrandMark } from '../components/BrandMark';
-import { webAppUrl } from '../lib/siteConfig';
 
 const NAV_LINKS = [
   { href: '/', label: 'خانه' },
@@ -30,14 +30,12 @@ export function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a
-            href={webAppUrl}
-            rel="noopener noreferrer"
-            target="_blank"
+          <AppCta
+            place="header"
             className="hidden sm:inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary min-h-11"
           >
             ورود به وب‌اپ
-          </a>
+          </AppCta>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -91,14 +89,12 @@ export function Header() {
                 {link.label}
               </a>
             ))}
-            <a
-              href={webAppUrl}
-              rel="noopener noreferrer"
-              target="_blank"
+            <AppCta
+              place="header"
               className="mt-1 mb-2 inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark"
             >
               ورود به وب‌اپ
-            </a>
+            </AppCta>
           </div>
         </nav>
       ) : null}

@@ -1,7 +1,7 @@
+import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
 import { BUSINESS_IDENTITY_PLACEHOLDERS, SITE_NAME } from '../content/siteContent';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { webAppUrl } from '../lib/siteConfig';
 
 const identityItems = [
   { label: 'بنیان‌گذاران', value: BUSINESS_IDENTITY_PLACEHOLDERS.founders },
@@ -118,14 +118,12 @@ export function AboutPage() {
             ثبت‌نام و پرداخت در داخل اپلیکیشن انجام می‌شود. نمونهٔ درس را ببینید یا وارد وب‌اپ شوید.
           </p>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
-            <a
-              href={webAppUrl}
-              rel="noopener noreferrer"
-              target="_blank"
+            <AppCta
+              place="about"
               className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
             >
               ورود به وب‌اپ
-            </a>
+            </AppCta>
             <a
               href="/sample"
               className="inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text hover:bg-brand-surface min-h-12"

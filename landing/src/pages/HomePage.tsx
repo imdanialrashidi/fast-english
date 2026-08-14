@@ -6,6 +6,7 @@ import { FinalCta } from '../sections/FinalCta';
 import { Hero } from '../sections/Hero';
 import { HowItWorks } from '../sections/HowItWorks';
 import { InstallSection } from '../sections/InstallSection';
+import { PaymentSection } from '../sections/PaymentSection';
 import { SampleLesson } from '../sections/SampleLesson';
 
 export function HomePage() {
@@ -17,6 +18,7 @@ export function HomePage() {
       <CefrSection />
       <SampleLesson />
       <InstallSection />
+      <PaymentSection />
       <FaqSection />
       <FinalCta />
     </SiteLayout>
