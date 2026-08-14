@@ -1,7 +1,8 @@
+import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
 import { SITE_NAME } from '../content/siteContent';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { publicSampleUrl, webAppUrl } from '../lib/siteConfig';
+import { publicSampleUrl } from '../lib/siteConfig';
 
 export function SamplePage() {
   return (
@@ -60,14 +61,12 @@ export function SamplePage() {
             >
               باز کردن نمونهٔ زنده و صوت
             </a>
-            <a
-              href={webAppUrl}
-              rel="noopener noreferrer"
-              target="_blank"
+            <AppCta
+              place="sample"
               className="inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text hover:bg-brand-surface min-h-12"
             >
               ورود به وب‌اپ
-            </a>
+            </AppCta>
           </div>
           <p className="mt-4 text-xs text-brand-muted">
             اگر نمونهٔ زنده در دسترس نباشد، همین صفحه متن نمونه را نمایش می‌دهد؛ محتوای کامل پس از

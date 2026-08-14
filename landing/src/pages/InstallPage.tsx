@@ -1,23 +1,33 @@
 import { ApkButton } from '../components/ApkButton';
+import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { apkAvailable, apkState, webAppUrl } from '../lib/siteConfig';
+import { apkAvailable, apkState } from '../lib/siteConfig';
 
 const webAppSteps = [
   'در مرورگر موبایل یا دسکتاپ به آدرس وب‌اپ بروید و ثبت‌نام کنید.',
-  'برای دسترسی سریع‌تر، صفحهٔ وب‌اپ را به صفحهٔ اصلی مرورگر اضافه کنید.',
+  'برای دسترسی سریع‌تر، می‌توانید وب‌اپ را مانند یک برنامه روی صفحهٔ اصلی دستگاه نصب کنید (بخش «نصب وب‌اپ» در همین صفحه).',
   'همهٔ مراحل (پرداخت، تعیین سطح، درس‌ها) در داخل وب‌اپ انجام می‌شود.',
 ];
 
+const pwaSteps = [
+  'روی صفحهٔ وب‌اپ (در مرورگر) به دنبال گزینهٔ نصب بگردید؛ روش آن در مرورگرهای مختلف فرق می‌کند و ممکن است این گزینه اصلاً نمایش داده نشود.',
+  'اندروید/کروم: وقتی مرورگر وب‌اپ را قابل نصب تشخیص دهد، نوار نصب نشان می‌دهد یا در منو ⋮ گزینهٔ «Add to Home screen» / «Install app» قرار می‌گیرد.',
+  'دسکتاپ (کروم/اج): آیکن نصب در نوار آدرس یا منوی مرورگر («Install…») نمایش داده می‌شود.',
+  'آیفون/آیپد (سافاری): دکمهٔ Share و سپس «Add to Home Screen». سافاری روی iOS همان پنجرهٔ نصب اندروید را ندارد.',
+  'سایر مرورگرها (مثل فایرفاکس) ممکن است روش نصب جداگانه‌ای نداشته باشند؛ در آن صورت وب‌اپ به‌صورت عادی در مرورگر کار می‌کند.',
+  'نصب وب‌اپ درس‌ها را آفلاین نمی‌کند؛ پخش صوت همچنان به اتصال اینترنت نیاز دارد.',
+];
+
 const apkSteps = [
-  'از همین صفحه دکمهٔ «دانلود نسخهٔ اندروید» را بزنید؛ فایل APK از دامنهٔ fastenglishpodcast.com دانلود می‌شود.',
+  'از همین صفحه دکمهٔ «دانلود نسخهٔ اندروید» را بزنید؛ فایل APK از دامنهٔ رسمی همین وب‌سایت دانلود می‌شود.',
   'پس از پایان دانلود، روی فایل ضربه بزنید. اندروید ممکن است اجازهٔ نصب از این مرورگر را بخواهد.',
   'در پنجرهٔ «نصب برنامه‌های ناشناخته» فقط اجازهٔ نصب از همان مرورگر (مثلاً Chrome) را بدهید؛ این کار کل سیستم را ناامن نمی‌کند.',
   'پس از نصب، برنامه را باز کنید و با همان حساب وب‌اپ وارد شوید.',
 ];
 
 const verifySteps = [
-  'آدرس صفحه‌ای که از آن دانلود می‌کنید با fastenglishpodcast.com شروع می‌شود.',
+  'آدرس صفحه‌ای که از آن دانلود می‌کنید باید با آدرس همین وب‌سایت شروع شود.',
   'فایل APK را از وب‌سایت‌ها، کانال‌ها یا گروه‌های ناشناس دریافت نکنید؛ فقط همین وب‌سایت مرجع رسمی است.',
   'پیش از نصب، اطمینان کنید نسخهٔ فایل با نسخهٔ اعلام‌شده در همین صفحه هماهنگ است.',
 ];
@@ -52,14 +62,36 @@ export function InstallPage() {
               </li>
             ))}
           </ol>
-          <a
-            href={webAppUrl}
-            rel="noopener noreferrer"
-            target="_blank"
+          <AppCta
+            place="install"
             className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
           >
             باز کردن وب‌اپ
-          </a>
+          </AppCta>
+        </section>
+
+        <section
+          aria-labelledby="install-pwa"
+          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+        >
+          <h2 id="install-pwa" className="text-xl font-extrabold">
+            ۲. نصب وب‌اپ روی صفحهٔ اصلی (PWA)
+          </h2>
+          <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+            مرورگرهای مدرن می‌توانند وب‌اپ را مانند یک برنامه نصب کنند. روش نصب در مرورگرهای مختلف
+            یکسان نیست و هیچ مرورگری تضمین نمی‌کند که این گزینه را نشان دهد:
+          </p>
+          <ol className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+            {pwaSteps.map((s, i) => (
+              <li key={s} className="flex gap-2">
+                <span className="font-bold text-brand-primary">{i + 1}.</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs text-brand-muted">
+            نصب وب‌اپ اختیاری است؛ بدون نصب هم می‌توانید از همهٔ امکانات در مرورگر استفاده کنید.
+          </p>
         </section>
 
         <section
@@ -67,7 +99,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-apk" className="text-xl font-extrabold">
-            ۲. نسخهٔ اندروید — نصب مستقیم
+            ۳. نسخهٔ اندروید — نصب مستقیم
           </h2>
           {hasApk ? (
             <>
@@ -106,7 +138,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-permission" className="text-xl font-extrabold">
-            ۳. وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد
+            ۴. وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد
           </h2>
           <p className="mt-3 text-sm text-brand-muted leading-relaxed">
             اندروید برای محافظت از شما، نصب برنامه‌های خارج از فروشگاه را به‌صورت پیش‌فرض محدود می‌کند.
@@ -123,7 +155,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-verify" className="text-xl font-extrabold">
-            ۴. بررسی اصالت دانلود
+            ۵. بررسی اصالت دانلود
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
             {verifySteps.map((s) => (
@@ -142,7 +174,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-update" className="text-xl font-extrabold">
-            ۵. به‌روزرسانی
+            ۶. به‌روزرسانی
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
             {updateSteps.map((s) => (

@@ -1,5 +1,5 @@
+import { AppCta } from '../components/AppCta';
 import { SITE_NAME } from '../content/siteContent';
-import { webAppUrl } from '../lib/siteConfig';
 
 const PRODUCT_LINKS = [
   { href: '/', label: 'خانه' },
@@ -62,14 +62,9 @@ export function Footer() {
                 {l.label}
               </a>
             ))}
-            <a
-              href={webAppUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="block text-brand-muted hover:text-brand-text"
-            >
+            <AppCta place="footer" className="block text-brand-muted hover:text-brand-text">
               وب‌اپ
-            </a>
+            </AppCta>
           </nav>
         </div>
         <p className="mt-8 text-xs text-brand-muted">

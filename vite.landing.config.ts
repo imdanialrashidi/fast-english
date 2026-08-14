@@ -1,9 +1,17 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
+
+// Build/version diagnostics for the landing telemetry contract: injected
+// at build time (define) with a safe fallback for dev/test builds.
+const pkgVersion = JSON.parse(
+  readFileSync(new URL('package.json', import.meta.url), 'utf8'),
+).version;
+const buildTime = new Date().toISOString();
 
 // Static marketing landing surface: builds `landing/` into `dist-landing/`.
 // Tailwind is configured ONLY in this Vite root and is NOT present in the
@@ -18,6 +26,10 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 export default defineConfig({
   root: 'landing',
   plugins: [react(), tailwindcss()],
+  define: {
+    __LANDING_VERSION__: JSON.stringify(pkgVersion),
+    __BUILD_TIME__: JSON.stringify(buildTime),
+  },
   // Landing configuration lives in the repository-root `.env` (see
   // `.env.example`), so build-time values like the APK URL are shared
   // with the rest of the repository.

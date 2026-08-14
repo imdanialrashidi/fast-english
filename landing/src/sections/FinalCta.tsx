@@ -1,4 +1,4 @@
-import { webAppUrl } from '../lib/siteConfig';
+import { AppCta } from '../components/AppCta';
 
 export function FinalCta() {
   return (
@@ -16,14 +16,12 @@ export function FinalCta() {
             وارد وب‌اپ شوید.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href={webAppUrl}
-              rel="noopener noreferrer"
-              target="_blank"
+            <AppCta
+              place="final"
               className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
             >
               ورود به وب‌اپ
-            </a>
+            </AppCta>
             <a
               href="/sample"
               className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 min-h-12"

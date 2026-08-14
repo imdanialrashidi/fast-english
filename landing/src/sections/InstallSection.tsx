@@ -1,7 +1,9 @@
 import { ApkButton } from '../components/ApkButton';
-import { webAppUrl } from '../lib/siteConfig';
+import { AppCta } from '../components/AppCta';
+import { apkAvailable, apkState } from '../lib/siteConfig';
 
 export function InstallSection() {
+  const hasApk = apkAvailable(apkState);
   return (
     <section id="install" aria-labelledby="install-title" className="py-12 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -22,20 +24,24 @@ export function InstallSection() {
               <p className="text-sm text-white/85 leading-relaxed">
                 بدون نصب، در مرورگر موبایل یا دسکتاپ. همین حالا وارد شوید.
               </p>
-              <a
-                href={webAppUrl}
-                rel="noopener noreferrer"
-                target="_blank"
+              <AppCta
+                place="install"
                 className="mt-3 inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-11"
               >
                 باز کردن وب‌اپ
-              </a>
+              </AppCta>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5">
               <span className="block text-xs font-semibold text-white/60 mb-2">اندروید</span>
-              <p className="text-sm text-white/85 leading-relaxed">
-                دانلود مستقیم فایل APK فقط از همین وب‌سایت؛ نسخهٔ رسمی امضا شده.
-              </p>
+              {hasApk ? (
+                <p className="text-sm text-white/85 leading-relaxed">
+                  دانلود مستقیم فایل APK فقط از همین وب‌سایت؛ نسخهٔ رسمی امضا شده.
+                </p>
+              ) : (
+                <p className="text-sm text-white/85 leading-relaxed">
+                  نسخهٔ اندروید هنوز منتشر نشده است؛ به‌زودی از همین وب‌سایت ارائه می‌شود.
+                </p>
+              )}
               <span className="mt-3 inline-block">
                 <ApkButton />
               </span>

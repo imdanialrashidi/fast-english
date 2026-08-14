@@ -5,9 +5,15 @@
 // even before JavaScript loads.
 import { type ComponentType, StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
+import { initTelemetry } from './lib/telemetry';
 import './styles.css';
 
 export function mountApp(Page: ComponentType) {
+  // Attach the acquisition-telemetry sinks (ring buffer + optional
+  // beacon) before the first render so no click is ever lost. Never
+  // throws; a plain support-session buffer is all that exists by
+  // default (see docs/OBSERVABILITY.md).
+  initTelemetry();
   const container = document.getElementById('root');
   if (!container) {
     throw new Error('Root container #root is missing');
