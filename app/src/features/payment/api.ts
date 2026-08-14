@@ -17,6 +17,7 @@ import {
   receiptDownloadPath,
 } from './constants';
 import { toPaymentError } from './errors';
+import { normalizeLastFour } from './formatters';
 import { currentRequestResponseSchema, paymentDestinationSchema, planListSchema } from './schemas';
 import type {
   CreateRequestInput,
@@ -214,14 +215,6 @@ export async function createPaymentRequest(
   } catch (err) {
     throw toPaymentError(err);
   }
-}
-
-function normalizeLastFour(raw: string): string {
-  // Mirror the form-schema transform: latin digits only, no spaces.
-  return raw
-    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/\D/g, '');
 }
 
 /**

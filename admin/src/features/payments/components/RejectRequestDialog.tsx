@@ -131,7 +131,10 @@ export function RejectRequestDialog({
             <Stack sx={{ gap: 1.25 }}>
               <OperatorDetailRow label="کاربر" value={studentName || 'بدون نام'} />
               <OperatorDetailRow label="پلن" value={planName} />
-              <OperatorDetailRow label="مبلغ" value={formatToman(amountToman)} />
+              <OperatorDetailRow
+                label="مبلغ"
+                value={formatToman(amountToman, { suffix: 'تومان' })}
+              />
             </Stack>
           </Box>
 

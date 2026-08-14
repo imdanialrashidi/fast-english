@@ -123,7 +123,7 @@ export function OperatorRequestItem({ item, selected, onOpen }: Props) {
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
-              {formatToman(item.amountToman)}
+              {formatToman(item.amountToman, { suffix: 'تومان' })}
             </Typography>
           </Stack>
           {timeLine ? (
