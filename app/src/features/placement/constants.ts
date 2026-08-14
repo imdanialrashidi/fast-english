@@ -23,6 +23,7 @@ export const PLACEMENT_UNSAVED_WARNING = 'پاسخی که ذخیره نشده ا
 
 // P2-S2 Level-related constants
 
+// Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
 export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
 
 export type CefrLevel = (typeof CEFR_LEVELS)[number];

@@ -23,8 +23,9 @@
 // States: loading / switching / ready / error / no_entitlement / not_found.
 
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { extractApiError } from '../../../../../shared/lib/apiError';
 import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { layout, radius } from '../../../../../shared/ui/tokens';
@@ -196,9 +197,9 @@ export function LessonDetailRoute() {
         }
       } catch (err) {
         if (seqRef.current !== seq) return;
-        const errObj = err as { status?: number; data?: { code?: string; message?: string } };
-        const code = errObj?.data?.code ?? '';
-        const status = errObj?.status ?? 0;
+        const envelope = extractApiError(err);
+        const code = envelope.code ?? '';
+        const status = envelope.status ?? 0;
         if (status === 404) {
           setPhase('not_found');
           setErrorInfo({
@@ -292,6 +293,19 @@ export function LessonDetailRoute() {
     player.pause();
   }, [player]);
 
+  // Memoized pure derivations (plan 013). MUST live above the early
+  // returns so hook order stays stable across phase transitions
+  // (loading → ready → switching); inputs are stable payload refs, so
+  // player-context re-renders (~4x/s during playback) skip the work.
+  const cachedJacket = phase === 'switching' ? jacketForVariant(id, user?.id) : null;
+  const railLevels =
+    phase === 'switching'
+      ? (cachedJacket?.availableLevels ?? lesson?.availableLevels)
+      : lesson?.availableLevels;
+  const entries: EditionRailEntry[] = useMemo(() => buildEditionRail(railLevels), [railLevels]);
+  const transcript = phase === 'ready' ? (lesson?.variant?.transcript ?? '') : '';
+  const paragraphs = useMemo(() => splitParagraphs(transcript), [transcript]);
+
   if (phase === 'loading') {
     return (
       <PageContainer maxWidth="lg">
@@ -327,7 +341,6 @@ export function LessonDetailRoute() {
   // -----------------------------------------------------------------------
   // ready / switching — jacket stays; variant regions swap atomically.
   // -----------------------------------------------------------------------
-  const cachedJacket = phase === 'switching' ? jacketForVariant(id, user?.id) : null;
   const jacketEpisode =
     phase === 'switching'
       ? (cachedJacket?.episode ?? lesson?.episode ?? null)
@@ -336,11 +349,6 @@ export function LessonDetailRoute() {
     phase === 'switching'
       ? null // variant-dependent identity lines hide during the switch
       : (lesson?.variant ?? null);
-  const entries: EditionRailEntry[] = buildEditionRail(
-    phase === 'switching'
-      ? (cachedJacket?.availableLevels ?? lesson?.availableLevels)
-      : lesson?.availableLevels,
-  );
   const targetEntry = phase === 'switching' ? railEntryForVariant(entries, id) : null;
   const switchingNote =
     phase === 'switching' && targetEntry
@@ -351,7 +359,6 @@ export function LessonDetailRoute() {
   const recommendedLevel = String(lesson?.recommendedLevel ?? cachedJacket?.recommendedLevel ?? '');
 
   const summaryFa = phase === 'ready' ? (lesson?.variant?.summaryFa ?? '') : '';
-  const transcript = phase === 'ready' ? (lesson?.variant?.transcript ?? '') : '';
   const sessionTitle =
     (jacketEpisode?.titleFa?.trim() || jacketEpisode?.title || '').trim() ||
     productCopy.episode.entity;
@@ -649,7 +656,7 @@ export function LessonDetailRoute() {
                 data-testid="english-reading"
                 sx={{ maxWidth: layout.readingMaxWidth, width: '100%' }}
               >
-                {splitParagraphs(transcript).map((paragraph, i) => (
+                {paragraphs.map((paragraph, i) => (
                   <Typography
                     key={`${i}-${paragraph.slice(0, 24)}`}
                     variant="englishReading"

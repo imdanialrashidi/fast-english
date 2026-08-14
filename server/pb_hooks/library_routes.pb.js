@@ -46,6 +46,7 @@ routerAdd(
     var LESSONS_C = "lessons";
     var PROGRESS_C = "lesson_progress";
 
+    // Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
     var CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
     var MAX_QUERY_LEN = 60;
     var MAX_PAGE = 50;
@@ -56,21 +57,7 @@ routerAdd(
     // Inline rate limit (per user). The Library is a search surface
     // (debounced queries, filter changes), so the window is larger than
     // the lesson list route but still bounded: 120 requests / 5 min.
-    if (typeof globalThis.__fepLibraryList === "undefined") { globalThis.__fepLibraryList = {}; }
-    var RATE_WIN = globalThis.__fepLibraryList;
-    var RATE_MAX = 120;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     function normalizeLevel(lvl) {
       var s = typeof lvl === 'string' ? lvl : String(lvl || '');
@@ -203,7 +190,7 @@ routerAdd(
       var preferredLevel = pd.getPreferredLevel(student, recommendedLevel);
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepLibraryList"), uid, 120, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // -----------------------------------------------------------------
@@ -329,7 +316,9 @@ routerAdd(
 
       var progresses = [];
       try {
-        progresses = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "", 0, 0, { uid: uid });
+        // One ordered full scan feeds both the per-Variant progress map
+        // and the Continue rail (plan 012) — never fetch twice.
+        progresses = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "-last_played_at", 0, 0, { uid: uid });
       } catch (_) {}
       var progressByLesson = {};
       if (progresses && progresses.length > 0) {
@@ -502,10 +491,7 @@ routerAdd(
       //    activity first, capped at MAX_CONTINUE.
       // -----------------------------------------------------------------
       var continueListening = [];
-      var continueRows = [];
-      try {
-        continueRows = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "-last_played_at", 0, 0, { uid: uid });
-      } catch (_) {}
+      var continueRows = progresses; // already -last_played_at ordered (single fetch, plan 012)
       if (continueRows && continueRows.length > 0) {
         for (var cri = 0; cri < continueRows.length && continueListening.length < MAX_CONTINUE; cri++) {
           var cr = continueRows[cri];

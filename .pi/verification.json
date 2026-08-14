@@ -35,9 +35,17 @@
           "tests/safety-guard.test.mjs",
           "tests/launcher.test.mjs",
           "tests/secret-scan.test.mjs",
-          "tests/dev-persistence-contract.test.mjs"
+          "tests/dev-persistence-contract.test.mjs",
+          "tests/hook-rate-limit.test.mjs",
+          "tests/deploy-config.test.mjs",
+          "tests/cefr-consistency.test.mjs"
         ]
       ]
+    },
+    {
+      "id": "app-browser",
+      "include": ["app/src/features/**", "app/src/lib/**"],
+      "commands": [["bash", "scripts/verify-feature.sh", "all", "app"]]
     },
     {
       "id": "frontend-fast",
@@ -50,6 +58,7 @@
         "tsconfig.json",
         "vitest.config.ts"
       ],
+      "exclude": ["app/src/features/**", "app/src/lib/**"],
       "commands": [
         ["bash", "scripts/verify-fast.sh"]
       ]
@@ -78,7 +87,8 @@
         "scripts/playwright-fast.sh"
       ],
       "commands": [
-        ["bash", "scripts/playwright-fast.sh"]
+        ["bash", "scripts/playwright-fast.sh"],
+        ["npx", "biome", "check", "e2e/", "playwright.config.ts"]
       ]
     },
     {

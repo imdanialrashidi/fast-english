@@ -5,7 +5,7 @@
 // already in deps and used by `app/src/lib/schemas.ts`).
 
 import { z } from 'zod';
-import { toLatinDigits } from '../../lib/phone';
+import { normalizeLastFour } from '../../../../shared/lib/formatters';
 import { MAX_RECEIPT_BYTES } from './constants';
 
 // ----- Wire-level response schemas -----
@@ -78,7 +78,7 @@ const lastFourSchema = z
   .string()
   .trim()
   .max(16)
-  .transform((s) => toLatinDigits(s).replace(/\D/g, ''))
+  .transform((s) => normalizeLastFour(s))
   .refine((digits) => digits === '' || digits.length === 4, {
     message: 'چهار رقم آخر کارت مبدأ باید دقیقاً ۴ رقم باشد.',
   });

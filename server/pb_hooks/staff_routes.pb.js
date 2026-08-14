@@ -135,6 +135,19 @@ routerAdd(
       var pageItems = allHits.slice(startIdx, startIdx + perPage);
 
       // 8. Shape items
+      // Batch student lookups: one bulk fep_users fetch + byId map instead
+      // of a findRecordById per row (library_routes pattern).
+      var usersById = {};
+      try {
+        var allUsers = $app.findRecordsByFilter(USERS_COLLECTION, "1=1", "", 0, 0);
+        if (allUsers) {
+          for (var ui = 0; ui < allUsers.length; ui++) {
+            var uRec = allUsers[ui];
+            if (!uRec) continue;
+            usersById[String(uRec.id || "")] = uRec;
+          }
+        }
+      } catch (_) {}
       var items = [];
       for (var ii = 0; ii < pageItems.length; ii++) {
         var rec = pageItems[ii];
@@ -144,7 +157,7 @@ routerAdd(
         var maskedPhone = "";
         if (userId) {
           try {
-            var userRec = $app.findRecordById(USERS_COLLECTION, userId);
+            var userRec = usersById[userId];
             if (userRec) {
               studentName = String(userRec.get("name") || "");
               var rawPhone = String(userRec.get("phone") || "");
@@ -442,10 +455,7 @@ routerAdd(
 
     // Rate limit state. We check/create on globalThis inside the closure
     // so the state persists across invocations (per PB 0.39 JSVM pattern).
-    if (typeof globalThis.__fepApproveLimit === "undefined") { globalThis.__fepApproveLimit = {}; }
-    var RATE_WIN = globalThis.__fepApproveLimit;
-    var RATE_MAX = 10;
-    var RATE_MS = 10 * 60 * 1000;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     function opCheck(ev) {
       // Central Staff guard (guards.pb.js): Auth Collection must be
@@ -460,25 +470,10 @@ routerAdd(
       return null;
     }
 
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var k = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) k.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < k.length; wj++) b.push(k[wj]);
-      if (b.length >= RATE_MAX) {
-        var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1;
-        try { e.response.header().set("Retry-After", String(retry)); } catch (_) {}
-        return { status: 429, body: { code: "rate_limited", message: "Too many requests. Please try again later." } };
-      }
-      b.push(now);
-      return null;
-    }
-
     try {
       var authErr = opCheck(e);
       if (authErr) return e.json(authErr.status, authErr.body);
-      var rateErr = checkRate(String(e.auth.id || ""));
+      var rateErr = rl.checkRate(rl.window("__fepApproveLimit"), String(e.auth.id || ""), 10, 600000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
       var requestId = String(e.request.pathValue("requestId") || "");
       if (!requestId) return e.json(400, { code: "invalid_request", message: "Missing request ID." });
@@ -640,10 +635,7 @@ routerAdd(
     var STAFF_COLLECTION = "staff_admins";
     var SUBS_COLLECTION = "subscriptions";
 
-    if (typeof globalThis.__fepRejectLimit === "undefined") { globalThis.__fepRejectLimit = {}; }
-    var RATE_WIN = globalThis.__fepRejectLimit;
-    var RATE_MAX = 10;
-    var RATE_MS = 10 * 60 * 1000;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     function opCheck(ev) {
       // Central Staff guard (guards.pb.js): Auth Collection must be
@@ -658,26 +650,11 @@ routerAdd(
       return null;
     }
 
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var k = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) k.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < k.length; wj++) b.push(k[wj]);
-      if (b.length >= RATE_MAX) {
-        var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1;
-        try { e.response.header().set("Retry-After", String(retry)); } catch (_) {}
-        return { status: 429, body: { code: "rate_limited", message: "Too many requests." } };
-      }
-      b.push(now);
-      return null;
-    }
-
     try {
       var authErr = opCheck(e);
       if (authErr) return e.json(authErr.status, authErr.body);
 
-      var rateErr = checkRate(String(e.auth.id || ""));
+      var rateErr = rl.checkRate(rl.window("__fepRejectLimit"), String(e.auth.id || ""), 10, 600000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       var requestId = String(e.request.pathValue("requestId") || "");

@@ -106,10 +106,27 @@ export function sanitizeMessage(text: string): string {
     /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g,
     '[REDACTED_TOKEN]',
   );
-  // Iranian mobile numbers (ASCII digits; the UI copy uses Persian
-  // digits, which never match).
+  // Filesystem paths (server error text, dev-machine stacks, storage
+  // layout). Superset of the server sanitizer's PATH_PATTERNS
+  // (content_import_core.pb.js): /var/, /tmp/, /home/, storage/,
+  // pb_data, drive letters — plus the standard FHS prefixes, the
+  // production layout /opt/fast-english, and bare data/ relative paths.
+  // The tail stops at whitespace, quotes, angle brackets, parens or
+  // square brackets (stack-trace safe).
+  out = out.replace(
+    /(?:\/opt|\/var|\/tmp|\/home|\/usr|\/etc|\/root|\/srv|\/app)(?:\/[^\s"'<>()[\]]*)?|\b(?:pb_data|storage|data)\/[^\s"'<>()[\]]*|[A-Za-z]:\\[^\s"'<>()[\]]*/g,
+    '[REDACTED_PATH]',
+  );
+  // Iranian mobile numbers: compact ASCII, spaced/dashed ASCII, and
+  // Persian/Arabic-digit forms (error copy can carry any shape).
   out = out.replace(/(?:\+98|0098|0)9\d{9}\b/g, '[REDACTED_PHONE]');
+  out = out.replace(
+    /(?:\+98|0098|0)[\s-]*9[\s-]*\d{2}[\s-]*\d{3}[\s-]*\d{4}\b/g,
+    '[REDACTED_PHONE]',
+  );
+  out = out.replace(/[۰-۹٠-٩]{11}/g, '[REDACTED_PHONE]');
   // Emails.
+
   out = out.replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[REDACTED_EMAIL]');
   // Long random-looking strings that may be file tokens / nonces.
   out = out.replace(/\b[A-Za-z0-9_-]{40,}\b/g, '[REDACTED]');

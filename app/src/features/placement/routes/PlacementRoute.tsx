@@ -240,6 +240,11 @@ export function PlacementRoute() {
     } catch (err) {
       const mapped = mapPlacementError(err);
       if (mapped.code === 'placement_attempt_stale') {
+        // Recovery path: reload the attempt, then re-enable the submit
+        // gate so the student can review and submit again. Safe because
+        // the server's submit is idempotent and transactional (repeated
+        // submission returns the accepted result).
+        submitLockRef.current = false;
         await loadAttempt();
         return;
       }

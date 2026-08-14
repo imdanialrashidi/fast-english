@@ -303,4 +303,94 @@ test.describe('P2-S1 Placement E2E', () => {
     const resumeBody = resumeResp.body as { kind?: string };
     expect(resumeBody.kind).toBe('submitted');
   });
+
+  test('final submit recovers from a concurrent 409 (stale revision) without a dead-end lock', async ({
+    page,
+  }) => {
+    // Regression for the submit-lock dead-end: when the final submit hits
+    // placement_attempt_stale (attempt modified elsewhere), the app reloads
+    // the attempt and must re-enable the submit gate. With the bug, the
+    // second «تأیید و ثبت» silently no-ops forever (submitLockRef stuck).
+    const suToken = await getSuperuserToken();
+    const student = await createActiveStudent(suToken);
+
+    // Answer all 20 questions via API (attempt stays in_progress).
+    const startResp = await jsonFetch(`${PB_URL}/api/fast-english/placement/attempts/start`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${student.token}` },
+    });
+    expect(startResp.status).toBe(201);
+    const startBody = startResp.body as {
+      attempt?: { id: string; revision: number };
+      questions?: Array<{ id: string; options: Array<{ id: string }> }>;
+    };
+    const attemptId = startBody.attempt?.id;
+    const questions = startBody.questions || [];
+    expect(questions.length).toBe(20);
+    let rev = startBody.attempt?.revision as number;
+    for (const q of questions) {
+      const ans = await jsonFetch(
+        `${PB_URL}/api/fast-english/placement/attempts/${attemptId}/answer`,
+        {
+          method: 'PUT',
+          headers: { authorization: `Bearer ${student.token}` },
+          body: JSON.stringify({
+            questionId: q.id,
+            optionId: q.options[0]?.id,
+            expectedRevision: rev,
+          }),
+        },
+      );
+      expect(ans.ok).toBe(true);
+      rev = (ans.body as { attempt?: { revision: number } }).attempt?.revision || rev + 1;
+    }
+
+    // Login in the real browser; the active student without placement is
+    // redirected to /placement, which resumes the in_progress attempt.
+    await page.goto('/login');
+    await page.getByLabel('شمارهٔ موبایل').fill(student.phone);
+    await page.locator('input[name="password"]').fill(student.password);
+    await page.getByRole('button', { name: 'ورود' }).click();
+    await page.waitForURL('**/placement', { timeout: 10000 });
+
+    // Navigate to the last question and into the review screen.
+    await page.getByRole('button', { name: 'رفتن به سؤال 20' }).click();
+    await page.getByRole('button', { name: 'مرور' }).click();
+    await expect(page.getByRole('button', { name: 'ثبت نهایی' })).toBeVisible();
+    await page.getByRole('button', { name: 'ثبت نهایی' }).click();
+    await expect(page.getByRole('button', { name: 'تأیید و ثبت' })).toBeVisible();
+
+    // Concurrent modification: bump the revision server-side while the
+    // confirm dialog is open (simulating a second tab answering).
+    const staleAns = await jsonFetch(
+      `${PB_URL}/api/fast-english/placement/attempts/${attemptId}/answer`,
+      {
+        method: 'PUT',
+        headers: { authorization: `Bearer ${student.token}` },
+        body: JSON.stringify({
+          questionId: questions[0]?.id,
+          optionId: questions[0]?.options[0]?.id,
+          expectedRevision: rev,
+        }),
+      },
+    );
+    expect(staleAns.status).toBe(200);
+
+    // Submit — the server answers 409 placement_attempt_stale; the app
+    // reloads the attempt and returns to the question flow (no error
+    // dead-end).
+    await page.getByRole('button', { name: 'تأیید و ثبت' }).click();
+    await expect(page.getByText('خطا در ثبت نهایی')).toHaveCount(0, { timeout: 5000 });
+    await expect(page.getByRole('button', { name: 'رفتن به سؤال 20' })).toBeVisible({
+      timeout: 5000,
+    });
+
+    // Recovery: re-enter review and submit again. With the dead-end bug the
+    // gate stays locked and this click silently no-ops (no navigation).
+    await page.getByRole('button', { name: 'رفتن به سؤال 20' }).click();
+    await page.getByRole('button', { name: 'مرور' }).click();
+    await page.getByRole('button', { name: 'ثبت نهایی' }).click();
+    await page.getByRole('button', { name: 'تأیید و ثبت' }).click();
+    await page.waitForURL(/\/placement\/result/, { timeout: 10000 });
+  });
 });

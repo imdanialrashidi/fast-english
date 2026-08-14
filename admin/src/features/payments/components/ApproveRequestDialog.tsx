@@ -117,7 +117,10 @@ export function ApproveRequestDialog({
             <Stack sx={{ gap: 1.25 }}>
               <OperatorDetailRow label="کاربر" value={studentName || 'بدون نام'} />
               <OperatorDetailRow label="پلن" value={planName} />
-              <OperatorDetailRow label="مبلغ" value={formatToman(amountToman)} />
+              <OperatorDetailRow
+                label="مبلغ"
+                value={formatToman(amountToman, { suffix: 'تومان' })}
+              />
               <OperatorDetailRow label="مدت اشتراک" value={`${durationDays} روز`} />
               <OperatorDetailRow label="شناسهٔ درخواست" value={requestId} valueDir="ltr" />
               <OperatorDetailRow

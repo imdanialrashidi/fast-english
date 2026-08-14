@@ -17,6 +17,7 @@ import {
   getSuperuserToken,
   nextPhone,
   randomId,
+  seedPlacementQuestions,
 } from './smoke-common.mjs';
 
 const PORT = Number(process.env.PB_SMOKE_PLACEMENT_PORT ?? 18093);
@@ -132,6 +133,28 @@ async function getDefaultCategoryId(su) {
   if (!item) throw new Error('default category missing');
   defaultCategoryId = item.id;
   return defaultCategoryId;
+}
+
+async function uploadHeroImage(su, topicId) {
+  const boundary = `--FB${randomId()}`;
+  const parts = [
+    `--${boundary}\r\nContent-Disposition: form-data; name="hero_image_wide"; filename="hero.png"\r\nContent-Type: image/png\r\n\r\n`,
+    PNG_FIXTURE,
+    `\r\n--${boundary}--\r\n`,
+  ];
+  const buf = Buffer.concat(parts.map((p) => (typeof p === 'string' ? Buffer.from(p) : p)));
+  const res = await fetch(`${URL}/api/collections/topics/records/${topicId}`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${su}`,
+      'content-type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body: buf,
+    signal: AbortSignal.timeout(15_000),
+  });
+  const t = await res.text();
+  if (res.status !== 200) throw new Error(`hero upload: ${res.status} ${t.slice(0, 200)}`);
+  return JSON.parse(t);
 }
 
 async function uploadArtwork(su, topicId) {
@@ -360,33 +383,9 @@ async function makeFullStudent(su, level = 'B1') {
   });
   const refreshedToken = refresh.body?.token || token;
 
-  // Placement questions
-  for (let i = 0; i < 20; i++) {
-    await jf('/api/collections/placement_questions/records', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${su}` },
-      body: JSON.stringify({
-        question_key: `q${String(i).padStart(2, '0')}`,
-        version: 1,
-        position: i + 1,
-        prompt: `Q${i + 1}`,
-        options: [
-          { id: 'a', text: 'A' },
-          { id: 'b', text: 'B' },
-          { id: 'c', text: 'C' },
-          { id: 'd', text: 'D' },
-        ],
-        options_text: JSON.stringify([
-          { id: 'a', text: 'A' },
-          { id: 'b', text: 'B' },
-          { id: 'c', text: 'C' },
-          { id: 'd', text: 'D' },
-        ]),
-        correct_option_id: 'a',
-        is_active: true,
-      }),
-    });
-  }
+  // Placement questions (shared helper: q01..q20, opt0 correct —
+  // idempotent against the unique (question_key, version) index).
+  await seedPlacementQuestions(URL, su);
 
   // Complete placement
   const start = await jf('/api/fast-english/placement/attempts/start', {
@@ -595,12 +594,30 @@ async function main() {
   scenario('lesson created with audio', () => assert(!!lesson.id, 'no id'));
   const lessonId = lesson.id;
 
-  // Duplicate (topic, level) rejection
-  try {
-    await makeLesson(su, topicId, { level: 'B1', title: 'Dup' });
-    assert(false, 'dup allowed');
-  } catch {}
-  scenario('duplicate topic+level rejected', () => assert(true));
+  // Duplicate (topic, level) rejection. The create POST is called directly
+  // (makeLesson throws a bare Error that would swallow the status); a real
+  // rejection is the unique (topic, level) index answering 400 for an
+  // otherwise-valid draft create.
+  const dupRes = await jf('/api/collections/lessons/records', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({
+      topic: topicId,
+      level: 'B1',
+      title: 'Dup',
+      summary: 's',
+      body: 'b',
+      estimated_minutes: 10,
+      status: 'draft',
+    }),
+  });
+  scenario('duplicate topic+level rejected', () => {
+    assert(dupRes.status === 400, `expected 400, got ${dupRes.status}`);
+    assert(
+      !dupRes.body?.id,
+      `duplicate create must not return a record: ${JSON.stringify(dupRes.body).slice(0, 200)}`,
+    );
+  });
 
   // Draft topic
   const dt = await makeTopic(su, {
@@ -704,6 +721,75 @@ async function main() {
   );
   aScenario('detail Cache-Control: private, no-store', async () => {
     await assertCacheHeader(detail.headers, 'private, no-store');
+  });
+
+  // ==================================================================
+  // 2b. Hero artwork route (public, published-state gating only)
+  // ==================================================================
+  const heroTopic = await makeTopic(su, { keepDraft: true, sort_order: 2 });
+  await uploadHeroImage(su, heroTopic.id);
+  await uploadArtwork(su, heroTopic.id);
+  const heroPub = await jf(`/api/collections/topics/records/${heroTopic.id}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({
+      status: 'published',
+      category: await getDefaultCategoryId(su),
+      content_key: `fx-hero-${randomId()}`,
+      content_version: 1,
+      title_fa: 'عنوان اپیزود هیرو',
+      description_fa: 'توضیح اپیزود هیرو',
+    }),
+  });
+  if (heroPub.status !== 200)
+    throw new Error(
+      `hero topic publish: ${heroPub.status} ${JSON.stringify(heroPub.body).slice(0, 200)}`,
+    );
+  const heroLesson = await makeLesson(su, heroTopic.id, {
+    level: 'B1',
+    title: 'Hero B1',
+    audio_duration_seconds: 120,
+  });
+
+  const heroFetch = await fetch(`${URL}/api/fast-english/artwork/${heroLesson.id}/hero`, {
+    signal: AbortSignal.timeout(15_000),
+  });
+  const heroBytes = Buffer.from(await heroFetch.arrayBuffer());
+  aScenario('hero artwork serves the stored bytes (200, public cache)', async () => {
+    await assertHttp({ status: heroFetch.status, body: null }, 200, 'hero fetch');
+    assert(
+      heroBytes.equals(PNG_FIXTURE),
+      `hero bytes mismatch: got ${heroBytes.length}B expected ${PNG_FIXTURE.length}B`,
+    );
+    assert(
+      String(heroFetch.headers.get('content-type') || '').startsWith('image/png'),
+      `hero content-type=${heroFetch.headers.get('content-type')}`,
+    );
+    assert(
+      String(heroFetch.headers.get('cache-control') || '').includes('public'),
+      'hero route must be publicly cacheable',
+    );
+  });
+
+  const heroMissing = await fetch(`${URL}/api/fast-english/artwork/${lessonId}/hero`, {
+    signal: AbortSignal.timeout(15_000),
+  });
+  aScenario('hero artwork 404 when the Episode has no wide image', async () => {
+    await assertHttp({ status: heroMissing.status, body: null }, 404, 'hero missing');
+  });
+
+  const heroDraft = await makeTopic(su, { keepDraft: true, sort_order: 3 });
+  await uploadHeroImage(su, heroDraft.id);
+  const heroDraftLesson = await makeLesson(su, heroDraft.id, {
+    level: 'B1',
+    title: 'Hero draft',
+    status: 'draft',
+  });
+  const heroDraftFetch = await fetch(`${URL}/api/fast-english/artwork/${heroDraftLesson.id}/hero`, {
+    signal: AbortSignal.timeout(15_000),
+  });
+  aScenario('hero artwork 404 for unpublished content (published-state gating)', async () => {
+    await assertHttp({ status: heroDraftFetch.status, body: null }, 404, 'hero draft');
   });
 
   // ==================================================================

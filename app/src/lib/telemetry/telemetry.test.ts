@@ -84,9 +84,37 @@ describe('sanitizeMessage', () => {
     expect(out).toContain('[REDACTED_EMAIL]');
   });
 
-  it('keeps Persian-digit phone examples in copy untouched', () => {
-    const out = sanitizeMessage('مثلاً ۰۹۱۲۳۴۵۶۷۸۹');
-    expect(out).toContain('۰۹۱۲۳۴۵۶۷۸۹');
+  it('redacts Persian and Arabic-digit phone numbers (contract change per SEC-09)', () => {
+    // Previously "Persian digits never match" — that left real phones in
+    // error strings unredacted. The telemetry contract (file header) says
+    // phones never leave; the copy scanner keeps UI copy canonical anyway.
+    const out = sanitizeMessage('مثلاً ۰۹۱۲۳۴۵۶۷۸۹ یا ٠٩١٢٣٤٥٦٧٨٩');
+    expect(out).not.toContain('۰۹۱۲۳۴۵۶۷۸۹');
+    expect(out).not.toContain('٠٩١٢٣٤٥٦٧٨٩');
+    expect(out).toContain('[REDACTED_PHONE]');
+  });
+
+  it('redacts spaced and dashed Iranian mobile numbers', () => {
+    const out = sanitizeMessage('call +98 912 345 6789 or +98-912-345-6789 now');
+    expect(out).not.toMatch(/912|345|6789/);
+    expect(out).toContain('[REDACTED_PHONE]');
+  });
+
+  it('redacts filesystem paths (absolute, relative, Windows)', () => {
+    const out = sanitizeMessage(
+      'failed at /opt/fast-english/shared/pb_data/storage/abc/rec/file.png and /var/log/caddy/access.log and /tmp/fep-e2e-123/x and C:\\Users\\danial\\keys\\release.jks and pb_data/storage/x/y and data/foo/bar',
+    );
+    expect(out).not.toMatch(
+      /opt\/fast-english|var\/log|caddy\/access|tmp\/fep-e2e|pb_data|storage\/abc|release\.jks|data\/foo/,
+    );
+    expect(out).not.toMatch(/Users\\danial/);
+    expect(out).toContain('[REDACTED_PATH]');
+  });
+
+  it('does not over-redact ordinary numbers or the word storage', () => {
+    const out = sanitizeMessage('attempt 12345 with 3 retries; storage capacity ok');
+    expect(out).toContain('12345');
+    expect(out).toContain('storage capacity');
   });
 });
 

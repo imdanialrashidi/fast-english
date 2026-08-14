@@ -46,18 +46,9 @@ routerAdd(
     if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
 
     // Per-staff rate limit (plan is read-only; 30/min is generous).
-    if (typeof globalThis.__fepImportPlanRate === "undefined") { globalThis.__fepImportPlanRate = {}; }
-    var rateWindow = globalThis.__fepImportPlanRate;
-    var staffId = String(e.auth.id || "");
-    var nowMs = Date.now();
-    var bucket = rateWindow[staffId];
-    if (!bucket || !Array.isArray(bucket)) { bucket = []; rateWindow[staffId] = bucket; }
-    var keep = [];
-    for (var wi = 0; wi < bucket.length; wi++) { if (bucket[wi] > nowMs - 300000) keep.push(bucket[wi]); }
-    bucket.length = 0;
-    for (var wj = 0; wj < keep.length; wj++) bucket.push(keep[wj]);
-    if (bucket.length >= 30) return e.json(429, { code: "rate_limited", message: "Too many requests." });
-    bucket.push(nowMs);
+    var rlP = require(__hooks + '/rate_limit.pb.js');
+    var rateErrP = rlP.checkRate(rlP.window("__fepImportPlanRate"), String(e.auth.id || ""), 30, 300000);
+    if (rateErrP) return e.json(rateErrP.status, rateErrP.body);
 
     function loadContentState(app, contentKey, categoryKey) {
       var episode = null;
@@ -320,18 +311,9 @@ routerAdd(
 
     // Per-staff rate limit (execute is a heavy write; 30/min is still a
     // tight bound for a staff-only administrative operation).
-    if (typeof globalThis.__fepImportExecRate === "undefined") { globalThis.__fepImportExecRate = {}; }
-    var rateWindow = globalThis.__fepImportExecRate;
-    var staffId = String(e.auth.id || "");
-    var nowMs0 = Date.now();
-    var bucket = rateWindow[staffId];
-    if (!bucket || !Array.isArray(bucket)) { bucket = []; rateWindow[staffId] = bucket; }
-    var keep = [];
-    for (var wi = 0; wi < bucket.length; wi++) { if (bucket[wi] > nowMs0 - 300000) keep.push(bucket[wi]); }
-    bucket.length = 0;
-    for (var wj = 0; wj < keep.length; wj++) bucket.push(keep[wj]);
-    if (bucket.length >= 30) return e.json(429, { code: "rate_limited", message: "Too many requests." });
-    bucket.push(nowMs0);
+    var rlE = require(__hooks + '/rate_limit.pb.js');
+    var rateErrE = rlE.checkRate(rlE.window("__fepImportExecRate"), String(e.auth.id || ""), 30, 300000);
+    if (rateErrE) return e.json(rateErrE.status, rateErrE.body);
 
     // --- Helpers (inlined: PB 0.39 JSVM handlers cannot see top-level) ---
     function failAudit(app, auditRecord, errorDiags) {

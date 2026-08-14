@@ -32,6 +32,7 @@ import {
   getSuperuserToken,
   nextPhone,
   randomId,
+  seedPlacementQuestions,
 } from './smoke-common.mjs';
 
 // Bind the shared stateless helpers to this suite's PocketBase URL.
@@ -146,93 +147,6 @@ async function renewOverlapUser(suToken, userId, token) {
   return { first, second };
 }
 
-async function seedQuestions(suToken) {
-  const prompts = [
-    'She ___ to school.',
-    'They ___ football.',
-    'I saw ___ elephant.',
-    'Cat is ___ the table.',
-    'What says woof?',
-    'Yesterday I ___ a movie.',
-    'She ___ visit tomorrow.',
-    'Which is a fruit?',
-    '___ is my friend.',
-    'How many children?',
-    'Sky is?',
-    'This is ___ book.',
-    'She runs ___.',
-    'Smell with?',
-    '___ do you live?',
-    'I ___ like coffee.',
-    'Wear on feet?',
-    'This is ___ than that.',
-    'Sleep in a ___.',
-    'You ___ brush teeth.',
-  ];
-  const opts = [
-    ['go', 'goes', 'going', 'went'],
-    ['plays', 'play', 'playing', 'played'],
-    ['a', 'an', 'the', '---'],
-    ['on', 'in', 'at', 'under'],
-    ['Cat', 'Dog', 'Cow', 'Sheep'],
-    ['watch', 'watched', 'watching', 'watches'],
-    ['will', 'is', 'does', 'has'],
-    ['Carrot', 'Apple', 'Bread', 'Cheese'],
-    ['He', 'Him', 'His', 'Her'],
-    ['child', 'childs', 'children', 'childrens'],
-    ['Red', 'Green', 'Blue', 'Yellow'],
-    ['interest', 'interested', 'interesting', 'interests'],
-    ['quick', 'quickly', 'quicker', 'quickness'],
-    ['Eyes', 'Ears', 'Nose', 'Hands'],
-    ['Where', 'What', 'Who', 'Why'],
-    ['dont', 'doesnt', 'isnt', 'arent'],
-    ['Hat', 'Gloves', 'Shoes', 'Scarf'],
-    ['good', 'better', 'best', 'well'],
-    ['Kitchen', 'Bedroom', 'Bathroom', 'Garage'],
-    ['must', 'can', 'might', 'will'],
-  ];
-  const correct = [
-    'b',
-    'b',
-    'b',
-    'd',
-    'b',
-    'b',
-    'a',
-    'b',
-    'a',
-    'c',
-    'c',
-    'c',
-    'b',
-    'c',
-    'a',
-    'a',
-    'c',
-    'b',
-    'b',
-    'a',
-  ];
-
-  for (let i = 0; i < 20; i++) {
-    const optArr = opts[i].map((t, j) => ({ id: String.fromCharCode(97 + j), text: t }));
-    await jsonFetch('/api/collections/placement_questions/records', {
-      method: 'POST',
-      headers: { authorization: suToken },
-      body: JSON.stringify({
-        question_key: `q${String(i).padStart(2, '0')}`,
-        version: 1,
-        position: i + 1,
-        prompt: prompts[i],
-        options: optArr,
-        options_text: JSON.stringify(optArr),
-        correct_option_id: correct[i],
-        is_active: true,
-      }),
-    });
-  }
-}
-
 // ---- Main ----
 
 async function main() {
@@ -331,7 +245,7 @@ async function main() {
   check(!!activeToken, 'S9: active student created');
 
   // Seed questions
-  await seedQuestions(suToken);
+  await seedPlacementQuestions(URL, suToken);
   const qCheck = await jsonFetch('/api/collections/placement_questions/records', {
     headers: { authorization: suToken },
   });
@@ -411,6 +325,17 @@ async function main() {
       r30.status === 409 && r30.body?.code === 'placement_attempt_stale',
       `S30: stale (${r30.status})`,
     );
+
+    // S30b: error bodies never echo raw exception text — mapped branches
+    // return fixed safe messages (the 500 fallback is a constant
+    // "Internal error." verified by grep in the hooks).
+    const leakPatterns = ['Error', 'sql', 'query', 'column', 'undefined', 'UNIQUE', 'stack'];
+    for (const errRes of [r27, r28, r30]) {
+      const msg = String(errRes.body?.message || '');
+      for (const lp of leakPatterns) {
+        check(!msg.includes(lp), `S30b: no raw text in ${errRes.status} body (${lp})`);
+      }
+    }
 
     // S22: Resume
     const r22 = await jsonFetch('/api/fast-english/placement/attempts/start', {

@@ -24,6 +24,7 @@
 //      single source of truth for the newest un-sent position.
 
 import { useCallback, useEffect, useRef } from 'react';
+import { extractApiError } from '../../../../shared/lib/apiError';
 import { FUNNEL_EVENTS, shouldFireMilestone, trackFunnel } from '../../lib/telemetry';
 import * as progressApi from './api';
 import type { LessonProgressResponse } from './types';
@@ -205,8 +206,7 @@ export function useProgressSave({
         return true;
       } catch (err: unknown) {
         writeInFlightRef.current = false;
-        const errObj = err as { status?: number; data?: { code?: string } };
-        if (errObj?.status === 409) {
+        if (extractApiError(err).status === 409) {
           // Stale revision — reload authoritative progress and retry the
           // newest pending position (falling back to the failed one).
           try {

@@ -5,6 +5,7 @@
 
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+import { extractApiError } from '../../../../../shared/lib/apiError';
 import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { PageHeader } from '../../../../../shared/ui/PageHeader';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
@@ -60,19 +61,19 @@ export function LessonsRoute() {
 
       setPhase('ready');
     } catch (err) {
-      const errObj = err as { status?: number; data?: { code?: string; message?: string } };
-      const code = errObj?.data?.code ?? '';
+      const envelope = extractApiError(err);
+      const code = envelope.code ?? '';
       if (code === 'subscription_required' || code === 'account_suspended') {
         setPhase('no_entitlement');
         setErrorInfo({
           title: 'دسترسی محدود',
-          description: errObj?.data?.message || 'اشتراک فعالی ندارید.',
+          description: envelope.message || 'اشتراک فعالی ندارید.',
         });
       } else {
         setPhase('error');
         setErrorInfo({
           title: 'خطا در بارگذاری درس‌ها',
-          description: errObj?.data?.message || 'خطایی رخ داد.',
+          description: envelope.message || 'خطایی رخ داد.',
           retry: true,
         });
       }

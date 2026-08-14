@@ -53,6 +53,7 @@ import {
   getSuperuserToken,
   nextPhone,
   randomId,
+  seedPlacementQuestions,
 } from './smoke-common.mjs';
 
 const URL = process.env.PB_SMOKE_URL;
@@ -360,32 +361,9 @@ async function makeFullStudent(su, level = 'B1') {
   });
   const refreshedToken = refresh.body?.token || token;
 
-  for (let i = 0; i < 20; i++) {
-    await jf('/api/collections/placement_questions/records', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${su}` },
-      body: JSON.stringify({
-        question_key: `q${String(i).padStart(2, '0')}`,
-        version: 1,
-        position: i + 1,
-        prompt: `Q${i + 1}`,
-        options: [
-          { id: 'a', text: 'A' },
-          { id: 'b', text: 'B' },
-          { id: 'c', text: 'C' },
-          { id: 'd', text: 'D' },
-        ],
-        options_text: JSON.stringify([
-          { id: 'a', text: 'A' },
-          { id: 'b', text: 'B' },
-          { id: 'c', text: 'C' },
-          { id: 'd', text: 'D' },
-        ]),
-        correct_option_id: 'a',
-        is_active: true,
-      }),
-    });
-  }
+  // Placement questions (shared helper: q01..q20, opt0 correct —
+  // idempotent against the unique (question_key, version) index).
+  await seedPlacementQuestions(URL, su);
 
   const start = await jf('/api/fast-english/placement/attempts/start', {
     method: 'POST',

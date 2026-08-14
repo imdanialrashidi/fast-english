@@ -73,7 +73,7 @@ export function OperatorRequestHistory({ detail }: { detail: RequestDetail }) {
         ) : null}
         {detail.status === 'rejected' ? (
           <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-            مبلغ درخواست: {formatToman(detail.amountToman)}
+            مبلغ درخواست: {formatToman(detail.amountToman, { suffix: 'تومان' })}
           </Typography>
         ) : null}
       </Stack>

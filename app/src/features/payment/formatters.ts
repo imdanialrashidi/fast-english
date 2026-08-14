@@ -1,54 +1,14 @@
 // app/src/features/payment/formatters.ts
 // Pure formatting helpers for the payment feature. No React, no
 // network. Safe to import from tests.
+//
+// Digit conversion, last-four normalization, and Toman formatting
+// live in shared/lib/formatters (single home); the feature keeps its
+// display helpers that are payment-specific.
 
-import { toLatinDigits } from '../../lib/phone';
+import { normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
 
-// Persian digits — used when displaying numbers inside the RTL shell.
-const PERSIAN_DIGITS: readonly string[] = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-
-function toPersianDigits(input: string | number | null | undefined): string {
-  if (input === null || input === undefined) return '';
-  const s = String(input);
-  let out = '';
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (ch >= '0' && ch <= '9') {
-      out += PERSIAN_DIGITS[Number(ch)];
-    } else {
-      out += ch;
-    }
-  }
-  return out;
-}
-
-/**
- * Format a non-negative integer price in Toman with Persian digits
- * and a thousands separator. Returns the input as-is if it is not a
- * finite number — never throws.
- *
- * @example formatToman(1234567) === '۱٬۲۳۴٬۵۶۷'
- */
-export function formatToman(value: number | null | undefined): string {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
-    return '';
-  }
-  // Math.trunc to keep integer-only formatting; the server returns
-  // a non-negative integer per the PB schema. We use the Persian
-  // locale so the thousands separator is U+066C (Arabic comma) and
-  // the digits are already Persian, no second pass needed.
-  const n = Math.trunc(value);
-  return n.toLocaleString('fa-IR');
-}
-
-/**
- * Normalize any user-typed string to four Latin digits (or empty).
- * Used by the form to validate the sender-card-last-4 input.
- */
-export function normalizeLastFour(raw: string | null | undefined): string {
-  if (typeof raw !== 'string') return '';
-  return toLatinDigits(raw).replace(/\D/g, '');
-}
+export { formatToman, normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
 
 /**
  * Display a last-four value as four Persian digits. Falls back to an

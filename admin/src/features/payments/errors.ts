@@ -5,6 +5,7 @@
 // the UI. An optional `requestId` is carried as a support code and may only
 // be rendered inside safe error-details surfaces.
 
+import { extractApiError } from '../../../../shared/lib/apiError';
 import { ApiError } from './api';
 
 export class OperatorError extends Error {
@@ -81,21 +82,11 @@ function extract(err: unknown): Extracted {
   if (err instanceof ApiError) {
     return { status: err.status, code: err.code ?? '' };
   }
-  if (!err || typeof err !== 'object') return { status: 500, code: '' };
-  const e = err as Record<string, unknown> & {
-    response?: { status?: number; data?: { code?: string } };
-    status?: number;
-    code?: string;
-    cause?: { code?: string };
-  };
-  let status = 500;
-  const resp = e.response;
-  if (typeof e.status === 'number') status = e.status;
-  else if (resp && typeof resp === 'object' && typeof resp.status === 'number') {
-    status = resp.status;
-  }
-  const code = String(resp?.data?.code ?? (e.code as string) ?? (e.cause?.code as string) ?? '');
-  return { status, code };
+  // Shared envelope normalization (shared/lib/apiError.ts) — the admin
+  // fetch layer throws ApiError (handled above); anything else that
+  // reaches this mapper reads through the same envelope as the app.
+  const envelope = extractApiError(err);
+  return { status: envelope.status ?? 500, code: envelope.code ?? '' };
 }
 
 function isNetworkError(err: unknown): boolean {

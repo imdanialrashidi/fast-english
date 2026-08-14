@@ -314,7 +314,10 @@ export function OperatorRequestDetail({
         <SectionCard title="انتظار پرداخت">
           <Stack sx={{ gap: 1.25 }}>
             <OperatorDetailRow label="پلن" value={detail.planName} />
-            <OperatorDetailRow label="مبلغ مورد انتظار" value={formatToman(detail.amountToman)} />
+            <OperatorDetailRow
+              label="مبلغ مورد انتظار"
+              value={formatToman(detail.amountToman, { suffix: 'تومان' })}
+            />
             <OperatorDetailRow label="مدت" value={`${detail.durationDays} روز`} />
             {detail.bankReference ? (
               <OperatorDetailRow label="مرجع بانکی" value={detail.bankReference} valueDir="ltr" />

@@ -1,5 +1,10 @@
 // admin/src/features/payments/formatters.ts
 // P1-S2 — Formatters for the operator view.
+// Toman formatting lives in shared/lib/formatters; the admin call
+// sites pass the unit label via the shared `suffix` option so the
+// operator screens keep rendering «تومان» exactly as before.
+
+export { formatToman } from '../../../../shared/lib/formatters';
 
 export function formatAge(seconds: number): string {
   if (seconds < 60) return `${seconds} ثانیه`;
@@ -10,14 +15,6 @@ export function formatAge(seconds: number): string {
   if (hours < 24) return `${hours} ساعت و ${remainingMinutes} دقیقه`;
   const days = Math.floor(hours / 24);
   return `${days} روز`;
-}
-
-export function formatToman(amount: number): string {
-  try {
-    return `${new Intl.NumberFormat('fa-IR').format(amount)} تومان`;
-  } catch {
-    return `${amount} تومان`;
-  }
 }
 
 export function formatDateTime(iso: string | null | undefined): string {

@@ -8,6 +8,10 @@
 //
 // P3-S2 Closure changes:
 //   - PUT accepts only { positionSeconds, expectedRevision }.
+//   - positionSeconds 0 is rejected with 400 invalid_position on create
+//     AND update (PB required NumberFields reject 0 on save; 0 means
+//     "not started" and is never stored). On update, a stale revision
+//     (409) is reported before the 0 rejection.
 //   - Duration is always server-authoritative (from Lesson.audio_duration_seconds).
 //   - All mutations run inside $app.runInTransaction.
 //   - Strict numeric validation (rejects null, strings, booleans, arrays, objects).
@@ -37,23 +41,7 @@ routerAdd(
     var TOPICS_C = "topics";
     var SUBS_C = "subscriptions";
     var PROGRESS_C = "lesson_progress";
-
-    // Inline rate limit
-    if (typeof globalThis.__fepProgRead === "undefined") { globalThis.__fepProgRead = {}; }
-    var RATE_WIN = globalThis.__fepProgRead;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       // Full entitlement check (inlined)
@@ -123,7 +111,7 @@ routerAdd(
       if (!lessonId) return e.json(400, { code: "invalid_request", message: "Missing lessonId." });
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepProgRead"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Load lesson and verify published (cross-level: no level equality
@@ -252,23 +240,7 @@ routerAdd(
     var PROGRESS_C = "lesson_progress";
     var COMPLETION_THRESHOLD = 0.9; // 90%
     var POSITION_TOLERANCE = 2; // seconds — clamp minor floating-point overshoot
-
-    // Inline rate limit
-    if (typeof globalThis.__fepProgWrite === "undefined") { globalThis.__fepProgWrite = {}; }
-    var RATE_WIN = globalThis.__fepProgWrite;
-    var RATE_MAX = 60;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       // Parse lessonId
@@ -408,7 +380,7 @@ routerAdd(
           }
 
           // Rate limit
-          var rateErr = checkRate(uid);
+          var rateErr = rl.checkRate(rl.window("__fepProgWrite"), uid, 60, 300000);
           if (rateErr) {
             throw { httpStatus: rateErr.status, code: rateErr.body.code, message: rateErr.body.message };
           }
@@ -477,6 +449,13 @@ routerAdd(
 
           if (!existing) {
             // ---- CREATE new progress record ----
+            // PB 0.39 required NumberFields reject 0 ("blank") on save — a
+            // progress record can never store position 0. Answer with the
+            // contract code instead of an opaque 500; the client treats
+            // position 0 as "not started" and never needs to store it.
+            if (positionSeconds === 0) {
+              throw { httpStatus: 400, code: "invalid_position", message: "positionSeconds must be greater than 0." };
+            }
             // Use the transaction-owned collection
             var progCol = $app.findCollectionByNameOrId(PROGRESS_C);
             var newRec = new Record(progCol);
@@ -543,6 +522,14 @@ routerAdd(
           if (expectedRevision !== currentRevision) {
             throw { httpStatus: 409, code: "stale_revision", message: "Progress was updated by another session. Reload and retry.",
                     expectedRevision: expectedRevision, currentRevision: currentRevision };
+          }
+
+          // PB 0.39 required NumberFields reject 0 ("blank") on save — an
+          // existing record cannot be reset to 0 either. The stale check
+          // above wins so a stale 0:00 save surfaces as a recoverable 409,
+          // not a 400.
+          if (positionSeconds === 0) {
+            throw { httpStatus: 400, code: "invalid_position", message: "positionSeconds must be greater than 0." };
           }
 
           // 8. Calculate position, furthest, completion, timestamps
@@ -648,21 +635,7 @@ routerAdd(
     var SUBS_C = "subscriptions";
     var PROGRESS_C = "lesson_progress";
 
-    if (typeof globalThis.__fepProgSummary === "undefined") { globalThis.__fepProgSummary = {}; }
-    var RATE_WIN = globalThis.__fepProgSummary;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       // Full entitlement check
@@ -727,7 +700,7 @@ routerAdd(
       if (entitlementErr) return e.json(entitlementErr.status, entitlementErr.body);
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepProgSummary"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Count published lessons for this level with published topics AND
@@ -737,8 +710,28 @@ routerAdd(
       try {
         allLessons = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "-published_at", 0, 0, { lvl: selLvl });
       } catch (_) {}
-      var pdSum = null;
-      try { pdSum = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdSum = null; }
+      // Batch topic/category lookups (library_routes pattern): two bulk
+      // queries instead of per-lesson findRecordById calls.
+      var sumTopics = [];
+      try { sumTopics = $app.findRecordsByFilter(TOPICS_C, "status = 'published'", "", 0, 0); } catch (_) {}
+      var sumTopicById = {};
+      if (sumTopics && sumTopics.length > 0) {
+        for (var sti2 = 0; sti2 < sumTopics.length; sti2++) {
+          var st2 = sumTopics[sti2];
+          if (!st2) continue;
+          sumTopicById[String(st2.id || "")] = st2;
+        }
+      }
+      var sumCats = [];
+      try { sumCats = $app.findRecordsByFilter("categories", "publication_status = 'published'", "", 0, 0); } catch (_) {}
+      var sumCatById = {};
+      if (sumCats && sumCats.length > 0) {
+        for (var sci2 = 0; sci2 < sumCats.length; sci2++) {
+          var sc2 = sumCats[sci2];
+          if (!sc2) continue;
+          sumCatById[String(sc2.id || "")] = sc2;
+        }
+      }
       var publishedCount = 0;
       var totalDurationSeconds = 0;
       if (allLessons && allLessons.length > 0) {
@@ -750,10 +743,10 @@ routerAdd(
           var tPub = false;
           if (tId) {
             try {
-              var tRec = $app.findRecordById(TOPICS_C, tId);
-              if (tRec && tRec.get("status") === "published" && pdSum) {
-                var catS2 = pdSum.requirePublishedCategory($app, tRec.get("category"));
-                if (catS2.ok) tPub = true;
+              var tRec = sumTopicById[tId];
+              if (tRec && tRec.get("status") === "published") {
+                var catIdS = String(tRec.get("category") || "");
+                if (catIdS && sumCatById[catIdS]) tPub = true;
               }
             } catch (_) {}
           }
@@ -848,21 +841,7 @@ routerAdd(
     var PROGRESS_C = "lesson_progress";
     var COMPLETION_THRESHOLD = 0.9;
 
-    if (typeof globalThis.__fepProgCont === "undefined") { globalThis.__fepProgCont = {}; }
-    var RATE_WIN = globalThis.__fepProgCont;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       // Full entitlement check (inlined)
@@ -927,7 +906,7 @@ routerAdd(
       if (entitlementErr) return e.json(entitlementErr.status, entitlementErr.body);
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepProgCont"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Get all published lessons for this level (with published topics
@@ -937,8 +916,28 @@ routerAdd(
         allLessons = $app.findRecordsByFilter(LESSONS_C, "level = {:lvl} && status = 'published'", "-published_at", 0, 0, { lvl: selLvl });
       } catch (_) {}
 
-      var pdCont = null;
-      try { pdCont = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pdCont = null; }
+      // Batch topic/category lookups (library_routes pattern): two bulk
+      // queries instead of per-lesson findRecordById calls.
+      var contTopics = [];
+      try { contTopics = $app.findRecordsByFilter(TOPICS_C, "status = 'published'", "", 0, 0); } catch (_) {}
+      var contTopicById = {};
+      if (contTopics && contTopics.length > 0) {
+        for (var cti = 0; cti < contTopics.length; cti++) {
+          var ct = contTopics[cti];
+          if (!ct) continue;
+          contTopicById[String(ct.id || "")] = ct;
+        }
+      }
+      var contCats = [];
+      try { contCats = $app.findRecordsByFilter("categories", "publication_status = 'published'", "", 0, 0); } catch (_) {}
+      var contCatById = {};
+      if (contCats && contCats.length > 0) {
+        for (var cci = 0; cci < contCats.length; cci++) {
+          var cc = contCats[cci];
+          if (!cc) continue;
+          contCatById[String(cc.id || "")] = cc;
+        }
+      }
       var validLessons = [];
       if (allLessons && allLessons.length > 0) {
         for (var li = 0; li < allLessons.length; li++) {
@@ -949,10 +948,10 @@ routerAdd(
           var tPub = false;
           if (tId) {
             try {
-              var tRec = $app.findRecordById(TOPICS_C, tId);
-              if (tRec && tRec.get("status") === "published" && pdCont) {
-                var catC2 = pdCont.requirePublishedCategory($app, tRec.get("category"));
-                if (catC2.ok) tPub = true;
+              var tRec = contTopicById[tId];
+              if (tRec && tRec.get("status") === "published") {
+                var catIdC = String(tRec.get("category") || "");
+                if (catIdC && contCatById[catIdC]) tPub = true;
               }
             } catch (_) {}
           }
@@ -1043,7 +1042,10 @@ routerAdd(
         var topicSlug = "";
         if (topicId2) {
           try {
-            var tRec2 = $app.findRecordById(TOPICS_C, topicId2);
+            // The topic is guaranteed published (bestLesson came from the
+            // published-filtered validLessons built above), so read it from
+            // the bulk map instead of a per-item query.
+            var tRec2 = contTopicById[topicId2];
             if (tRec2) {
               topicTitle = String(tRec2.get("title") || "");
               topicSlug = String(tRec2.get("slug") || "");

@@ -2,6 +2,8 @@
 // Map PocketBase / network errors to safe Persian messages. Never
 // surfaces internal fields, collection rules, or server paths.
 
+import { extractApiError } from '../../../shared/lib/apiError';
+
 const PERSIAN_MESSAGES: Record<string, string> = {
   invalid_phone: 'شمارهٔ موبایل معتبر نیست.',
   duplicate_phone: 'این شمارهٔ موبایل قبلاً ثبت شده است.',
@@ -32,25 +34,13 @@ function extractPocketBaseError(err: unknown): {
   code?: string;
   message?: string;
 } {
-  if (!err || typeof err !== 'object') return { status: 500 };
-  const e = err as Record<string, unknown> & {
-    response?: { status: number; data?: unknown };
-    status?: number;
-    code?: string;
-    message?: string;
-  };
-  if (e.response && typeof e.response === 'object') {
-    const data = e.response.data as Record<string, unknown> | undefined;
-    return {
-      status: e.response.status,
-      code: (data?.code as string) ?? e.code ?? undefined,
-      message: (data?.message as string) ?? e.message ?? undefined,
-    };
-  }
+  // Shared envelope normalization (shared/lib/apiError.ts) — same
+  // { status, data/response/body } family as the payment mapper.
+  const envelope = extractApiError(err);
   return {
-    status: (e.status as number) ?? 500,
-    code: (e.code as string) ?? undefined,
-    message: (e.message as string) ?? undefined,
+    status: envelope.status ?? 500,
+    code: envelope.code ?? undefined,
+    message: envelope.message ?? undefined,
   };
 }
 

@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { extractApiError } from '../../../../../shared/lib/apiError';
 import { useAuth } from '../../../lib/auth';
 import { getDashboard } from '../../placement/api';
 import { formatPersianDateTime } from '../formatters';
@@ -51,23 +52,9 @@ export function resolveApprovedCta(
 }
 
 function mapDashboardErrorCode(err: unknown): string | null {
-  if (!err || typeof err !== 'object') return null;
-  const e = err as {
-    response?: { data?: { code?: string }; code?: string };
-    code?: string;
-    cause?: { code?: string; data?: { code?: string } };
-  };
-  // The PB SDK puts the parsed body directly on `response` (custom
-  // routes send { code, message }); the raw-fetch wrapper nests it
-  // under `response.data`. Read both, then fall back to cause.
-  const code =
-    e.response?.code ??
-    e.response?.data?.code ??
-    e.code ??
-    e.cause?.code ??
-    e.cause?.data?.code ??
-    null;
-  return typeof code === 'string' ? code : null;
+  // Shared envelope normalization — one read for all error shapes.
+  const code = extractApiError(err).code || null;
+  return code;
 }
 
 export function PaymentApprovedPanel({ request }: { request: PaymentRequest }) {

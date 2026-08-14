@@ -233,7 +233,11 @@ node -e "
   const sw = fs.readFileSync('dist-app/sw.js', 'utf8');
   const urls = [...sw.matchAll(/\"url\":\"([^\"]+)\"/g)].map((m) => m[1]);
   if (urls.length === 0) { console.error('no precache entries found in dist-app/sw.js'); process.exit(1); }
-  const bad = urls.filter((u) => u.startsWith('api/') || u.startsWith('files/') || /token/i.test(u));
+  // Query-precise, matching the Service Worker's own isProtectedUrl guard:
+  // protected URLs are /api or /files paths, or URLs carrying a token=
+  // query parameter. A public chunk whose NAME contains \"tokens\" (the
+  // post-split tokens-*.js module) is NOT protected and must not fail here.
+  const bad = urls.filter((u) => u.startsWith('api/') || u.startsWith('files/') || /(^|[?&])token=/.test(u));
   if (bad.length > 0) { console.error('protected URL found in the Service Worker precache:', bad); process.exit(1); }
   console.log('precache manifest clean: ' + urls.length + ' public App-shell entries, no protected URLs');
 "
@@ -271,11 +275,15 @@ run bash deploy/test-process-args-redaction.sh
 
 # 23. P4-S3 — Caddy access-log token-redaction proof. Requires a local caddy
 #     binary; the release server runs this drill unconditionally (see
-#     deploy/README.md), CI/local runs include it whenever caddy is present.
+#     deploy/README.md). CI provisions caddy and sets FEP_REQUIRE_CADDY=1 so
+#     the canonical gate cannot silently skip the proof.
 if command -v caddy >/dev/null 2>&1; then
   run bash deploy/test-log-redaction.sh
+elif [ "${FEP_REQUIRE_CADDY:-0}" = "1" ]; then
+  echo 'ERROR: FEP_REQUIRE_CADDY=1 but caddy binary not found — access-log redaction drill REQUIRED' >&2
+  exit 1
 else
-  echo 'caddy binary not found — skipping the access-log redaction drill (release gate runs it)'
+  echo 'caddy binary not found — skipping the access-log redaction drill locally (CI/release run it; set FEP_REQUIRE_CADDY=1 to demand it)'
 fi
 
 printf '\nAll project verification checks passed.\n'

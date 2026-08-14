@@ -11,6 +11,7 @@ export const cefr = {
 } as const;
 
 export type CefrLevel = keyof typeof cefr;
+// Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
 export const cefrLevels: readonly CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 export type ColorScheme = 'light' | 'dark';

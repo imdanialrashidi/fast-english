@@ -35,10 +35,7 @@ routerAdd(
     var TOTAL_Q = 20;
 
     // Rate-limit state
-    if (typeof globalThis.__fepPlStart === "undefined") { globalThis.__fepPlStart = {}; }
-    var RATE_WIN = globalThis.__fepPlStart;
-    var RATE_MAX = 10;
-    var RATE_MS = 300000;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     // --- Inline helpers ---
 
@@ -74,17 +71,6 @@ routerAdd(
         }
       } catch (_) {}
       if (!hasValid) { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
-      return null;
-    }
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
       return null;
     }
 
@@ -147,7 +133,7 @@ routerAdd(
       var authErr = checkEligibility(e);
       if (authErr) return e.json(authErr.status, authErr.body);
 
-      var rateErr = checkRate(String(e.auth.id || ""));
+      var rateErr = rl.checkRate(rl.window("__fepPlStart"), String(e.auth.id || ""), 10, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       var uid = String(e.auth.id || "");
@@ -187,7 +173,8 @@ routerAdd(
         questions = $app.findRecordsByFilter("placement_questions", "is_active = true", "position", 0, 0);
       } catch (qe) {
         var qeMsg = String(qe && qe.message ? qe.message : String(qe));
-        return e.json(500, { code: "qe", message: qeMsg });
+        try { $app.logger().error("placement_routes: start questions load error: " + qeMsg); } catch (_) {}
+        return e.json(500, { code: "qe", message: "Internal error." });
       }
       if (!questions) { return e.json(500, { code: "null_questions" }); }
       var qActual = questions.length;
@@ -282,7 +269,8 @@ routerAdd(
       var full = (msg + " " + rawD).toLowerCase();
       if (full.indexOf("placement_unavailable") >= 0) { return e.json(503, { code: "placement_unavailable", message: "Placement is not available at this time." }); }
       if (full.indexOf("unique") >= 0) { return e.json(409, { code: "attempt_exists", message: "An attempt already exists." }); }
-      return e.json(500, { code: "unexpected_error", message: msg });
+      try { $app.logger().error("placement_routes: start error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   },
   $apis.requireAuth("fep_users")
@@ -301,10 +289,7 @@ routerAdd(
     var SUBS_C = "subscriptions";
     var TOTAL_Q = 20;
 
-    if (typeof globalThis.__fepPlAnswer === "undefined") { globalThis.__fepPlAnswer = {}; }
-    var RATE_WIN = globalThis.__fepPlAnswer;
-    var RATE_MAX = 60;
-    var RATE_MS = 300000;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     // --- Inline helpers ---
 
@@ -328,17 +313,6 @@ routerAdd(
       var hasValid = false;
       try { var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: String(ev.auth.id || "") }); for (var si = 0; si < subs.length; si++) { var s = subs[si]; var expStr = String(s.get("expires_at") || ""); var startStr = String(s.get("starts_at") || ""); if (!expStr || !startStr) continue; var expMs = new Date(expStr).getTime(); var startMs = new Date(startStr).getTime(); if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; break; } } } catch (_) {}
       if (!hasValid) { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
-      return null;
-    }
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
       return null;
     }
 
@@ -386,7 +360,7 @@ routerAdd(
       var authErr = checkEligibility(e);
       if (authErr) return e.json(authErr.status, authErr.body);
 
-      var rateErr = checkRate(String(e.auth.id || ""));
+      var rateErr = rl.checkRate(rl.window("__fepPlAnswer"), String(e.auth.id || ""), 60, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       var uid = String(e.auth.id || "");
@@ -487,8 +461,10 @@ routerAdd(
       var rawD = String(topErr && topErr.rawData ? topErr.rawData : "");
       var full = (msg + " " + rawD).toLowerCase();
       var codeMap2 = { not_found: 404, attempt_not_in_progress: 409, invalid_question: 400, invalid_option: 400, invalid_request: 400 };
-      for (var ec2 in codeMap2) { if (full.indexOf(ec2) >= 0) { return e.json(codeMap2[ec2], { code: ec2, message: msg }); } }
-      return e.json(500, { code: "unexpected_error", message: msg });
+      var msgMap2 = { not_found: "Not found.", attempt_not_in_progress: "Attempt is not in progress.", invalid_question: "Invalid question.", invalid_option: "Invalid option.", invalid_request: "Invalid request." };
+      for (var ec2 in codeMap2) { if (full.indexOf(ec2) >= 0) { return e.json(codeMap2[ec2], { code: ec2, message: msgMap2[ec2] }); } }
+      try { $app.logger().error("placement_routes: answer error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   },
   $apis.requireAuth("fep_users")
@@ -507,10 +483,7 @@ routerAdd(
     var SUBS_C = "subscriptions";
     var TOTAL_Q = 20;
 
-    if (typeof globalThis.__fepPlSubmit === "undefined") { globalThis.__fepPlSubmit = {}; }
-    var RATE_WIN = globalThis.__fepPlSubmit;
-    var RATE_MAX = 5;
-    var RATE_MS = 300000;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     // --- Inline helpers ---
 
@@ -534,17 +507,6 @@ routerAdd(
       var hasValid = false;
       try { var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: String(ev.auth.id || "") }); for (var si = 0; si < subs.length; si++) { var s = subs[si]; var expStr = String(s.get("expires_at") || ""); var startStr = String(s.get("starts_at") || ""); if (!expStr || !startStr) continue; var expMs = new Date(expStr).getTime(); var startMs = new Date(startStr).getTime(); if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasValid = true; break; } } } catch (_) {}
       if (!hasValid) { return { status: 403, body: { code: "placement_subscription_required", message: "Active subscription required." } }; }
-      return null;
-    }
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
       return null;
     }
 
@@ -593,7 +555,7 @@ routerAdd(
       var authErr = checkEligibility(e);
       if (authErr) return e.json(authErr.status, authErr.body);
 
-      var rateErr = checkRate(String(e.auth.id || ""));
+      var rateErr = rl.checkRate(rl.window("__fepPlSubmit"), String(e.auth.id || ""), 5, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       var attemptId = String(e.request.pathValue("attemptId") || "");
@@ -685,8 +647,10 @@ routerAdd(
       var rawD = String(topErr && topErr.rawData ? topErr.rawData : "");
       var full = (msg + " " + rawD).toLowerCase();
       var codeMap = { not_found: 404, attempt_not_in_progress: 409, invalid_snapshot: 500, incomplete_attempt: 409 };
-      for (var ec in codeMap) { if (full.indexOf(ec) >= 0) { return e.json(codeMap[ec], { code: ec, message: msg }); } }
-      return e.json(500, { code: "unexpected_error", message: msg });
+      var msgMap = { not_found: "Not found.", attempt_not_in_progress: "Attempt is not in progress.", invalid_snapshot: "Internal error.", incomplete_attempt: "Attempt is not complete." };
+      for (var ec in codeMap) { if (full.indexOf(ec) >= 0) { return e.json(codeMap[ec], { code: ec, message: msgMap[ec] }); } }
+      try { $app.logger().error("placement_routes: submit error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   },
   $apis.requireAuth("fep_users")
