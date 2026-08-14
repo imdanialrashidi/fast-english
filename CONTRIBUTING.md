@@ -5,7 +5,7 @@ Contributions should improve representative task outcomes, reduce risk/cost, or 
 ## Setup
 
 1. Use Node.js 22.19.0 or newer.
-2. Install the reviewed Pi pin from `README.md`.
+2. Install the reviewed Pi pin from `docs/TOOLING_SETUP.md`.
 3. Review project-local packages/extensions before trusting the repository.
 4. Run `bash scripts/verify.sh` before and after a workflow change.
 5. Use the direct autonomous launcher for trusted work. For an untrusted repository or meaningful credential/private-data exposure, use `bash scripts/pi-sandbox.sh` or another boundary described in `SECURITY.md`.

@@ -86,12 +86,12 @@ Non-confidential source of truth for what Fast English Podcast must do.
 - Device/network baseline: low-to-mid Android phones, unstable mobile network; offline-tolerant app shell.
 
 ## Acceptance criteria
-- [ ] Signup/login with real PocketBase; phone normalization + collision handled.
-- [ ] One real disposable receipt request approved; exactly one subscription; repeated approval no double extension; unauthorized receipt/approval fail.
-- [ ] 20-question placement completes on real backend in browser + Android; no answer leakage.
-- [ ] Active student accesses real lesson + audio; pending/expired denied; progress survives refresh.
-- [ ] PWA installable; release APK installs on physical device; APK version + SHA-256 produced.
-- [ ] Both builds reproducible; `scripts/verify.sh` green; sensitive-diff `/review` passed; `/ship` run.
+- [x] Signup/login with real PocketBase; phone normalization + collision handled.
+- [x] One real disposable receipt request approved; exactly one subscription; repeated approval no double extension; unauthorized receipt/approval fail.
+- [x] 20-question placement completes on real backend in browser + Android; no answer leakage.
+- [x] Active student accesses real lesson + audio; pending/expired denied; progress survives refresh.
+- [ ] PWA installable; release APK installs on physical device; APK version + SHA-256 produced. (PWA proven; release APK + physical-device gate open — needs keystore + device.)
+- [ ] Both builds reproducible; `scripts/verify.sh` green; sensitive-diff `/review` passed; `/ship` run. (Builds + verify green; `/review` and `/ship` not run.)
 
 ## Open product decisions (external inputs)
 - monthly/quarterly/yearly prices; destination card number, cardholder, bank name; review SLA; operator hours/identities/count; rejection/refund policy; receipt retention approval; approved privacy/terms copy; support contact; final logo + app icons; 20 reviewed placement questions; initial topics/lesson texts/audio; VPS + DNS access; release keystore ownership + secure storage.

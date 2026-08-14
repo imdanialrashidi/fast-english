@@ -174,6 +174,28 @@ var __contentAdminCore = (function () {
 
   // --- Loaders -------------------------------------------------------------
 
+  // Bulk variant loader for LIST endpoints: one lessons scan, indexed by
+  // topic id (list shape). Detail endpoints keep loadLessons per topic.
+  function loadAllLessonsByTopic(app) {
+    var byTopic = {};
+    var hits = [];
+    try {
+      hits = app.findRecordsByFilter("lessons", "1=1", "", 0, 0);
+    } catch (_) { hits = []; }
+    if (hits && hits.length > 0) {
+      for (var i = 0; i < hits.length; i++) {
+        var rec = hits[i];
+        if (!rec) continue;
+        var tid = String(rec.get("topic") || "");
+        if (!tid) continue;
+        if (!byTopic[tid]) byTopic[tid] = {};
+        var level = String(rec.get("level") || "");
+        if (!byTopic[tid][level]) byTopic[tid][level] = rec;
+      }
+    }
+    return byTopic;
+  }
+
   function loadLessons(app, topicId) {
     var out = {};
     if (!app || !topicId) return out;
@@ -668,8 +690,12 @@ var __contentAdminCore = (function () {
   }
 
   // Episode list row with per-level statuses + missing-content flags.
-  function episodeListItem(app, rec) {
-    var lessons = loadLessons(app, String(rec.id || ""));
+  function episodeListItem(app, rec, lessonsByTopic) {
+    // LIST routes pass a prebuilt per-topic map (one bulk lessons scan);
+    // detail routes omit it and load this topic's lessons individually.
+    var lessons = lessonsByTopic
+      ? (lessonsByTopic[String(rec.id || "")] || {})
+      : loadLessons(app, String(rec.id || ""));
     var counts = { published: 0, draft: 0, archived: 0, total: 0 };
     var levels = {};
     var hasIncomplete = false;
@@ -762,6 +788,7 @@ var __contentAdminCore = (function () {
     validateImage: validateImage,
     validateAudio: validateAudio,
     normalizeTranscript: normalizeTranscript,
+    loadAllLessonsByTopic: loadAllLessonsByTopic,
     loadLessons: loadLessons,
     loadVocabulary: loadVocabulary,
     findCategoryById: findCategoryById,

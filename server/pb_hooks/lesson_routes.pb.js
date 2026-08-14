@@ -9,18 +9,21 @@
 // Routes:
 //   GET /api/fast-english/lessons
 //     - Requires full premium entitlement (active student, active sub,
-//       placement completed, matching level).
+//       placement completed). Level is a browsing preference, NOT an
+//       authorization boundary (Slice 6): any Published Variant A1-C2.
 //     - Returns published lessons for the student's selected level.
 //     - Sanitized metadata only; no body, no audio filename or record.
 //     - Cache-Control: private, no-store
 //
 //   GET /api/fast-english/lessons/{lessonId}
-//     - Requires full premium entitlement + level match.
+//     - Requires full premium entitlement; cross-level access is allowed
+//       (any Published Variant A1-C2, Slice 6).
 //     - Returns full lesson body + direct audio URL.
 //     - Cache-Control: private, no-store
 //
 //   GET /api/fast-english/lessons/{lessonId}/audio
-//     - Requires full premium entitlement + level match.
+//     - Requires full premium entitlement (level equality was removed in
+//       Slice 6 — any Published Variant is entitled).
 //     - Serves the protected premium audio file with Range/206 support.
 //     - This replaces the PB built-in protected file approach because
 //       PB 0.39 filter rules cannot express cross-collection back-

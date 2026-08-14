@@ -50,7 +50,7 @@ bash scripts/pi-doctor.sh
   - `pnpm verify:feature [auth|payment|placement|lessons|progress|all] [app|landing|all]` — fast + mapped real-Backend smokes + `@critical` Playwright + affected build.
   - `pnpm verify:full` — the canonical full gate (`scripts/project-verify.sh` + full Playwright). `scripts/verify.sh` delegates here (CI/release compatibility entry).
   - Affected-change routing: `node scripts/verify-affected.mjs --file <path> --plan` (routes in `.pi/verification.json`; unmatched files fall back to the full gate).
-- Real-Backend smokes (`pnpm smoke:*`, 15 suites) each start a disposable PocketBase in `/tmp` — they never touch `server/pb_data/`; throwaway credentials never appear in output (`scripts/pb-test-helper.sh`).
+- Real-Backend smokes (`pnpm smoke:*`, 16 suites) each start a disposable PocketBase in `/tmp` — they never touch `server/pb_data/`; throwaway credentials never appear in output (`scripts/pb-test-helper.sh`).
 - Browser lanes: `pnpm test:e2e:fast [spec]` (low-resource: Vite dev servers, one worker, no retries/video/trace/screenshots, `PW_FAST=1`), `pnpm test:e2e:smoke`, `pnpm test:e2e:failed`, `pnpm test:e2e:full` (`CI=1`: built app/landing/admin via `vite preview`, at most one retry, trace on first retry, screenshots on failure only). Never set `CI=1` locally.
 - Android: `pnpm android:build:debug`, `pnpm android:build:release` (fails safely without `FEP_ANDROID_*` signing vars), `pnpm android:verify:release` (apksigner/zipalign/SHA-256).
 

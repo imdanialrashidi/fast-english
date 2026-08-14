@@ -392,10 +392,14 @@ routerAdd("GET", "/api/fast-english/staff/episodes", function (e) {
     hits = $app.findRecordsByFilter("topics", filterParts.join(" && "), "", 0, 0, params);
   } catch (_) { hits = []; }
 
+  // One bulk lessons scan for the whole list instead of a full scan per
+  // topic row (plan 007 batching; detail routes keep per-topic loads).
+  var lessonsByTopic = core.loadAllLessonsByTopic ? core.loadAllLessonsByTopic($app) : null;
+
   var out = [];
   for (var i = 0; i < hits.length; i++) {
     var rec = hits[i];
-    var item = core.episodeListItem($app, rec);
+    var item = core.episodeListItem($app, rec, lessonsByTopic);
     if (search) {
       var hay = (item.titleFa + " " + item.titleEn + " " + item.slug + " " + item.contentKey + " " + (item.category ? item.category.titleFa + " " + item.category.key : "")).toLowerCase();
       if (hay.indexOf(search.toLowerCase()) < 0) continue;

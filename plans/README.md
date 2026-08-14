@@ -24,6 +24,11 @@ your row when done.
 | 003  | Fix placement final-submit lock dead-end after a stale-revision recovery | P1 | S | — | DONE |
 | 004  | Repair two vacuous smoke assertions (placement score→level mapping, duplicate topic+level rejection) | P1 | S | — | DONE |
 | 005  | Fix server error contracts — progress position-0 500 and placement raw-error leakage | P2 | S | — | DONE |
+| 006  | Fix the Caddy 6 MB body cap vs the 64 MB content-import contract | P1 | S | — | DONE |
+| 007  | Batch per-row lookups in the staff queue and the admin episode list | P2 | S-M | — | DONE |
+| 008  | Onboarding and doc drift — README, .env.example, stale docs | P2 | S | — | DONE |
+| 009  | Make the Caddy access-log redaction drill run in CI | P2 | S | — | DONE |
+| 010  | Remove dead student routes, previewData, and the unused workbox-window dependency | P3 | S | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -61,6 +66,35 @@ Documented deviations from the plans as written:
   inert in the current UI. Smoke scenarios assert the final contract.
 - **Plan 005, smoke**: the S0 per-threshold loop additionally asserts
   `kind === 'level_selection_required'` (reviewer hardening).
+
+## Implemented 2026-08-14 (branch `advisor/plans-006-010`)
+
+Plans 006-010 executed in one follow-up session. Deviations from the plans
+as written:
+
+- **Plan 009, scope extension (pre-existing gate fix)**: while wiring the
+  Caddy drill into CI it was discovered that the canonical gate had been
+  RED on main since the perf slice (PR #4, 2026-08-14 09:25): the PWA
+  precache scan in `scripts/project-verify.sh` flagged the public
+  post-split `assets/tokens-*.js` chunk name via `/token/i`. The scan is
+  now query-precise (matches the SW's own `isProtectedUrl` guard:
+  `api/`, `files/`, or a `token=` query param). This was required for the
+  drill to run in a green gate; the full gate is green locally again
+  (exit 0) and the FEP_REQUIRE_CADDY branch fails fast as designed.
+- **Plan 010, scope reduced**: `workbox-window` was NOT removed — the
+  plan's death certificate was wrong: `vite-plugin-pwa`'s
+  `virtual:pwa-register/react` resolves to it internally, and removing it
+  breaks `pnpm build:app` (reproduced, then reverted). The three dead
+  route files and `previewData.ts` were removed; `LessonDirection.test.ts`
+  was repointed at the live `LessonDetailRoute` + `readingMaxWidth` token
+  (contract: LTR isolation + bounded 40rem measure).
+- **Plan 008, scope**: `docs/ARCHITECTURE.md` needed no change (the "15
+  suites" claim existed only in `docs/TOOLING_SETUP.md`); PLAN.md records
+  for Slices 7-9 appended in the established style.
+- **Plan 006**: no local caddy binary, so verification is the new static
+  test `tests/deploy-config.test.mjs` (wired into the harness lane) plus
+  the deploy-time `smoke-prod.sh`; `caddy validate` deferred to a machine
+  with caddy.
 
 ## Findings considered and rejected (vetted; not planned)
 

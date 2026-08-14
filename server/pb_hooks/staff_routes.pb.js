@@ -135,6 +135,19 @@ routerAdd(
       var pageItems = allHits.slice(startIdx, startIdx + perPage);
 
       // 8. Shape items
+      // Batch student lookups: one bulk fep_users fetch + byId map instead
+      // of a findRecordById per row (library_routes pattern).
+      var usersById = {};
+      try {
+        var allUsers = $app.findRecordsByFilter(USERS_COLLECTION, "1=1", "", 0, 0);
+        if (allUsers) {
+          for (var ui = 0; ui < allUsers.length; ui++) {
+            var uRec = allUsers[ui];
+            if (!uRec) continue;
+            usersById[String(uRec.id || "")] = uRec;
+          }
+        }
+      } catch (_) {}
       var items = [];
       for (var ii = 0; ii < pageItems.length; ii++) {
         var rec = pageItems[ii];
@@ -144,7 +157,7 @@ routerAdd(
         var maskedPhone = "";
         if (userId) {
           try {
-            var userRec = $app.findRecordById(USERS_COLLECTION, userId);
+            var userRec = usersById[userId];
             if (userRec) {
               studentName = String(userRec.get("name") || "");
               var rawPhone = String(userRec.get("phone") || "");

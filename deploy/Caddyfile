@@ -146,6 +146,21 @@ app.fastenglishpodcast.com {
 	# PocketBase APIs (including /api/fast-english/* custom routes, realtime,
 	# file URLs). Bounded request body: 5MB receipt + 1MB documented margin.
 	# API failures terminate here — they are never sent to the SPA fallback.
+	# Content-import packages (CLI + Admin ZIP) legitimately reach ~60MB
+	# (server parses 64MB; zip.ts caps 60MiB uncompressed). Scoped to the
+	# import paths only — every other /api/* body keeps the 6MB boundary
+	# (5MB receipt + margin). The most-specific handle wins in Caddy.
+	handle /api/fast-english/staff/content-import/* {
+		request_body {
+			max_size 64MB
+		}
+		reverse_proxy 127.0.0.1:8090 {
+			transport http {
+				read_timeout 360s
+			}
+		}
+	}
+
 	handle /api/* {
 		request_body {
 			max_size 6MB
@@ -206,6 +221,21 @@ admin.fastenglishpodcast.com {
 				request>uri query {
 					replace token "[REDACTED]"
 				}
+			}
+		}
+	}
+
+	# Content-import packages (CLI + Admin ZIP) legitimately reach ~60MB
+	# (server parses 64MB; zip.ts caps 60MiB uncompressed). Scoped to the
+	# import paths only — every other /api/* body keeps the 6MB boundary
+	# (5MB receipt + margin). The most-specific handle wins in Caddy.
+	handle /api/fast-english/staff/content-import/* {
+		request_body {
+			max_size 64MB
+		}
+		reverse_proxy 127.0.0.1:8090 {
+			transport http {
+				read_timeout 360s
 			}
 		}
 	}

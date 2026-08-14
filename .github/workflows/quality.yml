@@ -79,12 +79,27 @@ jobs:
       - name: Provision PocketBase test binary
         run: bash scripts/setup-pocketbase.sh
 
+      # The access-log token-redaction drill (step 23 of project-verify.sh)
+      # requires a real caddy binary; the drill is the proof for the
+      # documented "audio file token travels as a URL query parameter"
+      # vector and must run in the canonical gate. Pin matches the deploy
+      # tooling's verified version (docs/PLAN.md P4-S3: v2.10.2).
+      - name: Provision Caddy (access-log redaction drill)
+        run: |
+          CADDY_VERSION="v2.10.2"
+          curl -fsSL "https://github.com/caddyserver/caddy/releases/download/${CADDY_VERSION}/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" -o /tmp/caddy.tgz
+          tar -xzf /tmp/caddy.tgz -C /tmp caddy
+          sudo mv /tmp/caddy /usr/local/bin/caddy
+          caddy version
+
       # The real Fast English backend + operations gate: typecheck + Biome +
       # Vitest + all 16 real-PocketBase smoke suites (concurrent, isolated) +
       # deterministic three-surface builds + topology/boundary checks + PWA
       # output checks + Android version/signing fail-safes + deploy
       # token-redaction proofs. Never replaced by a generic or fast lane.
       - name: Verify (backend release gate)
+        env:
+          FEP_REQUIRE_CADDY: '1'
         run: bash scripts/project-verify.sh
 
   e2e:
