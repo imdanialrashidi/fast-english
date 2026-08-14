@@ -33,15 +33,15 @@ Recognize common interfaces when they exist:
 
 Rules:
 
-- never set `CI=1`;
+- never set `CI=1` for routine local debugging;
 - avoid full builds unless necessary;
 - avoid browser tests for backend-only or pure-logic changes;
 - rerun only failed browser tests while debugging;
 - prefer unit tests for pure logic;
-- never claim unexecuted checks passed.
+- never claim unexecuted checks passed;
 - review the affected plan before first use when a route changed; command arrays come from repository code and must be code-reviewed;
-- if a changed file matches no configured route, use the router's full-gate fallback rather than silently skipping it;
-- treat route maps as conservative dependency evidence, not proof that unlisted runtime dependencies do not exist.
+- if a changed file matches no configured route, use the router's conservative fallback rather than silently skipping it;
+- treat route maps as dependency evidence, not proof that unlisted runtime dependencies do not exist.
 
 ## Lane 2: feature
 
@@ -64,19 +64,36 @@ Generated tests must also satisfy `test-design`: parsing/passing is insufficient
 
 ## Lane 3: full
 
-Run once only:
+Use one authoritative full gate, not several copies of the same proof.
 
-- before merge or release;
-- after deployment or release changes;
-- after auth, authorization, payment, subscription, migration, or schema changes;
-- when explicitly requested;
-- when the canonical repository gate is required.
+For an ordinary task delivered by PR:
 
-Recognize:
+1. run targeted checks while editing;
+2. run feature verification once when the slice is complete;
+3. commit/push the task branch;
+4. treat the GitHub `quality` workflow as the authoritative full gate.
+
+Do **not** also run the local full gate by default when GitHub CI will run the same canonical contracts. Run a local full gate before push only when one of these applies:
+
+- authentication, authorization, payment, subscription, migration, schema, deployment, release, or similarly High-risk work;
+- the verification/workflow harness itself changed and local proof is needed before sending it to CI;
+- CI is unavailable;
+- the user explicitly requested a local full run;
+- a specific repository contract says local full proof is mandatory.
+
+Recognize full interfaces:
 
 - `scripts/verify.sh`
 - `scripts/verify-full.sh`
 - package-manager `verify:full`
+
+Rules:
+
+- a green full gate is evidence for the exact code SHA it tested; PR metadata or commit-message changes do not require rerunning it;
+- after a code change, rerun the smallest affected local evidence first, then let CI establish the new full-gate result;
+- if CI fails, inspect the failed job before changing code;
+- after a repair, rerun failed CI jobs only when the platform supports it; do not restart already-green lanes without a concrete reason;
+- do not weaken assertions, add broad retries, or inflate timeouts merely to obtain green status.
 
 ## Playwright policy
 
