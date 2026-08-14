@@ -566,6 +566,10 @@ test.describe('authenticated shell (App Bar, bottom nav, flows)', () => {
   test('App Bar uses semantic foregrounds and a tonal surface in both schemes', async ({
     page,
   }) => {
+    // The top App Bar is phone/tablet chrome only (the desktop shell owns
+    // the brand via the side navigation), so pin a mobile viewport where
+    // the App Bar exists.
+    await page.setViewportSize({ width: 390, height: 844 });
     const su = await getSuperuserToken();
     const student = await createActiveStudent(su);
     await setAuthAndGo(page, student.token, student.record, '/');

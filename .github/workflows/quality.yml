@@ -152,7 +152,10 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-artifacts-${{ matrix.shard }}
+          # The shard value contains '/' (e.g. 4/5), which is not a valid
+          # artifact-name character on GitHub Actions; sanitize it so a
+          # failing shard actually uploads its traces/screenshots.
+          name: ${{ format('e2e-artifacts-shard-{0}', replace(matrix.shard, '/', '-')) }}
           path: |
             test-results/e2e/
             playwright-report/
