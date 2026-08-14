@@ -109,11 +109,12 @@ export function sanitizeMessage(text: string): string {
   // Filesystem paths (server error text, dev-machine stacks, storage
   // layout). Superset of the server sanitizer's PATH_PATTERNS
   // (content_import_core.pb.js): /var/, /tmp/, /home/, storage/,
-  // pb_data, drive letters — plus the standard FHS prefixes and the
-  // production layout /opt/fast-english. The tail stops at whitespace,
-  // quotes, angle brackets, parens or square brackets (stack-trace safe).
+  // pb_data, drive letters — plus the standard FHS prefixes, the
+  // production layout /opt/fast-english, and bare data/ relative paths.
+  // The tail stops at whitespace, quotes, angle brackets, parens or
+  // square brackets (stack-trace safe).
   out = out.replace(
-    /(?:\/opt|\/var|\/tmp|\/home|\/usr|\/etc|\/root|\/srv|\/app)(?:\/[^\s"'<>()[\]]*)?|\b(?:pb_data|storage)\/[^\s"'<>()[\]]*|[A-Za-z]:\\[^\s"'<>()[\]]*/g,
+    /(?:\/opt|\/var|\/tmp|\/home|\/usr|\/etc|\/root|\/srv|\/app)(?:\/[^\s"'<>()[\]]*)?|\b(?:pb_data|storage|data)\/[^\s"'<>()[\]]*|[A-Za-z]:\\[^\s"'<>()[\]]*/g,
     '[REDACTED_PATH]',
   );
   // Iranian mobile numbers: compact ASCII, spaced/dashed ASCII, and
