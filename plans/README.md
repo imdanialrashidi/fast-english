@@ -29,6 +29,11 @@ your row when done.
 | 008  | Onboarding and doc drift — README, .env.example, stale docs | P2 | S | — | DONE |
 | 009  | Make the Caddy access-log redaction drill run in CI | P2 | S | — | DONE |
 | 010  | Remove dead student routes, previewData, and the unused workbox-window dependency | P3 | S | — | DONE |
+| 011  | Harden telemetry redaction — filesystem paths and phone variants | P2 | S | — | DONE |
+| 012  | Fetch the library user's progress once per request | P3 | S | — | DONE |
+| 013  | Memoize the episode page's per-render transcript split and edition rail | P3 | S | — | DONE |
+| 014  | Wire a production dependency audit into CI | P3 | S | — | DONE |
+| 015  | Cover the hero-artwork route with real smoke scenarios | P3 | S | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -95,6 +100,34 @@ as written:
   test `tests/deploy-config.test.mjs` (wired into the harness lane) plus
   the deploy-time `smoke-prod.sh`; `caddy validate` deferred to a machine
   with caddy.
+
+## Implemented 2026-08-14 (branch `advisor/five-plans`, commit 3)
+
+Plans 011-015 executed in a third session. Deviations from the plans as
+written:
+
+- **Plan 011, contract change**: the existing test
+  `'keeps Persian-digit phone examples in copy untouched'` encoded the OLD
+  contract ("Persian digits never match") that the audit finding SEC-09
+  identified as the leak. The test was UPDATED to the new contract
+  (Persian-digit phones → `[REDACTED_PHONE]`), not weakened; the change is
+  deliberate and documented in the test comment.
+- **Plan 013, implementation lesson**: the first edit placed the `useMemo`
+  calls AFTER the component's early returns (phase guards), violating the
+  Rules of Hooks — React crashed on the loading→ready transition
+  (e2e: jacket not found). The memos were moved ABOVE the early returns
+  (with the other hooks); the episode e2e spec (21 tests) is green.
+- **Plan 014, finding**: the first real audit run (npmjs registry) found
+  ONE HIGH advisory — `fast-uri <3.1.5` (GHSA-7p8r-x3mc-p8w7, host
+  confusion via backslash authority) via the direct `ajv` dependency
+  (Node-side tooling surface; NOT in the shipped app bundle — verified by
+  grepping dist-app). The CI step is wired as planned and will fail until
+  the maintainer runs `pnpm up fast-uri` (patch-level, same major). No
+  bump performed per the plan boundary.
+- **Plan 015, route shape**: the hero route is PUBLIC (no auth) with
+  published-state gating only — the planned "pending student denied"
+  scenario was replaced by publication-gating scenarios (draft → 404),
+  matching the route's actual contract.
 
 ## Findings considered and rejected (vetted; not planned)
 

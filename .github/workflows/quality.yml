@@ -53,6 +53,12 @@ jobs:
           CI_SKIP_PLAYWRIGHT: '1'
         run: bash scripts/ci-install.sh
 
+      # Production dependency advisories (npmjs registry; the local
+      # mirror lacks the audit endpoint, so this runs in CI only).
+      # --audit-level high fails the job on high/critical advisories.
+      - name: Audit production dependencies
+        run: pnpm audit --prod --audit-level high
+
       # Everyday gate: typecheck + Biome + Vitest (743 unit tests).
       - name: Fast verification (typecheck + Biome + Vitest)
         run: bash scripts/verify-fast.sh

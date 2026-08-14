@@ -315,7 +315,9 @@ routerAdd(
 
       var progresses = [];
       try {
-        progresses = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "", 0, 0, { uid: uid });
+        // One ordered full scan feeds both the per-Variant progress map
+        // and the Continue rail (plan 012) — never fetch twice.
+        progresses = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "-last_played_at", 0, 0, { uid: uid });
       } catch (_) {}
       var progressByLesson = {};
       if (progresses && progresses.length > 0) {
@@ -488,10 +490,7 @@ routerAdd(
       //    activity first, capped at MAX_CONTINUE.
       // -----------------------------------------------------------------
       var continueListening = [];
-      var continueRows = [];
-      try {
-        continueRows = $app.findRecordsByFilter(PROGRESS_C, "user = {:uid}", "-last_played_at", 0, 0, { uid: uid });
-      } catch (_) {}
+      var continueRows = progresses; // already -last_played_at ordered (single fetch, plan 012)
       if (continueRows && continueRows.length > 0) {
         for (var cri = 0; cri < continueRows.length && continueListening.length < MAX_CONTINUE; cri++) {
           var cr = continueRows[cri];
