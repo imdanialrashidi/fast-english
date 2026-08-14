@@ -22,6 +22,7 @@ try {
 } catch (_) {}
 
 var __contentAdminCore = (function () {
+  // Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
   var CEFR_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
   function importCore() {

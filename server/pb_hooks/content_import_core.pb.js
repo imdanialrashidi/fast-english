@@ -21,6 +21,7 @@ try {
 
 var __contentImportModule = (function () {
   var PACKAGE_SCHEMA_VERSION = "1.0.0";
+  // Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
   var CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
   var ARTWORK_MAX = 5 * 1024 * 1024;
   var AUDIO_MAX = 10 * 1024 * 1024;

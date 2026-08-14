@@ -37,7 +37,8 @@
           "tests/secret-scan.test.mjs",
           "tests/dev-persistence-contract.test.mjs",
           "tests/hook-rate-limit.test.mjs",
-          "tests/deploy-config.test.mjs"
+          "tests/deploy-config.test.mjs",
+          "tests/cefr-consistency.test.mjs"
         ]
       ]
     },
