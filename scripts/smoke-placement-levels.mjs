@@ -100,6 +100,25 @@ async function answerAll(token, attemptId, startRev, questions) {
   return rev;
 }
 
+// Answers exactly `correctCount` questions correctly (opt0) and the rest
+// with a wrong option (opt1), producing a known score for the mapping
+// assertions. Seeded questions always carry 4 options with opt0 correct.
+async function answerPattern(token, attemptId, startRev, questions, correctCount) {
+  let rev = startRev;
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const optionId = i < correctCount ? q.options[0].id : q.options[1].id;
+    const ans = await jsonFetch(`/api/fast-english/placement/attempts/${attemptId}/answer`, {
+      method: 'PUT',
+      headers: { authorization: token, 'content-type': 'application/json' },
+      body: JSON.stringify({ questionId: q.id, optionId, expectedRevision: rev }),
+    });
+    if (ans.status !== 200) throw new Error(`answer ${i + 1} failed: ${JSON.stringify(ans.body)}`);
+    rev = ans.body.attempt.revision;
+  }
+  return rev;
+}
+
 async function submitAttempt(token, attemptId, rev) {
   const r = await jsonFetch(`/api/fast-english/placement/attempts/${attemptId}/submit`, {
     method: 'POST',
@@ -252,7 +271,10 @@ async function main() {
   }
   await seedQuestions(suToken);
 
-  // S0: Score-to-level mapping
+  // S0: Score-to-level mapping, asserted per threshold against the real
+  // server. Each row answers exactly `score` questions correctly on a fresh
+  // student and asserts the server-derived suggestedLevel — the 12 rows are
+  // the authoritative scoreToLevel() contract (placement_level_routes.pb.js).
   const mappingTests = [
     { score: 0, expected: 'A1' },
     { score: 3, expected: 'A1' },
@@ -270,8 +292,30 @@ async function main() {
 
   for (const mt of mappingTests) {
     start(`S0-score-${mt.score}-maps-to-${mt.expected}`);
-    check(mt.score >= 0 && mt.score <= 20, `score ${mt.score} should be valid`);
-    // We test the mapping implicitly via the submit flow
+    const student = await createActiveStudent(API_URL, suToken);
+    const startResp = await startAttempt(student.token);
+    const rev = await answerPattern(
+      student.token,
+      startResp.attempt.id,
+      startResp.attempt.revision,
+      startResp.questions,
+      mt.score,
+    );
+    const submitResp = await submitAttempt(student.token, startResp.attempt.id, rev);
+    check(
+      submitResp.attempt.score === mt.score,
+      `score ${submitResp.attempt.score} !== ${mt.score}`,
+    );
+    const ctx = await fetchLevelContext(student.token);
+    check(ctx.status === 200, `level-context status ${ctx.status}`);
+    check(
+      ctx.body.kind === 'level_selection_required',
+      `kind ${ctx.body.kind} !== level_selection_required for score ${mt.score}`,
+    );
+    check(
+      ctx.body.suggestedLevel === mt.expected,
+      `suggested ${ctx.body.suggestedLevel} !== ${mt.expected} for score ${mt.score}`,
+    );
     pass();
   }
 

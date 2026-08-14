@@ -412,6 +412,17 @@ async function main() {
       `S30: stale (${r30.status})`,
     );
 
+    // S30b: error bodies never echo raw exception text — mapped branches
+    // return fixed safe messages (the 500 fallback is a constant
+    // "Internal error." verified by grep in the hooks).
+    const leakPatterns = ['Error', 'sql', 'query', 'column', 'undefined', 'UNIQUE', 'stack'];
+    for (const errRes of [r27, r28, r30]) {
+      const msg = String(errRes.body?.message || '');
+      for (const lp of leakPatterns) {
+        check(!msg.includes(lp), `S30b: no raw text in ${errRes.status} body (${lp})`);
+      }
+    }
+
     // S22: Resume
     const r22 = await jsonFetch('/api/fast-english/placement/attempts/start', {
       method: 'POST',

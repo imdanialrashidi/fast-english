@@ -35,7 +35,8 @@
           "tests/safety-guard.test.mjs",
           "tests/launcher.test.mjs",
           "tests/secret-scan.test.mjs",
-          "tests/dev-persistence-contract.test.mjs"
+          "tests/dev-persistence-contract.test.mjs",
+          "tests/hook-rate-limit.test.mjs"
         ]
       ]
     },

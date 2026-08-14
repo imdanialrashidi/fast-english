@@ -42,8 +42,6 @@ try {
   $app.logger().info("lesson_routes: hook file loaded");
 } catch (_) {}
 
-
-
 // =====================================================================
 // GET /api/fast-english/lessons
 // Premium lesson list for the student's selected level.
@@ -56,26 +54,10 @@ routerAdd(
     var LESSONS_C = "lessons";
     var TOPICS_C = "topics";
     var USERS_C = "fep_users";
-
-    // Inline rate limit
-    if (typeof globalThis.__fepLessonsList === "undefined") { globalThis.__fepLessonsList = {}; }
-    var RATE_WIN = globalThis.__fepLessonsList;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     // Sanitized lesson shape (no body, no audio filename, no internal notes)
-    function shapeLessonListItem(rec, pd) {
+    function shapeLessonListItem(rec, pd, topicById, catById) {
       if (!rec) return null;
       var topicId = "";
       try { topicId = String(rec.get("topic") || ""); } catch (_) {}
@@ -90,7 +72,7 @@ routerAdd(
       var categoryInfo = null;
       if (topicId) {
         try {
-          var t = $app.findRecordById(TOPICS_C, topicId);
+          var t = (topicById && topicById[topicId]) ? topicById[topicId] : null;
           if (t) {
             topicTitle = String(t.get("title") || "");
             topicSlug = String(t.get("slug") || "");
@@ -106,7 +88,7 @@ routerAdd(
             try { catId = String(t.get("category") || ""); } catch (_) {}
             if (catId) {
               try {
-                var cat = $app.findRecordById("categories", catId);
+                var cat = (catById && catById[catId]) ? catById[catId] : null;
                 if (cat) {
                   categoryInfo = {
                     id: String(cat.id || ""),
@@ -244,7 +226,7 @@ routerAdd(
       if (!requestedLevel) return e.json(403, { code: "no_level", message: "No level selected." });
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepLessonsList"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Pagination
@@ -270,6 +252,32 @@ routerAdd(
         );
       } catch (qe) {}
 
+      // Batch topic + category lookups (library_routes pattern): two bulk
+      // queries instead of ~2-4 findRecordById calls per lesson. Only
+      // published topics and published categories are indexed, which is
+      // exactly the visibility rule below (archival hides all child
+      // content).
+      var topicsAll = [];
+      try { topicsAll = $app.findRecordsByFilter(TOPICS_C, "status = 'published'", "", 0, 0); } catch (_) {}
+      var topicById = {};
+      if (topicsAll && topicsAll.length > 0) {
+        for (var ti2 = 0; ti2 < topicsAll.length; ti2++) {
+          var t2 = topicsAll[ti2];
+          if (!t2) continue;
+          topicById[String(t2.id || "")] = t2;
+        }
+      }
+      var catsAll = [];
+      try { catsAll = $app.findRecordsByFilter("categories", "publication_status = 'published'", "", 0, 0); } catch (_) {}
+      var catById = {};
+      if (catsAll && catsAll.length > 0) {
+        for (var ci2 = 0; ci2 < catsAll.length; ci2++) {
+          var c2 = catsAll[ci2];
+          if (!c2) continue;
+          catById[String(c2.id || "")] = c2;
+        }
+      }
+
       // Filter to only those with published topics AND published parent
       // Categories (Category archival hides all child content). This runs
       // BEFORE pagination so hidden records never consume page slots or
@@ -283,10 +291,10 @@ routerAdd(
         var topicPublished = false;
         if (tId) {
           try {
-            var tRec = $app.findRecordById(TOPICS_C, tId);
+            var tRec = topicById[tId];
             if (tRec && tRec.get("status") === "published") {
-              var catRes = pd.requirePublishedCategory($app, tRec.get("category"));
-              if (catRes.ok) topicPublished = true;
+              var catId2 = String(tRec.get("category") || "");
+              if (catId2 && catById[catId2]) topicPublished = true;
             }
           } catch (_) {}
         }
@@ -299,7 +307,7 @@ routerAdd(
       var skip = (page - 1) * perPage;
       var filtered = [];
       for (var vi = skip; vi < visible.length && filtered.length < perPage; vi++) {
-        filtered.push(shapeLessonListItem(visible[vi], pd));
+        filtered.push(shapeLessonListItem(visible[vi], pd, topicById, catById));
       }
 
       try { e.response.header().set("Cache-Control", "private, no-store"); } catch (_) {}
@@ -335,23 +343,7 @@ routerAdd(
     var LESSONS_C = "lessons";
     var TOPICS_C = "topics";
     var USERS_C = "fep_users";
-
-    // Inline rate limit
-    if (typeof globalThis.__fepLessonsDetail === "undefined") { globalThis.__fepLessonsDetail = {}; }
-    var RATE_WIN = globalThis.__fepLessonsDetail;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       // Full entitlement check (inlined)
@@ -433,7 +425,7 @@ routerAdd(
       if (!lessonId) return e.json(400, { code: "invalid_request", message: "Missing lessonId." });
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepLessonsDetail"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Load lesson
@@ -575,8 +567,29 @@ routerAdd(
             { lvl: lessonLevel }
           );
         } catch (_) {}
+        // Batch sibling topic/category lookups (library_routes pattern):
+        // two bulk queries instead of per-sibling findRecordById calls.
+        var sibTopics = [];
+        try { sibTopics = $app.findRecordsByFilter(TOPICS_C, "status = 'published'", "", 0, 0); } catch (_) {}
+        var sibTopicById = {};
+        if (sibTopics && sibTopics.length > 0) {
+          for (var sti = 0; sti < sibTopics.length; sti++) {
+            var st = sibTopics[sti];
+            if (!st) continue;
+            sibTopicById[String(st.id || "")] = st;
+          }
+        }
+        var sibCats = [];
+        try { sibCats = $app.findRecordsByFilter("categories", "publication_status = 'published'", "", 0, 0); } catch (_) {}
+        var sibCatById = {};
+        if (sibCats && sibCats.length > 0) {
+          for (var sci = 0; sci < sibCats.length; sci++) {
+            var sc = sibCats[sci];
+            if (!sc) continue;
+            sibCatById[String(sc.id || "")] = sc;
+          }
+        }
         var sibList = [];
-        var sibTopicCache = {};
         if (sibRows && sibRows.length > 0) {
           for (var si2 = 0; si2 < sibRows.length; si2++) {
             var sib = sibRows[si2];
@@ -584,14 +597,10 @@ routerAdd(
             var sibTid = "";
             try { sibTid = String(sib.get("topic") || ""); } catch (_) {}
             if (!sibTid) continue;
-            var sibTopic = sibTopicCache[sibTid];
-            if (sibTopicCache[sibTid] === undefined) {
-              try { sibTopic = $app.findRecordById(TOPICS_C, sibTid); } catch (_) { sibTopic = null; }
-              sibTopicCache[sibTid] = sibTopic;
-            }
+            var sibTopic = sibTopicById[sibTid];
             if (!sibTopic || String(sibTopic.get("status") || "") !== "published") continue;
-            var sibCatRes = pd.requirePublishedCategory($app, sibTopic.get("category"));
-            if (!sibCatRes.ok) continue;
+            var sibCatId = String(sibTopic.get("category") || "");
+            if (!sibCatId || !sibCatById[sibCatId]) continue;
             sibList.push({ lesson: sib, topic: sibTopic });
           }
         }
@@ -695,23 +704,15 @@ routerAdd(
     var LESSONS_C = "lessons";
     var TOPICS_C = "topics";
 
-    // Rate limit (per-IP)
-    if (typeof globalThis.__fepPublicSample === "undefined") { globalThis.__fepPublicSample = []; }
-    var RATE_WIN = globalThis.__fepPublicSample;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate() {
-      var now = Date.now(); var ws = now - RATE_MS;
-      var keep = []; for (var wi = 0; wi < RATE_WIN.length; wi++) { if (RATE_WIN[wi] > ws) keep.push(RATE_WIN[wi]); }
-      RATE_WIN.length = 0; for (var wj = 0; wj < keep.length; wj++) RATE_WIN.push(keep[wj]);
-      if (RATE_WIN.length >= RATE_MAX) { var retry = Math.ceil((RATE_WIN[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      RATE_WIN.push(now);
-      return null;
-    }
+    // Per-IP rate limit (bounded window from the shared module). The
+    // landing sample is anonymous, so the budget is keyed by real client
+    // IP — one caller can never exhaust the budget for every visitor.
+    var pd = null;
+    try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
-      var rateErr = checkRate();
+      var rateErr = rl.checkRate(rl.window("__fepPublicSample"), (pd && pd.clientIp) ? pd.clientIp(e) : "unknown", 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Find the single published public sample
@@ -830,23 +831,13 @@ routerAdd(
     var TOPICS_C = "topics";
     var MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10 MB
 
-    // Per-IP rate limit
-    if (typeof globalThis.__fepSampleAudio === "undefined") { globalThis.__fepSampleAudio = []; }
-    var RATE_WIN = globalThis.__fepSampleAudio;
-    var RATE_MAX = 60;
-    var RATE_MS = 300000;
-
-    function checkRate() {
-      var now = Date.now(); var ws = now - RATE_MS;
-      var keep = []; for (var wi = 0; wi < RATE_WIN.length; wi++) { if (RATE_WIN[wi] > ws) keep.push(RATE_WIN[wi]); }
-      RATE_WIN.length = 0; for (var wj = 0; wj < keep.length; wj++) RATE_WIN.push(keep[wj]);
-      if (RATE_WIN.length >= RATE_MAX) { var retry = Math.ceil((RATE_WIN[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      RATE_WIN.push(now);
-      return null;
-    }
+    // Per-IP rate limit (bounded window from the shared module).
+    var pd2 = null;
+    try { pd2 = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd2 = null; }
+    var rl2 = require(__hooks + '/rate_limit.pb.js');
 
     try {
-      var rateErr = checkRate();
+      var rateErr = rl2.checkRate(rl2.window("__fepSampleAudio"), (pd2 && pd2.clientIp) ? pd2.clientIp(e) : "unknown", 60, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Find the published public sample
@@ -1063,23 +1054,7 @@ routerAdd(
     var USERS_C = "fep_users";
     var SUBS_C = "subscriptions";
     var MAX_AUDIO_BYTES = 10 * 1024 * 1024;
-
-    // Inline rate limit
-    if (typeof globalThis.__fepPremiumAudio === "undefined") { globalThis.__fepPremiumAudio = {}; }
-    var RATE_WIN = globalThis.__fepPremiumAudio;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       // === Manual auth resolution ===
@@ -1173,7 +1148,7 @@ routerAdd(
       }
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepPremiumAudio"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // === Load lesson ===

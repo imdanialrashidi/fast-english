@@ -650,6 +650,15 @@ async function main() {
   });
   await makeLesson(su, topic2.id, { level: 'B1', title: 'Second B1' });
 
+  // Fresh lesson for the create-with-zero-position contract (the golden
+  // student has no progress record on it).
+  const zeroTopic = await makeTopic(su, {
+    slug: `t-zero-${randomId()}`,
+    status: 'published',
+    sort_order: 6,
+  });
+  const zeroLesson = await makeLesson(su, zeroTopic.id, { level: 'B1', title: 'Zero position' });
+
   // ==================================================================
   // Create the golden student (B1)
   // ==================================================================
@@ -1357,6 +1366,54 @@ async function main() {
   aScenario('array body rejected (400)', async () => {
     assert(arrBody.status === 400, `expected 400, got ${arrBody.status}`);
   });
+
+  // ==================================================================
+  // 28a. positionSeconds 0 is a 400 contract answer, not the PB
+  //      required-number-zero 500 — on create AND on update (PB 0.39
+  //      rejects 0 on any save of a required number field; 0 means
+  //      "not started" and is never stored). A stale revision (409)
+  //      takes precedence over the 0 rejection on update.
+  // ==================================================================
+  const zeroCreate = await jf(`/api/fast-english/lessons/${zeroLesson.id}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${sToken}` },
+    body: JSON.stringify({ positionSeconds: 0, expectedRevision: 0 }),
+  });
+  aScenario('create with positionSeconds 0 rejected (400 invalid_position)', async () => {
+    await assertHttp(zeroCreate, 400, 'create-with-zero');
+    assert(
+      zeroCreate.body?.code === 'invalid_position',
+      `expected code invalid_position, got ${JSON.stringify(zeroCreate.body).slice(0, 200)}`,
+    );
+  });
+
+  const zeroCreate30 = await jf(`/api/fast-english/lessons/${zeroLesson.id}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${sToken}` },
+    body: JSON.stringify({ positionSeconds: 30, expectedRevision: 0 }),
+  });
+  aScenario('create with positionSeconds 30 works (200)', async () => {
+    await assertHttp(zeroCreate30, 200, 'create-with-30');
+  });
+
+  const zeroUpdate = await jf(`/api/fast-english/lessons/${zeroLesson.id}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${sToken}` },
+    body: JSON.stringify({
+      positionSeconds: 0,
+      expectedRevision: zeroCreate30.body?.revision,
+    }),
+  });
+  aScenario(
+    'update existing record to positionSeconds 0 rejected (400 invalid_position)',
+    async () => {
+      await assertHttp(zeroUpdate, 400, 'update-to-zero');
+      assert(
+        zeroUpdate.body?.code === 'invalid_position',
+        `expected code invalid_position, got ${JSON.stringify(zeroUpdate.body).slice(0, 200)}`,
+      );
+    },
+  );
 
   // ==================================================================
   // 29. No raw internal fields leak

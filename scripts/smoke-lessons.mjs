@@ -595,12 +595,30 @@ async function main() {
   scenario('lesson created with audio', () => assert(!!lesson.id, 'no id'));
   const lessonId = lesson.id;
 
-  // Duplicate (topic, level) rejection
-  try {
-    await makeLesson(su, topicId, { level: 'B1', title: 'Dup' });
-    assert(false, 'dup allowed');
-  } catch {}
-  scenario('duplicate topic+level rejected', () => assert(true));
+  // Duplicate (topic, level) rejection. The create POST is called directly
+  // (makeLesson throws a bare Error that would swallow the status); a real
+  // rejection is the unique (topic, level) index answering 400 for an
+  // otherwise-valid draft create.
+  const dupRes = await jf('/api/collections/lessons/records', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({
+      topic: topicId,
+      level: 'B1',
+      title: 'Dup',
+      summary: 's',
+      body: 'b',
+      estimated_minutes: 10,
+      status: 'draft',
+    }),
+  });
+  scenario('duplicate topic+level rejected', () => {
+    assert(dupRes.status === 400, `expected 400, got ${dupRes.status}`);
+    assert(
+      !dupRes.body?.id,
+      `duplicate create must not return a record: ${JSON.stringify(dupRes.body).slice(0, 200)}`,
+    );
+  });
 
   // Draft topic
   const dt = await makeTopic(su, {

@@ -49,23 +49,9 @@ routerAdd(
     var TOTAL_Q = 20;
 
     // --- Rate-limit state ---
-    if (typeof globalThis.__fepLevelCtx === "undefined") { globalThis.__fepLevelCtx = {}; }
-    var RATE_WIN = globalThis.__fepLevelCtx;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     // --- Inline helpers ---
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
 
     function scoreToLevel(sc) {
       var s = Number(sc);
@@ -119,7 +105,7 @@ routerAdd(
       if (!hasSub) { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepLevelCtx"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Find attempt
@@ -254,7 +240,8 @@ routerAdd(
 
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
-      return e.json(500, { code: "unexpected_error", message: msg });
+      try { $app.logger().error("placement_level_routes: level-context error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   },
   $apis.requireAuth("fep_users")
@@ -274,21 +261,7 @@ routerAdd(
     var SUBS_C = "subscriptions";
     var ALLOWED_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
-    if (typeof globalThis.__fepSelLevel === "undefined") { globalThis.__fepSelLevel = {}; }
-    var RATE_WIN = globalThis.__fepSelLevel;
-    var RATE_MAX = 5;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     function scoreToLevel(sc) {
       var s = Number(sc);
@@ -350,7 +323,7 @@ routerAdd(
       if (!hasSub) { return e.json(403, { code: "subscription_required", message: "Active subscription required." }); }
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepSelLevel"), uid, 5, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       // Parse request body
@@ -449,8 +422,10 @@ routerAdd(
       var rawD = String(topErr && topErr.rawData ? topErr.rawData : "");
       var full = (msg + " " + rawD).toLowerCase();
       var cmap = { user_not_found: 401, subscription_required: 403, no_attempt: 404, attempt_not_submitted: 409, invalid_score: 400, level_mapping_integrity_error: 500 };
-      for (var ec in cmap) { if (full.indexOf(ec) >= 0) { return e.json(cmap[ec], { code: ec, message: msg }); } }
-      return e.json(500, { code: "unexpected_error", message: msg });
+      var cmsg = { user_not_found: "User not found.", subscription_required: "Active subscription required.", no_attempt: "No attempt found.", attempt_not_submitted: "Attempt is not submitted.", invalid_score: "Invalid score.", level_mapping_integrity_error: "Internal error." };
+      for (var ec in cmap) { if (full.indexOf(ec) >= 0) { return e.json(cmap[ec], { code: ec, message: cmsg[ec] }); } }
+      try { $app.logger().error("placement_level_routes: selected-level error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   },
   $apis.requireAuth("fep_users")
@@ -469,21 +444,7 @@ routerAdd(
     var ATTEMPTS_C = "placement_attempts";
     var SUBS_C = "subscriptions";
 
-    if (typeof globalThis.__fepDash === "undefined") { globalThis.__fepDash = {}; }
-    var RATE_WIN = globalThis.__fepDash;
-    var RATE_MAX = 30;
-    var RATE_MS = 300000;
-
-    function checkRate(uid) {
-      if (!uid) return null;
-      var now = Date.now(); var ws = now - RATE_MS;
-      var b = RATE_WIN[uid]; if (!b || !Array.isArray(b)) { b = []; RATE_WIN[uid] = b; }
-      var keep = []; for (var wi = 0; wi < b.length; wi++) { if (b[wi] > ws) keep.push(b[wi]); }
-      b.length = 0; for (var wj = 0; wj < keep.length; wj++) b.push(keep[wj]);
-      if (b.length >= RATE_MAX) { var retry = Math.ceil((b[0] + RATE_MS - now) / 1000); if (retry < 1) retry = 1; return { status: 429, body: { code: "rate_limited", message: "Too many requests." } }; }
-      b.push(now);
-      return null;
-    }
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     try {
       if (!e.auth || !e.auth.id) { return e.json(401, { code: "auth_required", message: "Authentication required." }); }
@@ -539,7 +500,7 @@ routerAdd(
       }
 
       // Rate limit
-      var rateErr = checkRate(uid);
+      var rateErr = rl.checkRate(rl.window("__fepDash"), uid, 30, 300000);
       if (rateErr) return e.json(rateErr.status, rateErr.body);
 
       var sugLvl = String(student.get("suggested_level") || "");
@@ -710,7 +671,8 @@ routerAdd(
 
     } catch (topErr) {
       var msg = String(topErr && topErr.message ? topErr.message : String(topErr));
-      return e.json(500, { code: "unexpected_error", message: msg });
+      try { $app.logger().error("placement_level_routes: dashboard error: " + msg); } catch (_) {}
+      return e.json(500, { code: "unexpected_error", message: "Internal error." });
     }
   },
   $apis.requireAuth("fep_users")

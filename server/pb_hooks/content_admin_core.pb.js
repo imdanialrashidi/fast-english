@@ -578,28 +578,15 @@ var __contentAdminCore = (function () {
 
   // Buckets live on globalThis so they survive across hook files; each
   // route family uses its own bucket name. Returns an error object to
-  // return, or null when the request may proceed.
+  // return, or null when the request may proceed. Buckets are keyed by
+  // bucketName + staff id and live in a bounded map (shared module).
   function rateLimit(e, bucketName, maxRequests, windowMs) {
-    if (typeof globalThis.__fepAdminRate === "undefined") {
-      globalThis.__fepAdminRate = {};
-    }
-    var all = globalThis.__fepAdminRate;
-    if (!all[bucketName]) all[bucketName] = {};
-    var bucket = all[bucketName];
+    var rl = require(__hooks + '/rate_limit.pb.js');
     var staffId = String(e.auth && e.auth.id ? e.auth.id : "");
-    var now = Date.now();
-    var window = bucket[staffId];
-    if (!window || !Array.isArray(window)) { window = []; bucket[staffId] = window; }
-    var keep = [];
-    for (var i = 0; i < window.length; i++) {
-      if (window[i] > now - windowMs) keep.push(window[i]);
-    }
-    window.length = 0;
-    for (var j = 0; j < keep.length; j++) window.push(keep[j]);
-    if (window.length >= maxRequests) {
-      return { status: 429, code: "rate_limited", message: "Too many requests." };
-    }
-    window.push(now);
+    if (!staffId) return null;
+    var err = rl.checkRate(rl.window("__fepAdminRate"), bucketName + ":" + staffId, maxRequests, windowMs);
+    // Keep the caller-facing shape { status, code, message }.
+    if (err) return { status: err.status, code: err.body.code, message: err.body.message };
     return null;
   }
 

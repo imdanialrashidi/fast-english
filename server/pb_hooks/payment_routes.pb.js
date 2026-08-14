@@ -92,18 +92,7 @@ routerAdd(
     ];
     // Per-user rate limit (5 attempts / 10 min). PB 0.39's middleware
     // falls back to per-IP for custom routes, so we enforce the per-
-    // user window here. State is in-memory and is rebuilt on PB
-    // restart, which is acceptable for a soft abuse-prevention limit.
-    var RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-    var RATE_LIMIT_MAX = 5;
-    // The window map is shared across all invocations of this closure
-    // because `var` at the top of a `routerAdd` callback is captured
-    // in the JSVM's persistent function frame. PB does not re-create
-    // the handler on every request, so the map survives between calls.
-    if (typeof globalThis.__fepPostRateWindow === "undefined") {
-      globalThis.__fepPostRateWindow = {};
-    }
-    var RATE_WINDOW = globalThis.__fepPostRateWindow;
+    var rl = require(__hooks + '/rate_limit.pb.js');
 
     // ----- Inline digit normalizer -----
     function normalizeDigits(raw) {
@@ -307,36 +296,15 @@ routerAdd(
       //         penalised. -----
       var userIdKey = String(e.auth.id || "");
       if (userIdKey) {
-        var nowMs = Date.now();
-        var windowStart = nowMs - RATE_LIMIT_WINDOW_MS;
-        var bucket = RATE_WINDOW[userIdKey];
-        if (!bucket || !Array.isArray(bucket)) {
-          bucket = [];
-          RATE_WINDOW[userIdKey] = bucket;
+        // Per-user window (bounded map from the shared module). Only
+        // successful or rejected attempts that reach this point count —
+        // auth/account failures and 4xx rejections above are intentionally
+        // not counted, so a user fixing a bad request is not penalised.
+        var rateErr = rl.checkRate(rl.window("__fepPostRateWindow"), userIdKey, 5, 10 * 60 * 1000);
+        if (rateErr) {
+          try { e.response.header().set("Retry-After", String(rateErr.retryAfterSec)); } catch (_) {}
+          return e.json(rateErr.status, rateErr.body);
         }
-        // Drop entries older than the window.
-        var keep = [];
-        for (var wi = 0; wi < bucket.length; wi++) {
-          if (bucket[wi] > windowStart) keep.push(bucket[wi]);
-        }
-        bucket.length = 0;
-        for (var wj = 0; wj < keep.length; wj++) bucket.push(keep[wj]);
-        if (bucket.length >= RATE_LIMIT_MAX) {
-          // Suggest a retry after the oldest entry expires.
-          var oldest = bucket[0];
-          var retryAfterSec = Math.ceil(
-            (oldest + RATE_LIMIT_WINDOW_MS - nowMs) / 1000
-          );
-          if (retryAfterSec < 1) retryAfterSec = 1;
-          try {
-            e.response.header().set("Retry-After", String(retryAfterSec));
-          } catch (_) {}
-          return e.json(429, {
-            code: "rate_limited",
-            message: "Too many requests. Please try again later.",
-          });
-        }
-        bucket.push(nowMs);
       }
 
       // ----- 3. Parse multipart form via findUploadedFiles (triggers
@@ -701,6 +669,12 @@ routerAdd(
     var guardErr2 = g2.requireStudent(e);
     if (guardErr2) return e.json(guardErr2.status, { code: guardErr2.code, message: guardErr2.message });
 
+    // Per-user rate limit (bounded window from the shared module): this
+    // GET is cheap, but keep it throttled like every other route.
+    var rl2 = require(__hooks + '/rate_limit.pb.js');
+    var rateErr2 = rl2.checkRate(rl2.window("__fepPaymentCurrent"), String(e.auth.id || ""), 30, 300000);
+    if (rateErr2) return e.json(rateErr2.status, rateErr2.body);
+
     function shapeRequestForClient(rec) {
       if (!rec) return null;
       return {
@@ -906,6 +880,14 @@ routerAdd(
       if (!g || !g.requireStudent) return e.json(500, { code: "unexpected_error", message: "Internal error." });
       var guardErr = g.requireStudent(e);
       if (guardErr) return e.json(guardErr.status, { code: guardErr.code, message: guardErr.message });
+
+      // Per-user rate limit (bounded window from the shared module): the
+      // receipt streams up to 5 MB per response, so a single entitled
+      // account must not be able to amplify cheap requests into unbounded
+      // bandwidth/IO on the PocketBase process.
+      var rlR = require(__hooks + '/rate_limit.pb.js');
+      var rateErrR = rlR.checkRate(rlR.window("__fepPaymentReceipt"), String(e.auth.id || ""), 30, 300000);
+      if (rateErrR) return e.json(rateErrR.status, rateErrR.body);
 
       // 2. Path parameter: the request id. The ServeMux wildcard
       //    name is "requestId".
