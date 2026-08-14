@@ -34,6 +34,7 @@ import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { PageHeader } from '../../../../../shared/ui/PageHeader';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { useAuth } from '../../../lib/auth';
+import { FUNNEL_EVENTS, trackFunnel } from '../../../lib/telemetry';
 import {
   createPaymentRequest,
   loadActiveDestination,
@@ -171,6 +172,9 @@ export function PaymentRoute() {
         transferAt: values.transferAt,
       });
       if (res.kind === 'request') {
+        // Funnel telemetry: payment-request submission succeeded. No
+        // receipt/transfer/payment data is ever included.
+        trackFunnel(FUNNEL_EVENTS.paymentRequestSubmitted, { planId: values.planId });
         // Clear local file + URL (ReceiptPicker revokes on value=null).
         setValue('receiptFile', undefined as unknown as File, { shouldValidate: false });
         reset(

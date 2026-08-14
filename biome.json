@@ -23,7 +23,8 @@
       "!dist-landing-apk",
       "!dist-admin",
       "!.pi",
-      "!.mcp.json"
+      "!.mcp.json",
+      "!.artifacts"
     ]
   },
   "formatter": {

@@ -1,0 +1,1651 @@
+{
+  "tag": "20260814-001457",
+  "throttled": true,
+  "profile": {
+    "latency": 150,
+    "downloadThroughput": 1677721.6,
+    "uploadThroughput": 768000,
+    "cpuRate": 4
+  },
+  "journeys": [
+    {
+      "id": "entry",
+      "lcp": 2796,
+      "cls": 0,
+      "clsEntries": 0,
+      "fcp": 2512,
+      "tbt": 733,
+      "longTasks": 4,
+      "ttfb": 14,
+      "dcl": 1919,
+      "load": 1919,
+      "transfer": {
+        "js": 232923,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 0
+      },
+      "transferTotal": 360929,
+      "scripts": [
+        {
+          "name": "index-Dt6K6v9l.js",
+          "transfer": 83111,
+          "durationMs": 268
+        },
+        {
+          "name": "rolldown-runtime-Bh1tDfsg.js",
+          "transfer": 867,
+          "durationMs": 187
+        },
+        {
+          "name": "pocketbase--U1jwlZs.js",
+          "transfer": 49968,
+          "durationMs": 260
+        },
+        {
+          "name": "GlobalStyles-BSFTQLQ3.js",
+          "transfer": 925,
+          "durationMs": 198
+        },
+        {
+          "name": "RtlProvider-CHfX4HdN.js",
+          "transfer": 572,
+          "durationMs": 198
+        },
+        {
+          "name": "Button-CPxFRPCd.js",
+          "transfer": 11322,
+          "durationMs": 216
+        },
+        {
+          "name": "ThemeProviderWithVars-D-xSjJvo.js",
+          "transfer": 4318,
+          "durationMs": 356
+        },
+        {
+          "name": "zero-styled-Bey7sd82.js",
+          "transfer": 603,
+          "durationMs": 354
+        },
+        {
+          "name": "useSlot-x7pW9wkW.js",
+          "transfer": 1100,
+          "durationMs": 372
+        },
+        {
+          "name": "Portal-CjCrhcXw.js",
+          "transfer": 3098,
+          "durationMs": 415
+        },
+        {
+          "name": "Modal-DX9mbDuz.js",
+          "transfer": 5321,
+          "durationMs": 419
+        },
+        {
+          "name": "List-DAajlnrX.js",
+          "transfer": 1057,
+          "durationMs": 496
+        },
+        {
+          "name": "Skeleton-BC6oswgG.js",
+          "transfer": 1738,
+          "durationMs": 510
+        },
+        {
+          "name": "lib-C6a5KKlm.js",
+          "transfer": 8356,
+          "durationMs": 515
+        },
+        {
+          "name": "shape-DzJ0mT-f.js",
+          "transfer": 972,
+          "durationMs": 522
+        },
+        {
+          "name": "typography-om7uFghg.js",
+          "transfer": 801,
+          "durationMs": 565
+        },
+        {
+          "name": "tokens-CDlbfZVd.js",
+          "transfer": 1220,
+          "durationMs": 571
+        },
+        {
+          "name": "createSvgIcon-ndznCIJ8.js",
+          "transfer": 1440,
+          "durationMs": 645
+        },
+        {
+          "name": "mergeSlotProps-DycGI7je.js",
+          "transfer": 1193,
+          "durationMs": 658
+        },
+        {
+          "name": "StatePanel-DzUex5g5.js",
+          "transfer": 2107,
+          "durationMs": 662
+        },
+        {
+          "name": "IconButton-QRiMfoo2.js",
+          "transfer": 1702,
+          "durationMs": 670
+        },
+        {
+          "name": "Alert-feyQMl9l.js",
+          "transfer": 2330,
+          "durationMs": 717
+        },
+        {
+          "name": "ArrowForwardRounded-ChBovzQv.js",
+          "transfer": 1917,
+          "durationMs": 721
+        },
+        {
+          "name": "Grow-BWGdGT6e.js",
+          "transfer": 1454,
+          "durationMs": 795
+        },
+        {
+          "name": "Chip-CAquUjt1.js",
+          "transfer": 2993,
+          "durationMs": 808
+        },
+        {
+          "name": "LinearProgress-DV1XTx-8.js",
+          "transfer": 2184,
+          "durationMs": 811
+        },
+        {
+          "name": "auth-j_Eyi-uV.js",
+          "transfer": 2961,
+          "durationMs": 820
+        },
+        {
+          "name": "player-rEVw-ppn.js",
+          "transfer": 4691,
+          "durationMs": 871
+        },
+        {
+          "name": "useControlled-DeP3fIw1.js",
+          "transfer": 592,
+          "durationMs": 873
+        },
+        {
+          "name": "useControlled-BaiN1fqJ.js",
+          "transfer": 366,
+          "durationMs": 947
+        },
+        {
+          "name": "Tooltip-BeLIKs25.js",
+          "transfer": 11346,
+          "durationMs": 965
+        },
+        {
+          "name": "ThemeSwitch-CAu6a5K3.js",
+          "transfer": 2342,
+          "durationMs": 961
+        },
+        {
+          "name": "domain-x_RtuAYQ.js",
+          "transfer": 556,
+          "durationMs": 969
+        },
+        {
+          "name": "productCopy-Dqb1cfSC.js",
+          "transfer": 2162,
+          "durationMs": 1022
+        },
+        {
+          "name": "LevelBadge-C5nhEMZH.js",
+          "transfer": 1015,
+          "durationMs": 1024
+        },
+        {
+          "name": "PageSkeletons-dFnKFyA7.js",
+          "transfer": 1489,
+          "durationMs": 1096
+        },
+        {
+          "name": "ContentSection-xzdn0-RL.js",
+          "transfer": 1100,
+          "durationMs": 1111
+        },
+        {
+          "name": "api-BMVS8zwz.js",
+          "transfer": 1175,
+          "durationMs": 1113
+        },
+        {
+          "name": "CheckCircleRounded-Bj5nDASU.js",
+          "transfer": 685,
+          "durationMs": 1118
+        },
+        {
+          "name": "LessonCard-BUDORN3V.js",
+          "transfer": 2269,
+          "durationMs": 1176
+        },
+        {
+          "name": "EpisodeCard-80q0s1FP.js",
+          "transfer": 1923,
+          "durationMs": 1178
+        },
+        {
+          "name": "api-B5anRWU3.js",
+          "transfer": 772,
+          "durationMs": 1249
+        },
+        {
+          "name": "Brand-BbeicX5c.js",
+          "transfer": 2296,
+          "durationMs": 1270
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 156
+        }
+      ],
+      "pageErrors": [],
+      "url": "/",
+      "journeyMs": 3722,
+      "settled": true
+    },
+    {
+      "id": "login",
+      "lcp": 3732,
+      "cls": 0,
+      "clsEntries": 0,
+      "fcp": 2268,
+      "tbt": 874,
+      "longTasks": 6,
+      "ttfb": 7,
+      "dcl": 1798,
+      "load": 1799,
+      "transfer": {
+        "js": 294093,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 0
+      },
+      "transferTotal": 406842,
+      "scripts": [
+        {
+          "name": "index-Dt6K6v9l.js",
+          "transfer": 83111,
+          "durationMs": 260
+        },
+        {
+          "name": "rolldown-runtime-Bh1tDfsg.js",
+          "transfer": 867,
+          "durationMs": 181
+        },
+        {
+          "name": "pocketbase--U1jwlZs.js",
+          "transfer": 49968,
+          "durationMs": 257
+        },
+        {
+          "name": "GlobalStyles-BSFTQLQ3.js",
+          "transfer": 925,
+          "durationMs": 191
+        },
+        {
+          "name": "RtlProvider-CHfX4HdN.js",
+          "transfer": 572,
+          "durationMs": 189
+        },
+        {
+          "name": "Button-CPxFRPCd.js",
+          "transfer": 11322,
+          "durationMs": 207
+        },
+        {
+          "name": "ThemeProviderWithVars-D-xSjJvo.js",
+          "transfer": 4318,
+          "durationMs": 347
+        },
+        {
+          "name": "zero-styled-Bey7sd82.js",
+          "transfer": 603,
+          "durationMs": 341
+        },
+        {
+          "name": "useSlot-x7pW9wkW.js",
+          "transfer": 1100,
+          "durationMs": 363
+        },
+        {
+          "name": "Portal-CjCrhcXw.js",
+          "transfer": 3098,
+          "durationMs": 408
+        },
+        {
+          "name": "Modal-DX9mbDuz.js",
+          "transfer": 5321,
+          "durationMs": 411
+        },
+        {
+          "name": "List-DAajlnrX.js",
+          "transfer": 1057,
+          "durationMs": 485
+        },
+        {
+          "name": "Skeleton-BC6oswgG.js",
+          "transfer": 1738,
+          "durationMs": 496
+        },
+        {
+          "name": "lib-C6a5KKlm.js",
+          "transfer": 8356,
+          "durationMs": 503
+        },
+        {
+          "name": "shape-DzJ0mT-f.js",
+          "transfer": 972,
+          "durationMs": 517
+        },
+        {
+          "name": "typography-om7uFghg.js",
+          "transfer": 801,
+          "durationMs": 562
+        },
+        {
+          "name": "tokens-CDlbfZVd.js",
+          "transfer": 1220,
+          "durationMs": 567
+        },
+        {
+          "name": "createSvgIcon-ndznCIJ8.js",
+          "transfer": 1440,
+          "durationMs": 639
+        },
+        {
+          "name": "mergeSlotProps-DycGI7je.js",
+          "transfer": 1193,
+          "durationMs": 651
+        },
+        {
+          "name": "StatePanel-DzUex5g5.js",
+          "transfer": 2107,
+          "durationMs": 659
+        },
+        {
+          "name": "IconButton-QRiMfoo2.js",
+          "transfer": 1702,
+          "durationMs": 671
+        },
+        {
+          "name": "Alert-feyQMl9l.js",
+          "transfer": 2330,
+          "durationMs": 715
+        },
+        {
+          "name": "ArrowForwardRounded-ChBovzQv.js",
+          "transfer": 1917,
+          "durationMs": 721
+        },
+        {
+          "name": "Grow-BWGdGT6e.js",
+          "transfer": 1454,
+          "durationMs": 793
+        },
+        {
+          "name": "Chip-CAquUjt1.js",
+          "transfer": 2993,
+          "durationMs": 805
+        },
+        {
+          "name": "LinearProgress-DV1XTx-8.js",
+          "transfer": 2184,
+          "durationMs": 813
+        },
+        {
+          "name": "auth-j_Eyi-uV.js",
+          "transfer": 2961,
+          "durationMs": 826
+        },
+        {
+          "name": "player-rEVw-ppn.js",
+          "transfer": 4691,
+          "durationMs": 864
+        },
+        {
+          "name": "useControlled-DeP3fIw1.js",
+          "transfer": 592,
+          "durationMs": 870
+        },
+        {
+          "name": "useControlled-BaiN1fqJ.js",
+          "transfer": 366,
+          "durationMs": 941
+        },
+        {
+          "name": "Tooltip-BeLIKs25.js",
+          "transfer": 11346,
+          "durationMs": 956
+        },
+        {
+          "name": "ThemeSwitch-CAu6a5K3.js",
+          "transfer": 2342,
+          "durationMs": 955
+        },
+        {
+          "name": "domain-x_RtuAYQ.js",
+          "transfer": 556,
+          "durationMs": 967
+        },
+        {
+          "name": "productCopy-Dqb1cfSC.js",
+          "transfer": 2162,
+          "durationMs": 1009
+        },
+        {
+          "name": "LevelBadge-C5nhEMZH.js",
+          "transfer": 1015,
+          "durationMs": 1016
+        },
+        {
+          "name": "PageSkeletons-dFnKFyA7.js",
+          "transfer": 1489,
+          "durationMs": 1086
+        },
+        {
+          "name": "ContentSection-xzdn0-RL.js",
+          "transfer": 1100,
+          "durationMs": 1101
+        },
+        {
+          "name": "api-BMVS8zwz.js",
+          "transfer": 1175,
+          "durationMs": 1102
+        },
+        {
+          "name": "CheckCircleRounded-Bj5nDASU.js",
+          "transfer": 685,
+          "durationMs": 1116
+        },
+        {
+          "name": "LessonCard-BUDORN3V.js",
+          "transfer": 2269,
+          "durationMs": 1159
+        },
+        {
+          "name": "EpisodeCard-80q0s1FP.js",
+          "transfer": 1923,
+          "durationMs": 1166
+        },
+        {
+          "name": "api-B5anRWU3.js",
+          "transfer": 772,
+          "durationMs": 1237
+        },
+        {
+          "name": "Brand-BbeicX5c.js",
+          "transfer": 2296,
+          "durationMs": 1258
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 156
+        },
+        {
+          "name": "LoginRoute-XK5N_sj6.js",
+          "transfer": 2565,
+          "durationMs": 166
+        },
+        {
+          "name": "TextField-DTif_AMk.js",
+          "transfer": 13298,
+          "durationMs": 178
+        },
+        {
+          "name": "isMuiElement-Cu-AKM0J.js",
+          "transfer": 544,
+          "durationMs": 166
+        },
+        {
+          "name": "useFormControl-BdubuexC.js",
+          "transfer": 622,
+          "durationMs": 164
+        },
+        {
+          "name": "Menu-C56WB5yP.js",
+          "transfer": 4101,
+          "durationMs": 162
+        },
+        {
+          "name": "useRovingTabIndex-Ii-ntSGe.js",
+          "transfer": 2321,
+          "durationMs": 244
+        },
+        {
+          "name": "DialogContent-4F-pvDjv.js",
+          "transfer": 2428,
+          "durationMs": 311
+        },
+        {
+          "name": "DialogTitle-Cit9KQ5d.js",
+          "transfer": 972,
+          "durationMs": 307
+        },
+        {
+          "name": "Divider-DlPoPny2.js",
+          "transfer": 1574,
+          "durationMs": 307
+        },
+        {
+          "name": "InputAdornment-DugSKfkj.js",
+          "transfer": 1287,
+          "durationMs": 308
+        },
+        {
+          "name": "zod-CEZUfmV9.js",
+          "transfer": 11146,
+          "durationMs": 319
+        },
+        {
+          "name": "schemas-R6tIKaFr.js",
+          "transfer": 1223,
+          "durationMs": 396
+        },
+        {
+          "name": "schemas-CI1yCQq7.js",
+          "transfer": 19089,
+          "durationMs": 471
+        }
+      ],
+      "pageErrors": [],
+      "url": "/login",
+      "journeyMs": 4771,
+      "settled": true
+    },
+    {
+      "id": "home",
+      "lcp": 3980,
+      "cls": 0,
+      "clsEntries": 1,
+      "fcp": 2384,
+      "tbt": 1471,
+      "longTasks": 8,
+      "ttfb": 6,
+      "dcl": 1829,
+      "load": 1829,
+      "transfer": {
+        "js": 232923,
+        "css": 997,
+        "img": 300,
+        "font": 111452,
+        "other": 7521
+      },
+      "transferTotal": 353193,
+      "scripts": [
+        {
+          "name": "index-Dt6K6v9l.js",
+          "transfer": 83111,
+          "durationMs": 267
+        },
+        {
+          "name": "rolldown-runtime-Bh1tDfsg.js",
+          "transfer": 867,
+          "durationMs": 184
+        },
+        {
+          "name": "pocketbase--U1jwlZs.js",
+          "transfer": 49968,
+          "durationMs": 242
+        },
+        {
+          "name": "GlobalStyles-BSFTQLQ3.js",
+          "transfer": 925,
+          "durationMs": 176
+        },
+        {
+          "name": "RtlProvider-CHfX4HdN.js",
+          "transfer": 572,
+          "durationMs": 184
+        },
+        {
+          "name": "Button-CPxFRPCd.js",
+          "transfer": 11322,
+          "durationMs": 195
+        },
+        {
+          "name": "ThemeProviderWithVars-D-xSjJvo.js",
+          "transfer": 4318,
+          "durationMs": 342
+        },
+        {
+          "name": "zero-styled-Bey7sd82.js",
+          "transfer": 603,
+          "durationMs": 339
+        },
+        {
+          "name": "useSlot-x7pW9wkW.js",
+          "transfer": 1100,
+          "durationMs": 350
+        },
+        {
+          "name": "Portal-CjCrhcXw.js",
+          "transfer": 3098,
+          "durationMs": 395
+        },
+        {
+          "name": "Modal-DX9mbDuz.js",
+          "transfer": 5321,
+          "durationMs": 419
+        },
+        {
+          "name": "List-DAajlnrX.js",
+          "transfer": 1057,
+          "durationMs": 494
+        },
+        {
+          "name": "Skeleton-BC6oswgG.js",
+          "transfer": 1738,
+          "durationMs": 495
+        },
+        {
+          "name": "lib-C6a5KKlm.js",
+          "transfer": 8356,
+          "durationMs": 500
+        },
+        {
+          "name": "shape-DzJ0mT-f.js",
+          "transfer": 972,
+          "durationMs": 503
+        },
+        {
+          "name": "typography-om7uFghg.js",
+          "transfer": 801,
+          "durationMs": 552
+        },
+        {
+          "name": "tokens-CDlbfZVd.js",
+          "transfer": 1220,
+          "durationMs": 575
+        },
+        {
+          "name": "createSvgIcon-ndznCIJ8.js",
+          "transfer": 1440,
+          "durationMs": 647
+        },
+        {
+          "name": "mergeSlotProps-DycGI7je.js",
+          "transfer": 1193,
+          "durationMs": 643
+        },
+        {
+          "name": "StatePanel-DzUex5g5.js",
+          "transfer": 2107,
+          "durationMs": 649
+        },
+        {
+          "name": "IconButton-QRiMfoo2.js",
+          "transfer": 1702,
+          "durationMs": 654
+        },
+        {
+          "name": "Alert-feyQMl9l.js",
+          "transfer": 2330,
+          "durationMs": 699
+        },
+        {
+          "name": "ArrowForwardRounded-ChBovzQv.js",
+          "transfer": 1917,
+          "durationMs": 722
+        },
+        {
+          "name": "Grow-BWGdGT6e.js",
+          "transfer": 1454,
+          "durationMs": 795
+        },
+        {
+          "name": "Chip-CAquUjt1.js",
+          "transfer": 2993,
+          "durationMs": 795
+        },
+        {
+          "name": "LinearProgress-DV1XTx-8.js",
+          "transfer": 2184,
+          "durationMs": 796
+        },
+        {
+          "name": "auth-j_Eyi-uV.js",
+          "transfer": 2961,
+          "durationMs": 799
+        },
+        {
+          "name": "player-rEVw-ppn.js",
+          "transfer": 4691,
+          "durationMs": 847
+        },
+        {
+          "name": "useControlled-DeP3fIw1.js",
+          "transfer": 592,
+          "durationMs": 869
+        },
+        {
+          "name": "useControlled-BaiN1fqJ.js",
+          "transfer": 366,
+          "durationMs": 945
+        },
+        {
+          "name": "Tooltip-BeLIKs25.js",
+          "transfer": 11346,
+          "durationMs": 962
+        },
+        {
+          "name": "ThemeSwitch-CAu6a5K3.js",
+          "transfer": 2342,
+          "durationMs": 955
+        },
+        {
+          "name": "domain-x_RtuAYQ.js",
+          "transfer": 556,
+          "durationMs": 954
+        },
+        {
+          "name": "productCopy-Dqb1cfSC.js",
+          "transfer": 2162,
+          "durationMs": 1001
+        },
+        {
+          "name": "LevelBadge-C5nhEMZH.js",
+          "transfer": 1015,
+          "durationMs": 1023
+        },
+        {
+          "name": "PageSkeletons-dFnKFyA7.js",
+          "transfer": 1489,
+          "durationMs": 1101
+        },
+        {
+          "name": "ContentSection-xzdn0-RL.js",
+          "transfer": 1100,
+          "durationMs": 1108
+        },
+        {
+          "name": "api-BMVS8zwz.js",
+          "transfer": 1175,
+          "durationMs": 1108
+        },
+        {
+          "name": "CheckCircleRounded-Bj5nDASU.js",
+          "transfer": 685,
+          "durationMs": 1120
+        },
+        {
+          "name": "LessonCard-BUDORN3V.js",
+          "transfer": 2269,
+          "durationMs": 1156
+        },
+        {
+          "name": "EpisodeCard-80q0s1FP.js",
+          "transfer": 1923,
+          "durationMs": 1178
+        },
+        {
+          "name": "api-B5anRWU3.js",
+          "transfer": 772,
+          "durationMs": 1254
+        },
+        {
+          "name": "Brand-BbeicX5c.js",
+          "transfer": 2296,
+          "durationMs": 1261
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 160
+        }
+      ],
+      "pageErrors": [],
+      "url": "/",
+      "journeyMs": 4866,
+      "settled": true
+    },
+    {
+      "id": "library",
+      "lcp": 4180,
+      "cls": 0,
+      "clsEntries": 0,
+      "fcp": 2640,
+      "tbt": 1148,
+      "longTasks": 6,
+      "ttfb": 9,
+      "dcl": 1835,
+      "load": 1835,
+      "transfer": {
+        "js": 259068,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 6326
+      },
+      "transferTotal": 393400,
+      "scripts": [
+        {
+          "name": "index-Dt6K6v9l.js",
+          "transfer": 83111,
+          "durationMs": 263
+        },
+        {
+          "name": "rolldown-runtime-Bh1tDfsg.js",
+          "transfer": 867,
+          "durationMs": 217
+        },
+        {
+          "name": "pocketbase--U1jwlZs.js",
+          "transfer": 49968,
+          "durationMs": 270
+        },
+        {
+          "name": "GlobalStyles-BSFTQLQ3.js",
+          "transfer": 925,
+          "durationMs": 214
+        },
+        {
+          "name": "RtlProvider-CHfX4HdN.js",
+          "transfer": 572,
+          "durationMs": 222
+        },
+        {
+          "name": "Button-CPxFRPCd.js",
+          "transfer": 11322,
+          "durationMs": 232
+        },
+        {
+          "name": "ThemeProviderWithVars-D-xSjJvo.js",
+          "transfer": 4318,
+          "durationMs": 381
+        },
+        {
+          "name": "zero-styled-Bey7sd82.js",
+          "transfer": 603,
+          "durationMs": 378
+        },
+        {
+          "name": "useSlot-x7pW9wkW.js",
+          "transfer": 1100,
+          "durationMs": 385
+        },
+        {
+          "name": "Portal-CjCrhcXw.js",
+          "transfer": 3098,
+          "durationMs": 413
+        },
+        {
+          "name": "Modal-DX9mbDuz.js",
+          "transfer": 5321,
+          "durationMs": 424
+        },
+        {
+          "name": "List-DAajlnrX.js",
+          "transfer": 1057,
+          "durationMs": 527
+        },
+        {
+          "name": "Skeleton-BC6oswgG.js",
+          "transfer": 1738,
+          "durationMs": 529
+        },
+        {
+          "name": "lib-C6a5KKlm.js",
+          "transfer": 8356,
+          "durationMs": 540
+        },
+        {
+          "name": "shape-DzJ0mT-f.js",
+          "transfer": 972,
+          "durationMs": 534
+        },
+        {
+          "name": "typography-om7uFghg.js",
+          "transfer": 801,
+          "durationMs": 560
+        },
+        {
+          "name": "tokens-CDlbfZVd.js",
+          "transfer": 1220,
+          "durationMs": 571
+        },
+        {
+          "name": "createSvgIcon-ndznCIJ8.js",
+          "transfer": 1440,
+          "durationMs": 680
+        },
+        {
+          "name": "mergeSlotProps-DycGI7je.js",
+          "transfer": 1193,
+          "durationMs": 684
+        },
+        {
+          "name": "StatePanel-DzUex5g5.js",
+          "transfer": 2107,
+          "durationMs": 688
+        },
+        {
+          "name": "IconButton-QRiMfoo2.js",
+          "transfer": 1702,
+          "durationMs": 693
+        },
+        {
+          "name": "Alert-feyQMl9l.js",
+          "transfer": 2330,
+          "durationMs": 710
+        },
+        {
+          "name": "ArrowForwardRounded-ChBovzQv.js",
+          "transfer": 1917,
+          "durationMs": 725
+        },
+        {
+          "name": "Grow-BWGdGT6e.js",
+          "transfer": 1454,
+          "durationMs": 831
+        },
+        {
+          "name": "Chip-CAquUjt1.js",
+          "transfer": 2993,
+          "durationMs": 838
+        },
+        {
+          "name": "LinearProgress-DV1XTx-8.js",
+          "transfer": 2184,
+          "durationMs": 842
+        },
+        {
+          "name": "auth-j_Eyi-uV.js",
+          "transfer": 2961,
+          "durationMs": 852
+        },
+        {
+          "name": "player-rEVw-ppn.js",
+          "transfer": 4691,
+          "durationMs": 863
+        },
+        {
+          "name": "useControlled-DeP3fIw1.js",
+          "transfer": 592,
+          "durationMs": 875
+        },
+        {
+          "name": "useControlled-BaiN1fqJ.js",
+          "transfer": 366,
+          "durationMs": 981
+        },
+        {
+          "name": "Tooltip-BeLIKs25.js",
+          "transfer": 11346,
+          "durationMs": 993
+        },
+        {
+          "name": "ThemeSwitch-CAu6a5K3.js",
+          "transfer": 2342,
+          "durationMs": 1005
+        },
+        {
+          "name": "domain-x_RtuAYQ.js",
+          "transfer": 556,
+          "durationMs": 1005
+        },
+        {
+          "name": "productCopy-Dqb1cfSC.js",
+          "transfer": 2162,
+          "durationMs": 1018
+        },
+        {
+          "name": "LevelBadge-C5nhEMZH.js",
+          "transfer": 1015,
+          "durationMs": 1025
+        },
+        {
+          "name": "PageSkeletons-dFnKFyA7.js",
+          "transfer": 1489,
+          "durationMs": 1131
+        },
+        {
+          "name": "ContentSection-xzdn0-RL.js",
+          "transfer": 1100,
+          "durationMs": 1142
+        },
+        {
+          "name": "api-BMVS8zwz.js",
+          "transfer": 1175,
+          "durationMs": 1159
+        },
+        {
+          "name": "CheckCircleRounded-Bj5nDASU.js",
+          "transfer": 685,
+          "durationMs": 1159
+        },
+        {
+          "name": "LessonCard-BUDORN3V.js",
+          "transfer": 2269,
+          "durationMs": 1169
+        },
+        {
+          "name": "EpisodeCard-80q0s1FP.js",
+          "transfer": 1923,
+          "durationMs": 1173
+        },
+        {
+          "name": "api-B5anRWU3.js",
+          "transfer": 772,
+          "durationMs": 1278
+        },
+        {
+          "name": "Brand-BbeicX5c.js",
+          "transfer": 2296,
+          "durationMs": 1292
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 156
+        },
+        {
+          "name": "LibraryRoute-Dr8HE2xr.js",
+          "transfer": 5399,
+          "durationMs": 176
+        },
+        {
+          "name": "TextField-DTif_AMk.js",
+          "transfer": 13298,
+          "durationMs": 189
+        },
+        {
+          "name": "isMuiElement-Cu-AKM0J.js",
+          "transfer": 544,
+          "durationMs": 163
+        },
+        {
+          "name": "useFormControl-BdubuexC.js",
+          "transfer": 300,
+          "durationMs": 346
+        },
+        {
+          "name": "Menu-C56WB5yP.js",
+          "transfer": 4101,
+          "durationMs": 170
+        },
+        {
+          "name": "useRovingTabIndex-Ii-ntSGe.js",
+          "transfer": 300,
+          "durationMs": 356
+        },
+        {
+          "name": "InputAdornment-DugSKfkj.js",
+          "transfer": 1287,
+          "durationMs": 164
+        },
+        {
+          "name": "CloseRounded-OUWZQMXJ.js",
+          "transfer": 916,
+          "durationMs": 162
+        }
+      ],
+      "pageErrors": [],
+      "url": "/library",
+      "journeyMs": 5096,
+      "settled": true
+    },
+    {
+      "id": "account",
+      "lcp": 4028,
+      "cls": 0.06,
+      "clsEntries": 1,
+      "fcp": 2584,
+      "tbt": 1192,
+      "longTasks": 8,
+      "ttfb": 5,
+      "dcl": 1815,
+      "load": 1815,
+      "transfer": {
+        "js": 258086,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 1764
+      },
+      "transferTotal": 387856,
+      "scripts": [
+        {
+          "name": "index-Dt6K6v9l.js",
+          "transfer": 83111,
+          "durationMs": 263
+        },
+        {
+          "name": "rolldown-runtime-Bh1tDfsg.js",
+          "transfer": 867,
+          "durationMs": 183
+        },
+        {
+          "name": "pocketbase--U1jwlZs.js",
+          "transfer": 49968,
+          "durationMs": 255
+        },
+        {
+          "name": "GlobalStyles-BSFTQLQ3.js",
+          "transfer": 925,
+          "durationMs": 192
+        },
+        {
+          "name": "RtlProvider-CHfX4HdN.js",
+          "transfer": 572,
+          "durationMs": 192
+        },
+        {
+          "name": "Button-CPxFRPCd.js",
+          "transfer": 11322,
+          "durationMs": 209
+        },
+        {
+          "name": "ThemeProviderWithVars-D-xSjJvo.js",
+          "transfer": 4318,
+          "durationMs": 349
+        },
+        {
+          "name": "zero-styled-Bey7sd82.js",
+          "transfer": 603,
+          "durationMs": 347
+        },
+        {
+          "name": "useSlot-x7pW9wkW.js",
+          "transfer": 1100,
+          "durationMs": 361
+        },
+        {
+          "name": "Portal-CjCrhcXw.js",
+          "transfer": 3098,
+          "durationMs": 405
+        },
+        {
+          "name": "Modal-DX9mbDuz.js",
+          "transfer": 5321,
+          "durationMs": 408
+        },
+        {
+          "name": "List-DAajlnrX.js",
+          "transfer": 1057,
+          "durationMs": 484
+        },
+        {
+          "name": "Skeleton-BC6oswgG.js",
+          "transfer": 1738,
+          "durationMs": 500
+        },
+        {
+          "name": "lib-C6a5KKlm.js",
+          "transfer": 8356,
+          "durationMs": 505
+        },
+        {
+          "name": "shape-DzJ0mT-f.js",
+          "transfer": 972,
+          "durationMs": 512
+        },
+        {
+          "name": "typography-om7uFghg.js",
+          "transfer": 801,
+          "durationMs": 557
+        },
+        {
+          "name": "tokens-CDlbfZVd.js",
+          "transfer": 1220,
+          "durationMs": 558
+        },
+        {
+          "name": "createSvgIcon-ndznCIJ8.js",
+          "transfer": 1440,
+          "durationMs": 633
+        },
+        {
+          "name": "mergeSlotProps-DycGI7je.js",
+          "transfer": 1193,
+          "durationMs": 650
+        },
+        {
+          "name": "StatePanel-DzUex5g5.js",
+          "transfer": 2107,
+          "durationMs": 654
+        },
+        {
+          "name": "IconButton-QRiMfoo2.js",
+          "transfer": 1702,
+          "durationMs": 662
+        },
+        {
+          "name": "Alert-feyQMl9l.js",
+          "transfer": 2330,
+          "durationMs": 704
+        },
+        {
+          "name": "ArrowForwardRounded-ChBovzQv.js",
+          "transfer": 1917,
+          "durationMs": 708
+        },
+        {
+          "name": "Grow-BWGdGT6e.js",
+          "transfer": 1454,
+          "durationMs": 783
+        },
+        {
+          "name": "Chip-CAquUjt1.js",
+          "transfer": 2993,
+          "durationMs": 800
+        },
+        {
+          "name": "LinearProgress-DV1XTx-8.js",
+          "transfer": 2184,
+          "durationMs": 808
+        },
+        {
+          "name": "auth-j_Eyi-uV.js",
+          "transfer": 2961,
+          "durationMs": 814
+        },
+        {
+          "name": "player-rEVw-ppn.js",
+          "transfer": 4691,
+          "durationMs": 858
+        },
+        {
+          "name": "useControlled-DeP3fIw1.js",
+          "transfer": 592,
+          "durationMs": 855
+        },
+        {
+          "name": "useControlled-BaiN1fqJ.js",
+          "transfer": 366,
+          "durationMs": 932
+        },
+        {
+          "name": "Tooltip-BeLIKs25.js",
+          "transfer": 11346,
+          "durationMs": 953
+        },
+        {
+          "name": "ThemeSwitch-CAu6a5K3.js",
+          "transfer": 2342,
+          "durationMs": 955
+        },
+        {
+          "name": "domain-x_RtuAYQ.js",
+          "transfer": 556,
+          "durationMs": 963
+        },
+        {
+          "name": "productCopy-Dqb1cfSC.js",
+          "transfer": 2162,
+          "durationMs": 1010
+        },
+        {
+          "name": "LevelBadge-C5nhEMZH.js",
+          "transfer": 1015,
+          "durationMs": 1011
+        },
+        {
+          "name": "PageSkeletons-dFnKFyA7.js",
+          "transfer": 1489,
+          "durationMs": 1084
+        },
+        {
+          "name": "ContentSection-xzdn0-RL.js",
+          "transfer": 1100,
+          "durationMs": 1107
+        },
+        {
+          "name": "api-BMVS8zwz.js",
+          "transfer": 1175,
+          "durationMs": 1110
+        },
+        {
+          "name": "CheckCircleRounded-Bj5nDASU.js",
+          "transfer": 685,
+          "durationMs": 1117
+        },
+        {
+          "name": "LessonCard-BUDORN3V.js",
+          "transfer": 2269,
+          "durationMs": 1167
+        },
+        {
+          "name": "EpisodeCard-80q0s1FP.js",
+          "transfer": 1923,
+          "durationMs": 1168
+        },
+        {
+          "name": "api-B5anRWU3.js",
+          "transfer": 772,
+          "durationMs": 1241
+        },
+        {
+          "name": "Brand-BbeicX5c.js",
+          "transfer": 2296,
+          "durationMs": 1264
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 157
+        },
+        {
+          "name": "AccountRoute-BJzaeoCF.js",
+          "transfer": 2263,
+          "durationMs": 166
+        },
+        {
+          "name": "Divider-DlPoPny2.js",
+          "transfer": 1574,
+          "durationMs": 162
+        },
+        {
+          "name": "api-B2Q07J6o.js",
+          "transfer": 2237,
+          "durationMs": 174
+        },
+        {
+          "name": "schemas-CI1yCQq7.js",
+          "transfer": 19089,
+          "durationMs": 199
+        }
+      ],
+      "pageErrors": [],
+      "url": "/account",
+      "journeyMs": 4869,
+      "settled": true
+    },
+    {
+      "id": "episode",
+      "lcp": 3708,
+      "cls": 0.072,
+      "clsEntries": 4,
+      "fcp": 2448,
+      "tbt": 1051,
+      "longTasks": 8,
+      "ttfb": 4,
+      "dcl": 1750,
+      "load": 1750,
+      "transfer": {
+        "js": 258724,
+        "css": 997,
+        "img": 15557,
+        "font": 111452,
+        "other": 27239
+      },
+      "transferTotal": 413969,
+      "scripts": [
+        {
+          "name": "index-Dt6K6v9l.js",
+          "transfer": 83111,
+          "durationMs": 263
+        },
+        {
+          "name": "rolldown-runtime-Bh1tDfsg.js",
+          "transfer": 867,
+          "durationMs": 173
+        },
+        {
+          "name": "pocketbase--U1jwlZs.js",
+          "transfer": 49968,
+          "durationMs": 246
+        },
+        {
+          "name": "GlobalStyles-BSFTQLQ3.js",
+          "transfer": 925,
+          "durationMs": 173
+        },
+        {
+          "name": "RtlProvider-CHfX4HdN.js",
+          "transfer": 572,
+          "durationMs": 179
+        },
+        {
+          "name": "Button-CPxFRPCd.js",
+          "transfer": 11322,
+          "durationMs": 196
+        },
+        {
+          "name": "ThemeProviderWithVars-D-xSjJvo.js",
+          "transfer": 4318,
+          "durationMs": 338
+        },
+        {
+          "name": "zero-styled-Bey7sd82.js",
+          "transfer": 603,
+          "durationMs": 335
+        },
+        {
+          "name": "useSlot-x7pW9wkW.js",
+          "transfer": 1100,
+          "durationMs": 353
+        },
+        {
+          "name": "Portal-CjCrhcXw.js",
+          "transfer": 3098,
+          "durationMs": 397
+        },
+        {
+          "name": "Modal-DX9mbDuz.js",
+          "transfer": 5321,
+          "durationMs": 410
+        },
+        {
+          "name": "List-DAajlnrX.js",
+          "transfer": 1057,
+          "durationMs": 477
+        },
+        {
+          "name": "Skeleton-BC6oswgG.js",
+          "transfer": 1738,
+          "durationMs": 486
+        },
+        {
+          "name": "lib-C6a5KKlm.js",
+          "transfer": 8356,
+          "durationMs": 492
+        },
+        {
+          "name": "shape-DzJ0mT-f.js",
+          "transfer": 972,
+          "durationMs": 501
+        },
+        {
+          "name": "typography-om7uFghg.js",
+          "transfer": 801,
+          "durationMs": 547
+        },
+        {
+          "name": "tokens-CDlbfZVd.js",
+          "transfer": 1220,
+          "durationMs": 561
+        },
+        {
+          "name": "createSvgIcon-ndznCIJ8.js",
+          "transfer": 1440,
+          "durationMs": 627
+        },
+        {
+          "name": "mergeSlotProps-DycGI7je.js",
+          "transfer": 1193,
+          "durationMs": 640
+        },
+        {
+          "name": "StatePanel-DzUex5g5.js",
+          "transfer": 2107,
+          "durationMs": 642
+        },
+        {
+          "name": "IconButton-QRiMfoo2.js",
+          "transfer": 1702,
+          "durationMs": 652
+        },
+        {
+          "name": "Alert-feyQMl9l.js",
+          "transfer": 2330,
+          "durationMs": 699
+        },
+        {
+          "name": "ArrowForwardRounded-ChBovzQv.js",
+          "transfer": 1917,
+          "durationMs": 712
+        },
+        {
+          "name": "Grow-BWGdGT6e.js",
+          "transfer": 1454,
+          "durationMs": 779
+        },
+        {
+          "name": "Chip-CAquUjt1.js",
+          "transfer": 2993,
+          "durationMs": 792
+        },
+        {
+          "name": "LinearProgress-DV1XTx-8.js",
+          "transfer": 2184,
+          "durationMs": 798
+        },
+        {
+          "name": "auth-j_Eyi-uV.js",
+          "transfer": 2961,
+          "durationMs": 807
+        },
+        {
+          "name": "player-rEVw-ppn.js",
+          "transfer": 4691,
+          "durationMs": 854
+        },
+        {
+          "name": "useControlled-DeP3fIw1.js",
+          "transfer": 592,
+          "durationMs": 867
+        },
+        {
+          "name": "useControlled-BaiN1fqJ.js",
+          "transfer": 366,
+          "durationMs": 934
+        },
+        {
+          "name": "Tooltip-BeLIKs25.js",
+          "transfer": 11346,
+          "durationMs": 955
+        },
+        {
+          "name": "ThemeSwitch-CAu6a5K3.js",
+          "transfer": 2342,
+          "durationMs": 952
+        },
+        {
+          "name": "domain-x_RtuAYQ.js",
+          "transfer": 556,
+          "durationMs": 961
+        },
+        {
+          "name": "productCopy-Dqb1cfSC.js",
+          "transfer": 2162,
+          "durationMs": 1008
+        },
+        {
+          "name": "LevelBadge-C5nhEMZH.js",
+          "transfer": 1015,
+          "durationMs": 1021
+        },
+        {
+          "name": "PageSkeletons-dFnKFyA7.js",
+          "transfer": 1489,
+          "durationMs": 1074
+        },
+        {
+          "name": "ContentSection-xzdn0-RL.js",
+          "transfer": 1100,
+          "durationMs": 1090
+        },
+        {
+          "name": "api-BMVS8zwz.js",
+          "transfer": 1175,
+          "durationMs": 1093
+        },
+        {
+          "name": "CheckCircleRounded-Bj5nDASU.js",
+          "transfer": 685,
+          "durationMs": 1099
+        },
+        {
+          "name": "LessonCard-BUDORN3V.js",
+          "transfer": 2269,
+          "durationMs": 1147
+        },
+        {
+          "name": "EpisodeCard-80q0s1FP.js",
+          "transfer": 1923,
+          "durationMs": 1161
+        },
+        {
+          "name": "api-B5anRWU3.js",
+          "transfer": 772,
+          "durationMs": 1228
+        },
+        {
+          "name": "Brand-BbeicX5c.js",
+          "transfer": 2296,
+          "durationMs": 1246
+        },
+        {
+          "name": "workbox-window.prod.es5-Bd17z0YL.js",
+          "transfer": 2514,
+          "durationMs": 163
+        },
+        {
+          "name": "LessonDetailRoute-CogNH6Jn.js",
+          "transfer": 19016,
+          "durationMs": 192
+        },
+        {
+          "name": "Menu-C56WB5yP.js",
+          "transfer": 4101,
+          "durationMs": 184
+        },
+        {
+          "name": "useRovingTabIndex-Ii-ntSGe.js",
+          "transfer": 300,
+          "durationMs": 176
+        },
+        {
+          "name": "Divider-DlPoPny2.js",
+          "transfer": 1574,
+          "durationMs": 179
+        },
+        {
+          "name": "RefreshRounded-DWpNlTrK.js",
+          "transfer": 810,
+          "durationMs": 171
+        }
+      ],
+      "pageErrors": [],
+      "url": "/lessons/nrtx7hgg6zyp0f4",
+      "journeyMs": 4932,
+      "settled": true
+    }
+  ],
+  "spaNavigations": [
+    {
+      "id": "nav:home->library",
+      "clickToSettledMs": 8329,
+      "settled": true
+    },
+    {
+      "id": "nav:library->episode",
+      "clickToSettledMs": 889,
+      "settled": true
+    }
+  ],
+  "capturedAt": "2026-08-13T20:45:06.830Z"
+}

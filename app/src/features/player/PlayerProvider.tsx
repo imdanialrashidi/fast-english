@@ -42,6 +42,7 @@ import {
   useState,
 } from 'react';
 import { useAuth } from '../../lib/auth';
+import { classifyMediaError, reportPlayerFailure } from '../../lib/telemetry';
 import { setAudioBusy } from '../../pwa/activity';
 import {
   clampPosition,
@@ -350,6 +351,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const handleError = useCallback(() => {
     setState((prev) => ({ ...prev, isLoading: false, hasError: true, isPlaying: false }));
     setAudioBusy(false);
+    // Operational telemetry: the classified media-error code plus the
+    // lesson id only — never the media URL or the MediaError message
+    // (both can embed protected tokens).
+    const lessonId = stateRef.current.session?.lessonId ?? null;
+    const code = classifyMediaError(audioRef.current?.error?.code);
+    reportPlayerFailure(lessonId, code);
     const audio = audioRef.current;
     // A recoverable failure stops playback at a REAL position. Save it so
     // the practical position survives the retry (the deck's resume point

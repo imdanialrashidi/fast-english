@@ -12,6 +12,7 @@ import {
 import { mapAuthError } from './authErrors';
 import { normalizeIranianPhone, phoneToInternalEmail } from './phone';
 import { getPocketBase } from './pocketbase';
+import { FUNNEL_EVENTS, trackFunnel } from './telemetry';
 
 export const COLLECTION = 'fep_users';
 
@@ -186,6 +187,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const serverRecord = requireAuthRecord(auth.record, String(record.id));
         const user = toFepUser(serverRecord);
         setState({ user, isAuthenticated: true, isInitializing: false });
+        // Funnel telemetry: signup completed (no personal data — never
+        // phone/name/email).
+        trackFunnel(FUNNEL_EVENTS.signupCompleted);
         return user;
       } catch (err) {
         throw mapAuthError(err);

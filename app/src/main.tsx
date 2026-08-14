@@ -8,9 +8,16 @@ import { createRtlCache } from '../../shared/ui/rtl';
 import { appTheme } from '../../shared/ui/theme';
 import { App } from './app/App';
 import { ThemeHost } from './app/theme/ThemeHost';
+import { instrumentRuntime } from './lib/telemetry/runtime';
 import { PwaManager } from './pwa/PwaManager';
 import { isNativeRuntime, unregisterStaleServiceWorkers } from './pwa/register';
 import './styles.css';
+
+// Production observability (see docs/OBSERVABILITY.md): uncaught errors,
+// unhandled rejections, API/player failures and funnel events are captured
+// through the telemetry boundary. Failure-isolated: if anything in here
+// throws, the app still boots.
+instrumentRuntime();
 
 // P4-S2 — The PWA Service Worker must not run inside the Capacitor Native
 // WebView. In Native mode no registration is created and stale registrations

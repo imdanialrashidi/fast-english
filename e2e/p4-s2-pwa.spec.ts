@@ -198,7 +198,12 @@ test('protected API responses are never cached', { tag: '@critical' }, async ({ 
   const joined = entries.join('\n');
   expect(joined).not.toContain('/api/');
   expect(joined).not.toContain('/files/');
-  expect(joined).not.toContain('token');
+  // Tokenized URLs carry the short-lived file token as a query parameter
+  // (?token=...). The substring "token" alone is NOT a signal: the public
+  // design-tokens chunk (tokens-*.js) is a legitimate precached App-shell
+  // asset. The SW's runtime guard matches /token=/i on the search string
+  // (app/src/pwa/sw.ts isProtectedUrl); this assertion mirrors it.
+  expect(joined).not.toMatch(/[?&]token=/i);
 });
 
 test('tokenized audio URLs are never cached', { tag: '@critical' }, async ({ page }) => {
@@ -216,7 +221,10 @@ test('tokenized audio URLs are never cached', { tag: '@critical' }, async ({ pag
   expect(status).toBeGreaterThanOrEqual(400);
 
   const entries = await cacheEntries(page);
-  expect(entries.some((u) => u.includes('token'))).toBe(false);
+  // Tokenized URLs use the ?token= query form (see the SW's isProtectedUrl
+  // guard); a bare "token" substring also matches the legitimate public
+  // tokens-*.js design-tokens chunk, so the assertion is query-precise.
+  expect(entries.some((u) => /[?&]token=/i.test(u))).toBe(false);
   expect(entries.some((u) => u.includes('/lessons/'))).toBe(false);
 });
 
