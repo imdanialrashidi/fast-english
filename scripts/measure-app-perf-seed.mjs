@@ -22,6 +22,7 @@ import { randomBytes } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { seedPlacementQuestions } from './smoke-common.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -102,40 +103,6 @@ async function createStaff(su) {
   });
   if (login.status !== 200 || !login.body?.token) throw new Error('staff login failed');
   return { email, password, token: login.body.token };
-}
-
-async function seedPlacementQuestions(su) {
-  const existing = await jsonFetch('/api/collections/placement_questions/records?perPage=1', {
-    headers: { authorization: su },
-  });
-  if ((existing.body?.items ?? []).length > 0) return;
-  for (let i = 0; i < 20; i++) {
-    const r = await jsonFetch('/api/collections/placement_questions/records', {
-      method: 'POST',
-      headers: { authorization: su },
-      body: JSON.stringify({
-        question_key: `perfq${String(i).padStart(2, '0')}`,
-        version: 1,
-        position: i + 1,
-        prompt: `Question ${i + 1}`,
-        options: [
-          { id: 'a', text: 'A' },
-          { id: 'b', text: 'B' },
-          { id: 'c', text: 'C' },
-          { id: 'd', text: 'D' },
-        ],
-        options_text: JSON.stringify([
-          { id: 'a', text: 'A' },
-          { id: 'b', text: 'B' },
-          { id: 'c', text: 'C' },
-          { id: 'd', text: 'D' },
-        ]),
-        correct_option_id: 'a',
-        is_active: true,
-      }),
-    });
-    if (r.status !== 200) throw new Error(`placement question ${i}: ${r.status}`);
-  }
 }
 
 // Import the example content package exactly like the CLI does (validate →
@@ -285,7 +252,7 @@ async function createEntitledStudent(su, { level = 'B1' } = {}) {
   const refreshed = refresh.body?.token ?? token;
 
   // Placement: start → answer all → submit → select level.
-  await seedPlacementQuestions(su);
+  await seedPlacementQuestions(PB_URL, su);
   const start = await jsonFetch('/api/fast-english/placement/attempts/start', {
     method: 'POST',
     headers: { authorization: refreshed },

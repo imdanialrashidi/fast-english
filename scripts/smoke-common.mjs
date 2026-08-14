@@ -58,6 +58,49 @@ export async function getSuperuserToken(base) {
   return r.body.token;
 }
 
+// Seeds the 20 active placement questions (question_key q01..q20,
+// four options opt0..opt3, correct = opt0 — suites answer via
+// q.options[0]). Idempotent: tolerates an existing active set (the
+// unique (question_key, version) index rejects duplicates) and verifies
+// the final count.
+export async function seedPlacementQuestions(base, suToken, { count = 20 } = {}) {
+  const created = [];
+  for (let i = 1; i <= count; i++) {
+    const key = `q${String(i).padStart(2, '0')}`;
+    const opts = [];
+    for (let j = 0; j < 4; j++) {
+      opts.push({ id: `opt${j}`, text: `Option ${String.fromCharCode(65 + j)}` });
+    }
+    const r = await fetchJson(base, '/api/collections/placement_questions/records', {
+      method: 'POST',
+      headers: { authorization: suToken },
+      body: JSON.stringify({
+        question_key: key,
+        version: 1,
+        position: i,
+        prompt: `Question ${i}?`,
+        options: opts,
+        options_text: JSON.stringify(opts),
+        correct_option_id: 'opt0',
+        is_active: true,
+      }),
+    });
+    // 400 = duplicate (already seeded) — acceptable; anything else is fatal.
+    if (r.status !== 200 && r.status !== 201 && r.status !== 400) {
+      throw new Error(`seed question ${key}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+    }
+    created.push(r.body?.id);
+  }
+  const check = await fetchJson(base, '/api/collections/placement_questions/records?perPage=50', {
+    headers: { authorization: suToken },
+  });
+  const active = (check.body?.items || []).filter((q) => q.is_active === true);
+  if (active.length !== count) {
+    throw new Error(`placement seeding: expected ${count} active questions, got ${active.length}`);
+  }
+  return created;
+}
+
 export async function login(base, phone, password = 'Test1234!') {
   const r = await fetchJson(base, '/api/collections/fep_users/auth-with-password', {
     method: 'POST',

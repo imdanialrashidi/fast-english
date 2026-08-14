@@ -22,6 +22,7 @@ import {
   getSuperuserToken,
   nextPhone,
   randomId,
+  seedPlacementQuestions,
 } from './smoke-common.mjs';
 
 const PORT = Number(process.env.PB_SMOKE_PLACEMENT_PORT ?? 18093);
@@ -289,38 +290,9 @@ async function makeEntitledStudent(su, level = 'B1') {
   const student = await createActiveStudent(URL, su);
   // Placement questions (idempotent: shared disposable PB may already
   // have them from another suite — the unique (question_key, version)
-  // index makes duplicates fail harmlessly).
-  const existing = await jf('/api/collections/placement_questions/records?perPage=1', {
-    headers: { authorization: `Bearer ${su}` },
-  });
-  if (!existing.body?.items?.length) {
-    for (let i = 0; i < 20; i++) {
-      await jf('/api/collections/placement_questions/records', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${su}` },
-        body: JSON.stringify({
-          question_key: `epq${String(i).padStart(2, '0')}`,
-          version: 1,
-          position: i + 1,
-          prompt: `Q${i + 1}`,
-          options: [
-            { id: 'a', text: 'A' },
-            { id: 'b', text: 'B' },
-            { id: 'c', text: 'C' },
-            { id: 'd', text: 'D' },
-          ],
-          options_text: JSON.stringify([
-            { id: 'a', text: 'A' },
-            { id: 'b', text: 'B' },
-            { id: 'c', text: 'C' },
-            { id: 'd', text: 'D' },
-          ]),
-          correct_option_id: 'a',
-          is_active: true,
-        }),
-      });
-    }
-  }
+  // index makes duplicates fail harmlessly and the helper verifies the
+  // final active count).
+  await seedPlacementQuestions(URL, su);
   const start = await jf('/api/fast-english/placement/attempts/start', {
     method: 'POST',
     headers: { authorization: `Bearer ${student.token}` },
@@ -332,7 +304,7 @@ async function makeEntitledStudent(su, level = 'B1') {
     const ans = await jf(`/api/fast-english/placement/attempts/${attemptId}/answer`, {
       method: 'PUT',
       headers: { authorization: `Bearer ${student.token}` },
-      body: JSON.stringify({ questionId: q.id, optionId: 'a', expectedRevision: rev }),
+      body: JSON.stringify({ questionId: q.id, optionId: q.options[0].id, expectedRevision: rev }),
     });
     rev = ans.body?.attempt?.revision || rev + 1;
   }

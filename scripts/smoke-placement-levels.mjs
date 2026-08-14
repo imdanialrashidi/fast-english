@@ -12,6 +12,7 @@ import {
   getSuperuserToken,
   login,
   nextPhone,
+  seedPlacementQuestions,
 } from './smoke-common.mjs';
 
 const SMOKE_PORT = Number(process.env.PB_SMOKE_PLACEMENT_PORT ?? 18093);
@@ -52,29 +53,6 @@ function check(cond, msg) {
 // ============================================================
 // Setup helpers (shared fixtures come from ./smoke-common.mjs)
 // ============================================================
-
-async function seedQuestions(suToken) {
-  for (let i = 1; i <= 20; i++) {
-    const opts = [];
-    for (let j = 0; j < 4; j++) {
-      opts.push({ id: `opt${j}`, text: `Option ${String.fromCharCode(65 + j)}` });
-    }
-    await jsonFetch('/api/collections/placement_questions/records', {
-      method: 'POST',
-      headers: { authorization: suToken },
-      body: JSON.stringify({
-        question_key: `q${i}`,
-        version: 1,
-        position: i,
-        prompt: `Question ${i}?`,
-        options: opts,
-        options_text: JSON.stringify(opts),
-        correct_option_id: 'opt0',
-        is_active: true,
-      }),
-    });
-  }
-}
 
 async function startAttempt(token) {
   const r = await jsonFetch('/api/fast-english/placement/attempts/start', {
@@ -269,7 +247,7 @@ async function main() {
     console.error('Setup failed:', e.message);
     process.exit(1);
   }
-  await seedQuestions(suToken);
+  await seedPlacementQuestions(API_URL, suToken);
 
   // S0: Score-to-level mapping, asserted per threshold against the real
   // server. Each row answers exactly `score` questions correctly on a fresh
