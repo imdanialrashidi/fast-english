@@ -43,6 +43,11 @@
       ]
     },
     {
+      "id": "app-browser",
+      "include": ["app/src/features/**", "app/src/lib/**"],
+      "commands": [["bash", "scripts/verify-feature.sh", "all", "app"]]
+    },
+    {
       "id": "frontend-fast",
       "include": [
         "app/**",
@@ -53,6 +58,7 @@
         "tsconfig.json",
         "vitest.config.ts"
       ],
+      "exclude": ["app/src/features/**", "app/src/lib/**"],
       "commands": [
         ["bash", "scripts/verify-fast.sh"]
       ]
@@ -81,7 +87,8 @@
         "scripts/playwright-fast.sh"
       ],
       "commands": [
-        ["bash", "scripts/playwright-fast.sh"]
+        ["bash", "scripts/playwright-fast.sh"],
+        ["npx", "biome", "check", "e2e/", "playwright.config.ts"]
       ]
     },
     {
