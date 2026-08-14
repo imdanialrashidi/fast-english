@@ -34,6 +34,11 @@ your row when done.
 | 013  | Memoize the episode page's per-render transcript split and edition rail | P3 | S | — | DONE |
 | 014  | Wire a production dependency audit into CI | P3 | S | — | DONE |
 | 015  | Cover the hero-artwork route with real smoke scenarios | P3 | S | — | DONE |
+| 016  | Consolidate Persian formatting helpers into shared/lib/formatters | P2 | S-M | — | DONE |
+| 017  | Enforce one CEFR level order across the five declarations | P3 | S | — | DONE |
+| 018  | Centralize placement-question seeding in smoke-common | P3 | M | — | DONE |
+| 019  | Close the verify-affected routing gaps (app changes → browser lane; spec changes → static checks) | P3 | M | — | DONE |
+| 020  | Consolidate the API-error envelope extraction into shared/lib | P3 | M | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -128,6 +133,59 @@ written:
   published-state gating only — the planned "pending student denied"
   scenario was replaced by publication-gating scenarios (draft → 404),
   matching the route's actual contract.
+
+## Implemented 2026-08-14 (branch `advisor/five-plans`, plans 016-020)
+
+Plans 016-020 executed in one follow-up session (commits ae2ee67..19449f0).
+Deviations from the plans as written:
+
+- **Plan 016, admin surface**: `admin/.../payments/formatters.ts` re-exports
+  the shared `formatToman` and the five operator component call sites pass
+  `{ suffix: 'تومان' }` (the plan's wrapper reading would have kept a
+  `function formatToman` matching the done-criteria grep). A new small
+  `admin/.../payments/formatters.test.ts` pins the «۱٬۲۳۴ تومان» surface
+  (no admin formatter test existed). The Step-4 fa-IR grep additionally
+  matches admin content-feature version-number formatting
+  (`admin/src/features/content/**`), which is outside the plan's scope and
+  was left untouched.
+- **Plan 017**: no deviations; red-green proven (2 tests fail on a mutated
+  order, pass after restore).
+- **Plan 018, answer-path assumption**: the plan assumed every suite answers
+  via `q.options[0]`; `smoke-episode.mjs` actually answered with a literal
+  option id `'a'` (its per-suite seed used a/b/c/d ids). The answer path was
+  adapted to `q.options[0].id` — shape-independent, same semantics (the
+  shared seed is opt0-correct). `smoke-placement-race` and
+  `smoke-placement-capacity` KEEP their local seeding (2-option race keys /
+  max-content questions + deactivation logic — different semantics, per the
+  plan's STOP conditions). `measure-app-perf-seed.mjs` was migrated (its
+  prompts were already the generic shape). Red-green proven (typo'd
+  collection fails loudly).
+- **Plan 019, runner semantics**: `selectVerificationPlan` is a UNION over
+  routes (a file can match several), so the new `app-browser` route keeps
+  the routing disjoint via an `exclude` on `frontend-fast` (the plan's
+  union branch), rather than relying on ordering. The e2e-tsconfig note
+  lives in the commit message (JSON has no comments).
+- **Plan 020, live cast sites**: Home/Library/Progress routes had NO inline
+  casts in the live tree (audit overstatement); the real sites were
+  LessonsRoute, LessonDetailRoute, and useProgressSave (`as {status` grep).
+  PaymentApprovedPanel's `mapDashboardErrorCode` — the same manual envelope
+  read, code-only use — was migrated too so no envelope duplication
+  remains. All unit suites pass with zero assertion changes.
+
+## Written 2026-08-14 (plans 016-020, not yet implemented)
+
+Written on request; implementation not started (rows above are TODO).
+Selection: the next five by leverage from the audit's vetted-but-unplanned
+findings — all consolidation/DX work with clean verification stories:
+016 formatters (real divergent output between surfaces), 017 CEFR order
+(behavioral duplication ×5, cheapest mechanical fix = static gate), 018
+placement seeding (~10 duplicated loops), 019 affected-routing gaps
+(overstated lane promise), 020 error-envelope (four mappers, one
+normalization). Still deferred: Biome hooks lane (parser risk), e2e fixed
+sleeps (churn risk), p3-s2 API-only tests, staff-queue SQL pagination
+(PB sort quirk), audio full-file reads (HIGH-risk perf), CSP + token
+storage (pre-launch), superuser API exposure (operator input), and the
+direction items (maintainer decisions).
 
 ## Findings considered and rejected (vetted; not planned)
 
