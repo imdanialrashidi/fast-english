@@ -100,6 +100,62 @@ test('install page explains installation without unsafe guidance', async ({ page
   await expect(page.getByText('نسخهٔ اندروید به‌زودی منتشر می‌شود')).toBeVisible();
 });
 
+test('campaign parameters are preserved on the primary CTA, unknown params are dropped', async ({
+  page,
+}) => {
+  await page.goto('/?utm_source=e2e&utm_campaign=launch&token=SECRET&fbclid=xyz');
+  const cta = page.locator('main a[href^="https://app.fastenglishpodcast.com"]').first();
+  // AppCta applies the campaign params in an effect after hydration;
+  // poll until the enriched href is visible.
+  await expect.poll(() => cta.getAttribute('href')).toContain('utm_source=e2e');
+  const href = await cta.getAttribute('href');
+  expect(href).toContain('utm_campaign=launch');
+  expect(href).not.toContain('token=');
+  expect(href).not.toContain('fbclid=');
+});
+
+test('acquisition telemetry records route surface and signup intent without PII', async ({
+  page,
+}) => {
+  await page.goto('/?utm_source=e2e');
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        typeof window.__fepTelemetry === 'function' ? window.__fepTelemetry() : null,
+      ),
+    )
+    .not.toBeNull();
+  // route_change recorded exactly once per page load, surface redacted.
+  const before = await page.evaluate(() => window.__fepTelemetry().events);
+  const routes = before.filter((e) => e.name === 'route_change');
+  expect(routes).toHaveLength(1);
+  expect(routes[0].surface).toBe('/');
+  // Clicking the hero CTA records signup_intent with a fixed place.
+  await page.locator('main a[href^="https://app.fastenglishpodcast.com"]:visible').first().click();
+  await expect
+    .poll(() => page.evaluate(() => window.__fepTelemetry().events.map((e) => e.name)))
+    .toContain('signup_intent');
+  const after = await page.evaluate(() => window.__fepTelemetry().events);
+  const signup = after.find((e) => e.name === 'signup_intent');
+  expect(signup?.fields?.where).toBe('hero');
+  // No query params / campaign values ever enter the event payload.
+  expect(JSON.stringify(after)).not.toContain('utm_');
+});
+
+test('install page explains per-browser PWA flows and records install intent', async ({ page }) => {
+  await page.goto('/install');
+  await expect(page.getByText('نصب وب‌اپ روی صفحهٔ اصلی (PWA)')).toBeVisible();
+  await expect(page.getByText('سافاری روی iOS همان پنجرهٔ نصب اندروید را ندارد')).toBeVisible();
+  await expect(page.getByText('هیچ مرورگری تضمین نمی‌کند که این گزینه را نشان دهد')).toBeVisible();
+  // beforeinstallprompt → install_intent (shared contract event).
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('beforeinstallprompt', { cancelable: true }));
+  });
+  await expect
+    .poll(() => page.evaluate(() => window.__fepTelemetry().events.map((e) => e.name)))
+    .toContain('install_intent');
+});
+
 test('skip link is keyboard-accessible and targets main content', async ({ page }) => {
   await page.goto('/');
   await page.keyboard.press('Tab');

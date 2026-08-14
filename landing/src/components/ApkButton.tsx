@@ -3,6 +3,7 @@
 // download link: without a configured official release URL it renders
 // an honest "coming soon" state instead of a dead or unsafe link.
 import { apkAvailable, apkState } from '../lib/siteConfig';
+import { trackDownloadIntent } from '../lib/telemetry';
 
 export function ApkButton({ className = '' }: { className?: string }) {
   if (!apkAvailable(apkState)) {
@@ -21,6 +22,7 @@ export function ApkButton({ className = '' }: { className?: string }) {
       rel="noopener noreferrer"
       target="_blank"
       className={`inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text hover:bg-brand-surface min-h-12 ${className}`}
+      onClick={() => trackDownloadIntent()}
     >
       دانلود نسخهٔ اندروید
       {apkState.version ? ` — نسخهٔ ${apkState.version}` : ''}
