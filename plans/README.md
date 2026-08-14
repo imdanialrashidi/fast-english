@@ -172,6 +172,28 @@ Deviations from the plans as written:
   read, code-only use — was migrated too so no envelope duplication
   remains. All unit suites pass with zero assertion changes.
 
+- **Plan 017, scope extension (audit incompleteness)**: the plan's premise
+  of "five declarations" was factually incomplete — the live tree has three
+  more runtime-behavioral copies: `library_routes.pb.js` (`CEFR_ORDER`,
+  variant resolution + library level sort), `placement_level_routes.pb.js`
+  (`ALLOWED_LEVELS`, selected-level validation), and
+  `app/src/features/placement/constants.ts` (`CEFR_LEVELS`) plus the
+  `cefrLevelSchema` z.enum in `schemas.ts`. The gate was extended to cover
+  all nine declarations (same mechanical pattern) and each carries the
+  keep-in-sync comment; red-green proven on `library_routes.pb.js`.
+- **Plan 018, perf seed answer path (reviewer finding)**: the migrated
+  `measure-app-perf-seed.mjs` answered placement with a literal option id
+  `'a'` from its old per-suite seed; the shared seed uses opt0..opt3, so
+  the answer loop 400'd and submit 409'd. Fixed to `q.options[0].id` and
+  the seed script was run end-to-end against a disposable PB (content
+  import + placement + entitled student) to prove it.
+- **Plan 019, lane cost (STOP-condition report)**: the `app-browser` lane
+  is heavy by design — measured components from this session: verify-fast
+  ~25s, app build ~30s, each smoke suite 0.5-3 min (16 suites), @critical
+  Playwright ~2-4 min ⇒ a full `verify-feature all app` run is on the
+  order of 10-15 min for a single feature edit. Follow-up per the plan's
+  maintenance note: a path→smoke-group table, NOT dropping the lane.
+
 ## Written 2026-08-14 (plans 016-020, not yet implemented)
 
 Written on request; implementation not started (rows above are TODO).

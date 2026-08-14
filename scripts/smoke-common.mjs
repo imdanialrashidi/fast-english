@@ -85,7 +85,8 @@ export async function seedPlacementQuestions(base, suToken, { count = 20 } = {})
         is_active: true,
       }),
     });
-    // 400 = duplicate (already seeded) — acceptable; anything else is fatal.
+    // 400 = the unique (question_key, version) index rejected a
+    // duplicate from a previous run — acceptable; anything else is fatal.
     if (r.status !== 200 && r.status !== 201 && r.status !== 400) {
       throw new Error(`seed question ${key}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
     }

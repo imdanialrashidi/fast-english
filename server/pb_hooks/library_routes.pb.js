@@ -46,6 +46,7 @@ routerAdd(
     var LESSONS_C = "lessons";
     var PROGRESS_C = "lesson_progress";
 
+    // Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
     var CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
     var MAX_QUERY_LEN = 60;
     var MAX_PAGE = 50;

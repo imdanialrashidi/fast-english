@@ -259,6 +259,7 @@ routerAdd(
     var USERS_C = "fep_users";
     var ATTEMPTS_C = "placement_attempts";
     var SUBS_C = "subscriptions";
+    // Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
     var ALLOWED_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
     var rl = require(__hooks + '/rate_limit.pb.js');

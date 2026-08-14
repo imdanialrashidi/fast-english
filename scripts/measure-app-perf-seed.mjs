@@ -266,7 +266,7 @@ async function createEntitledStudent(su, { level = 'B1' } = {}) {
     const ans = await jsonFetch(`/api/fast-english/placement/attempts/${attemptId}/answer`, {
       method: 'PUT',
       headers: { authorization: refreshed },
-      body: JSON.stringify({ questionId: q.id, optionId: 'a', expectedRevision: rev }),
+      body: JSON.stringify({ questionId: q.id, optionId: q.options[0].id, expectedRevision: rev }),
     });
     rev = ans.body?.attempt?.revision ?? rev + 1;
   }
