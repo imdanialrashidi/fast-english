@@ -25,6 +25,7 @@
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { extractApiError } from '../../../../../shared/lib/apiError';
 import { PageContainer } from '../../../../../shared/ui/PageContainer';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { layout, radius } from '../../../../../shared/ui/tokens';
@@ -196,9 +197,9 @@ export function LessonDetailRoute() {
         }
       } catch (err) {
         if (seqRef.current !== seq) return;
-        const errObj = err as { status?: number; data?: { code?: string; message?: string } };
-        const code = errObj?.data?.code ?? '';
-        const status = errObj?.status ?? 0;
+        const envelope = extractApiError(err);
+        const code = envelope.code ?? '';
+        const status = envelope.status ?? 0;
         if (status === 404) {
           setPhase('not_found');
           setErrorInfo({
