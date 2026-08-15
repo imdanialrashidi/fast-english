@@ -25,7 +25,8 @@ concurrency:
 #   e2e      — the full Playwright suite sharded across independent runners.
 #              Every shard owns its disposable PocketBase + preview servers
 #              (no cross-shard fixture/state sharing), keeps CI retries and
-#              failure traces, and uploads failure artifacts keyed by shard.#   verify   — merge gate: green only when every lane is green.
+#              failure traces, and uploads failure artifacts keyed by shard.
+#   verify   — merge gate: green only when every lane is green.
 #
 # The local full gate (pnpm verify:full / scripts/verify-full.sh) is
 # unchanged and remains the canonical serial model for review-time runs.
@@ -119,6 +120,17 @@ jobs:
         # shard and the remaining files spread to ~88 max, balancing the
         # critical path far better than 4 shards (max 129).
         shard: [1/5, 2/5, 3/5, 4/5, 5/5]
+        include:
+          - shard: 1/5
+            slug: shard-1-5
+          - shard: 2/5
+            slug: shard-2-5
+          - shard: 3/5
+            slug: shard-3-5
+          - shard: 4/5
+            slug: shard-4-5
+          - shard: 5/5
+            slug: shard-5-5
     steps:
       - uses: actions/checkout@v7
         with:
@@ -152,7 +164,10 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-artifacts-${{ matrix.shard }}
+          # The shard value contains '/' (e.g. 4/5), which is not a valid
+          # artifact-name character on GitHub Actions; each shard carries a
+          # sanitized slug so a failing shard actually uploads its traces.
+          name: e2e-artifacts-${{ matrix.slug }}
           path: |
             test-results/e2e/
             playwright-report/

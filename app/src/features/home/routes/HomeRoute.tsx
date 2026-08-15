@@ -203,6 +203,14 @@ function ContinueHero({
   const position = progress.positionSeconds ?? 0;
   const percent = Math.min(100, Math.max(0, progress.percent ?? 0));
 
+  // Remaining time only from authoritative duration + saved position.
+  const duration = progress.durationSeconds ?? 0;
+  let remainingMinutes: number | null = null;
+  if (duration > 0 && position > 0) {
+    const remaining = duration - position;
+    if (remaining > 30) remainingMinutes = Math.max(1, Math.ceil(remaining / 60));
+  }
+
   return (
     <Card
       data-testid="home-continue"
@@ -317,6 +325,14 @@ function ContinueHero({
               ? productCopy.actions.continueFrom(formatClock(position))
               : productCopy.actions.startListening}
           </Button>
+          {remainingMinutes !== null ? (
+            <Typography
+              variant="caption"
+              sx={{ color: 'onPrimaryContainer', display: 'block', textAlign: 'center', mt: 1 }}
+            >
+              حدود {remainingMinutes} دقیقه باقی‌مانده
+            </Typography>
+          ) : null}
         </Box>
       </Stack>
     </Card>

@@ -1084,11 +1084,24 @@ test.describe('lesson detail and player', () => {
     // never-playing surface, and the route transition may briefly keep
     // the previous route mounted on slower runners.
     expect(await page.locator('audio[preload="metadata"]').count()).toBe(1);
-    // No overlap with the bottom navigation.
-    const miniBox = (await mini.boundingBox())!;
-    const navBox = (await page.getByTestId('student-bottom-nav').boundingBox())!;
-    // Sub-pixel rendering may round the touching edges by under a pixel.
-    expect(miniBox.y + miniBox.height).toBeLessThanOrEqual(navBox.y + 2);
+    // No overlap with the bottom navigation. The mini player slides in
+    // with an entrance animation, so wait for the geometry to settle before
+    // asserting the contract (a real overlap still fails the poll).
+    await expect
+      .poll(
+        async () => {
+          const m = (await mini.boundingBox())!;
+          const n = (await page.getByTestId('student-bottom-nav').boundingBox())!;
+          // Sub-pixel rendering may round the touching edges by under a
+          // pixel.
+          return m.y + m.height - n.y;
+        },
+        {
+          timeout: 10_000,
+          message: 'mini player must settle above the bottom navigation',
+        },
+      )
+      .toBeLessThanOrEqual(2);
 
     // Return-to-lesson action restores the detail route.
     await page.getByTestId('mini-player-return').click();
