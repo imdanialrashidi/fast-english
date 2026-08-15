@@ -5,6 +5,9 @@ launch. Every box must be checked with evidence; nothing is assumed.
 
 ## A. Preconditions (deployment Gate)
 
+- [ ] VPS provider to be purchased in Iran — NO provider/server selected yet
+      (recorded HUMAN INPUT REQUIRED; not chosen by tooling)
+
 - [ ] DNS records exist and resolve for all four names:
       `fastenglishpodcast.com`, `www`, `app`, `admin` → server IP
       (as of 2026-08-01 they do NOT resolve; create before launch)
@@ -19,8 +22,19 @@ launch. Every box must be checked with evidence; nothing is assumed.
 - [ ] S3 backup bucket: approved credentials AND verified off-VPS restore
       drill (off-VPS destination is a Gate requirement — local-only copies do
       not satisfy it)
-- [ ] Support/legal identity approved (landing `VITE_SUPPORT_URL`; privacy/
-      terms placeholders still marked `needs-review` until real copy lands)
+- [ ] Business values set via Admin → تنظیمات → تنظیمات کسب‌وکار (after the
+      first release): the two launch plans (monthly 299,000 / quarterly
+      807,300 — NO yearly), card-to-card destination (card number, holder,
+      bank, short instructions, review ETA default «حداکثر تا ۲۴ ساعت»), and
+      the public support/collaboration contact (unset = honest «هنوز اعلام
+      نشده» on the Landing)
+- [ ] `pnpm seed:plans --target=production --confirm-production` ran; public
+      settings endpoint returns the two plans; Landing shows real prices
+- [ ] Placement: demo bank (`seeds/placement/demo-bank.v1.json`, kind=demo) is
+      NEVER installed into production without explicit `--allow-demo` +
+      `--confirm-production`; the reviewed bank remains HUMAN INPUT REQUIRED
+- [ ] Privacy/terms placeholders still marked `needs-review` until real copy
+      lands (legal copy remains HUMAN INPUT REQUIRED)
 
 ## B. Install and configuration
 
@@ -68,7 +82,13 @@ launch. Every box must be checked with evidence; nothing is assumed.
       and the live-server grep (token absent, marker present)
 - [ ] No real payment submitted; disposable accounts deleted after the run
 
-## E. Android / PWA (device gate)
+## E. iOS install experience
+
+- [ ] Landing shows the «نصب روی iPhone / iPad» CTA → `/install#ios` with the
+      honest Safari flow (Share → Add to Home Screen → Open as Web App → Add)
+- [ ] No fake App Store link / direct-install claim exists anywhere
+
+## F. Android / PWA (device gate)
 
 - [ ] PWA update prompt works; SW never caches `/api/`/protected responses
 - [ ] Release APK installs on a physical device (v2 signature)
@@ -77,7 +97,7 @@ launch. Every box must be checked with evidence; nothing is assumed.
       no SW interference in Capacitor
 - [ ] `apksigner verify` + `sha256sum` documented for the shipped file
 
-## F. Operations
+## G. Operations
 
 - [ ] `deploy/ops-check.sh` exit 0; cron wired for daily checks
 - [ ] Backup timer active (`systemctl list-timers fast-english-backup-copy`)
@@ -85,7 +105,7 @@ launch. Every box must be checked with evidence; nothing is assumed.
 - [ ] Monitoring expectations documented (no platform — approved)
 - [ ] Owner placeholders replaced in the six ops docs
 
-## G. Final sign-off
+## H. Final sign-off
 
 - [ ] No secret in Git, logs, bundles, or docs
 - [ ] `/review` performed on this Phase 4 change set

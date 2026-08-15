@@ -122,8 +122,10 @@ export default defineConfig({
         {
           // The landing is a fully static multi-page site; the build
           // includes the SSR pre-render step so tests exercise the same
-          // crawlable HTML that production serves.
-          command: `vite build --config vite.landing.config.ts && node scripts/prerender-landing.mjs && node_modules/.bin/vite preview --config vite.landing.config.ts --port ${LANDING_PORT} --host 127.0.0.1 --strictPort`,
+          // crawlable HTML that production serves. The preview proxy
+          // forwards /api to the disposable PocketBase so the runtime
+          // public-settings fetch (prices + support) is exercised for real.
+          command: `vite build --config vite.landing.config.ts && node scripts/prerender-landing.mjs && VITE_API_TARGET=${PB_URL} node_modules/.bin/vite preview --config vite.landing.config.ts --port ${LANDING_PORT} --host 127.0.0.1 --strictPort`,
           url: LANDING_URL,
           reuseExistingServer: !isCI,
           timeout: 120_000,

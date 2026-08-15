@@ -136,7 +136,6 @@ for (const layout of LAYOUTS) {
         }
         await route.continue();
       });
-      await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
       await page.getByRole('button', { name: /ارسال رسید/ }).click();
       await expect(page.getByText('در حال ارسال رسید…')).toBeVisible({ timeout: 5_000 });
       await page.screenshot({ path: `${dir}/03-uploading.png` });
@@ -184,7 +183,6 @@ for (const layout of LAYOUTS) {
           mimeType: 'image/jpeg',
           buffer: JPEG_1x1,
         });
-        await pageB.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
         await pageB.getByRole('button', { name: /ارسال رسید/ }).click();
         await pageB.waitForURL('**/payment-status', { timeout: 30_000 });
         await expect(pageB.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({

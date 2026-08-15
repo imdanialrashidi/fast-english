@@ -2,15 +2,17 @@
 // Real student payment page. Loads plans and the active destination
 // from the backend, walks the user through the five payment stages,
 // collects one receipt image with client validation mirroring the
-// server, requires an explicit transfer confirmation, and submits
-// the multipart form to the real P1-S1B route.
+// server, and submits the multipart form to the real P1-S1B route.
+//
+// Simplified journey (Business Configuration slice): choose plan →
+// see the destination card → transfer manually → upload ONE receipt →
+// submit. No transaction-reference fields and no confirmation step.
 //
 // The journey stages reflect real state only:
 //   - stage 1 active until a plan is selected
 //   - stage 2 active until a receipt is selected
-//   - stage 3 active until the transfer confirmation is checked
-//   - stage 4 (submission) is shown while the request is being sent
-//   - stage 5 (result) is owned by /payment-status after success
+//   - stage 3 (submission) is shown while the request is being sent
+//   - stage 4 (result) is owned by /payment-status after success
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
@@ -20,11 +22,8 @@ import {
   Button,
   Card,
   CardContent,
-  Checkbox,
   CircularProgress,
-  FormControlLabel,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
@@ -47,7 +46,7 @@ import { PaymentJourney } from '../components/PaymentJourney';
 import { PlanSelector } from '../components/PlanSelector';
 import { ReceiptPicker } from '../components/ReceiptPicker';
 import { toPaymentError } from '../errors';
-import { formatDurationDays, formatFileSize, formatToman } from '../formatters';
+import { formatDurationDays, formatToman } from '../formatters';
 import { type PaymentFormValues, paymentFormSchema } from '../schemas';
 import type { PaymentDestination, PaymentError as PaymentErrorModel, Plan } from '../types';
 
@@ -64,10 +63,8 @@ export function PaymentRoute() {
     'none' | 'pending' | 'rejected' | 'other' | 'unknown'
   >('unknown');
   const [submissionError, setSubmissionError] = useState<PaymentErrorModel | null>(null);
-  const [transferConfirmed, setTransferConfirmed] = useState(false);
 
   const {
-    register,
     handleSubmit,
     setValue,
     watch,
@@ -80,15 +77,11 @@ export function PaymentRoute() {
     defaultValues: {
       planId: '',
       receiptFile: undefined as unknown as File,
-      bankReference: '',
-      senderCardLast4: '',
-      transferAt: '',
     },
   });
 
   const selectedPlanId = watch('planId');
   const receiptFile = watch('receiptFile');
-  const senderCardLast4 = watch('senderCardLast4');
 
   useEffect(() => {
     let cancelled = false;
@@ -148,7 +141,7 @@ export function PaymentRoute() {
 
   // Journey stages (0-based):
   //   0 info, 1 card-to-card, 2 receipt, 3 submit, 4 result
-  const journeyActiveStep = selectedPlanId ? (receiptFile ? (transferConfirmed ? 3 : 2) : 1) : 0;
+  const journeyActiveStep = selectedPlanId ? (receiptFile ? 2 : 1) : 0;
 
   const submissionDisabled = useMemo(() => {
     if (isSubmitting) return true;
@@ -157,9 +150,8 @@ export function PaymentRoute() {
     if (load.plans.length === 0) return true;
     if (!selectedPlanId) return true;
     if (!receiptFile) return true;
-    if (!transferConfirmed) return true;
     return false;
-  }, [isSubmitting, load, selectedPlanId, receiptFile, transferConfirmed]);
+  }, [isSubmitting, load, selectedPlanId, receiptFile]);
 
   const onSubmit = handleSubmit(async (values) => {
     setSubmissionError(null);
@@ -167,9 +159,6 @@ export function PaymentRoute() {
       const res = await createPaymentRequest({
         planId: values.planId,
         receiptFile: values.receiptFile,
-        bankReference: values.bankReference,
-        senderCardLast4: values.senderCardLast4,
-        transferAt: values.transferAt,
       });
       if (res.kind === 'request') {
         // Funnel telemetry: payment-request submission succeeded. No
@@ -181,9 +170,6 @@ export function PaymentRoute() {
           {
             planId: values.planId,
             receiptFile: undefined as unknown as File,
-            bankReference: '',
-            senderCardLast4: '',
-            transferAt: '',
           },
           { keepValues: false },
         );
@@ -198,8 +184,6 @@ export function PaymentRoute() {
       // Map specific codes back to form fields when applicable.
       if (e.code === 'invalid_receipt') {
         setError('receiptFile', { type: 'server', message: e.message });
-      } else if (e.code === 'invalid_transfer_details') {
-        setError('senderCardLast4', { type: 'server', message: e.message });
       } else if (e.code === 'invalid_plan') {
         setError('planId', { type: 'server', message: e.message });
       } else {
@@ -319,7 +303,6 @@ export function PaymentRoute() {
                     selectedId={selectedPlanId || null}
                     onSelect={(id) => {
                       setValue('planId', id, { shouldValidate: true });
-                      setTransferConfirmed(false);
                     }}
                   />
                   {errors.planId ? (
@@ -331,60 +314,10 @@ export function PaymentRoute() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent>
-                <Stack spacing={2}>
-                  <Typography component="h2" variant="h4">
-                    جزئیات انتقال (اختیاری)
-                  </Typography>
-                  <TextField
-                    label="چهار رقم آخر کارت مبدأ"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    {...register('senderCardLast4')}
-                    error={Boolean(errors.senderCardLast4)}
-                    helperText={
-                      errors.senderCardLast4?.message ??
-                      'فقط برای پیگیری داخلی استفاده می‌شود. هرگز اطلاعات کامل کارت ارسال نکنید.'
-                    }
-                    slotProps={{
-                      input: {
-                        inputProps: {
-                          inputMode: 'numeric',
-                          pattern: '[0-9]*',
-                          maxLength: 8,
-                        },
-                      },
-                    }}
-                  />
-                  <TextField
-                    label="شمارهٔ پیگیری بانک"
-                    inputMode="text"
-                    autoComplete="off"
-                    {...register('bankReference')}
-                    error={Boolean(errors.bankReference)}
-                    helperText={
-                      errors.bankReference?.message ??
-                      `اگر بانک شما شمارهٔ پیگیری صادر کرده، اینجا وارد کنید. (${formatPersianPreview(senderCardLast4)})`
-                    }
-                  />
-                  <TextField
-                    label="زمان واریز"
-                    type="datetime-local"
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    {...register('transferAt')}
-                    error={Boolean(errors.transferAt)}
-                    helperText={errors.transferAt?.message ?? ' '}
-                  />
-                </Stack>
-              </CardContent>
-            </Card>
-
             <ReceiptPicker
               value={receiptFile ?? null}
               onChange={(f) => {
                 setValue('receiptFile', f as unknown as File, { shouldValidate: true });
-                setTransferConfirmed(false);
               }}
               error={
                 errors.receiptFile
@@ -393,45 +326,6 @@ export function PaymentRoute() {
               }
               disabled={isSubmitting}
             />
-
-            {receiptFile && selectedPlan ? (
-              <Card data-testid="confirmation-summary">
-                <CardContent>
-                  <Stack spacing={1.5}>
-                    <Typography component="h2" variant="h4">
-                      خلاصه و تأیید ارسال
-                    </Typography>
-                    <Stack spacing={1}>
-                      <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>
-                        پلن:{' '}
-                        <strong>
-                          {selectedPlan.name} — {formatToman(selectedPlan.priceToman)} تومان
-                        </strong>
-                      </Typography>
-                      <Typography variant="body2">
-                        مبلغ: <strong>{formatToman(selectedPlan.priceToman)} تومان</strong>
-                      </Typography>
-                      <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>
-                        فایل انتخاب‌شده: <strong>{receiptFile.name}</strong> (
-                        {formatFileSize(receiptFile.size)})
-                      </Typography>
-                    </Stack>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={transferConfirmed}
-                          onChange={(e) => setTransferConfirmed(e.target.checked)}
-                          disabled={isSubmitting}
-                          slotProps={{ input: { 'aria-label': 'تأیید انجام انتقال' } }}
-                        />
-                      }
-                      label="انتقال را انجام داده‌ام و رسید انتخاب‌شده مربوط به همین پرداخت است."
-                      sx={{ alignItems: 'flex-start' }}
-                    />
-                  </Stack>
-                </CardContent>
-              </Card>
-            ) : null}
 
             {submissionError ? (
               <PaymentErrorPanel error={submissionError} data-testid="submission-error" />
@@ -493,16 +387,4 @@ export function PaymentRoute() {
       )}
     </PageContainer>
   );
-}
-
-function formatPersianPreview(raw: string | undefined): string {
-  if (!raw) return 'مثال: ۱۲۳۴';
-  // Show what the user typed so far, normalized to four digits.
-  const digits = raw
-    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/\D/g, '');
-  if (!digits) return 'مثال: ۱۲۳۴';
-  const padded = digits.padStart(4, '0').slice(-4);
-  return `اکنون: ${padded}`;
 }

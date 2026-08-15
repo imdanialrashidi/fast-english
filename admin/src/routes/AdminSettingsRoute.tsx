@@ -1,12 +1,14 @@
 // admin/src/routes/AdminSettingsRoute.tsx
-// Staff settings. Theme selection («ظاهر») lives ONLY here — never in the
-// Admin Top App Bar or any login/entry surface (Podcast Slice 1).
+// Staff settings. ONE obvious location for owner-controlled business
+// configuration (plans, payment destination, support contact) plus the
+// account card and the theme selection («ظاهر») which lives ONLY here.
 
 import { Card, CardContent, Stack, Typography } from '@mui/material';
 import { PageContainer } from '../../../shared/ui/PageContainer';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { ThemeSwitch } from '../../../shared/ui/ThemeSwitch';
 import { useStaffAuth } from '../auth/staffAuth';
+import { BusinessSettingsPanel } from '../features/settings/BusinessSettingsPanel';
 
 export function AdminSettingsRoute() {
   const { user } = useStaffAuth();
@@ -28,6 +30,17 @@ export function AdminSettingsRoute() {
             >
               {user?.email || ''}
             </Typography>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Typography component="h2" variant="titleMedium" sx={{ mb: 1.5 }}>
+              تنظیمات کسبوکار
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              طرحها، قیمتها، مقصد کارتبهکارت و کانال پشتیبانی/همکاری — همینجا و بدون تغییر کد.
+            </Typography>
+            <BusinessSettingsPanel />
           </CardContent>
         </Card>
         <Card>

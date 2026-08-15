@@ -1,0 +1,24 @@
+{
+  "$comment": "Canonical launch plan set (owner-approved 2026-08-15). Monthly 299,000 toman; Quarterly 90 days at exactly 807,300 toman = 10% discount vs 3x monthly (897,000). NO yearly/365-day plan exists or is offered. Seeded via `pnpm seed:plans` (scripts/seed/plans.mjs) with explicit target guards.",
+  "schemaVersion": 1,
+  "plans": [
+    {
+      "name": "ماهانه",
+      "slug": "monthly",
+      "durationDays": 30,
+      "priceToman": 299000,
+      "displayOrder": 1,
+      "isActive": true,
+      "description": ""
+    },
+    {
+      "name": "سه ماهه",
+      "slug": "quarterly",
+      "durationDays": 90,
+      "priceToman": 807300,
+      "displayOrder": 2,
+      "isActive": true,
+      "description": "معادل ۱۰٪ تخفیف نسبت به پرداخت سه‌بارهٔ ماهانه."
+    }
+  ]
+}

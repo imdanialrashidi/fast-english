@@ -178,10 +178,8 @@ test.describe('P1-S1 student payment flow', () => {
     await expect(previewImg).toBeVisible({ timeout: 5_000 });
 
     // -- Submit multipart request --
-    // The redesign requires an explicit transfer confirmation before
-    // submission (confirmation summary + checkbox).
-    await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
-    await expect(page.getByTestId('confirmation-summary')).toContainText('E2E Monthly');
+    // Simplified journey (Business Configuration slice): plan + receipt
+    // are enough — no confirmation checkbox, no transfer-reference fields.
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
 
     // -- Redirect to /payment-status --
@@ -319,7 +317,6 @@ test.describe('P1-S1 student payment flow', () => {
       mimeType: 'image/jpeg',
       buffer: JPEG_1x1,
     });
-    await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
     // Wait for the status page to show the new pending record
@@ -501,7 +498,6 @@ test.describe('P1-S1 responsive QA', () => {
         mimeType: 'image/jpeg',
         buffer: JPEG_1x1,
       });
-      await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
       await page.getByRole('button', { name: /ارسال رسید/ }).click();
       await page.waitForURL('**/payment-status', { timeout: 30_000 });
       await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({

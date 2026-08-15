@@ -5,7 +5,7 @@
 # Does not install or modify dependencies. Does not auto-format.
 # Fails on the first real failure. Preserves readable command output.
 #
-# CI backend lane: set FEP_VERIFY_PARALLEL_SMOKES=1 to run the 16 smoke
+# CI backend lane: set FEP_VERIFY_PARALLEL_SMOKES=1 to run the 17 smoke
 # suites concurrently (each on its own disposable PocketBase; see
 # scripts/verify-smokes-parallel.sh). The default serial order below is
 # unchanged for local/review runs.
@@ -131,6 +131,13 @@ else
   #      CEFR availableLevels order, deterministic pagination, Continue
   #      rail, entitlement denial, bounds, sanitization, read-only browsing).
   run bash scripts/smoke-placement.sh node scripts/smoke-library.mjs
+
+  # 13g. Business Settings smoke (Business Configuration slice; 51 scenarios):
+  #      seed:plans canonical two-plan set + prices, public settings endpoint
+  #      + propagation, staff-guarded settings routes, single-active
+  #      destination, review ETA, demo placement bank install guards + real
+  #      placement flow (score 20 -> C2), public sample contract.
+  run bash scripts/smoke-placement.sh node scripts/smoke-business-settings.mjs
 fi
 
 # 13d. Content Package Schema validation (Podcast Slice 3): the committed

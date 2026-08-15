@@ -64,9 +64,10 @@ describe('Payment redesign — journey architecture', () => {
 
   it('the journey maps real form state to the active stage', () => {
     const route = read(PAYMENT_ROUTE);
-    // no plan → stage 1; plan → stage 2; file → stage 3; confirmed → stage 4
+    // no plan → stage 1; plan → stage 2; file → stage 3 (submission is
+    // direct — the simplified flow has no separate confirmation stage).
     expect(route).toContain('journeyActiveStep');
-    expect(route).toContain('transferConfirmed');
+    expect(route).not.toContain('transferConfirmed');
     expect(route).toMatch(/journeyActiveStep\s*=\s*selectedPlanId/);
   });
 
@@ -99,8 +100,15 @@ describe('Payment redesign — hierarchy', () => {
     expect(route).toMatch(/variant="contained"/);
     expect(route).toMatch(/fullWidth/);
     expect(route).toMatch(/disabled=\{submissionDisabled\}/);
-    // Submission is impossible without the transfer confirmation.
-    expect(route).toContain('if (!transferConfirmed) return true;');
+    // Submission requires only a selected plan + receipt (no confirmation
+    // checkbox, no transaction-reference fields in the simplified flow).
+    expect(route).toContain('if (!selectedPlanId) return true;');
+    expect(route).toContain('if (!receiptFile) return true;');
+    expect(route).not.toContain('transferConfirmed');
+    expect(route).not.toContain('جزئیات انتقال');
+    expect(route).not.toContain('senderCardLast4');
+    expect(route).not.toContain('bankReference');
+    expect(route).not.toContain('transferAt');
   });
 
   it('copy actions are secondary icon controls, not CTAs', () => {
@@ -234,13 +242,14 @@ describe('Payment redesign — copy + error semantics', () => {
     expect(route).not.toContain('LinearProgress');
   });
 
-  it('confirmation summary lists plan, amount and file before submission', () => {
+  it('the submission surface keeps an honest plan/amount summary line', () => {
     const route = read(PAYMENT_ROUTE);
-    expect(route).toContain('data-testid="confirmation-summary"');
-    expect(route).toContain('پلن:');
-    expect(route).toContain('مبلغ:');
-    expect(route).toContain('فایل انتخاب‌شده:');
-    expect(route).toContain('انتقال را انجام داده‌ام');
+    // The simplified journey needs no confirmation checkbox or summary
+    // card: the sticky submit area already states plan + price + duration.
+    expect(route).not.toContain('data-testid="confirmation-summary"');
+    expect(route).not.toContain('انتقال را انجام داده‌ام');
+    expect(route).toContain('formatToman(p.priceToman)');
+    expect(route).toContain('formatDurationDays(p.durationDays)');
   });
 
   it('trust content is explicit and makes no unsupported promises', () => {

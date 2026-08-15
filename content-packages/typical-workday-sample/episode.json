@@ -1,0 +1,68 @@
+{
+  "$schema": "../../schemas/episode-package.schema.json",
+  "schemaVersion": "1.0.0",
+  "contentKey": "general.typical-workday-sample",
+  "contentVersion": 1,
+  "categoryKey": "general",
+  "episode": {
+    "slug": "typical-workday-sample",
+    "titleEn": "A Typical Workday",
+    "titleFa": "یک روز کاری معمولی",
+    "descriptionFa": "نمونهٔ درس عمومی فست انگلیش پادکست: یک روز کاری معمولی در سطح B1 با متن و صوت. این بسته محتوای DEMO است و کتابخانهٔ نهایی انتشار را تشکیل نمی‌دهد.",
+    "artworkSquare": "artwork/square.png",
+    "heroImageWide": "artwork/hero.png",
+    "artworkAltFa": "نمای ساده از یک روز کاری",
+    "episodeNumber": 1,
+    "featured": false
+  },
+  "variants": [
+    {
+      "level": "B1",
+      "summaryFa": "متن و صوت نمونهٔ درس «یک روز کاری معمولی» در سطح B1 — دقیقاً همان متنی که صفحهٔ نمونهٔ وب‌سایت وعده می‌دهد.",
+      "audio": "audio/b1.mp3",
+      "transcript": "transcripts/b1.md",
+      "vocabulary": [
+        {
+          "term": "typical",
+          "phonetic": "/ˈtɪpɪkl/",
+          "partOfSpeech": "adjective",
+          "meaningFa": "معمولی، عادی",
+          "definitionEn": "Showing the usual or normal features of something.",
+          "exampleSentence": "A typical workday starts early."
+        },
+        {
+          "term": "quarter",
+          "phonetic": "/ˈkwɔːtə/",
+          "partOfSpeech": "noun",
+          "meaningFa": "ربع (ساعت)",
+          "definitionEn": "Fifteen minutes before or after an hour.",
+          "exampleSentence": "She leaves the house at a quarter to nine."
+        },
+        {
+          "term": "metro",
+          "phonetic": "/ˈmetrəʊ/",
+          "partOfSpeech": "noun",
+          "meaningFa": "مترو",
+          "definitionEn": "An underground railway system in a city.",
+          "exampleSentence": "She takes the metro every morning."
+        },
+        {
+          "term": "repeat",
+          "phonetic": "/rɪˈpiːt/",
+          "partOfSpeech": "verb",
+          "meaningFa": "تکرار کردن",
+          "definitionEn": "To say or do something again.",
+          "exampleSentence": "She repeats a few sentences out loud."
+        },
+        {
+          "term": "notebook",
+          "phonetic": "/ˈnəʊtbʊk/",
+          "partOfSpeech": "noun",
+          "meaningFa": "دفتر یادداشت",
+          "definitionEn": "A small book for writing notes.",
+          "exampleSentence": "She writes two short paragraphs in her notebook."
+        }
+      ]
+    }
+  ]
+}

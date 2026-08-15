@@ -18,8 +18,17 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderToString } from 'react-dom/server';
 import { createServer } from 'vite';
+
+// Landing pages now use React hooks (usePublicSettings). React must be a
+// SINGLE instance between the page modules (loaded through Vite's SSR
+// loader) and react-dom/server: without a forced production build, Vite
+// loads the dev React while Node's react-dom/server resolves the
+// production build, and every hook throws "Cannot read properties of
+// null (reading 'useState')". The dynamic import guarantees NODE_ENV is
+// set before react-dom/server is evaluated (ESM static imports hoist).
+process.env.NODE_ENV = 'production';
+const { renderToString } = await import('react-dom/server');
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outArg = process.argv.indexOf('--out');

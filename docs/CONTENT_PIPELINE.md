@@ -402,6 +402,27 @@ storage file counts before/after).
 - The smoke asserts CLI/server fingerprint and duration parity for
   every fixture.
 
+## 21b. Demo public-sample package (Business Configuration slice)
+
+`content-packages/typical-workday-sample/` is a DEMO package that produces the
+lesson promised by the Landing sample pages ("A Typical Workday", B1 — the
+exact text lives in `landing/src/content/sampleContent.ts`, pinned verbatim by
+`landing/src/content/sampleContent.test.ts`). It is NOT the final production
+library; final launch-content quantity remains HUMAN INPUT REQUIRED.
+
+Recipe for a disposable/local/staging environment:
+1. ensure a `general` category exists (superuser API or Admin Content Studio);
+2. `pnpm content:import content-packages/typical-workday-sample` (Draft);
+3. publish the episode + variant (Admin Content Studio);
+4. flag the lesson `is_public_sample = true` (superuser API);
+5. verify `GET /api/fast-english/public/sample` returns the matching lesson.
+
+The sample audio/artwork are generated fixtures (same technique as
+`content-packages/example-episode`); the transcript/title are real.
+
+Placement questions are a separate seed path — see `seeds/README.md`
+(`pnpm seed:placement`, demo vs reviewed promotion guards).
+
 ## 22. Admin Content Studio import (Podcast Slice 4)
 
 - **ZIP ingestion decision (proven constraint):** the pinned PB 0.39.9

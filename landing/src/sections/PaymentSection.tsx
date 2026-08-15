@@ -1,8 +1,12 @@
 // landing/src/sections/PaymentSection.tsx
 // Honest subscription/payment expectations: manual card-to-card payment
 // with receipt upload and operator review. No online payment gateway
-// exists, so none is implied anywhere on the landing. Prices are an open
-// business input (docs/PRODUCT.md) and are deliberately never stated.
+// exists, so none is implied anywhere on the landing. Prices come from
+// the runtime public settings endpoint (canonical `plans` collection —
+// Business Configuration slice) and are deliberately never hard-coded
+// here.
+import { PlanPricing } from '../components/PlanPricing';
+
 const facts = [
   {
     title: 'پرداخت فقط کارت‌به‌کارت دستی',
@@ -43,9 +47,10 @@ export function PaymentSection() {
             </li>
           ))}
         </ul>
+        <PlanPricing />
         <p className="mt-4 text-xs text-brand-muted max-w-3xl">
-          طرح‌ها: ماهانه (۳۰ روز)، ۹۰ روزه و ۳۶۵ روزه. قیمت هر طرح در داخل اپلیکیشن نمایش داده می‌شود.
-          ثبت‌نام رایگان است و هزینه فقط پس از انتخاب طرح پرداخت می‌شود.
+          طرحها: ماهانه (۳۰ روز) و ۹۰ روزه. پرداخت کارتبهکارت است و پس از بارگذاری رسید و تأیید
+          اپراتور، اشتراک فعال میشود.
         </p>
       </div>
     </section>

@@ -171,6 +171,18 @@ for p in / /about /how-it-works /install /collaboration /contact /privacy /terms
 done
 if [[ "$BROKEN" -eq 0 ]]; then ok "no broken internal links on landing"; else bad "$BROKEN broken internal link(s)"; fi
 
+# public business-settings endpoint on the landing domain (scoped Caddy handle)
+# must return the canonical payload shape: plans array + support contact.
+SETTINGS="$(curl "${CURL_OPTS[@]}" "$ROOT_BASE/api/fast-english/public/settings")" || SETTINGS=""
+if [[ "$SETTINGS" == *'"plans"'* && "$SETTINGS" == *'"support"'* ]]; then
+  ok "landing public-settings endpoint serves plans + support"
+else
+  bad "landing public-settings endpoint malformed/unreachable"
+fi
+# The landing must not expose a generic API surface (only the scoped path).
+C="$(code "$ROOT_BASE/api/collections/plans/records")"
+if [[ "$C" == "404" ]]; then ok "landing domain does not expose generic /api"; else bad "landing /api/collections -> $C (expected 404)"; fi
+
 # ===========================================================================
 # 2. App + PWA + Auth
 # ===========================================================================

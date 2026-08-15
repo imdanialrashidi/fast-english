@@ -27,7 +27,7 @@ test('parallel smoke runner covers the same suites as the serial gate', () => {
     [...serialScripts].sort(),
     'parallel runner and serial gate must list the same smoke suites',
   );
-  assert.equal(new Set(parallelScripts).size, 16, 'expected exactly 16 distinct smoke suites');
+  assert.equal(new Set(parallelScripts).size, 17, 'expected exactly 17 distinct smoke suites');
   assert.equal(
     parallelScripts.length,
     new Set(parallelScripts).size,
