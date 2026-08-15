@@ -67,8 +67,94 @@ test.describe
       expect(await raw.text()).not.toContain('۲۹۹٬۰۰۰');
     });
 
+    test('a FREE plan renders «رایگان» and the acquisition copy adapts truthfully', async ({
+      page,
+    }) => {
+      // Seed one free plan (price 0) through the same shape the Admin
+      // Business Settings surface writes.
+      const res = await fetch(
+        `http://127.0.0.1:${Number(process.env.PB_E2E_PORT ?? 18101)}/api/collections/plans/records`,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', authorization: suToken },
+          body: JSON.stringify({
+            name: `${OWNED_PLAN_PREFIX} Free`,
+            slug: `e2e-landing-free-${randomBytes(3).toString('hex')}`,
+            duration_days: 30,
+            price_toman: 0,
+            is_active: true,
+            display_order: 100,
+          }),
+        },
+      );
+      const body = (await res.json()) as { id?: string; slug?: string };
+      if (!body.id || !body.slug) throw new Error('free landing plan seeding failed');
+
+      await page.goto('/');
+      // «رایگان» — never «۰ تومان».
+      const freeCard = page.getByTestId(`plan-card-${body.slug}`).first();
+      await expect(freeCard).toContainText('رایگان');
+      await expect(freeCard).not.toContainText('۰ تومان');
+      // The acquisition copy truthfully advertises the free start.
+      await expect(page.getByTestId('pricing-footer').first()).toContainText('رایگان');
+    });
+
+    test('card transfer disabled → no card-to-card claim anywhere on the Landing', async ({
+      page,
+    }) => {
+      // Deactivate every destination row (the canonical toggle state).
+      const list = await fetch(
+        `http://127.0.0.1:${Number(process.env.PB_E2E_PORT ?? 18101)}/api/collections/payment_destination/records?perPage=200`,
+        { headers: { authorization: suToken } },
+      );
+      const items = ((await list.json()) as { items: Array<{ id: string }> }).items;
+      for (const d of items) {
+        await fetch(
+          `http://127.0.0.1:${Number(process.env.PB_E2E_PORT ?? 18101)}/api/collections/payment_destination/records/${d.id}`,
+          {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json', authorization: suToken },
+            body: JSON.stringify({ is_active: false }),
+          },
+        );
+      }
+
+      await page.goto('/');
+      // The section lead and facts must not claim card-to-card payment.
+      await expect(page.getByText('پرداخت فقط کارتبه‌کارت دستی')).toHaveCount(0);
+      await expect(page.getByTestId('payment-methods-note').first()).toContainText('غیرفعال');
+      // With a free plan present, the free-start claim is truthful.
+      await expect(page.getByTestId('pricing-footer').first()).toContainText('فعلاً غیرفعال');
+      await expect(page.getByTestId('pricing-footer').first()).toContainText('رایگان');
+
+      // Restore the enabled state for the other specs sharing this PB.
+      for (const d of items) {
+        await fetch(
+          `http://127.0.0.1:${Number(process.env.PB_E2E_PORT ?? 18101)}/api/collections/payment_destination/records/${d.id}`,
+          {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json', authorization: suToken },
+            body: JSON.stringify({ is_active: true }),
+          },
+        );
+      }
+    });
+
     test('support contact is honestly unset before configuration', async ({ page }) => {
-      // No site_settings record exists in the shared disposable PB yet.
+      // The shared disposable PB may have site_settings rows left by the
+      // Admin spec (which configures the same canonical contact); restore
+      // the honest-unset precondition deterministically.
+      const existing = await fetch(
+        `http://127.0.0.1:${Number(process.env.PB_E2E_PORT ?? 18101)}/api/collections/site_settings/records?perPage=200`,
+        { headers: { authorization: suToken } },
+      );
+      const rows = ((await existing.json()) as { items: Array<{ id: string }> }).items;
+      for (const row of rows) {
+        await fetch(
+          `http://127.0.0.1:${Number(process.env.PB_E2E_PORT ?? 18101)}/api/collections/site_settings/records/${row.id}`,
+          { method: 'DELETE', headers: { authorization: suToken } },
+        );
+      }
       await page.goto('/contact');
       await expect(page.getByTestId('support-unavailable').first()).toBeVisible();
       await expect(page.getByText('هنوز اعلام نشده است')).toBeVisible();

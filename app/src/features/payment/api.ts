@@ -12,17 +12,25 @@ import { getPocketBase } from '../../lib/pocketbase';
 import {
   CURRENT_REQUEST_PATH,
   DESTINATION_COLLECTION,
+  FREE_ACTIVATE_PATH,
   PAYMENT_REQUEST_PATH,
   PLANS_COLLECTION,
   receiptDownloadPath,
 } from './constants';
 import { toPaymentError } from './errors';
 import { normalizeLastFour } from './formatters';
-import { currentRequestResponseSchema, paymentDestinationSchema, planListSchema } from './schemas';
+import {
+  currentRequestResponseSchema,
+  freeActivationResponseSchema,
+  paymentDestinationSchema,
+  planListSchema,
+} from './schemas';
 import type {
   CreateRequestInput,
   CreateRequestResponse,
   CurrentRequestResponse,
+  FreeActivationInput,
+  FreeActivationResponse,
   PaymentDestination,
   Plan,
 } from './types';
@@ -152,6 +160,33 @@ function destinationUnavailable(): Error {
     data: { code: 'payment_destination_unavailable' },
   };
   return err;
+}
+
+/**
+ * Activate a FREE plan (canonical server check: plan exists, is active,
+ * price_toman === 0). Only plan_id is sent — never a client price or a
+ * free flag. The server creates/activates the entitlement idempotently
+ * and returns `activated` or `already_entitled`.
+ */
+export async function activateFreePlan(
+  input: FreeActivationInput,
+  signal?: AbortSignal,
+): Promise<FreeActivationResponse> {
+  const pb = getPocketBase();
+  try {
+    const res = await pb.send(FREE_ACTIVATE_PATH, {
+      method: 'POST',
+      body: { plan_id: input.planId },
+      signal,
+    });
+    const parsed = freeActivationResponseSchema.safeParse(res);
+    if (!parsed.success) {
+      throw new Error('unexpected');
+    }
+    return parsed.data;
+  } catch (err) {
+    throw toPaymentError(err);
+  }
 }
 
 /**

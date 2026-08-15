@@ -494,6 +494,20 @@ routerAdd(
         });
       }
 
+      // ----- 11.5 A FREE plan (canonical price 0) is never payable
+      //         through the receipt route: it would create a zero-amount
+      //         request that blocks the student's free activation and
+      //         forces operators to review an empty receipt. The free
+      //         route is the ONLY activation path for price-0 plans.
+      //         Checked BEFORE the destination gate so the rejection is
+      //         deterministic regardless of the card-to-card toggle.
+      if (Number(plan.get("price_toman") || 0) === 0) {
+        return e.json(409, {
+          code: "free_plan_not_payable",
+          message: "این طرح رایگان است و نیازی به پرداخت ندارد.",
+        });
+      }
+
       // ----- 12. Active destination must exist -----
       var activeDestination = null;
       try {

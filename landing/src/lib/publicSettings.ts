@@ -33,6 +33,7 @@ export interface PublicPlan {
 export interface PublicSettings {
   plans: PublicPlan[];
   support: { supportContact: string };
+  payment: { cardTransferEnabled: boolean };
 }
 
 export const PUBLIC_SETTINGS_PATH = '/api/fast-english/public/settings';
@@ -74,10 +75,20 @@ export function parsePublicSettings(raw: unknown): PublicSettings | null {
     string,
     unknown
   >;
+  // Card-transfer availability: absent/malformed is treated as DISABLED —
+  // the Landing must never claim card-to-card payment works when the
+  // endpoint does not confirm it.
+  const payment = (r.payment && typeof r.payment === 'object' ? r.payment : {}) as Record<
+    string,
+    unknown
+  >;
   return {
     plans,
     support: {
       supportContact: typeof support.supportContact === 'string' ? support.supportContact : '',
+    },
+    payment: {
+      cardTransferEnabled: payment.cardTransferEnabled === true,
     },
   };
 }

@@ -80,6 +80,40 @@ export interface CreateRequestInput {
   transferAt?: string;
 }
 
+/**
+ * The server-issued entitlement summary returned by the free-activation
+ * route. `source === 'free'` is the server-authoritative marker; the
+ * amount snapshot is always 0 toman.
+ */
+export interface FreeSubscription {
+  id: string;
+  planId: string;
+  planName: string;
+  durationDays: number;
+  amountToman: number;
+  startsAt: string;
+  expiresAt: string;
+  status: string;
+  source: string;
+}
+
+/**
+ * Free-activation response: `activated` when the server created the
+ * entitlement in this call, `already_entitled` when the user already
+ * held a VALID entitlement (repeated/concurrent calls — idempotent),
+ * and `free_period_ended` when the user's one free period has already
+ * been consumed and is no longer valid — a terminal honest state, never
+ * a silent success.
+ */
+export type FreeActivationResponse =
+  | { kind: 'activated'; subscription: FreeSubscription }
+  | { kind: 'already_entitled'; subscription: FreeSubscription }
+  | { kind: 'free_period_ended'; subscription: FreeSubscription };
+
+export interface FreeActivationInput {
+  planId: string;
+}
+
 // Internal error model surfaced to the UI. Always carries a Persian
 // message that the UI can show directly; the raw error is never
 // exposed. The numeric `status` is preserved only for test assertions

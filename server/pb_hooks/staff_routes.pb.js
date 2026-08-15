@@ -576,6 +576,7 @@ routerAdd(
           sub.set("starts_at", startsAt.toISOString());
           sub.set("expires_at", expiresAt.toISOString());
           sub.set("status", "active");
+          sub.set("source", "paid");
           sub.set("approved_by", operatorId);
           sub.set("approved_at", approvalTime.toISOString());
           txApp.save(sub);

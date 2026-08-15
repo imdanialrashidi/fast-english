@@ -114,7 +114,7 @@ async function createPlainStudent() {
     body: JSON.stringify({ identity: signup.body.phone, password }),
   });
   if (login.status !== 200) throw new Error('student login failed');
-  return { token: login.body.token };
+  return { token: login.body.token, phone: signup.body.phone, id: signup.body.id };
 }
 
 async function createActiveStudent(suToken) {
@@ -424,6 +424,569 @@ async function main() {
     pub3.body?.support?.supportContact === 'https://t.me/fep-smoke',
     'B24: public settings carry the canonical support contact',
   );
+
+  // ------------------------------------------------------------------
+  // 4.5 FREE-PLAN + CARD-TO-CARD STATE MATRIX (price_toman = 0 semantics)
+  // ------------------------------------------------------------------
+  // F-series: the accepted commercial-state matrix. Every plan change
+  // goes through the REAL staff Business Settings routes; every student
+  // action goes through the REAL server routes.
+
+  const submitReceipt = async (studentToken, planId) => {
+    const boundary = `----FB${randomId()}`;
+    const parts = [
+      `--${boundary}\r\nContent-Disposition: form-data; name="plan_id"\r\n\r\n${planId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="receipt_file"; filename="t.png"\r\nContent-Type: image/png\r\n\r\n`,
+      PNG_FIXTURE,
+      `\r\n--${boundary}--\r\n`,
+    ];
+    const buf = Buffer.concat(parts.map((p) => (typeof p === 'string' ? Buffer.from(p) : p)));
+    return jf('/api/fast-english/payment-requests', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${studentToken}`,
+        'content-type': `multipart/form-data; boundary=${boundary}`,
+      },
+      body: buf,
+    });
+  };
+
+  const createFreePlan = async () => {
+    const r = await jf('/api/fast-english/staff/business-settings/plans', {
+      method: 'POST',
+      headers: { authorization: staffToken },
+      body: JSON.stringify({
+        name: 'رایگان آزمایشی',
+        slug: `free-${randomId()}`,
+        duration_days: 30,
+        price_toman: 0,
+        is_active: true,
+        display_order: 5,
+      }),
+    });
+    return r;
+  };
+
+  const freePlan = await createFreePlan();
+  check(
+    freePlan.status === 200 && freePlan.body?.plan?.priceToman === 0,
+    `F1: staff creates a FREE plan (price 0) through Business Settings (${freePlan.status})`,
+  );
+  const freePlanId = freePlan.body?.plan?.id;
+  const freePlanSlug = freePlan.body?.plan?.slug;
+
+  const paidTestPlan = await jf('/api/fast-english/staff/business-settings/plans', {
+    method: 'POST',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({
+      name: 'پولی آزمایشی',
+      slug: `paid-${randomId()}`,
+      duration_days: 30,
+      price_toman: 50000,
+      is_active: true,
+      display_order: 6,
+    }),
+  });
+  check(paidTestPlan.status === 200, `F2: staff creates a paid test plan (${paidTestPlan.status})`);
+  const paidTestPlanId = paidTestPlan.body?.plan?.id;
+
+  const staffGet2 = await jf('/api/fast-english/staff/business-settings', {
+    headers: { authorization: staffToken },
+  });
+  check(
+    staffGet2.body?.plans?.some((p) => p.id === freePlanId && p.priceToman === 0),
+    'F3: staff GET carries the free plan with price 0 (Admin sees «طرح رایگان» state)',
+  );
+
+  const pubFree = await jf('/api/fast-english/public/settings');
+  check(
+    pubFree.body?.plans?.some((p) => p.id === freePlanId && p.priceToman === 0),
+    'F4: public settings expose the free plan (Landing derives «رایگان» at runtime)',
+  );
+
+  // --- Free activation: happy path (card transfer is currently ON) ---
+  const freeStudent = await createPlainStudent();
+  const act = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: freeStudent.token },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    act.status === 200 && act.body?.kind === 'activated',
+    `F5: free activation happy path (${act.status} ${act.body?.kind})`,
+  );
+  check(
+    act.body?.subscription?.amountToman === 0 &&
+      act.body?.subscription?.source === 'free' &&
+      act.body?.subscription?.status === 'active',
+    'F6: free subscription snapshot = 0 toman, source free, active',
+  );
+  const freeUserRec = await jf(
+    `/api/collections/fep_users/records?filter=${encodeURIComponent(
+      "phone = '" + freeStudent.phone + "'",
+    )}`,
+    { headers: { authorization: suToken } },
+  );
+  check(
+    freeUserRec.body?.items?.[0]?.account_status === 'active',
+    `F7: free activation sets account_status = active (${freeUserRec.body?.items?.[0]?.account_status})`,
+  );
+  const freeUserReqs = await jf(
+    `/api/collections/payment_requests/records?filter=${encodeURIComponent(
+      "user = '" + freeUserRec.body.items[0].id + "'",
+    )}`,
+    { headers: { authorization: suToken } },
+  );
+  check(
+    (freeUserReqs.body?.items || []).length === 0,
+    'F8: free activation creates NO payment request (no receipt, no approval)',
+  );
+
+  // --- Idempotency: repeated + concurrent ---
+  const rep = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: freeStudent.token },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    rep.status === 200 && rep.body?.kind === 'already_entitled',
+    `F9: repeated free activation → already_entitled (${rep.status} ${rep.body?.kind})`,
+  );
+  const freeSubs = await jf(
+    `/api/collections/subscriptions/records?filter=${encodeURIComponent(
+      "user = '" + freeUserRec.body.items[0].id + "'",
+    )}`,
+    { headers: { authorization: suToken } },
+  );
+  check(
+    (freeSubs.body?.items || []).filter((s) => s.source === 'free').length === 1,
+    'F10: repeated activation leaves exactly ONE free subscription row',
+  );
+
+  const cPhone = nextPhone();
+  const cSignup = await jf('/api/collections/fep_users/records', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      name: 'C',
+      phone: cPhone,
+      password: 'Test1234!',
+      passwordConfirm: 'Test1234!',
+    }),
+  });
+  const cLogin = await jf('/api/collections/fep_users/auth-with-password', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ identity: cSignup.body.phone, password: 'Test1234!' }),
+  });
+  const cTok = cLogin.body.token;
+  const concurrent = await Promise.all([
+    jf('/api/fast-english/subscriptions/free-activate', {
+      method: 'POST',
+      headers: { authorization: cTok },
+      body: JSON.stringify({ plan_id: freePlanId }),
+    }),
+    jf('/api/fast-english/subscriptions/free-activate', {
+      method: 'POST',
+      headers: { authorization: cTok },
+      body: JSON.stringify({ plan_id: freePlanId }),
+    }),
+    jf('/api/fast-english/subscriptions/free-activate', {
+      method: 'POST',
+      headers: { authorization: cTok },
+      body: JSON.stringify({ plan_id: freePlanId }),
+    }),
+  ]);
+  check(
+    concurrent.every((r) => r.status === 200),
+    `F11: concurrent free activation — all responses 200 (${concurrent.map((r) => r.status).join(',')})`,
+  );
+  check(
+    concurrent.filter((r) => r.body?.kind === 'activated').length === 1,
+    'F12: concurrent free activation — exactly ONE created entitlement',
+  );
+  const cSubs = await jf(
+    `/api/collections/subscriptions/records?filter=${encodeURIComponent(
+      "user = '" + cLogin.body.record.id + "'",
+    )}`,
+    { headers: { authorization: suToken } },
+  );
+  check(
+    (cSubs.body?.items || []).filter((s) => s.source === 'free').length === 1,
+    'F13: concurrent free activation — exactly ONE subscription row in the DB',
+  );
+
+  // --- Negative path: the free route never grants a paid/inactive plan ---
+  const paidOnFree = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: freeStudent.token },
+    body: JSON.stringify({ plan_id: paidTestPlanId }),
+  });
+  check(
+    paidOnFree.status === 409 && paidOnFree.body?.code === 'not_free_plan',
+    `F14: paid plan on the free route → 409 not_free_plan (${paidOnFree.status})`,
+  );
+  const inactivePlan = await jf('/api/fast-english/staff/business-settings/plans', {
+    method: 'POST',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({
+      name: 'غیرفعال آزمایشی',
+      slug: `off-${randomId()}`,
+      duration_days: 30,
+      price_toman: 0,
+      is_active: false,
+      display_order: 7,
+    }),
+  });
+  const inactiveOnFree = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: freeStudent.token },
+    body: JSON.stringify({ plan_id: inactivePlan.body?.plan?.id }),
+  });
+  check(
+    inactiveOnFree.status === 404 && inactiveOnFree.body?.code === 'invalid_plan',
+    `F15: inactive plan on the free route → 404 invalid_plan (${inactiveOnFree.status})`,
+  );
+  const noAuthFree = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    noAuthFree.status === 401,
+    `F16: free activation without auth → 401 (${noAuthFree.status})`,
+  );
+
+  // --- Audit trail for free activation (safe detail only) ---
+  const ops = await jf('/api/collections/content_operations/records?perPage=100', {
+    headers: { authorization: suToken },
+  });
+  const freeAudit = (ops.body?.items || []).find(
+    (o) => o.content_type === 'subscription' && o.operation === 'create',
+  );
+  check(
+    !!freeAudit &&
+      JSON.parse(freeAudit.detail_json).kind === 'free_activate' &&
+      JSON.parse(freeAudit.detail_json).priceToman === 0,
+    'F17: free activation is audited (content_operations, safe detail, 0 toman)',
+  );
+
+  // --- Price-change protection: historical snapshots stay authoritative ---
+  const paidStudent = await createPlainStudent();
+  const receipt = await submitReceipt(paidStudent.token, paidTestPlanId);
+  check(receipt.status === 201, `F18: paid receipt submitted at 50,000 toman (${receipt.status})`);
+  const requestId = receipt.body?.request?.id;
+  await jf(`/api/fast-english/staff/business-settings/plans/${paidTestPlanId}`, {
+    method: 'PATCH',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({ price_toman: 99999 }),
+  });
+  const current = await jf('/api/fast-english/payment-requests/current', {
+    headers: { authorization: paidStudent.token },
+  });
+  check(
+    current.body?.request?.amountToman === 50000,
+    `F19: submitted receipt keeps its ORIGINAL amount after an operator price change (${current.body?.request?.amountToman})`,
+  );
+  const storedReq = await jf(`/api/collections/payment_requests/records/${requestId}`, {
+    headers: { authorization: suToken },
+  });
+  check(
+    storedReq.body?.amount_snapshot === 50000 && storedReq.body?.status === 'pending',
+    'F20: the stored payment request snapshot is unchanged by the later price edit',
+  );
+
+  // --- Price >0 → 0 makes the plan free at runtime (no rebuild) ---
+  const toZero = await jf(`/api/fast-english/staff/business-settings/plans/${paidTestPlanId}`, {
+    method: 'PATCH',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({ price_toman: 0 }),
+  });
+  check(toZero.status === 200, `F21: staff sets a paid plan price to 0 (${toZero.status})`);
+  const pubZero = await jf('/api/fast-english/public/settings');
+  check(
+    pubZero.body?.plans?.find((p) => p.id === paidTestPlanId)?.priceToman === 0,
+    'F22: public settings show price 0 right after the edit (plan is FREE at runtime)',
+  );
+  const newFreeAct = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: freeStudent.token }, // already entitled — must stay idempotent
+    body: JSON.stringify({ plan_id: paidTestPlanId }),
+  });
+  check(
+    newFreeAct.status === 200 && newFreeAct.body?.kind === 'already_entitled',
+    `F23: an already-entitled user keeps their existing entitlement (${newFreeAct.status} ${newFreeAct.body?.kind})`,
+  );
+
+  // --- Price 0 → >0: future acquisition becomes paid again ---
+  const backToPaid = await jf(`/api/fast-english/staff/business-settings/plans/${paidTestPlanId}`, {
+    method: 'PATCH',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({ price_toman: 70000 }),
+  });
+  check(
+    backToPaid.status === 200,
+    `F24: staff sets the plan price back above zero (${backToPaid.status})`,
+  );
+  const pubPaidAgain = await jf('/api/fast-english/public/settings');
+  check(
+    pubPaidAgain.body?.plans?.find((p) => p.id === paidTestPlanId)?.priceToman === 70000,
+    'F25: public settings show the new paid price at runtime',
+  );
+  const freeSubStill = await jf(
+    `/api/collections/subscriptions/records?filter=${encodeURIComponent(
+      "user = '" + freeUserRec.body.items[0].id + "'",
+    )}`,
+    { headers: { authorization: suToken } },
+  );
+  check(
+    (freeSubStill.body?.items || []).some(
+      (s) => s.source === 'free' && s.amount_snapshot === 0 && s.status === 'active',
+    ),
+    'F26: the existing free subscription is NOT retroactively changed by the price edit',
+  );
+
+  // --- Card-to-card toggle: OFF hides availability, keeps stored config ---
+  const currentDest = (
+    await jf('/api/fast-english/staff/business-settings', {
+      headers: { authorization: staffToken },
+    })
+  ).body?.destination;
+  const off = await jf('/api/fast-english/staff/business-settings/destination', {
+    method: 'PUT',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({
+      card_number: currentDest.cardNumber,
+      card_holder_name: currentDest.cardHolderName,
+      bank_name: currentDest.bankName,
+      instructions: currentDest.instructions,
+      review_sla_text: currentDest.reviewSlaText,
+      support_contact: currentDest.supportContact,
+      is_active: false,
+    }),
+  });
+  check(off.status === 200, `F27: staff disables card-to-card (${off.status})`);
+  const pubOff = await jf('/api/fast-english/public/settings');
+  check(
+    pubOff.body?.payment?.cardTransferEnabled === false,
+    'F28: public settings report card transfer DISABLED',
+  );
+  const staffGetOff = await jf('/api/fast-english/staff/business-settings', {
+    headers: { authorization: staffToken },
+  });
+  check(
+    staffGetOff.body?.destination?.cardNumber === currentDest.cardNumber &&
+      staffGetOff.body?.destination?.isActive === false,
+    'F29: stored destination card config SURVIVES the toggle (re-enable without re-entering)',
+  );
+  const staleStudent = await createPlainStudent();
+  const stale = await submitReceipt(staleStudent.token, paidTestPlanId);
+  check(
+    stale.status === 404 && stale.body?.code === 'payment_destination_unavailable',
+    `F30: stale paid submission while card transfer is OFF → payment_destination_unavailable (${stale.status})`,
+  );
+  const freeWhileOff = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: staleStudent.token },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    freeWhileOff.status === 200 && freeWhileOff.body?.kind === 'activated',
+    `F31: free plan still activates while card transfer is OFF (${freeWhileOff.status} ${freeWhileOff.body?.kind})`,
+  );
+
+  // --- Re-enable: stored config is reused ---
+  const on = await jf('/api/fast-english/staff/business-settings/destination', {
+    method: 'PUT',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({
+      card_number: currentDest.cardNumber,
+      card_holder_name: currentDest.cardHolderName,
+      bank_name: currentDest.bankName,
+      instructions: currentDest.instructions,
+      review_sla_text: currentDest.reviewSlaText,
+      support_contact: currentDest.supportContact,
+      is_active: true,
+    }),
+  });
+  check(on.status === 200, `F32: staff re-enables card-to-card (${on.status})`);
+  const pubOn = await jf('/api/fast-english/public/settings');
+  check(
+    pubOn.body?.payment?.cardTransferEnabled === true &&
+      on.body?.destination?.cardNumber === currentDest.cardNumber,
+    'F33: card transfer re-enabled with the SAME stored destination card',
+  );
+
+  // --- Already-entitled paid student cannot mint a second entitlement ---
+  const activeStudent = await createActiveStudent(suToken);
+  const entitled = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: activeStudent.token },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    entitled.status === 200 && entitled.body?.kind === 'already_entitled',
+    `F34: paid-approved student keeps their valid entitlement (${entitled.status} ${entitled.body?.kind})`,
+  );
+
+  // --- Students/public can never mutate business settings ---
+  const studentPatch = await jf(`/api/fast-english/staff/business-settings/plans/${freePlanId}`, {
+    method: 'PATCH',
+    headers: { authorization: freeStudent.token },
+    body: JSON.stringify({ price_toman: 999999 }),
+  });
+  check(
+    studentPatch.status === 403,
+    `F35: student token cannot mutate plans through Business Settings (${studentPatch.status})`,
+  );
+  const studentDestMut = await jf('/api/fast-english/staff/business-settings/destination', {
+    method: 'PUT',
+    headers: { authorization: freeStudent.token },
+    body: JSON.stringify({
+      card_number: '6219861034529007',
+      card_holder_name: 'X',
+      bank_name: 'Y',
+    }),
+  });
+  check(
+    studentDestMut.status === 403,
+    `F36: student token cannot mutate the destination (${studentDestMut.status})`,
+  );
+  const pubNoCard = await jf('/api/fast-english/public/settings');
+  check(
+    !JSON.stringify(pubNoCard.body).includes('cardNumber') &&
+      !JSON.stringify(pubNoCard.body).includes('card_number') &&
+      !JSON.stringify(pubNoCard.body).includes('6219861034529007'),
+    'F37: public payload never contains destination card data',
+  );
+  const freeSlug = freePlanSlug;
+  void freeSlug; // (kept for future assertions; slug stability is covered by B-series)
+
+  // ------------------------------------------------------------------
+  // 4.6 SECURITY-REVIEW HARDENING SCENARIOS
+  // ------------------------------------------------------------------
+
+  // A pending PAID request blocks free activation (one commercial path).
+  const pendingBlocksFree = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: paidStudent.token }, // paidStudent still has a pending request (F18)
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    pendingBlocksFree.status === 409 && pendingBlocksFree.body?.code === 'pending_request_exists',
+    `F38: pending paid request blocks free activation (${pendingBlocksFree.status} ${pendingBlocksFree.body?.code})`,
+  );
+
+  // A price-0 plan is never payable through the receipt route.
+  const zeroPlan = await jf('/api/fast-english/staff/business-settings/plans', {
+    method: 'POST',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({
+      name: 'رایگان دوم',
+      slug: `free2-${randomId()}`,
+      duration_days: 30,
+      price_toman: 0,
+      is_active: true,
+      display_order: 8,
+    }),
+  });
+  const zeroPlanStudent = await createPlainStudent();
+  const zeroPaid = await submitReceipt(zeroPlanStudent.token, zeroPlan.body?.plan?.id);
+  check(
+    zeroPaid.status === 409 && zeroPaid.body?.code === 'free_plan_not_payable',
+    `F39: receipt submission for a FREE plan is rejected server-side (${zeroPaid.status} ${zeroPaid.body?.code})`,
+  );
+
+  // An EXPIRED free period is a terminal honest state, never a silent
+  // success and never a duplicate grant.
+  const expireStudent = await createPlainStudent();
+  const expireAct = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: expireStudent.token },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  const expireSubId = expireAct.body?.subscription?.id;
+  const expiredPatch = await jf(`/api/collections/subscriptions/records/${expireSubId}`, {
+    method: 'PATCH',
+    headers: { authorization: suToken },
+    body: JSON.stringify({ expires_at: new Date(Date.now() - 60_000).toISOString() }),
+  });
+  check(expiredPatch.status === 200, 'F39b: fixture expires the free subscription');
+  const afterExpiry = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: expireStudent.token },
+    body: JSON.stringify({ plan_id: freePlanId }),
+  });
+  check(
+    afterExpiry.status === 200 && afterExpiry.body?.kind === 'free_period_ended',
+    `F40: expired free period → free_period_ended (${afterExpiry.status} ${afterExpiry.body?.kind})`,
+  );
+  const expireUserRec = await jf(`/api/collections/fep_users/records/${expireStudent.id}`, {
+    headers: { authorization: suToken },
+  });
+  check(
+    expireUserRec.body?.account_status === 'expired',
+    `F40b: account transitions to 'expired' (the guard-routed honest state) (${expireUserRec.body?.account_status})`,
+  );
+  const expireSubs = await jf(
+    `/api/collections/subscriptions/records?filter=${encodeURIComponent(
+      "user = '" + expireStudent.id + "'",
+    )}`,
+    { headers: { authorization: suToken } },
+  );
+  check(
+    (expireSubs.body?.items || []).filter((s) => s.source === 'free').length === 1,
+    'F41: expired period does NOT mint a second free subscription',
+  );
+
+  // Destination audits mask the card number (data minimization).
+  const destOps = await jf('/api/collections/content_operations/records?perPage=100', {
+    headers: { authorization: suToken },
+  });
+  const destAudit = (destOps.body?.items || []).find(
+    (o) => o.content_type === 'payment_destination' && o.operation === 'update',
+  );
+  const destAuditDetail = destAudit ? JSON.parse(destAudit.detail_json) : null;
+  check(
+    !!destAudit &&
+      typeof destAuditDetail?.cardNumberMasked === 'string' &&
+      destAuditDetail.cardNumberMasked.indexOf('****') >= 0 &&
+      !('cardNumber' in (destAuditDetail || {})),
+    'F42: destination audit stores a MASKED card number, never the full PAN',
+  );
+
+  // A plan flipped >0 → 0 at runtime is activatable as FREE by a FRESH
+  // student (not just by an already-entitled user).
+  const flipPlan = await jf('/api/fast-english/staff/business-settings/plans', {
+    method: 'POST',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({
+      name: 'فلپ‌شونده',
+      slug: `flip-${randomId()}`,
+      duration_days: 30,
+      price_toman: 50000,
+      is_active: true,
+      display_order: 9,
+    }),
+  });
+  const flipId = flipPlan.body?.plan?.id;
+  await jf(`/api/fast-english/staff/business-settings/plans/${flipId}`, {
+    method: 'PATCH',
+    headers: { authorization: staffToken },
+    body: JSON.stringify({ price_toman: 0 }),
+  });
+  const freshFlipStudent = await createPlainStudent();
+  const flipAct = await jf('/api/fast-english/subscriptions/free-activate', {
+    method: 'POST',
+    headers: { authorization: freshFlipStudent.token },
+    body: JSON.stringify({ plan_id: flipId }),
+  });
+  check(
+    flipAct.status === 200 &&
+      flipAct.body?.kind === 'activated' &&
+      flipAct.body?.subscription?.amountToman === 0,
+    `F43: fresh student activates a plan flipped to 0 at runtime (${flipAct.status} ${flipAct.body?.kind})`,
+  );
+
   // Rate-limit response contract: after 60 writes in the window, the next
   // write must return 429 with a machine-readable code (the admin client
   // reads body.code). The write bucket is shared per staff member, so this

@@ -21,6 +21,7 @@ export function PaymentDetailsCard({
 }) {
   const formattedCard = destination ? formatCardNumber(destination.cardNumber) : '';
   const amount = plan ? formatToman(plan.priceToman) : '';
+  const isFree = plan !== null && plan.priceToman === 0;
 
   return (
     <Card data-testid="payment-details-card">
@@ -46,7 +47,7 @@ export function PaymentDetailsCard({
               color="var(--mui-palette-onPrimaryContainer)"
               component="div"
             >
-              مبلغ پرداختی
+              {isFree ? 'قیمت طرح' : 'مبلغ پرداختی'}
             </Typography>
             <Stack
               direction="row"
@@ -62,9 +63,9 @@ export function PaymentDetailsCard({
                 }}
                 data-testid="payment-amount"
               >
-                {amount ? `${amount} تومان` : '—'}
+                {isFree ? 'رایگان' : amount ? `${amount} تومان` : '—'}
               </Typography>
-              {plan && amount ? (
+              {plan && !isFree && amount ? (
                 <CopyValue
                   value={String(plan.priceToman)}
                   label="کپی مبلغ"
@@ -83,7 +84,14 @@ export function PaymentDetailsCard({
             ) : null}
           </Box>
 
-          {destination ? (
+          {isFree ? (
+            <Box data-testid="free-plan-note">
+              <Typography variant="body2" color="text.secondary">
+                این طرح کاملاً رایگان است؛ نیازی به انتقال کارت‌به‌کارت، بارگذاری رسید یا تأیید
+                پشتیبانی ندارد و دسترسی بلافاصله فعال می‌شود.
+              </Typography>
+            </Box>
+          ) : destination ? (
             <>
               <Box>
                 <Typography variant="caption" color="text.secondary" component="div">

@@ -17,6 +17,8 @@ export const ALLOWED_RECEIPT_MIME_TYPES: readonly string[] = [
 // share the exact strings.
 export const PAYMENT_REQUEST_PATH = '/api/fast-english/payment-requests';
 export const CURRENT_REQUEST_PATH = '/api/fast-english/payment-requests/current';
+// Server-authoritative FREE plan activation (price_toman === 0).
+export const FREE_ACTIVATE_PATH = '/api/fast-english/subscriptions/free-activate';
 // Secure owner-only receipt download. The path parameter is the
 // payment_request record id. The route requires `fep_users` auth
 // and an ownership check; cross-user access is rejected.

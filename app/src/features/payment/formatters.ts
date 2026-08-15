@@ -6,9 +6,19 @@
 // live in shared/lib/formatters (single home); the feature keeps its
 // display helpers that are payment-specific.
 
-import { normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
+import { formatToman, normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
 
 export { formatToman, normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
+
+/**
+ * Canonical price label: `price_toman === 0` is THE free-plan signal,
+ * so the UI renders «رایگان» instead of «۰ تومان». Any positive
+ * integer renders as the normal Persian Toman value.
+ */
+export function formatPlanPrice(priceToman: number): string {
+  if (typeof priceToman === 'number' && priceToman === 0) return 'رایگان';
+  return formatToman(priceToman);
+}
 
 /**
  * Display a last-four value as four Persian digits. Falls back to an

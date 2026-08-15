@@ -7,6 +7,7 @@ import {
   normalizeCardNumber,
   validateDestination,
   validatePlan,
+  validatePlanDraftPrice,
   validateSiteContact,
 } from './logic';
 
@@ -47,6 +48,21 @@ describe('validatePlan', () => {
     expect(
       validatePlan({ name: 'x', slug: 'ok', durationDays: 30, priceToman: 1.5 }).priceToman,
     ).toBeTruthy();
+  });
+});
+
+describe('validatePlanDraftPrice (blank must never become a FREE plan)', () => {
+  it('rejects an empty/blank price field', () => {
+    expect(validatePlanDraftPrice('')).toBe('قیمت الزامی است.');
+    expect(validatePlanDraftPrice('   ')).toBe('قیمت الزامی است.');
+  });
+  it('accepts explicit zero (the intentional free-plan signal) and positive prices', () => {
+    expect(validatePlanDraftPrice('0')).toBeNull();
+    expect(validatePlanDraftPrice('299000')).toBeNull();
+  });
+  it('rejects non-integer or negative input', () => {
+    expect(validatePlanDraftPrice('1.5')).toBeTruthy();
+    expect(validatePlanDraftPrice('-5')).toBeTruthy();
   });
 });
 

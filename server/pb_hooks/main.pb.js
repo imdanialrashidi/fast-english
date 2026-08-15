@@ -314,13 +314,26 @@ onRecordUpdate((e) => {
 onRecordCreate((e) => {
   var c = e.record && e.record.collection ? e.record.collection() : null;
   if (!c || c.name !== 'subscriptions') { e.next(); return; }
-  // All required fields must be set by the operator approve route.
-  if (!e.record.get('user') || !e.record.get('payment_request') ||
+  // All required fields must be set by the operator approve route (paid)
+  // or the free-activation route (free, no payment_request/approved_by).
+  var source = String(e.record.get('source') || 'paid');
+  var isFree = source === 'free';
+  if (!e.record.get('user') ||
       !e.record.get('plan_name_snapshot') || typeof e.record.get('amount_snapshot') !== 'number' ||
       typeof e.record.get('duration_days_snapshot') !== 'number' ||
-      !e.record.get('starts_at') || !e.record.get('expires_at') ||
-      !e.record.get('approved_by') || !e.record.get('approved_at')) {
+      !e.record.get('starts_at') || !e.record.get('expires_at')) {
     throw new BadRequestError('subscription: required fields missing', { code: 'forbidden' });
+  }
+  if (isFree) {
+    // Free subscriptions MUST NOT carry a payment request or a staff
+    // approver (they are not the result of a paid approval).
+    if (e.record.get('payment_request') || e.record.get('approved_by')) {
+      throw new BadRequestError('subscription: free rows must not link a payment request', { code: 'forbidden' });
+    }
+  } else {
+    if (!e.record.get('payment_request') || !e.record.get('approved_by') || !e.record.get('approved_at')) {
+      throw new BadRequestError('subscription: required fields missing', { code: 'forbidden' });
+    }
   }
   e.next();
 }, 'subscriptions');
@@ -331,7 +344,7 @@ onRecordUpdate((e) => {
   // All subscription fields are immutable after creation.
   var allFields = ['user', 'payment_request', 'plan', 'plan_name_snapshot',
     'amount_snapshot', 'duration_days_snapshot', 'starts_at', 'expires_at',
-    'status', 'approved_by', 'approved_at'];
+    'status', 'approved_by', 'approved_at', 'source'];
   if (e.originalRecord) {
     for (var i = 0; i < allFields.length; i++) {
       var f = allFields[i];
@@ -361,6 +374,17 @@ onRecordCreate((e) => {
     var slug = e.record.get('slug');
     if (typeof slug === 'string') {
       e.record.set('slug', slug.replace(/^\s+|\s+$/g, ''));
+    }
+    // An EXPLICIT integer price is required on every plan write: an
+    // unset `price_toman` must never silently become a FREE plan
+    // (Number(price || 0) === 0 everywhere). The staff Business Settings
+    // routes always send an explicit price; this hook enforces the same
+    // contract for direct/superuser writes.
+    var price = e.record.get('price_toman');
+    if (typeof price !== 'number' || !Number.isInteger(price) || price < 0) {
+      throw new BadRequestError('price_toman must be an explicit non-negative integer', {
+        code: 'forbidden',
+      });
     }
   }
   // Default is_active to true when not explicitly provided. The

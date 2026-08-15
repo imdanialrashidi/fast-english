@@ -45,12 +45,20 @@ export function quarterlySavingPercent(plans: readonly PublicPlan[]): number | n
 }
 
 function PlanCard({ plan, savingPercent }: { plan: PublicPlan; savingPercent: number | null }) {
+  const isFree = plan.priceToman === 0;
   return (
     <li
       data-testid={`plan-card-${plan.slug}`}
       className="rounded-2xl border border-brand-divider bg-white p-5 text-center"
     >
-      {savingPercent !== null ? (
+      {isFree ? (
+        <span
+          data-testid="plan-free-badge"
+          className="inline-block rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-bold text-brand-primary"
+        >
+          رایگان
+        </span>
+      ) : savingPercent !== null ? (
         <span
           data-testid="plan-saving-badge"
           className="inline-block rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-bold text-brand-primary"
@@ -67,8 +75,14 @@ function PlanCard({ plan, savingPercent }: { plan: PublicPlan; savingPercent: nu
             : `${toPersianDigits(plan.durationDays)} روز`}
       </p>
       <p className="mt-3 text-2xl font-extrabold text-brand-text">
-        {formatToman(plan.priceToman)}
-        <span className="text-sm font-semibold text-brand-muted"> تومان</span>
+        {isFree ? (
+          'رایگان'
+        ) : (
+          <>
+            {formatToman(plan.priceToman)}
+            <span className="text-sm font-semibold text-brand-muted"> تومان</span>
+          </>
+        )}
       </p>
       {plan.description ? (
         <p className="mt-2 text-xs text-brand-muted leading-relaxed">{plan.description}</p>
@@ -94,6 +108,8 @@ export function PlanPricing() {
 function LivePlanPricing() {
   const state = usePublicSettings();
   const plans = state.status === 'ready' ? state.settings.plans : [];
+  const cardTransferEnabled =
+    state.status === 'ready' ? state.settings.payment.cardTransferEnabled : false;
   const savingPercent = useMemo(() => quarterlySavingPercent(plans), [plans]);
 
   if (state.status === 'loading') {
@@ -113,6 +129,20 @@ function LivePlanPricing() {
     );
   }
 
+  const hasFreePlan = plans.some((p) => p.priceToman === 0);
+  const hasPaidPlan = plans.some((p) => p.priceToman > 0);
+  // Truthful footer: derived from the runtime state, never hard-coded.
+  const footer =
+    hasFreePlan && cardTransferEnabled && hasPaidPlan
+      ? 'ثبت‌نام رایگان است و با طرح رایگان می‌توانید همین حالا شروع کنید؛ طرح‌های پولی به‌صورت کارت‌به‌کارت پرداخت می‌شوند.'
+      : hasFreePlan && cardTransferEnabled
+        ? 'ثبت‌نام رایگان است و با طرح رایگان می‌توانید همین حالا شروع کنید.'
+        : hasFreePlan
+          ? 'پرداخت کارت‌به‌کارت فعلاً غیرفعال است؛ می‌توانید با طرح رایگان همین حالا شروع کنید.'
+          : cardTransferEnabled
+            ? 'ثبت‌نام رایگان است؛ پرداخت فقط پس از انتخاب طرح، به‌صورت کارت‌به‌کارت انجام می‌شود.'
+            : 'پرداخت کارت‌به‌کارت فعلاً غیرفعال است؛ به‌محض فعال‌شدن، امکان خرید در اپلیکیشن فراهم می‌شود.';
+
   return (
     <div className="mt-8">
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-3xl">
@@ -131,8 +161,8 @@ function LivePlanPricing() {
           خرید طرح سه ماهه معادل {toPersianDigits(savingPercent)}٪ تخفیف نسبت به پرداخت ماهانه است.
         </p>
       ) : null}
-      <p className="mt-2 text-xs text-brand-muted max-w-3xl">
-        ثبتنام رایگان است؛ پرداخت فقط پس از انتخاب طرح، بهصورت کارتبهکارت انجام میشود.
+      <p className="mt-2 text-xs text-brand-muted max-w-3xl" data-testid="pricing-footer">
+        {footer}
       </p>
     </div>
   );

@@ -198,4 +198,102 @@ test.describe('Admin Business Settings', () => {
     const items = (await plans.json()) as { items: Array<{ slug: string; duration_days: number }> };
     expect(items.items.some((p) => p.slug === 'yearly' || p.duration_days === 365)).toBe(false);
   });
+
+  test('a plan with price 0 shows «طرح رایگان» and the editor explains 0 toman', async ({
+    page,
+  }) => {
+    // Seed one free plan (the same shape the editor writes).
+    const r = await fetch(`${PB_URL}/api/collections/plans/records`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: token },
+      body: JSON.stringify({
+        name: 'آزمایشی رایگان',
+        slug: `e2e-admin-free-${randomBytes(3).toString('hex')}`,
+        duration_days: 30,
+        price_toman: 0,
+        is_active: true,
+        display_order: 3,
+      }),
+    });
+    const body = (await r.json()) as { slug?: string };
+    if (!body.slug) throw new Error('free plan seeding failed');
+
+    await page.addInitScript((payload) => {
+      localStorage.setItem('fep_staff_auth', payload);
+    }, session.payload);
+    await page.goto(`${ADMIN_URL}/settings`);
+
+    // The current commercial state is obvious: the free chip + active chip.
+    await expect(page.getByTestId(`settings-plan-free-${body.slug}`)).toContainText('طرح رایگان');
+    await expect(page.getByTestId(`settings-plan-${body.slug}`)).toContainText('فعال');
+    // The price editor explains that 0 toman means free.
+    await page.getByTestId(`settings-edit-plan-${body.slug}`).click();
+    await expect(page.getByLabel('قیمت (تومان)')).toHaveValue('0');
+    await expect(page.getByText('۰ تومان = طرح رایگان')).toBeVisible();
+  });
+
+  test('card-to-card toggle: «فعال/غیرفعال» state is obvious and stored config survives', async ({
+    page,
+  }) => {
+    // The staff localStorage payload carries the API token; use it to
+    // drive the REAL staff route (the exact surface the editor calls).
+    const staffToken = (JSON.parse(session.payload) as { token: string }).token;
+    const putDestination = async (isActive: boolean) => {
+      const res = await fetch(`${PB_URL}/api/fast-english/staff/business-settings/destination`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json', authorization: staffToken },
+        body: JSON.stringify({
+          card_number: '6037991234567890',
+          card_holder_name: 'E2E HOLDER',
+          bank_name: 'E2E BANK',
+          instructions: '',
+          review_sla_text: 'حداکثر تا ۲۴ ساعت',
+          support_contact: '',
+          is_active: isActive,
+        }),
+      });
+      if (res.status !== 200) throw new Error(`destination PUT failed: ${res.status}`);
+    };
+    await putDestination(true);
+
+    await page.addInitScript((payload) => {
+      localStorage.setItem('fep_staff_auth', payload);
+    }, session.payload);
+    await page.goto(`${ADMIN_URL}/settings`);
+
+    // Enabled state is explicit.
+    await expect(page.getByTestId('settings-card-transfer-status')).toContainText(
+      'پرداخت کارتبه‌کارت: فعال',
+    );
+    // Disable through the editor: the stored values stay visible.
+    await page.getByTestId('settings-edit-destination').click();
+    await expect(page.getByLabel('شماره کارت')).toHaveValue('6037991234567890');
+    await page.getByLabel('فعال است (فقط یک مقصد فعال میتواند وجود داشته باشد)').uncheck();
+    await page.getByTestId('settings-save-destination').click();
+    await expect(page.getByText('ذخیره شد.')).toBeVisible({ timeout: 10_000 });
+
+    // Off state is explicit; the stored card is NOT deleted.
+    await expect(page.getByTestId('settings-card-transfer-status')).toContainText(
+      'پرداخت کارتبه‌کارت: غیرفعال',
+    );
+    await expect(page.getByTestId('settings-destination-summary')).toContainText(
+      '6037991234567890',
+    );
+    const pubOff = await fetch(`${PB_URL}/api/fast-english/public/settings`);
+    const bodyOff = (await pubOff.json()) as { payment: { cardTransferEnabled: boolean } };
+    expect(bodyOff.payment.cardTransferEnabled).toBe(false);
+
+    // Re-enable from the same stored values.
+    await page.getByTestId('settings-edit-destination').click();
+    await expect(page.getByLabel('شماره کارت')).toHaveValue('6037991234567890');
+    await page.getByLabel('فعال است (فقط یک مقصد فعال میتواند وجود داشته باشد)').check();
+    await page.getByTestId('settings-save-destination').click();
+    await expect(page.getByText('ذخیره شد.')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('settings-card-transfer-status')).toContainText(
+      'پرداخت کارتبه‌کارت: فعال',
+    );
+    const pubOn = await fetch(`${PB_URL}/api/fast-english/public/settings`);
+    const bodyOn = (await pubOn.json()) as { payment: { cardTransferEnabled: boolean } };
+    expect(bodyOn.payment.cardTransferEnabled).toBe(true);
+  });
 });

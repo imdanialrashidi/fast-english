@@ -87,6 +87,20 @@ export function validatePlan(input: {
   return errors;
 }
 
+/**
+ * The editor keeps the price as a raw STRING; `Number('') === 0`, so an
+ * empty price field must be rejected BEFORE the numeric conversion — an
+ * accidental blank must never silently create a FREE plan.
+ */
+export function validatePlanDraftPrice(rawPrice: string): string | null {
+  if (rawPrice.trim() === '') return 'قیمت الزامی است.';
+  const n = Number(rawPrice);
+  if (!Number.isInteger(n) || n < 0 || n > 1_000_000_000) {
+    return 'قیمت باید عدد صحیح غیرمنفی (تومان) باشد.';
+  }
+  return null;
+}
+
 export function validateSiteContact(supportContact: string): FieldErrors {
   const v = supportContact.trim();
   if (!v) return {};

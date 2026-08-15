@@ -64,11 +64,17 @@ describe('Payment redesign — journey architecture', () => {
 
   it('the journey maps real form state to the active stage', () => {
     const route = read(PAYMENT_ROUTE);
-    // no plan → stage 1; plan → stage 2; file → stage 3 (submission is
-    // direct — the simplified flow has no separate confirmation stage).
-    expect(route).toContain('journeyActiveStep');
+    // Paid flow: no plan → stage 1; plan → stage 2; file → stage 3
+    // (submission is direct — the simplified flow has no separate
+    // confirmation stage).
+    expect(route).toContain('paidJourneyActiveStep');
     expect(route).not.toContain('transferConfirmed');
-    expect(route).toMatch(/journeyActiveStep\s*=\s*selectedPlanId/);
+    expect(route).toMatch(/paidJourneyActiveStep\s*=\s*selectedPlanId/);
+    // Free flow: the journey is the two-step «انتخاب طرح / شروع رایگان» —
+    // card-to-card and receipt stages must never appear for a free plan.
+    expect(route).toContain('FreeJourney');
+    expect(route).toContain('شروع رایگان');
+    expect(route).toMatch(/selectedPlanIsFree\s*\?\s*\(?\s*<FreeJourney/);
   });
 
   it('an existing pending (or decided) request redirects to the status workspace', () => {
@@ -245,10 +251,11 @@ describe('Payment redesign — copy + error semantics', () => {
   it('the submission surface keeps an honest plan/amount summary line', () => {
     const route = read(PAYMENT_ROUTE);
     // The simplified journey needs no confirmation checkbox or summary
-    // card: the sticky submit area already states plan + price + duration.
+    // card: the sticky submit area already states plan + price + duration
+    // (the free label «رایگان» is the canonical rendering for 0 toman).
     expect(route).not.toContain('data-testid="confirmation-summary"');
     expect(route).not.toContain('انتقال را انجام داده‌ام');
-    expect(route).toContain('formatToman(p.priceToman)');
+    expect(route).toContain('formatPlanPrice(p.priceToman)');
     expect(route).toContain('formatDurationDays(p.durationDays)');
   });
 

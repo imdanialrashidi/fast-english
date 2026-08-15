@@ -58,6 +58,24 @@ export const currentRequestResponseSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('request'), request: paymentRequestBaseSchema }),
 ]);
 
+const freeSubscriptionSchema = z.object({
+  id: z.string().min(1),
+  planId: z.string().min(1),
+  planName: z.string().min(1),
+  durationDays: z.number().int().positive(),
+  amountToman: z.number().int().nonnegative(),
+  startsAt: z.string().min(1),
+  expiresAt: z.string().min(1),
+  status: z.string().min(1),
+  source: z.string().min(1),
+});
+
+export const freeActivationResponseSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('activated'), subscription: freeSubscriptionSchema }),
+  z.object({ kind: z.literal('already_entitled'), subscription: freeSubscriptionSchema }),
+  z.object({ kind: z.literal('free_period_ended'), subscription: freeSubscriptionSchema }),
+]);
+
 // Safe API error envelope. We never trust the wire `code` or `message`
 // as user-facing copy; the error mapper (`errors.ts`) is the only
 // place that produces Persian messages.

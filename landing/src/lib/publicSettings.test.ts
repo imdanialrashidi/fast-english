@@ -31,6 +31,7 @@ const validPayload = {
     },
   ],
   support: { supportContact: 'https://t.me/fep' },
+  payment: { cardTransferEnabled: true },
 };
 
 describe('parsePublicSettings', () => {
@@ -40,6 +41,26 @@ describe('parsePublicSettings', () => {
     expect(parsed?.plans).toHaveLength(2);
     expect(parsed?.plans[0].priceToman).toBe(299000);
     expect(parsed?.support.supportContact).toBe('https://t.me/fep');
+    expect(parsed?.payment.cardTransferEnabled).toBe(true);
+  });
+
+  it('card transfer is DISABLED when the payment object is absent, malformed or false', () => {
+    // Absent (older/partial payload): the Landing must never claim
+    // card-to-card works when the endpoint does not confirm it.
+    expect(parsePublicSettings({ plans: [], support: {} })?.payment.cardTransferEnabled).toBe(
+      false,
+    );
+    expect(
+      parsePublicSettings({ plans: [], support: {}, payment: { cardTransferEnabled: false } })
+        ?.payment.cardTransferEnabled,
+    ).toBe(false);
+    expect(
+      parsePublicSettings({ plans: [], support: {}, payment: { cardTransferEnabled: 'yes' } })
+        ?.payment.cardTransferEnabled,
+    ).toBe(false);
+    expect(
+      parsePublicSettings({ plans: [], support: {}, payment: {} })?.payment.cardTransferEnabled,
+    ).toBe(false);
   });
 
   it('accepts an empty support contact (honest unset state)', () => {

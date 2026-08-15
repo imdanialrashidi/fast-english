@@ -48,6 +48,7 @@ import {
   normalizeCardNumber,
   validateDestination,
   validatePlan,
+  validatePlanDraftPrice,
   validateSiteContact,
 } from './logic';
 import type { BusinessDestination, BusinessPlan, BusinessSettings, BusinessSite } from './types';
@@ -144,6 +145,10 @@ function PlansSection({
       durationDays,
       priceToman,
     });
+    // A blank price field must be rejected BEFORE Number('') === 0: an
+    // accidental empty field must never silently publish a FREE plan.
+    const draftPriceError = validatePlanDraftPrice(editing.priceToman);
+    if (draftPriceError) validation.priceToman = draftPriceError;
     // The owner-approved launch set has no yearly plan; creating one is
     // refused in the editor even before the server check.
     if (validation.name === '' && isYearlyPlan({ durationDays, slug: editing.slug })) {
@@ -181,7 +186,9 @@ function PlansSection({
       setEditing(null);
       if (savedPlan) {
         const others = plans.filter((p) => p.id !== savedPlan?.id);
-        onChanged({ plans: [...others, savedPlan].sort((a, b) => a.displayOrder - b.displayOrder) });
+        onChanged({
+          plans: [...others, savedPlan].sort((a, b) => a.displayOrder - b.displayOrder),
+        });
       }
     } catch (err) {
       setSaveState({
@@ -245,6 +252,15 @@ function PlansSection({
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                    {p.priceToman === 0 ? (
+                      <Chip
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        label="طرح رایگان"
+                        data-testid={`settings-plan-free-${p.slug}`}
+                      />
+                    ) : null}
                     <Chip
                       size="small"
                       color={p.isActive ? 'success' : 'default'}
@@ -301,14 +317,16 @@ function PlansSection({
                   error={Boolean(errors.durationDays)}
                   helperText={errors.durationDays}
                 />
-                <TextField
-                  label="قیمت (تومان)"
-                  type="number"
-                  value={editing.priceToman}
-                  onChange={(e) => setEditing({ ...editing, priceToman: e.target.value })}
-                  error={Boolean(errors.priceToman)}
-                  helperText={errors.priceToman}
-                />
+                <Box>
+                  <TextField
+                    label="قیمت (تومان)"
+                    type="number"
+                    value={editing.priceToman}
+                    onChange={(e) => setEditing({ ...editing, priceToman: e.target.value })}
+                    error={Boolean(errors.priceToman)}
+                    helperText={errors.priceToman ?? '۰ تومان = طرح رایگان'}
+                  />
+                </Box>
               </Box>
               <TextField
                 label="ترتیب نمایش"
@@ -429,12 +447,21 @@ function DestinationSection({
             </Typography>
             {destination ? (
               <Box data-testid="settings-destination-summary">
-                <Typography variant="body1" dir="ltr" sx={{ textAlign: 'start' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: 700 }}
+                  data-testid="settings-card-transfer-status"
+                >
+                  پرداخت کارتبه‌کارت: {destination.isActive ? 'فعال' : 'غیرفعال'}
+                </Typography>
+                <Typography variant="body1" dir="ltr" sx={{ textAlign: 'start', mt: 0.5 }}>
                   {destination.cardNumber}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {destination.cardHolderName} — {destination.bankName}
-                  {destination.isActive ? '' : ' (غیرفعال)'}
+                  {destination.isActive
+                    ? ''
+                    : ' — اطلاعات ذخیره‌شده حفظ می‌شود و پس از فعال‌سازی دوباره استفاده می‌شود'}
                 </Typography>
                 {destination.reviewSlaText ? (
                   <Typography variant="caption" color="text.secondary">

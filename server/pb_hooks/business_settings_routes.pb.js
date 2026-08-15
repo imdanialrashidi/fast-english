@@ -28,7 +28,8 @@
 //     server-side (requireStaffAdmin); a UI guard is never authorization;
 //   - inputs are bounded, trimmed and validated; responses are sanitized
 //     (no storage names, no raw records, no credentials);
-//   - the public payload contains ONLY active plans + the support contact;
+//   - the public payload contains ONLY active plans + the support contact
+//     + the card-transfer availability BOOLEAN (never card details);
 //   - at most one ACTIVE payment_destination at any time (activating a
 //     destination deactivates the others in the same save);
 //   - no secrets: this surface never reads or writes superuser credentials,
@@ -64,7 +65,24 @@ routerAdd("GET", "/api/fast-english/public/settings", function (e) {
   var site = bs.loadSite();
   var support = bs.siteShape(site);
 
-  return e.json(200, { plans: plans, support: support });
+  // Card-to-card availability is a BOOLEAN only — never the card
+  // number/holder/bank/instructions (those are Student-surface values
+  // revealed only through the active destination record). Strict
+  // active-only lookup: an inactive/stored destination does NOT mean
+  // card transfer is enabled.
+  var cardTransferEnabled = false;
+  try {
+    var dests = $app.findRecordsByFilter("payment_destination", "is_active = true", "", 1, 0);
+    cardTransferEnabled = !!(dests && dests.length > 0);
+  } catch (_) {
+    cardTransferEnabled = false;
+  }
+
+  return e.json(200, {
+    plans: plans,
+    support: support,
+    payment: { cardTransferEnabled: cardTransferEnabled },
+  });
 });
 
 // =====================================================================
@@ -336,11 +354,17 @@ routerAdd("PUT", "/api/fast-english/staff/business-settings/destination", functi
   }
 
   // Audit trail (content_operations) so destination changes are attributable.
+  // The card number is MASKED — the full PAN must never be persisted in the
+  // audit log (data minimization); the destination row itself is the only
+  // store of the full value.
   try {
     var core = bs.coreModule();
     if (core && core.audit) {
+      var masked = cardNumber.length > 8
+        ? cardNumber.substring(0, 6) + "****" + cardNumber.substring(cardNumber.length - 4)
+        : "****";
       core.audit($app, String(e.auth.id || ""), "payment_destination", String(saved.id || ""), "update", {
-        cardNumber: cardNumber,
+        cardNumberMasked: masked,
         isActive: isActive,
       });
     }
