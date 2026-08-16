@@ -16,17 +16,9 @@
 
 import { useMemo } from 'react';
 import { formatToman } from '../../../shared/lib/formatters';
+import { toPersianDigits } from '../lib/persianDigits';
 import type { PublicPlan } from '../lib/publicSettings';
 import { usePublicSettings } from '../lib/usePublicSettings';
-
-const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
-
-function toPersianDigits(n: number): string {
-  return String(n)
-    .split('')
-    .map((d) => PERSIAN_DIGITS[Number(d)] ?? d)
-    .join('');
-}
 
 /** Derive the quarterly saving percent (null when it is not clean). */
 export function quarterlySavingPercent(plans: readonly PublicPlan[]): number | null {
@@ -36,7 +28,8 @@ export function quarterlySavingPercent(plans: readonly PublicPlan[]): number | n
   const base = 3 * monthly.priceToman;
   if (base <= 0 || quarterly.priceToman >= base) return null;
   // Integer-safe: 100 * (base - quarterly) / base with a tiny epsilon so
-  // exact ratios (e.g. 807300/897000 = 0.9) never fail float rounding.
+  // exact ratios (e.g. quarterly vs three times the monthly price) never
+  // fail float rounding.
   const raw = (100 * (base - quarterly.priceToman)) / base;
   const percent = Math.round(raw);
   if (Math.abs(raw - percent) > 1e-9) return null;
@@ -49,43 +42,43 @@ function PlanCard({ plan, savingPercent }: { plan: PublicPlan; savingPercent: nu
   return (
     <li
       data-testid={`plan-card-${plan.slug}`}
-      className="rounded-2xl border border-brand-divider bg-white p-5 text-center"
+      className="rounded-2xl border border-outline-soft bg-surface p-5 text-center"
     >
       {isFree ? (
         <span
           data-testid="plan-free-badge"
-          className="inline-block rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-bold text-brand-primary"
+          className="inline-block rounded-full bg-primary-container px-3 py-1 text-xs font-bold text-on-primary-container"
         >
           رایگان
         </span>
       ) : savingPercent !== null ? (
         <span
           data-testid="plan-saving-badge"
-          className="inline-block rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-bold text-brand-primary"
+          className="inline-block rounded-full bg-accent-container px-3 py-1 text-xs font-bold text-on-accent-container"
         >
           {toPersianDigits(savingPercent)}٪ تخفیف
         </span>
       ) : null}
-      <h3 className="mt-2 text-lg font-extrabold text-brand-text">{plan.name}</h3>
-      <p className="mt-1 text-sm text-brand-muted">
+      <h3 className="mt-2 text-lg font-extrabold text-text">{plan.name}</h3>
+      <p className="mt-1 text-sm text-muted">
         {plan.durationDays === 30
           ? '۳۰ روز'
           : plan.durationDays === 90
             ? '۹۰ روز'
             : `${toPersianDigits(plan.durationDays)} روز`}
       </p>
-      <p className="mt-3 text-2xl font-extrabold text-brand-text">
+      <p className="mt-3 text-2xl font-extrabold text-text">
         {isFree ? (
           'رایگان'
         ) : (
           <>
             {formatToman(plan.priceToman)}
-            <span className="text-sm font-semibold text-brand-muted"> تومان</span>
+            <span className="text-sm font-semibold text-muted"> تومان</span>
           </>
         )}
       </p>
       {plan.description ? (
-        <p className="mt-2 text-xs text-brand-muted leading-relaxed">{plan.description}</p>
+        <p className="mt-2 text-xs text-muted leading-relaxed">{plan.description}</p>
       ) : null}
     </li>
   );
@@ -97,7 +90,7 @@ export function PlanPricing() {
   // usePublicSettings.ts). The client hydrates the live component.
   if (typeof window === 'undefined') {
     return (
-      <p className="mt-4 text-xs text-brand-muted max-w-3xl">
+      <p className="mt-4 text-xs text-muted max-w-3xl">
         قیمت طرح‌ها در داخل اپلیکیشن نمایش داده می‌شود.
       </p>
     );
@@ -116,14 +109,14 @@ function LivePlanPricing() {
     // Reserved space so the section does not shift once prices arrive.
     return (
       <div className="mt-8" aria-busy="true" aria-live="polite">
-        <div className="h-6 w-40 rounded bg-brand-surface" />
+        <div className="h-6 w-40 rounded bg-surface-muted" />
       </div>
     );
   }
 
   if (state.status === 'unavailable' || plans.length === 0) {
     return (
-      <p className="mt-4 text-xs text-brand-muted max-w-3xl">
+      <p className="mt-4 text-xs text-muted max-w-3xl">
         قیمت طرح‌ها در داخل اپلیکیشن نمایش داده می‌شود.
       </p>
     );
@@ -157,11 +150,11 @@ function LivePlanPricing() {
         ))}
       </ul>
       {savingPercent !== null ? (
-        <p className="mt-3 text-xs text-brand-muted max-w-3xl">
+        <p className="mt-3 text-xs text-muted max-w-3xl">
           خرید طرح سه ماهه معادل {toPersianDigits(savingPercent)}٪ تخفیف نسبت به پرداخت ماهانه است.
         </p>
       ) : null}
-      <p className="mt-2 text-xs text-brand-muted max-w-3xl" data-testid="pricing-footer">
+      <p className="mt-2 text-xs text-muted max-w-3xl" data-testid="pricing-footer">
         {footer}
       </p>
     </div>

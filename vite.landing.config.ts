@@ -13,6 +13,12 @@ const pkgVersion = JSON.parse(
 ).version;
 const buildTime = new Date().toISOString();
 
+// The version marker is interpolated into an HTML attribute; only a
+// strict semver may reach the served markup.
+if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(pkgVersion)) {
+  throw new Error(`invalid package.json version for the release marker: "${pkgVersion}"`);
+}
+
 // Static marketing landing surface: builds `landing/` into `dist-landing/`.
 // Tailwind is configured ONLY in this Vite root and is NOT present in the
 // product application build, so MUI styling remains the only CSS system
@@ -38,7 +44,23 @@ const apiProxy = {
 
 export default defineConfig({
   root: 'landing',
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: 'landing-release-identity',
+      // Same marker contract as the Student App (data-app-version): the
+      // deployed Landing release must be identifiable from the served HTML
+      // before JavaScript runs. The prerender script preserves attributes
+      // on the #root div when it injects the SSR body.
+      transformIndexHtml(html) {
+        return html.replace(
+          '<div id="root"',
+          `<div id="root" data-landing-version="${pkgVersion}" data-build-time="${buildTime}"`,
+        );
+      },
+    },
+  ],
   define: {
     __LANDING_VERSION__: JSON.stringify(pkgVersion),
     __BUILD_TIME__: JSON.stringify(buildTime),

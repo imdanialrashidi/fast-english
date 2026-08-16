@@ -25,7 +25,7 @@ interface SupportContactProps {
 
 function StaticFallback() {
   return (
-    <span data-testid="support-unavailable" className="inline-block text-sm text-brand-muted">
+    <span data-testid="support-unavailable" className="inline-block text-sm text-muted">
       کانال پشتیبانی هنوز اعلام نشده است و به‌زودی در همین صفحه منتشر می‌شود.
     </span>
   );
@@ -47,7 +47,7 @@ function LiveSupportContact({ label, onIntent }: SupportContactProps) {
         target="_blank"
         data-testid="support-link"
         onClick={onIntent}
-        className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
+        className="mt-4 inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
       >
         {label}
       </a>
@@ -57,7 +57,7 @@ function LiveSupportContact({ label, onIntent }: SupportContactProps) {
   return (
     <span
       data-testid="support-contact-text"
-      className="mt-4 inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text min-h-12"
+      className="mt-4 inline-flex items-center justify-center rounded-[10px] border border-outline-soft bg-surface px-5 py-3 text-sm font-semibold text-text min-h-12"
       dir="ltr"
       lang="en"
     >

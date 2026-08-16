@@ -8,10 +8,12 @@ const styles = readFileSync(resolve(root, 'src', 'styles.css'), 'utf8');
 
 const requiredSections = [
   'Hero',
+  'WhyLevelsSection',
   'HowItWorks',
-  'BenefitsSection',
+  'ExperienceSection',
   'CefrSection',
   'SampleLesson',
+  'PaymentSection',
   'InstallSection',
   'FaqSection',
   'FinalCta',

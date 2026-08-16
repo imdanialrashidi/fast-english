@@ -83,7 +83,7 @@ describe('public page metadata (source)', () => {
       expect(html, `${page.file} og:site_name`).toContain('content="فست انگلیش پادکست"');
       expect(html, `${page.file} twitter:card`).toMatch(/name="twitter:card" content="summary"/);
       expect(html, `${page.file} favicon`).toContain(
-        'rel="icon" type="image/svg+xml" href="/favicon.svg"',
+        'rel="icon" type="image/png" href="/favicon.png"',
       );
       expect(html, `${page.file} viewport`).toContain('name="viewport"');
     }
@@ -180,7 +180,13 @@ describe('legal pages (source)', () => {
 describe('landing output file set', () => {
   it('contains exactly the expected static files in public/', () => {
     const files = readdirSync(publicDir).sort();
-    expect(files).toEqual(['favicon.svg', 'og-image.png', 'robots.txt', 'sitemap.xml']);
+    expect(files).toEqual([
+      'fastenglish_header_logo.png',
+      'favicon.png',
+      'og-image.png',
+      'robots.txt',
+      'sitemap.xml',
+    ]);
     // No PWA manifest: site.webmanifest must NOT exist until P4-S2.
     expect(files).not.toContain('site.webmanifest');
   });

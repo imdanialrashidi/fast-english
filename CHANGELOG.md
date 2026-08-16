@@ -4,6 +4,44 @@ All notable workflow changes are documented here. This project follows the spiri
 
 ## Unreleased
 
+## 1.0.0 — 2026-08-16 (release candidate)
+
+### Added
+
+- Release identity v1: root package version 1.0.0 embedded by App, Landing and
+  Admin builds (data-app-version / data-landing-version / data-admin-version +
+  build-time markers) and cross-checked with the Android versionName by
+  `pnpm android:check:version`; `scripts/check-production-bundle.sh` now runs in
+  the canonical gate and fails when any surface reports the pre-release 0.0.0
+  identity.
+- Record-level backup/restore proof (`pnpm smoke:restore-proof`): disposable
+  PocketBase runs the full chain — real Student signup → payment request with
+  receipt upload → staff approval → subscription → content/progress/placement/
+  settings fixtures → Backups-API backup → wipe → restore into a clean data dir →
+  same record IDs and fields, same user authenticates, receipt file bytes
+  identical (sha256). Wired into `scripts/project-verify.sh` (13h) and the CI
+  backend lane (18 parallel suites).
+- Landing redesign (final pre-production pass): the public site now runs on the
+  accepted midnight/ice semantic system (`shared/ui/tokens` family), uses the
+  official logo assets (wordmark PNG + byte-identical inline mark, official
+  favicon), and tells a conversion narrative — Hero (episode-jacket composition:
+  artwork, CEFR edition rail, deck) → why one episode in six levels → activation
+  journey → student experience (continue listening / vocabulary / transcript /
+  progress) → CEFR ladder → real sample episode → honest payment (runtime-derived)
+  → install/access → FAQ → final CTA. Persian copy rewritten to be concrete,
+  credible and truthful (no fabricated claims; payment and Android states stay
+  honest pre-launch).
+
+### Changed
+
+- `.env.example` documents the environment contract with explicit
+  REQUIRED/OPTIONAL/DISABLED classification; `deploy/env.production.example`
+  fixed (FEP_SMOKE_STUDENT_* drift removed).
+- Landing favicon replaced with the official app favicon (PNG); OG image
+  regenerated on the midnight/ice palette; landing token layer derived from the
+  accepted Light scheme (canvas #f5f9fa, primary #2a6f8c, midnight #0b1220 panels,
+  CEFR pairs).
+
 ### Added
 
 - Behavioral coverage for autonomous/strict guard modes and launcher trust overrides.

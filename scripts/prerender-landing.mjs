@@ -86,12 +86,12 @@ try {
     const body = renderToString(component());
     const filePath = resolve(outDir, `${file}.html`);
     const built = readFileSync(filePath, 'utf8');
-    const rootMarker = '<div id="root"></div>';
-    if (!built.includes(rootMarker)) {
+    const rootMarker = /<div id="root"[^>]*><\/div>/;
+    if (!rootMarker.test(built)) {
       throw new Error(`Built ${filePath} is missing the #root placeholder`);
     }
     const injected = built
-      .replace(rootMarker, `<div id="root">${body}</div>`)
+      .replace(rootMarker, (match) => match.replace('></div>', `>${body}</div>`))
       .replace('</head>', `${JSON_LD_HTML}</head>`);
     writeFileSync(filePath, injected);
     console.log(`prerendered ${file}.html (${body.length} chars)`);

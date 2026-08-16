@@ -11,6 +11,7 @@
 // No hard-coded prices, no temporary marketing copy that could become
 // false after an operator edit.
 import { PlanPricing } from '../components/PlanPricing';
+import { toPersianDigits } from '../lib/persianDigits';
 import { usePublicSettings } from '../lib/usePublicSettings';
 
 export function PaymentSection() {
@@ -28,19 +29,33 @@ export function PaymentSection() {
 // claim and no free-plan claim appear before the runtime data arrives.
 function PaymentSectionUnknown() {
   return (
-    <section id="payment" aria-labelledby="payment-title" className="py-12 sm:py-20">
+    <section id="payment" aria-labelledby="payment-title" className="py-14 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="max-w-3xl">
-          <h2 id="payment-title" className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            پرداخت ساده و شفاف
-          </h2>
-          <p className="mt-3 text-brand-muted leading-relaxed">
-            روش پرداخت و قیمت طرح‌ها در داخل اپلیکیشن نمایش داده می‌شود.
-          </p>
-        </div>
+        <PaymentHeading
+          title="پرداخت ساده و شفاف"
+          lead="روش پرداخت و قیمت طرح‌ها در داخل اپلیکیشن نمایش داده می‌شود."
+        />
         <PlanPricing />
       </div>
     </section>
+  );
+}
+
+function PaymentHeading({ title, lead }: { title: string; lead: string }) {
+  return (
+    <div className="max-w-2xl">
+      <p className="flex items-center gap-2 text-sm font-semibold text-accent">
+        <span aria-hidden className="inline-block h-px w-8 bg-accent/60" />
+        اشتراک
+      </p>
+      <h2
+        id="payment-title"
+        className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight leading-[1.3]"
+      >
+        {title}
+      </h2>
+      <p className="mt-4 text-base text-muted leading-relaxed">{lead}</p>
+    </div>
   );
 }
 
@@ -57,8 +72,8 @@ function LivePaymentSection() {
 
   const heading = hasFreePlan ? 'رایگان شروع کنید' : 'پرداخت ساده و شفاف';
   const lead = hasFreePlan
-    ? 'یک طرح کاملاً رایگان برای شروع وجود دارد؛ بدون پرداخت و بدون کارتبهکارت میتوانید وارد شوید.'
-    : 'هیچ درگاه پرداخت آنلاینی وجود ندارد؛ پرداخت بهصورت دستی کارتبهکارت انجام میشود تا کنترل کامل دست شما باشد.';
+    ? 'یک طرح کاملاً رایگان برای شروع وجود دارد؛ بدون پرداخت و بدون کارتبه‌کارت می‌توانید وارد شوید.'
+    : 'هیچ درگاه پرداخت آنلاینی وجود ندارد؛ پرداخت به‌صورت دستی کارت‌به‌کارت انجام می‌شود تا کنترل کامل دست شما باشد.';
 
   // Facts are derived from the runtime state; never hard-coded claims
   // that could become false after an operator edit.
@@ -67,21 +82,21 @@ function LivePaymentSection() {
       ? [
           {
             title: 'شروع رایگان',
-            desc: 'طرح رایگان بدون نیاز به پرداخت یا بارگذاری رسید فعال میشود.',
+            desc: 'طرح رایگان بدون نیاز به پرداخت یا بارگذاری رسید فعال می‌شود.',
           },
           {
-            title: 'پرداخت کارتبهکارت فعلاً غیرفعال است',
-            desc: 'به محض فعالشدن، امکان خرید طرحهای پولی در اپلیکیشن فراهم میشود.',
+            title: 'پرداخت کارت‌به‌کارت فعلاً غیرفعال است',
+            desc: 'به محض فعال‌شدن، امکان خرید طرح‌های پولی در اپلیکیشن فراهم می‌شود.',
           },
           {
             title: 'بدون درگاه آنلاین',
-            desc: 'درگاه پرداخت آنلاین وجود ندارد؛ اطلاعرسانی بعداً در همین صفحه انجام میشود.',
+            desc: 'درگاه پرداخت آنلاین وجود ندارد؛ اطلاع‌رسانی بعداً در همین صفحه انجام می‌شود.',
           },
         ]
       : [
           {
-            title: 'پرداخت کارتبهکارت فعلاً غیرفعال است',
-            desc: 'امکان خرید در حال حاضر فعال نیست؛ به محض فعالشدن، در همین صفحه اعلام میشود.',
+            title: 'پرداخت کارت‌به‌کارت فعلاً غیرفعال است',
+            desc: 'امکان خرید در حال حاضر فعال نیست؛ به محض فعال‌شدن، در همین صفحه اعلام می‌شود.',
           },
           {
             title: 'بدون درگاه آنلاین',
@@ -89,52 +104,53 @@ function LivePaymentSection() {
           },
           {
             title: 'بررسی دستی',
-            desc: 'هرگاه پرداخت فعال شود، رسید انتقال بهصورت دستی بررسی و اشتراک فعال میشود.',
+            desc: 'هرگاه پرداخت فعال شود، رسید انتقال به‌صورت دستی بررسی و اشتراک فعال می‌شود.',
           },
         ]
     : [
         {
-          title: 'پرداخت فقط کارتبهکارت دستی',
-          desc: 'درگاه پرداخت آنلاین وجود ندارد؛ مبلغ طرح را کارتبهکارت منتقل میکنید.',
+          title: 'پرداخت فقط کارت‌به‌کارت دستی',
+          desc: 'درگاه پرداخت آنلاین وجود ندارد؛ مبلغ طرح را کارت‌به‌کارت منتقل می‌کنید.',
         },
         {
           title: 'بارگذاری رسید انتقال',
-          desc: 'یک تصویر از رسید (JPEG، PNG یا WebP تا ۵ مگابایت) را در اپلیکیشن بارگذاری میکنید.',
+          desc: 'یک تصویر از رسید (JPEG، PNG یا WebP تا ۵ مگابایت) را در اپلیکیشن بارگذاری می‌کنید.',
         },
         {
-          title: 'بررسی دستی و فعالسازی',
-          desc: 'اپراتور رسید را بررسی میکند؛ فقط پس از تأیید، اشتراک شما فعال میشود.',
+          title: 'بررسی دستی و فعال‌سازی',
+          desc: 'اپراتور رسید را بررسی می‌کند؛ فقط پس از تأیید، اشتراک شما فعال می‌شود.',
         },
       ];
 
   return (
-    <section id="payment" aria-labelledby="payment-title" className="py-12 sm:py-20">
+    <section id="payment" aria-labelledby="payment-title" className="py-14 sm:py-24 bg-surface">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="max-w-3xl">
-          <h2 id="payment-title" className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            {heading}
-          </h2>
-          <p className="mt-3 text-brand-muted leading-relaxed">{lead}</p>
-        </div>
+        <PaymentHeading title={heading} lead={lead} />
 
-        <ul className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          {facts.map((f) => (
+        <ol className="mt-10 grid sm:grid-cols-3 gap-4">
+          {facts.map((f, i) => (
             <li
               key={f.title}
-              className="rounded-2xl border border-brand-divider bg-white p-4 sm:p-5"
+              className="rounded-2xl border border-outline-soft bg-canvas p-5 sm:p-6"
             >
-              <h3 className="text-base font-bold text-brand-text">{f.title}</h3>
-              <p className="mt-1 text-sm text-brand-muted leading-relaxed">{f.desc}</p>
+              <span
+                aria-hidden
+                className="inline-block text-xs font-extrabold text-primary/70 tabular-nums"
+              >
+                {toPersianDigits(i + 1, 2)}
+              </span>
+              <h3 className="mt-2 text-base font-bold text-text">{f.title}</h3>
+              <p className="mt-1 text-sm text-muted leading-relaxed">{f.desc}</p>
             </li>
           ))}
-        </ul>
+        </ol>
         <PlanPricing />
-        <p className="mt-4 text-xs text-brand-muted max-w-3xl" data-testid="payment-methods-note">
+        <p className="mt-4 text-xs text-muted max-w-3xl" data-testid="payment-methods-note">
           {cardTransferEnabled
-            ? 'پرداخت کارتبهکارت است و پس از بارگذاری رسید و تأیید اپراتور، اشتراک فعال میشود.'
+            ? 'پرداخت کارت‌به‌کارت است و پس از بارگذاری رسید و تأیید اپراتور، اشتراک فعال می‌شود.'
             : hasFreePlan
-              ? 'در حال حاضر پرداخت کارتبهکارت غیرفعال است؛ طرح رایگان بدون پرداخت قابل استفاده است.'
-              : 'در حال حاضر پرداخت کارتبهکارت غیرفعال است؛ بهمحض فعالشدن، امکان خرید فراهم میشود.'}
+              ? 'در حال حاضر پرداخت کارت‌به‌کارت غیرفعال است؛ طرح رایگان بدون پرداخت قابل استفاده است.'
+              : 'در حال حاضر پرداخت کارت‌به‌کارت غیرفعال است؛ به‌محض فعال‌شدن، امکان خرید فراهم می‌شود.'}
         </p>
       </div>
     </section>

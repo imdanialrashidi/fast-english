@@ -41,6 +41,7 @@ dist-landing-apk/
 dist-admin/
 playwright-report/
 test-results/
+.artifacts/
 *.log
 
 # PocketBase

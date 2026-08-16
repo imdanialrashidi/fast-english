@@ -1,6 +1,6 @@
 {
   "name": "fast-english-podcast",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Fast English Podcast — Persian-first English learning (PWA + Android).",
   "type": "module",
@@ -66,7 +66,8 @@
     "smoke:content-admin": "PB_SMOKE_PLACEMENT_PORT=18097 bash scripts/smoke-placement.sh node scripts/smoke-content-admin.mjs",
     "smoke:library": "PB_SMOKE_PLACEMENT_PORT=18098 bash scripts/smoke-placement.sh node scripts/smoke-library.mjs",
     "smoke:episode": "PB_SMOKE_PLACEMENT_PORT=18099 bash scripts/smoke-placement.sh node scripts/smoke-episode.mjs",
-    "smoke:business-settings": "PB_SMOKE_PLACEMENT_PORT=18100 bash scripts/smoke-placement.sh node scripts/smoke-business-settings.mjs"
+    "smoke:business-settings": "PB_SMOKE_PLACEMENT_PORT=18100 bash scripts/smoke-placement.sh node scripts/smoke-business-settings.mjs",
+    "smoke:restore-proof": "bash scripts/restore-proof.sh"
   },
   "dependencies": {
     "@capacitor/core": "8.4.2",

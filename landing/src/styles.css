@@ -14,18 +14,65 @@
   src: url("./assets/fonts/Vazirmatn-VF.woff2") format("woff2-variations");
 }
 
-/* Landing-specific theme tokens. Kept local to the landing surface. */
+/* ------------------------------------------------------------------
+   Landing design tokens.
+   The Landing is the public face of the same product family as the
+   Student App, so it uses the ACCEPTED semantic system from
+   `shared/ui/tokens/colors.ts` (Light scheme) instead of an independent
+   marketing palette: canvas/surface/text/muted/primary/accent/outline
+   roles carry the exact approved values, and the deliberate midnight
+   panels echo the app's Dark canvas (#05090a family, PWA theme #0B1220).
+   CEFR pairs come from `shared/ui/tokens/cefr.ts` (accessible pairs).
+   No arbitrary one-off colors; no gradients-as-decoration; no glass.
+------------------------------------------------------------------- */
 @theme {
-  --color-brand-midnight: #0b1220;
-  --color-brand-primary: #2563eb;
-  --color-brand-primary-dark: #1d4ed8;
-  --color-brand-secondary: #7c3aed;
-  --color-brand-surface: #f6f8fc;
-  --color-brand-text: #0f172a;
-  --color-brand-muted: #475569;
-  --color-brand-divider: #e2e8f0;
+  --font-sans: "Vazirmatn", "IRANSansX", "Tahoma", "Segoe UI", system-ui, -apple-system, sans-serif;
 
-  /* CEFR level tokens. Foreground meets AA contrast on each background. */
+  /* Page + surface roles (Light scheme — semanticLight). */
+  --color-canvas: #f5f9fa; /* background */
+  --color-surface: #ffffff; /* surfaceContainerLowest */
+  --color-surface-muted: #edf4f7; /* surface */
+  --color-surface-strong: #dde8ed; /* surfaceContainerHigh (hover/active) */
+  --color-text: #0e171b; /* onSurface */
+  --color-muted: #414e55; /* onSurfaceVariant */
+  --color-outline: #6e7a81;
+  --color-outline-soft: #839198; /* dividers/borders — >= 3:1 on white and canvas */
+
+  /* Action + accent roles (the brand blue is never a text-bearing fill). */
+  --color-primary: #2a6f8c;
+  --color-primary-hover: #25607b;
+  --color-primary-pressed: #1f526a;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d3e9f2;
+  --color-on-primary-container: #0c3242;
+  --color-accent: #2e7092;
+  --color-accent-container: #cde8f5;
+  --color-on-accent-container: #0c3a52;
+  --color-focus: #0a7aa8;
+
+  /* Soft brand wash for restrained top-edge glows (never a gradient wall). */
+  --color-wash-primary: rgba(42, 111, 140, 0.1);
+
+  /* Midnight panels (install / final CTA / hero visual) — the app's Dark
+     canvas family: #05090a canvas, #0b1220 the landing midnight (PWA
+     theme-color), #e4edf1 the Dark onSurface, #b3c1c8 the Dark variant. */
+  --color-midnight: #0b1220;
+  --color-midnight-deep: #05090a;
+  --color-midnight-surface: #16202b;
+  --color-ice: #e4edf1;
+  --color-ice-muted: #b3c1c8;
+  --color-ice-soft: rgba(228, 237, 241, 0.12);
+  --color-ice-hover: rgba(228, 237, 241, 0.24);
+
+  /* Status (honest live/check/off states — never color alone). */
+  --color-success: #1b7a56;
+  --color-success-container: #c5ecd9;
+  --color-on-success-container: #0b3f2a;
+  --color-warning: #8a5a1e;
+  --color-warning-container: #f5e2c0;
+
+  /* CEFR level tokens. Foreground meets AA contrast on each background
+     (identical pairs to shared/ui/tokens/cefr.ts). */
   --color-cefr-a1-bg: #e0f2fe;
   --color-cefr-a1-fg: #075985;
   --color-cefr-a2-bg: #dcfce7;
@@ -38,6 +85,11 @@
   --color-cefr-c1-fg: #5b21b6;
   --color-cefr-c2-bg: #fce7f3;
   --color-cefr-c2-fg: #9d174d;
+
+  /* Restrained elevation (elevationLight roles). */
+  --shadow-surface: 0px 1px 2px rgba(14, 23, 27, 0.06);
+  --shadow-interactive: 0px 2px 6px rgba(14, 23, 27, 0.1);
+  --shadow-sticky: 0px 4px 12px rgba(14, 23, 27, 0.12);
 }
 
 :root {
@@ -52,6 +104,8 @@ body {
   font-family: "Vazirmatn", "IRANSansX", "Tahoma", "Segoe UI", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--color-canvas);
+  color: var(--color-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -68,3 +122,28 @@ body {
 #root {
   min-height: 100dvh;
 }
+
+/* Shared editorial helpers (landing-only component classes). */
+:where(.landing-shell) {
+  font-feature-settings: "ss01";
+}
+
+/* Subtle “playing” pulse on the hero waveform (transform/opacity only,
+   collapsed by the global prefers-reduced-motion rule above). */
+@keyframes fep-wave {
+  0%,
+  100% {
+    transform: scaleY(0.65);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-wave {
+  animation: fep-wave 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Visible focus is always provided by the component-level
+   focus-visible:outline utilities (focus ring token #0a7aa8). */

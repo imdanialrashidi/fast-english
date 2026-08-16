@@ -86,6 +86,36 @@ touched. Local run on 2026-08-01 passed: health OK, counts matched the
 seeded data (superusers 1, users 1, plans 1, destination 1, topics 1,
 lessons 1).
 
+### 4b. Record-level restore proof (repository gate, fully disposable)
+
+```bash
+pnpm smoke:restore-proof        # = bash scripts/restore-proof.sh
+```
+
+This is the **record-level** proof behind the hard release gate (C): it does
+not stop at collection counts. In a disposable environment it runs the real
+chain end-to-end:
+
+1. starts a disposable PocketBase (migrations + hooks, temp data dir);
+2. creates representative records through the real product paths:
+   Student signup (`fep_users`) → active destination + plan → payment
+   request with a real receipt file upload → Staff approval route (creates
+   the subscription in one transaction) → content fixture (category/
+   episode/variant) → progress fixture (`lesson_progress`) → placement
+   attempt fixture → `site_settings` fixture;
+3. produces a backup via the PocketBase Backups API;
+4. stops the instance, **wipes the data dir** (simulated loss);
+5. restores the ZIP into a **clean** data directory (same mechanism as
+   `deploy/restore-drill.sh`) and starts the same binary + migrations+hooks;
+6. verifies: health; superuser auth; the **same Student authenticates**
+   with the same password; the same record IDs and important fields for
+   user/payment request/subscription/progress/attempt/content/settings;
+   the uploaded receipt **file** exists in the restored storage tree and
+   its bytes are identical (sha256).
+
+Wired into `scripts/project-verify.sh` (step 13h) and the CI backend lane.
+Never touches `server/pb_data` or any live database.
+
 ## 5. Restoring production (manual, emergency)
 
 ```text

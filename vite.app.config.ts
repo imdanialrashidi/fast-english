@@ -18,6 +18,12 @@ const pkgVersion = (() => {
 })();
 const buildTime = new Date().toISOString();
 
+// The version marker is interpolated into an HTML attribute; only a
+// strict semver may reach the served markup.
+if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(pkgVersion)) {
+  throw new Error(`invalid package.json version for the release marker: "${pkgVersion}"`);
+}
+
 // Product application surface: builds `app/` into `dist-app/`.
 // Used for the Web App, PWA, and the Capacitor `webDir`.
 //

@@ -1,6 +1,28 @@
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+
+// Admin release/build diagnostics: the same version identity as the
+// Student App and Landing (root package.json), injected into the built
+// HTML so the deployed Admin release is identifiable before any JS runs
+// (deployment health checks and support sessions). No secrets.
+const pkgVersion = (() => {
+  try {
+    return JSON.parse(readFileSync(fileURLToPath(new URL('package.json', import.meta.url)), 'utf8'))
+      .version;
+  } catch {
+    return '0.0.0';
+  }
+})();
+const buildTime = new Date().toISOString();
+
+// The version marker is interpolated into an HTML attribute; only a
+// strict semver may reach the served markup (a malformed package.json
+// version must fail the build, never corrupt the attribute).
+if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(pkgVersion)) {
+  throw new Error(`invalid package.json version for the release marker: "${pkgVersion}"`);
+}
 
 // Unified Staff Admin Console surface: builds `admin/` into `dist-admin/`.
 //
@@ -28,7 +50,21 @@ export default defineConfig({
   // Landing configuration lives in the repository-root `.env` (same
   // convention as the other surfaces).
   envDir: fileURLToPath(new URL('.', import.meta.url)),
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'admin-release-identity',
+      // Same marker contract as the Student App (data-app-version): the
+      // deployed Admin release must be identifiable from the served HTML
+      // before JavaScript runs. The #root div already carries data-surface.
+      transformIndexHtml(html) {
+        return html.replace(
+          '<div id="root"',
+          `<div id="root" data-admin-version="${pkgVersion}" data-build-time="${buildTime}"`,
+        );
+      },
+    },
+  ],
   build: {
     outDir: '../dist-admin',
     emptyOutDir: true,

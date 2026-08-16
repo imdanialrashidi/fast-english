@@ -19,7 +19,7 @@ export function SamplePage() {
       />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pb-12 sm:pb-20 space-y-4">
         <article
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
           lang="en"
           dir="ltr"
         >
@@ -30,19 +30,15 @@ export function SamplePage() {
             >
               {SAMPLE_LEVEL}
             </span>
-            <h2 className="mt-3 text-xl sm:text-2xl font-bold text-brand-text">
-              {SAMPLE_TITLE_EN}
-            </h2>
-            <p className="text-sm text-brand-muted mt-1" lang="fa" dir="rtl">
+            <h2 className="mt-3 text-xl sm:text-2xl font-bold text-text">{SAMPLE_TITLE_EN}</h2>
+            <p className="text-sm text-muted mt-1" lang="fa" dir="rtl">
               {SAMPLE_TITLE_FA}
             </p>
           </header>
           {SAMPLE_PARAGRAPHS_EN.map((paragraph, i) => (
             <p
               key={i}
-              className={
-                i > 0 ? 'mt-3 text-brand-text leading-loose' : 'text-brand-text leading-loose'
-              }
+              className={i > 0 ? 'mt-3 text-text leading-loose' : 'text-text leading-loose'}
             >
               {paragraph}
             </p>
@@ -51,12 +47,12 @@ export function SamplePage() {
 
         <section
           aria-labelledby="sample-play"
-          className="rounded-2xl border border-brand-divider bg-brand-surface p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface-muted p-5 sm:p-6"
         >
           <h2 id="sample-play" className="text-lg font-extrabold">
             شنیدن صوت و نمونهٔ زنده
           </h2>
-          <p className="mt-2 text-sm text-brand-muted leading-relaxed">
+          <p className="mt-2 text-sm text-muted leading-relaxed">
             پخش صوت و نسخهٔ زندهٔ همین نمونه درس در صفحهٔ نمونهٔ وب‌اپ در دسترس است:
           </p>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
@@ -64,18 +60,18 @@ export function SamplePage() {
               href={publicSampleUrl}
               rel="noopener noreferrer"
               target="_blank"
-              className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
+              className="inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
             >
               باز کردن نمونهٔ زنده و صوت
             </a>
             <AppCta
               place="sample"
-              className="inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text hover:bg-brand-surface min-h-12"
+              className="inline-flex items-center justify-center rounded-[10px] border border-outline-soft bg-surface px-5 py-3 text-sm font-semibold text-text hover:bg-surface-strong min-h-12"
             >
               ورود به وب‌اپ
             </AppCta>
           </div>
-          <p className="mt-4 text-xs text-brand-muted">
+          <p className="mt-4 text-xs text-muted">
             اگر نمونهٔ زنده در دسترس نباشد، همین صفحه متن نمونه را نمایش می‌دهد؛ محتوای کامل پس از
             فعال‌سازی اشتراک در اپلیکیشن باز می‌شود.
           </p>

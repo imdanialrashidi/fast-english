@@ -37,6 +37,20 @@ if (!versionName || !versionCode || !applicationId) {
   fail('could not parse versionName/versionCode/applicationId from android/app/build.gradle');
 }
 
+// --- 1b. Web version identity (release strategy v1) ---
+// The root package.json version is the single canonical WEB release
+// identity (embedded by the App/Landing/Admin builds + telemetry). It must
+// equal the Android versionName so every surface reports the same v1.x.y
+// release; a mismatch means support cannot tell which deployed pair is
+// which. Android versionCode remains the strictly-increasing integer.
+const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+if (pkg.version !== versionName) {
+  fail(`package.json version "${pkg.version}" != Android versionName "${versionName}"`);
+}
+if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(pkg.version)) {
+  fail(`package.json version "${pkg.version}" is not a real semver release version`);
+}
+
 // --- 2. Capacitor configuration ---
 const capacitor = JSON.parse(readFileSync(join(ROOT, 'capacitor.config.json'), 'utf8'));
 if (capacitor.appId !== applicationId) {

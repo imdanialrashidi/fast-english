@@ -63,35 +63,35 @@ export function PrivacyPage() {
         {topics.map((t) => (
           <section
             key={t.title}
-            className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+            className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
           >
             <h2 className="text-lg font-extrabold">{t.title}</h2>
-            <p className="mt-2 text-sm text-brand-muted leading-relaxed">{t.body}</p>
+            <p className="mt-2 text-sm text-muted leading-relaxed">{t.body}</p>
           </section>
         ))}
-        <section className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6">
+        <section className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6">
           <h2 className="text-lg font-extrabold">موارد در انتظار تصمیم مالک</h2>
-          <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+          <ul className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>مدت نگهداری رسیدها و داده‌های حساب — به‌زودی</span>
             </li>
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>وضعیت حقوقی و نهاد مسئول (شخص یا شرکت) — به‌زودی</span>
             </li>
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>حوزهٔ قضایی و قوانین قابل اعمال — به‌زودی</span>
             </li>
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>حقوق قانونی کاربر و ادعاهای انطباق با مقررات — به‌زودی</span>

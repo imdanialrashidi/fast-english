@@ -138,6 +138,14 @@ else
   #      destination, review ETA, demo placement bank install guards + real
   #      placement flow (score 20 -> C2), public sample contract.
   run bash scripts/smoke-placement.sh node scripts/smoke-business-settings.mjs
+
+  # 13h. Record-level backup/restore proof (release gate C): real Student
+  #      signup -> payment request + receipt upload -> staff approval ->
+  #      subscription, plus content/progress/placement/settings fixtures;
+  #      PocketBase Backups API backup -> wipe -> restore into a CLEAN
+  #      data dir -> same record IDs/fields, the same Student authenticates,
+  #      receipt file bytes identical (sha256). Fully disposable.
+  run bash scripts/restore-proof.sh
 fi
 
 # 13d. Content Package Schema validation (Podcast Slice 3): the committed
@@ -214,6 +222,13 @@ run node scripts/check-bundle-boundaries.mjs dist-app dist-admin
 
 # 16. Landing SEO/link checks against the built output (P4-S1).
 run node scripts/check-landing-output.mjs
+
+# 16b. Production bundle gate: the configured production values are
+#      embedded, the release-identity markers report the real version
+#      (never 0.0.0), and no debug/private material leaked into any
+#      built surface. Runs in the canonical gate so the release bundle
+#      cannot be assembled from an unchecked dist.
+run bash scripts/check-production-bundle.sh dist-landing dist-app dist-admin
 
 # 17. Configured-APK build: proves the download CTA is configuration-driven
 #     and that a configured official URL renders the correct link + version.
