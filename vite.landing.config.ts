@@ -23,6 +23,19 @@ const buildTime = new Date().toISOString();
 // is injected into the built HTML after the build by
 // `scripts/prerender-landing.mjs` (SSR `renderToString`), so pages remain
 // readable and indexable without JavaScript.
+// The landing fetches the public business-settings endpoint same-origin
+// (`/api/fast-english/public/settings`). In production a scoped Caddy
+// handle proxies exactly that path; in dev/e2e the Vite server and
+// preview proxies forward it to the local PocketBase.
+const apiTarget = process.env.VITE_API_TARGET ?? 'http://127.0.0.1:8090';
+
+const apiProxy = {
+  '/api': {
+    target: apiTarget,
+    changeOrigin: true,
+  },
+};
+
 export default defineConfig({
   root: 'landing',
   plugins: [react(), tailwindcss()],
@@ -54,11 +67,13 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: true,
+    proxy: apiProxy,
   },
   preview: {
     // Distinct from the app preview default (4173) so both surfaces can
     // be served side by side during end-to-end tests.
     port: 4174,
     strictPort: true,
+    proxy: apiProxy,
   },
 });

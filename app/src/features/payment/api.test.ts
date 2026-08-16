@@ -59,12 +59,29 @@ function makeFile(name = 'r.jpg', type = 'image/jpeg', size = 1024): File {
 }
 
 import {
+  activateFreePlan,
   createPaymentRequest,
   fetchReceiptBlob,
   loadActiveDestination,
   loadActivePlans,
   loadCurrentRequest,
 } from './api';
+
+function minimalFreeSubscription() {
+  return {
+    id: 's1',
+    planId: 'fp1',
+    planName: 'رایگان',
+    durationDays: 30,
+    amountToman: 0,
+    startsAt: '2026-01-01T00:00:00.000Z',
+    expiresAt: '2026-01-31T00:00:00.000Z',
+    status: 'active',
+    source: 'free',
+  };
+}
+
+import { FREE_ACTIVATE_PATH } from './constants';
 
 let fetchSpy: ReturnType<typeof vi.spyOn>;
 
@@ -196,6 +213,42 @@ describe('loadCurrentRequest', () => {
     const [path, opts] = call;
     expect(path).toBe(CURRENT_REQUEST_PATH);
     expect(opts.method).toBe('GET');
+  });
+});
+
+describe('activateFreePlan', () => {
+  it('sends ONLY plan_id to the free-activate route and maps both response kinds', async () => {
+    pbMock.send.mockResolvedValueOnce({
+      kind: 'activated',
+      subscription: minimalFreeSubscription(),
+    });
+    await activateFreePlan({ planId: 'fp1' });
+    const call = pbMock.send.mock.calls[0];
+    if (!call) throw new Error('expected at least one call');
+    const [path, opts] = call;
+    expect(path).toBe(FREE_ACTIVATE_PATH);
+    expect(opts.method).toBe('POST');
+    // Only the plan id travels to the server — never a client price or
+    // a free flag (the server reads the canonical plan record).
+    expect(opts.body).toEqual({ plan_id: 'fp1' });
+
+    pbMock.send.mockResolvedValueOnce({
+      kind: 'already_entitled',
+      subscription: minimalFreeSubscription(),
+    });
+    const res = await activateFreePlan({ planId: 'fp1' });
+    expect(res.kind).toBe('already_entitled');
+  });
+
+  it('maps server errors through toPaymentError', async () => {
+    pbMock.send.mockRejectedValueOnce(
+      Object.assign(new Error('not free'), {
+        response: { status: 409, data: { code: 'not_free_plan', message: 'x' } },
+      }),
+    );
+    await expect(activateFreePlan({ planId: 'fp1' })).rejects.toMatchObject({
+      code: 'not_free_plan',
+    });
   });
 });
 

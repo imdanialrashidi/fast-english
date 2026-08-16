@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "kind": "demo",
+  "label": "Demo placement bank v1",
+  "$comment": "DEMO / TEMPORARY dataset for development, staging and disposable test environments ONLY. NOT the reviewed production question bank. The final reviewed bank remains HUMAN INPUT REQUIRED before live launch. Promotion guard: scripts/seed/placement.mjs refuses to install a kind=demo dataset into a production target without explicit --allow-demo + --confirm-production.",
+  "version": 1,
+  "questions": [
+    {
+      "question_key": "q01",
+      "position": 1,
+      "prompt": "Choose the correct word: “She ___ a teacher.”",
+      "options": [
+        { "id": "opt0", "text": "is" },
+        { "id": "opt1", "text": "are" },
+        { "id": "opt2", "text": "am" },
+        { "id": "opt3", "text": "be" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q02",
+      "position": 2,
+      "prompt": "Choose the correct word: “I ___ to school every day.”",
+      "options": [
+        { "id": "opt0", "text": "go" },
+        { "id": "opt1", "text": "goes" },
+        { "id": "opt2", "text": "going" },
+        { "id": "opt3", "text": "gone" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q03",
+      "position": 3,
+      "prompt": "Choose the correct word: “There are two ___ on the table.”",
+      "options": [
+        { "id": "opt0", "text": "book" },
+        { "id": "opt1", "text": "books" },
+        { "id": "opt2", "text": "bookes" },
+        { "id": "opt3", "text": "a book" }
+      ],
+      "correct_option_id": "opt1"
+    },
+    {
+      "question_key": "q04",
+      "position": 4,
+      "prompt": "Choose the correct answer: “___ you like tea?”",
+      "options": [
+        { "id": "opt0", "text": "Do" },
+        { "id": "opt1", "text": "Does" },
+        { "id": "opt2", "text": "Is" },
+        { "id": "opt3", "text": "Are" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q05",
+      "position": 5,
+      "prompt": "Choose the correct word: “She ___ TV last night.”",
+      "options": [
+        { "id": "opt0", "text": "watch" },
+        { "id": "opt1", "text": "watches" },
+        { "id": "opt2", "text": "watched" },
+        { "id": "opt3", "text": "watching" }
+      ],
+      "correct_option_id": "opt2"
+    },
+    {
+      "question_key": "q06",
+      "position": 6,
+      "prompt": "Choose the correct word: “This is the ___ book I have ever read.”",
+      "options": [
+        { "id": "opt0", "text": "good" },
+        { "id": "opt1", "text": "better" },
+        { "id": "opt2", "text": "best" },
+        { "id": "opt3", "text": "well" }
+      ],
+      "correct_option_id": "opt2"
+    },
+    {
+      "question_key": "q07",
+      "position": 7,
+      "prompt": "Choose the correct word: “If it rains, we ___ at home.”",
+      "options": [
+        { "id": "opt0", "text": "stay" },
+        { "id": "opt1", "text": "stayed" },
+        { "id": "opt2", "text": "will stay" },
+        { "id": "opt3", "text": "would stay" }
+      ],
+      "correct_option_id": "opt2"
+    },
+    {
+      "question_key": "q08",
+      "position": 8,
+      "prompt": "Choose the correct word: “She has lived here ___ 2015.”",
+      "options": [
+        { "id": "opt0", "text": "for" },
+        { "id": "opt1", "text": "since" },
+        { "id": "opt2", "text": "from" },
+        { "id": "opt3", "text": "at" }
+      ],
+      "correct_option_id": "opt1"
+    },
+    {
+      "question_key": "q09",
+      "position": 9,
+      "prompt": "Choose the correct sentence:",
+      "options": [
+        { "id": "opt0", "text": "He doesn't likes coffee." },
+        { "id": "opt1", "text": "He don't like coffee." },
+        { "id": "opt2", "text": "He doesn't like coffee." },
+        { "id": "opt3", "text": "He not like coffee." }
+      ],
+      "correct_option_id": "opt2"
+    },
+    {
+      "question_key": "q10",
+      "position": 10,
+      "prompt": "Choose the correct word: “I'm looking forward ___ you soon.”",
+      "options": [
+        { "id": "opt0", "text": "to see" },
+        { "id": "opt1", "text": "seeing" },
+        { "id": "opt2", "text": "see" },
+        { "id": "opt3", "text": "to seeing" }
+      ],
+      "correct_option_id": "opt3"
+    },
+    {
+      "question_key": "q11",
+      "position": 11,
+      "prompt": "Choose the correct word: “The meeting was ___ until next week.”",
+      "options": [
+        { "id": "opt0", "text": "put off" },
+        { "id": "opt1", "text": "put on" },
+        { "id": "opt2", "text": "put up" },
+        { "id": "opt3", "text": "put down" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q12",
+      "position": 12,
+      "prompt": "Choose the correct word: “By the time we arrived, the film ___.”",
+      "options": [
+        { "id": "opt0", "text": "started" },
+        { "id": "opt1", "text": "has started" },
+        { "id": "opt2", "text": "had started" },
+        { "id": "opt3", "text": "was starting" }
+      ],
+      "correct_option_id": "opt2"
+    },
+    {
+      "question_key": "q13",
+      "position": 13,
+      "prompt": "Choose the correct word: “She suggested ___ the problem together.”",
+      "options": [
+        { "id": "opt0", "text": "discuss" },
+        { "id": "opt1", "text": "to discuss" },
+        { "id": "opt2", "text": "discussing" },
+        { "id": "opt3", "text": "discussed" }
+      ],
+      "correct_option_id": "opt2"
+    },
+    {
+      "question_key": "q14",
+      "position": 14,
+      "prompt": "Choose the correct word: “The report needs ___ before it can be sent.”",
+      "options": [
+        { "id": "opt0", "text": "checking" },
+        { "id": "opt1", "text": "to check" },
+        { "id": "opt2", "text": "check" },
+        { "id": "opt3", "text": "checked" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q15",
+      "position": 15,
+      "prompt": "Choose the correct word: “I wish I ___ more time to study.”",
+      "options": [
+        { "id": "opt0", "text": "have" },
+        { "id": "opt1", "text": "had" },
+        { "id": "opt2", "text": "will have" },
+        { "id": "opt3", "text": "would have" }
+      ],
+      "correct_option_id": "opt1"
+    },
+    {
+      "question_key": "q16",
+      "position": 16,
+      "prompt": "Choose the correct word: “The new policy will have a significant ___ on costs.”",
+      "options": [
+        { "id": "opt0", "text": "affect" },
+        { "id": "opt1", "text": "effect" },
+        { "id": "opt2", "text": "effective" },
+        { "id": "opt3", "text": "affective" }
+      ],
+      "correct_option_id": "opt1"
+    },
+    {
+      "question_key": "q17",
+      "position": 17,
+      "prompt": "Choose the correct word: “Hardly ___ had entered the room when the phone rang.”",
+      "options": [
+        { "id": "opt0", "text": "I" },
+        { "id": "opt1", "text": "me" },
+        { "id": "opt2", "text": "mine" },
+        { "id": "opt3", "text": "my" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q18",
+      "position": 18,
+      "prompt": "Choose the correct word: “The data ___ been analysed carefully.”",
+      "options": [
+        { "id": "opt0", "text": "has" },
+        { "id": "opt1", "text": "have" },
+        { "id": "opt2", "text": "is" },
+        { "id": "opt3", "text": "are" }
+      ],
+      "correct_option_id": "opt0"
+    },
+    {
+      "question_key": "q19",
+      "position": 19,
+      "prompt": "Choose the correct word: “Not only ___ the project, but she also presented it.”",
+      "options": [
+        { "id": "opt0", "text": "she completed" },
+        { "id": "opt1", "text": "did she complete" },
+        { "id": "opt2", "text": "she did complete" },
+        { "id": "opt3", "text": "completed she" }
+      ],
+      "correct_option_id": "opt1"
+    },
+    {
+      "question_key": "q20",
+      "position": 20,
+      "prompt": "Choose the most natural sentence:",
+      "options": [
+        { "id": "opt0", "text": "Despite of the rain, the event went ahead." },
+        { "id": "opt1", "text": "Despite the rain, the event went ahead." },
+        { "id": "opt2", "text": "Despite the rain, but the event went ahead." },
+        { "id": "opt3", "text": "Despite rain, however the event went ahead." }
+      ],
+      "correct_option_id": "opt1"
+    }
+  ]
+}

@@ -93,6 +93,8 @@ test('install page explains installation without unsafe guidance', async ({ page
   await page.goto('/install');
   await expect(page.getByRole('heading', { name: 'نصب اپلیکیشن', level: 1 })).toBeVisible();
   await expect(page.getByText('وب‌اپ — بدون نصب')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'نصب روی iPhone / iPad' })).toBeVisible();
+  await expect(page.locator('#ios')).toContainText('Add to Home Screen');
   await expect(page.getByText('وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد')).toBeVisible();
   await expect(page.getByText('بررسی اصالت دانلود')).toBeVisible();
   // Never encourages disabling Android security globally.
@@ -145,7 +147,9 @@ test('acquisition telemetry records route surface and signup intent without PII'
 test('install page explains per-browser PWA flows and records install intent', async ({ page }) => {
   await page.goto('/install');
   await expect(page.getByText('نصب وب‌اپ روی صفحهٔ اصلی (PWA)')).toBeVisible();
-  await expect(page.getByText('سافاری روی iOS همان پنجرهٔ نصب اندروید را ندارد')).toBeVisible();
+  // The dedicated iOS section replaced the old in-list bullet.
+  await expect(page.locator('#ios')).toBeVisible();
+  await expect(page.locator('#ios')).toContainText('Add to Home Screen');
   await expect(page.getByText('هیچ مرورگری تضمین نمی‌کند که این گزینه را نشان دهد')).toBeVisible();
   // beforeinstallprompt → install_intent (shared contract event).
   await page.evaluate(() => {

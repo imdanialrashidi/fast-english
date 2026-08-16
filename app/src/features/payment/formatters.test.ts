@@ -8,6 +8,7 @@ import {
   formatFileSize,
   formatLastFour,
   formatPersianDateTime,
+  formatPlanPrice,
   formatToman,
   normalizeLastFour,
 } from './formatters';
@@ -28,6 +29,17 @@ describe('formatToman', () => {
     expect(formatToman(-1)).toBe(''); // negative price is not a valid backend value
     expect(formatToman(null)).toBe('');
     expect(formatToman(undefined)).toBe('');
+  });
+});
+
+describe('formatPlanPrice', () => {
+  it('renders «رایگان» for zero toman (the canonical free-plan signal)', () => {
+    expect(formatPlanPrice(0)).toBe('رایگان');
+  });
+
+  it('renders the normal Persian Toman value for positive prices', () => {
+    expect(formatPlanPrice(299000)).toBe('۲۹۹٬۰۰۰');
+    expect(formatPlanPrice(1000)).toBe('۱٬۰۰۰');
   });
 });
 

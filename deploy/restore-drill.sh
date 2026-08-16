@@ -106,7 +106,12 @@ token="$(curl -fsS -X POST "http://127.0.0.1:$PORT/api/collections/_superusers/a
 echo "drill: superuser auth OK"
 
 echo "drill: collections (counts only, never record values):"
-for col in _superusers fep_users plans payment_destination payment_requests subscriptions placement_questions placement_attempts topics lessons lesson_progress; do
+# Full launch-critical collection contract (Business Configuration slice).
+# Derived from server/pb_migrations/*.js — every collection created by a
+# migration must be readable after a restore. tests/restore-drill-collections.test.mjs
+# re-derives this list from the migrations and fails CI when it goes stale.
+# Order is stable (creation order) so a missing collection shows up clearly.
+for col in _superusers fep_users plans payment_destination payment_requests subscriptions placement_questions placement_attempts topics lessons lesson_progress staff_admins categories lesson_vocabulary content_imports content_operations site_settings; do
   code="$(curl -sS -o "$TMPDIR/count.json" -w '%{http_code}' \
     "http://127.0.0.1:$PORT/api/collections/$col/records?page=1&perPage=1" \
     -H "Authorization: $token")" || { echo "drill: FAIL — cannot query $col" >&2; exit 1; }

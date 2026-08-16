@@ -151,54 +151,21 @@ describe('paymentFormSchema', () => {
     expect(r.success).toBe(true);
   });
 
-  it('normalises Persian last-four digits', () => {
+  it('rejects unknown transaction-reference fields (simplified form contract)', () => {
+    // The intended Student form collects ONLY planId + receiptFile.
+    // Unknown keys must be stripped by the schema, never carried forward.
     const r = paymentFormSchema.safeParse({
       planId: 'p1',
       receiptFile: makeFile(),
-      senderCardLast4: '۱۲۳۴',
+      senderCardLast4: '1234',
+      bankReference: 'REF-1',
+      transferAt: '2025-01-01T00:00:00.000Z',
     });
     expect(r.success).toBe(true);
     if (r.success) {
-      // Transformed value is Latin digits.
-      expect((r.data as { senderCardLast4: string }).senderCardLast4).toBe('1234');
+      expect('senderCardLast4' in r.data).toBe(false);
+      expect('bankReference' in r.data).toBe(false);
+      expect('transferAt' in r.data).toBe(false);
     }
-  });
-
-  it('rejects a non-4-digit last-four', () => {
-    const r = paymentFormSchema.safeParse({
-      planId: 'p1',
-      receiptFile: makeFile(),
-      senderCardLast4: '123',
-    });
-    expect(r.success).toBe(false);
-  });
-
-  it('rejects bank_reference with control characters', () => {
-    const r = paymentFormSchema.safeParse({
-      planId: 'p1',
-      receiptFile: makeFile(),
-      bankReference: 'abc\u0007',
-    });
-    expect(r.success).toBe(false);
-  });
-
-  it('rejects transfer_at that is more than 24h in the future', () => {
-    const future = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
-    const r = paymentFormSchema.safeParse({
-      planId: 'p1',
-      receiptFile: makeFile(),
-      transferAt: future,
-    });
-    expect(r.success).toBe(false);
-  });
-
-  it('accepts a transfer_at in the past', () => {
-    const past = new Date(Date.now() - 60_000).toISOString();
-    const r = paymentFormSchema.safeParse({
-      planId: 'p1',
-      receiptFile: makeFile(),
-      transferAt: past,
-    });
-    expect(r.success).toBe(true);
   });
 });

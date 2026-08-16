@@ -60,8 +60,14 @@ bash scripts/check-production-bundle.sh dist-landing dist-app dist-admin
 Then stage a bundle directory `<id>/{landing,app,admin,server,android}` (copy
 `dist-landing/`, `dist-app/`, `dist-admin/`,
 `server/pb_migrations+pb_hooks+VERSION`, `releases/*`) and copy it to the
-server. `VITE_SUPPORT_URL` stays unset until
-an approved support channel exists.
+server.
+
+Business values (plan prices, destination card, review ETA, support/collaboration
+contact) are NOT build-time values anymore: the Landing reads them at runtime
+from `/api/fast-english/public/settings` (scoped Caddy handle on the landing
+domain), and a Staff Admin edits them in the Admin Console (`/settings` →
+تنظیمات کسب‌وکار). Seeding the two launch plans and the demo placement bank
+uses the guarded seed tools (§11).
 
 ## 4. First-time install (server, as root)
 
@@ -88,6 +94,31 @@ systemctl enable --now caddy
 bash deploy/smoke-prod.sh           # full HTTPS smoke (disposable accounts)
 bash deploy/restore-drill.sh        # restore drill on a disposable instance
 ```
+
+## 4b. Business data seeding (after the first release is live)
+
+```bash
+# Canonical launch plans (monthly 299,000 / quarterly 807,300 — NO yearly):
+export FEP_PB_URL=https://app.fastenglishpodcast.com
+# superuser credentials from the server secrets file — never committed
+export FEP_PB_SUPERUSER_EMAIL=... FEP_PB_SUPERUSER_PASSWORD=...
+pnpm seed:plans --target=production --confirm-production --yes
+
+# Placement bank: the committed file is kind=demo — development/staging
+# ONLY. The reviewed production bank remains HUMAN INPUT REQUIRED; when it
+# arrives, commit it as seeds/placement/reviewed-bank.v1.json (kind=reviewed)
+# and install with:
+#   pnpm seed:placement --file seeds/placement/reviewed-bank.v1.json \
+#     --replace --target=production --confirm-production --yes
+# Demo data is REFUSED for production unless you explicitly pass --allow-demo.
+```
+
+Then, in the Admin Console (`admin.fastenglishpodcast.com` → تنظیمات → تنظیمات
+کسب‌وکار): set the card-to-card destination (card number, holder, bank, short
+instructions, review ETA — defaults to «حداکثر تا ۲۴ ساعت») and the public
+support/collaboration contact. The Landing picks both up at runtime without a
+rebuild. Also create the first Staff Admin (`pnpm staff:bootstrap`) and import
+content packages (`pnpm content:import`).
 
 ## 5. Deploying a new release
 

@@ -3,7 +3,6 @@ import {
   apkAvailable,
   DEFAULT_WEB_APP_URL,
   resolveApkState,
-  resolveSupportUrl,
   resolveWebAppUrl,
 } from './lib/siteConfig';
 
@@ -54,18 +53,5 @@ describe('resolveWebAppUrl', () => {
 
   it('keeps a configured https web app URL', () => {
     expect(resolveWebAppUrl('https://app.example.com/')).toBe('https://app.example.com');
-  });
-});
-
-describe('resolveSupportUrl', () => {
-  it('is null when not configured', () => {
-    expect(resolveSupportUrl(null)).toBeNull();
-    expect(resolveSupportUrl('')).toBeNull();
-  });
-
-  it('accepts only https absolute URLs', () => {
-    expect(resolveSupportUrl('https://t.me/channel')).toBe('https://t.me/channel');
-    expect(resolveSupportUrl('mailto:support@example.com')).toBeNull();
-    expect(resolveSupportUrl('tel:+98912')).toBeNull();
   });
 });

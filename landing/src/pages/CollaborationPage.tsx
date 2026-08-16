@@ -1,7 +1,8 @@
 import { PageIntro } from '../components/PageIntro';
+import { SupportContact } from '../components/SupportContact';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { supportUrl } from '../lib/siteConfig';
 import { trackCollaborationIntent } from '../lib/telemetry';
+import { usePublicSettings } from '../lib/usePublicSettings';
 
 const categories = [
   {
@@ -26,8 +27,23 @@ const categories = [
   },
 ];
 
+// SSR note: the prerender path cannot call hooks (Vite's SSR loader uses a
+// separate React instance) — the static honest state renders without them.
 export function CollaborationPage() {
-  const hasSupport = supportUrl !== null;
+  if (typeof window === 'undefined') {
+    return <CollaborationPageStatic hasSupport={false} />;
+  }
+  return <CollaborationPageLive />;
+}
+
+function CollaborationPageLive() {
+  const state = usePublicSettings();
+  const hasSupport =
+    state.status === 'ready' && state.settings.support.supportContact.trim() !== '';
+  return <CollaborationPageStatic hasSupport={hasSupport} />;
+}
+
+function CollaborationPageStatic({ hasSupport }: { hasSupport: boolean }) {
   return (
     <SiteLayout>
       <PageIntro
@@ -56,15 +72,7 @@ export function CollaborationPage() {
             </p>
           )}
           {hasSupport ? (
-            <a
-              href={supportUrl ?? undefined}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
-              onClick={() => trackCollaborationIntent()}
-            >
-              تماس برای همکاری
-            </a>
+            <SupportContact label="تماس برای همکاری" onIntent={() => trackCollaborationIntent()} />
           ) : (
             <span className="mt-4 inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white/70 min-h-12">
               کانال همکاری — به‌زودی

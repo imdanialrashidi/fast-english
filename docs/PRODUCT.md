@@ -32,8 +32,17 @@ Non-confidential source of truth for what Fast English Podcast must do.
 - Product app (`app.fastenglishpodcast.com`): all product behavior. Material UI only; no Tailwind.
 - Admin (`admin.fastenglishpodcast.com`): the Unified Staff Admin Console (separate Vite application); routine payment review lives there. PocketBase superuser dashboard stays unreachable publicly.
 
-## Plans (prices are open business inputs)
-- monthly: 30 days; quarterly: 90 days; yearly: 365 days. Prices backend-managed.
+## Plans (owner-approved launch set, 2026-08-15)
+- **monthly** — «ماهانه», 30 days, **299,000 toman**.
+- **quarterly** — «سه ماهه», 90 days, **807,300 toman** (= 10% discount vs 3 × 299,000 = 897,000).
+- **There is NO yearly/365-day plan.** It is never offered in Student, Landing,
+  Admin, public copy or launch configuration.
+- Canonical pricing source = the `plans` collection (backend-managed). The
+  public Landing renders prices from the public settings endpoint
+  (`GET /api/fast-english/public/settings`) — no hard-coded prices anywhere.
+  The quarterly saving badge on the Landing is DERIVED from the two prices.
+- Seeded via `pnpm seed:plans` (seeds/business/plans.json); editable at any
+  time by a Staff Admin in the Admin Console → تنظیمات → تنظیمات کسبوکار.
 
 ## Authentication
 - `phone` required + unique identity; `name` required; `password` required; `email` optional.
@@ -43,7 +52,18 @@ Non-confidential source of truth for what Fast English Podcast must do.
 - Roles: visitor, student, operator, content manager, technical admin/superuser.
 
 ## Manual payment
-- Client submits only `plan_id` + permitted transfer/receipt fields. Server snapshots plan name/price/duration.
+- Intended Student journey (deliberately simple): choose plan → see the
+  destination card (number, holder, bank, one short instruction, review ETA,
+  support action) → transfer manually → upload ONE receipt → submit → wait
+  for staff approval. The Student UI collects only `plan_id` + the receipt
+  file; no transaction-reference fields, banking forms, gateway concepts or
+  extra confirmation steps are presented to the Student.
+- The server still accepts optional legacy fields (`bank_reference`,
+  `sender_card_last4`, `transfer_at`) for backward compatibility; the
+  Student UI no longer sends them.
+- Review ETA copy defaults to «حداکثر تا ۲۴ ساعت» and is configurable via
+  Business Settings (`payment_destination.review_sla_text`).
+- Client submits `plan_id` + receipt only (minimal surface). Server snapshots plan name/price/duration.
 - States: pending, approved, rejected, cancelled. One pending request per user; resubmit only after rejection; old rejected requests auditable.
 - Approval is operator-only and backend-enforced; rejection requires a user-visible reason; internal note separate.
 - Receipt image alone never proves payment; operator compares with external bank info.
@@ -94,7 +114,19 @@ Non-confidential source of truth for what Fast English Podcast must do.
 - [ ] Both builds reproducible; `scripts/verify.sh` green; sensitive-diff `/review` passed; `/ship` run. (Builds + verify green; `/review` and `/ship` not run.)
 
 ## Open product decisions (external inputs)
-- monthly/quarterly/yearly prices; destination card number, cardholder, bank name; review SLA; operator hours/identities/count; rejection/refund policy; receipt retention approval; approved privacy/terms copy; support contact; final logo + app icons; 20 reviewed placement questions; initial topics/lesson texts/audio; VPS + DNS access; release keystore ownership + secure storage.
+- **Resolved 2026-08-15:** plan set + prices (see Plans); review ETA default;
+  support/collaboration share one configurable contact (`site_settings`);
+  demo placement bank + guarded seeding tool exist; matching public-sample
+  demo package exists; Landing pricing via runtime public settings.
+- **Still HUMAN INPUT REQUIRED before live launch:** destination card
+  number/cardholder/bank name + transfer instructions; operator
+  identities/count; rejection/refund policy; receipt retention approval;
+  approved privacy/terms copy; public support/collaboration URL value; final
+  logo/app icons (current assets are generated placeholders); 20 reviewed
+  placement questions (demo bank is NOT the reviewed bank); final Episode
+  library (demo sample package is NOT the production library); VPS (expected
+  in Iran — provider unselected) + DNS access; release keystore ownership +
+  secure storage.
 
 ## Security/privacy/compliance constraints
 - Data classification: phone + name + receipt images = private; never public. No public receipt files.

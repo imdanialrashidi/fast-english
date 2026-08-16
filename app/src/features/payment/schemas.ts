@@ -5,7 +5,6 @@
 // already in deps and used by `app/src/lib/schemas.ts`).
 
 import { z } from 'zod';
-import { normalizeLastFour } from '../../../../shared/lib/formatters';
 import { MAX_RECEIPT_BYTES } from './constants';
 
 // ----- Wire-level response schemas -----
@@ -59,6 +58,24 @@ export const currentRequestResponseSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('request'), request: paymentRequestBaseSchema }),
 ]);
 
+const freeSubscriptionSchema = z.object({
+  id: z.string().min(1),
+  planId: z.string().min(1),
+  planName: z.string().min(1),
+  durationDays: z.number().int().positive(),
+  amountToman: z.number().int().nonnegative(),
+  startsAt: z.string().min(1),
+  expiresAt: z.string().min(1),
+  status: z.string().min(1),
+  source: z.string().min(1),
+});
+
+export const freeActivationResponseSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('activated'), subscription: freeSubscriptionSchema }),
+  z.object({ kind: z.literal('already_entitled'), subscription: freeSubscriptionSchema }),
+  z.object({ kind: z.literal('free_period_ended'), subscription: freeSubscriptionSchema }),
+]);
+
 // Safe API error envelope. We never trust the wire `code` or `message`
 // as user-facing copy; the error mapper (`errors.ts`) is the only
 // place that produces Persian messages.
@@ -71,45 +88,12 @@ export const apiErrorSchema = z
 
 // ----- Form-level schema -----
 
-// Allow empty strings (PB treats empty as absent for optional text
-// fields). Normalize Persian/Arabic digits to Latin for the last-4
-// check so users can type "۱۲۳۴" or "1234" interchangeably.
-const lastFourSchema = z
-  .string()
-  .trim()
-  .max(16)
-  .transform((s) => normalizeLastFour(s))
-  .refine((digits) => digits === '' || digits.length === 4, {
-    message: 'چهار رقم آخر کارت مبدأ باید دقیقاً ۴ رقم باشد.',
-  });
-
-const bankReferenceSchema = z
-  .string()
-  .trim()
-  .max(80)
-  .refine((s) => {
-    // Reject control characters (server enforces this too).
-    for (let i = 0; i < s.length; i++) {
-      const code = s.charCodeAt(i);
-      if (code < 0x20 || code === 0x7f) return false;
-    }
-    return true;
-  }, 'شمارهٔ پیگیری نباید شامل کاراکتر کنترلی باشد.');
-
-const transferAtSchema = z
-  .string()
-  .trim()
-  .max(40)
-  .refine(
-    (s) => {
-      if (!s) return true;
-      const t = new Date(s).getTime();
-      if (Number.isNaN(t)) return false;
-      // Reject more than 24h in the future (server mirrors this).
-      return t - Date.now() <= 24 * 60 * 60 * 1000;
-    },
-    { message: 'زمان واریز معتبر نیست.' },
-  );
+// The intended Student payment journey is deliberately simple: choose a
+// plan → see the destination card → transfer manually → upload ONE
+// receipt → submit. No transaction-reference fields, banking forms or
+// extra confirmation steps (Business Configuration slice). The server
+// still accepts optional legacy fields for backward compatibility, but
+// the Student UI no longer collects them.
 
 const receiptFileSchema = z
   .instanceof(File, { message: 'رسید را انتخاب کنید.' })
@@ -123,9 +107,6 @@ const receiptFileSchema = z
 export const paymentFormSchema = z.object({
   planId: z.string().min(1, 'یک طرح انتخاب کنید.'),
   receiptFile: receiptFileSchema,
-  bankReference: bankReferenceSchema.optional().or(z.literal('')),
-  senderCardLast4: lastFourSchema.optional().or(z.literal('')),
-  transferAt: transferAtSchema.optional().or(z.literal('')),
 });
 
 export type PaymentFormValues = z.infer<typeof paymentFormSchema>;

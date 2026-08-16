@@ -41,11 +41,6 @@ export function resolveWebAppUrl(rawUrl: string | null): string {
   return normalizeOptionalUrl(rawUrl) ?? DEFAULT_WEB_APP_URL;
 }
 
-/** Resolve the optional support/contact URL; `null` when not configured. */
-export function resolveSupportUrl(rawUrl: string | null): string | null {
-  return normalizeOptionalUrl(rawUrl);
-}
-
 /** Accepts only absolute https URLs on a real host. Never local paths. */
 function normalizeOptionalUrl(raw: string | null): string | null {
   if (raw === null) return null;
@@ -71,9 +66,6 @@ export const apkState: ApkState = resolveApkState(
   env.VITE_ANDROID_APK_URL ?? null,
   env.VITE_ANDROID_APK_VERSION ?? null,
 );
-
-/** Optional contact/support channel. Only shown when actually configured. */
-export const supportUrl: string | null = resolveSupportUrl(env.VITE_SUPPORT_URL ?? null);
 
 /** Public sample lesson lives inside the web app (public route, no auth). */
 export const publicSampleUrl: string = `${webAppUrl}/sample`;

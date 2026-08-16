@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fastenglishpodcast.com/schemas/placement-bank.schema.json",
+  "title": "Placement question bank dataset",
+  "description": "Versioned placement-bank dataset contract (Business Configuration slice). Mirrors the `placement_questions` collection contract used by server/pb_hooks/placement_routes.pb.js: exactly 20 active questions, positions 1-20, four options each, one correct_option_id referencing an option id. `kind` marks the dataset as demo (development/staging only) or reviewed (production-eligible).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "version", "questions"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "enum": ["demo", "reviewed"] },
+    "label": { "type": "string", "maxLength": 200 },
+    "version": { "type": "integer", "minimum": 1 },
+    "questions": {
+      "type": "array",
+      "minItems": 20,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question_key", "position", "prompt", "options", "correct_option_id"],
+        "properties": {
+          "question_key": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$" },
+          "position": { "type": "integer", "minimum": 1, "maximum": 20 },
+          "prompt": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "options": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "text"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-zA-Z0-9_-]{1,20}$" },
+                "text": { "type": "string", "minLength": 1, "maxLength": 300 }
+              }
+            }
+          },
+          "correct_option_id": { "type": "string", "minLength": 1, "maxLength": 20 }
+        }
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import { LegalNotice } from '../components/LegalNotice';
 import { PageIntro } from '../components/PageIntro';
+import { SupportContact } from '../components/SupportContact';
 import { SITE_NAME } from '../content/siteContent';
 import { SiteLayout } from '../layouts/SiteLayout';
-import { supportUrl } from '../lib/siteConfig';
 
 const topics = [
   {
@@ -52,7 +52,6 @@ const topics = [
 ];
 
 export function PrivacyPage() {
-  const hasSupport = supportUrl !== null;
   return (
     <SiteLayout>
       <PageIntro
@@ -98,18 +97,7 @@ export function PrivacyPage() {
               <span>حقوق قانونی کاربر و ادعاهای انطباق با مقررات — به‌زودی</span>
             </li>
           </ul>
-          {hasSupport ? (
-            <a
-              href={supportUrl ?? undefined}
-              rel="noopener noreferrer"
-              target="_blank"
-              className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
-            >
-              ارتباط با پشتیبانی
-            </a>
-          ) : (
-            <p className="mt-4 text-xs text-brand-muted">کانال پشتیبانی هنوز اعلام نشده است.</p>
-          )}
+          <SupportContact />
         </section>
       </div>
     </SiteLayout>

@@ -70,6 +70,48 @@ Durable constraints only. Not a diary.
 ## Operational baseline
 - Local development storage: `scripts/dev.sh` runs PocketBase against the **persistent** `server/pb_data` by default so Student accounts survive dev PocketBase/app restarts; disposable data is an explicit opt-in (`PB_DEV_EPHEMERAL=1`, `PB_DATA_DIR` overrides the path). The smoke/e2e wrappers always use their own disposable data dirs and never touch `server/pb_data`.
 - Configuration/secrets: `.env` git-ignored; `.env.example` documents names only; no secrets in client bundle; production secrets live in `/opt/fast-english/shared/secrets/pocketbase.env` (root:root 0600, names documented in `deploy/env.production.example`).
+- Business Configuration slice: owner-controlled public/payment settings live
+  in the existing `plans` + `payment_destination` collections plus the new
+  `site_settings` singleton (`support_contact` — the canonical support AND
+  collaboration contact). Staff edit them in the Admin Console
+  (`/settings` → Business Settings) through staff-guarded routes
+  (`/api/fast-english/staff/business-settings*`,
+  `server/pb_hooks/business_settings_routes.pb.js`). The static Landing
+  consumes active plans + support contact + the card-transfer availability
+  BOOLEAN at RUNTIME from `GET /api/fast-english/public/settings`
+  (same-origin fetch through a scoped Caddy handle on the landing domain;
+  Vite dev/preview proxies in dev/e2e). No secrets are exposed by the
+  public payload or the settings surface. Seeding: `pnpm seed:plans`
+  (seeds/business/plans.json) and `pnpm seed:placement` (guarded
+  demo/reviewed bank promotion, seeds/placement/demo-bank.v1.json).
+- Free plans: `price_toman === 0` on the canonical `plans` record is THE
+  free-plan signal (PB 0.39 requires the field non-required so `0` is
+  storable — migration 1700000029; the staff routes still require an
+  explicit integer price). Free activation is a dedicated server route
+  `POST /api/fast-english/subscriptions/free-activate`
+  (`server/pb_hooks/subscription_routes.pb.js`): it loads the canonical
+  plan (exists + active + price 0), creates ONE `source='free'`
+  subscription (amount snapshot 0, no payment request, no staff
+  approval) and sets `account_status='active'` in a single transaction;
+  it is idempotent (repeated → `already_entitled`; the partial unique
+  index `idx_subscriptions_one_free_per_user` is the concurrency
+  backstop) and never mints a second entitlement over an existing valid
+  one. A pending paid payment request blocks the free path (one
+  commercial path at a time). Free plans work independently of the
+  card-to-card toggle.
+- Card-to-card enable/disable: the canonical persisted runtime state is
+  the `payment_destination` singleton's `is_active` flag (at most one
+  active row, enforced atomically by the staff route). Disabling it
+  hides ALL card-transfer UI (Student + Landing), makes paid plans
+  temporarily unavailable (server re-checks on every submission:
+  `payment_destination_unavailable`), and NEVER deletes the stored card
+  config — re-enabling reuses the same values. The public settings
+  endpoint exposes only the boolean `payment.cardTransferEnabled`.
+- Price-change protection: every paid payment request stores
+  `plan_name_snapshot`/`amount_snapshot`/`duration_days_snapshot` at
+  submission time, so later operator price edits never rewrite the
+  historical meaning of submitted receipts or existing subscriptions
+  (renewals/extensions start from the snapshot values).
 - Migrations: `pb_migrations/*.js` committed; `server/VERSION` pins PocketBase binary 0.39.9; migrations+hooks are loaded from the selected release (`current` symlink) by the systemd unit; migrations run on normal startup; migrations are NOT automatically reversible (documented rollback limitation).
 - Deployment: immutable releases under `/opt/fast-english/releases/<id>`, atomic `current` symlink, `pb_data` outside releases, `deploy/deploy.sh` with pre-deployment backup + health checks + smoke + automatic rollback; previous release never deleted.
 - Backup/restore: PocketBase automatic backups daily 02:30 UTC (`backups.cron`), keep 14 (`cronMaxKeep`), verified copies moved off `pb_data` at 02:40 UTC (`fast-english-backup-copy.timer`), S3 backups bucket only when credentials are approved; restore drill on a disposable instance (`deploy/restore-drill.sh`); initial verified backup before every first deploy.

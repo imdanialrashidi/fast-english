@@ -110,7 +110,6 @@ async function selectPlanAndReceipt(page: Page, fileName = 'r.jpg'): Promise<voi
 
 async function submitFlow(page: Page, fileName = 'r.jpg'): Promise<void> {
   await selectPlanAndReceipt(page, fileName);
-  await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
   await page.getByRole('button', { name: /ارسال رسید/ }).click();
   await page.waitForURL('**/payment-status', { timeout: 30_000 });
   await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
@@ -322,8 +321,6 @@ test.describe('payment redesign — receipt selection, preview, replace, remove'
     await page.getByTestId('remove-receipt').click();
     await expect(page.getByTestId('select-receipt')).toBeVisible();
     await expect(page.getByTestId('receipt-selected')).not.toBeVisible();
-    // The confirmation summary disappears with the file.
-    await expect(page.getByTestId('confirmation-summary')).not.toBeVisible();
     // Submission is blocked without a receipt.
     await expect(page.getByTestId('submit-payment')).toBeDisabled();
   });
@@ -340,17 +337,15 @@ test.describe('payment redesign — submission, pending, rejected, approved', ()
     const phone = uniquePhone();
     await signupAndLogin(page, 'E2E جریان', phone, 'Test1234!');
 
-    // Submit is disabled before the transfer confirmation.
-    await selectPlanAndReceipt(page);
+    // Simplified journey (Business Configuration slice): the submit button
+    // is disabled until a plan + receipt file are chosen — there is no
+    // confirmation checkbox and no transfer-reference step.
     await expect(page.getByTestId('submit-payment')).toBeDisabled();
-    await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
+    await selectPlanAndReceipt(page);
     await expect(page.getByTestId('submit-payment')).toBeEnabled();
 
-    // Confirmation summary lists plan, amount and file.
-    const summary = page.getByTestId('confirmation-summary');
-    await expect(summary).toContainText('E2E Monthly');
-    await expect(summary).toContainText('۱٬۲۳۴٬۵۶۷');
-    await expect(summary).toContainText('r.jpg');
+    // The sticky submit area still shows the honest plan/price summary.
+    await expect(page.getByText(/E2E Monthly.*۱٬۲۳۴٬۵۶۷ تومان/).last()).toBeVisible();
 
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
@@ -421,7 +416,7 @@ test.describe('payment redesign — submission, pending, rejected, approved', ()
     await page.waitForURL('**/payment', { timeout: 15_000 });
     await expect(page.getByRole('heading', { name: 'انتخاب طرح' })).toBeVisible();
     await selectPlanAndReceipt(page, 'r2.jpg');
-    await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
+    // Simplified journey: submission is direct after choosing plan + file.
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
@@ -652,7 +647,7 @@ test.describe('payment redesign — viewport geometry', () => {
       }
 
       // Pending workspace geometry.
-      await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
+      // Simplified journey: submission is direct after choosing plan + file.
       await page.getByRole('button', { name: /ارسال رسید/ }).click();
       await page.waitForURL('**/payment-status', { timeout: 30_000 });
       await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({
@@ -710,7 +705,7 @@ test.describe('payment redesign — dark mode and keyboard', () => {
 
     // The status workspace also renders cleanly in dark mode.
     await selectPlanAndReceipt(page);
-    await page.getByRole('checkbox', { name: 'تأیید انجام انتقال' }).check();
+    // Simplified journey: submission is direct after choosing plan + file.
     await page.getByRole('button', { name: /ارسال رسید/ }).click();
     await page.waitForURL('**/payment-status', { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /در انتظار بررسی/ })).toBeVisible({

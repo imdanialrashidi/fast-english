@@ -23,6 +23,12 @@ const TRUST_POINTS = [
   'پس از ارسال، وضعیت بررسی در همین صفحه نمایش داده می‌شود.',
 ];
 
+const FREE_POINTS = [
+  'این طرح رایگان است؛ هیچ پرداختی لازم نیست.',
+  'نیازی به بارگذاری رسید یا تأیید پشتیبانی نیست.',
+  'دسترسی همین حالا فعال می‌شود و می‌توانید تعیین سطح را ادامه دهید.',
+];
+
 export function PaymentInstructions({
   plan,
   destination,
@@ -30,16 +36,18 @@ export function PaymentInstructions({
   plan: Plan | null;
   destination: PaymentDestination | null;
 }) {
+  const isFree = plan !== null && plan.priceToman === 0;
+  const points = isFree ? FREE_POINTS : TRUST_POINTS;
   return (
     <Stack spacing={2} data-testid="payment-instructions">
       <PaymentDetailsCard plan={plan} destination={destination} />
       <Card>
         <CardContent>
           <Typography component="h2" variant="h4" sx={{ mb: 1.5 }}>
-            نکات مهم
+            {isFree ? 'دربارهٔ این طرح' : 'نکات مهم'}
           </Typography>
           <Stack spacing={1}>
-            {TRUST_POINTS.map((point) => (
+            {points.map((point) => (
               <Stack key={point} direction="row" spacing={1} sx={{ alignItems: 'flex-start' }}>
                 <CheckCircleOutlineRoundedIcon
                   sx={{ fontSize: 18, mt: 0.25, flexShrink: 0 }}

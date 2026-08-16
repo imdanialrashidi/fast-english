@@ -31,6 +31,7 @@ export const FUNNEL_EVENTS = {
   routeChange: 'route_change',
   signupCompleted: 'signup_completed',
   paymentRequestSubmitted: 'payment_request_submitted',
+  freePlanActivated: 'free_plan_activated',
   placementSubmitted: 'placement_submitted',
   levelSelected: 'level_selected',
   episodeStarted: 'episode_started',

@@ -24,10 +24,13 @@ const PERSIAN_MESSAGES: Record<string, string> = {
   // Plan / destination
   invalid_plan: 'طرح انتخاب‌شده در دسترس نیست.',
   payment_destination_unavailable: 'مقصد پرداخت فعال نیست. با پشتیبانی تماس بگیرید.',
+  not_free_plan: 'این طرح رایگان نیست.',
   // Transfer details
   invalid_transfer_details: 'جزئیات انتقال (مانند چهار رقم کارت) نامعتبر است.',
   // Concurrency
   pending_request_exists: 'شما یک درخواست در حال بررسی دارید. تا اعلام نتیجه صبر کنید.',
+  already_entitled: 'شما در حال حاضر یک اشتراک معتبر دارید.',
+  free_plan_not_payable: 'این طرح رایگان است و نیازی به پرداخت ندارد.',
   // Rate limiting
   rate_limited: 'تعداد درخواست‌ها زیاد است. کمی بعد تلاش کنید.',
   // Generic
@@ -88,7 +91,12 @@ function chooseCode(extracted: ExtractedErr, network: boolean): string {
     }
     return 'invalid_plan';
   }
-  if (extracted.status === 409) return 'pending_request_exists';
+  if (extracted.status === 409) {
+    if (extracted.code === 'already_entitled') return 'already_entitled';
+    if (extracted.code === 'free_plan_not_payable') return 'free_plan_not_payable';
+    if (extracted.code === 'not_free_plan') return 'not_free_plan';
+    return 'pending_request_exists';
+  }
   if (extracted.status === 413) return 'receipt_too_large';
   if (extracted.status === 502 || extracted.status === 503) return 'unavailable';
   if (extracted.code && PERSIAN_MESSAGES[extracted.code]) return extracted.code;

@@ -1,3 +1,10 @@
+import {
+  SAMPLE_LEVEL,
+  SAMPLE_PARAGRAPHS_EN,
+  SAMPLE_TITLE_EN,
+  SAMPLE_TITLE_FA,
+} from '../content/sampleContent';
+
 export function SampleLesson() {
   return (
     <section id="sample" aria-labelledby="sample-title" className="py-12 sm:py-20 bg-white">
@@ -23,22 +30,15 @@ export function SampleLesson() {
                 className="inline-flex items-center justify-center rounded-md px-2 py-0.5 text-xs font-bold"
                 style={{ background: 'var(--color-cefr-b1-bg)', color: 'var(--color-cefr-b1-fg)' }}
               >
-                B1
+                {SAMPLE_LEVEL}
               </span>
               <h3 className="mt-3 text-xl sm:text-2xl font-bold text-brand-text">
-                A Typical Workday
+                {SAMPLE_TITLE_EN}
               </h3>
-              <p className="text-sm text-brand-muted mt-1">یک روز کاری معمولی</p>
+              <p className="text-sm text-brand-muted mt-1">{SAMPLE_TITLE_FA}</p>
             </header>
-            <p className="text-brand-text leading-loose">
-              Sara starts her day at half past seven. She drinks a cup of tea, checks her email, and
-              leaves the house at a quarter to nine. Her office is in the city centre, so she takes
-              the metro every morning.
-            </p>
-            <p className="mt-3 text-brand-text leading-loose">
-              In the evening, Sara spends an hour with her English podcast. She listens to one
-              lesson, repeats a few sentences, and then writes two short paragraphs in her notebook.
-            </p>
+            <p className="text-brand-text leading-loose">{SAMPLE_PARAGRAPHS_EN[0]}</p>
+            <p className="mt-3 text-brand-text leading-loose">{SAMPLE_PARAGRAPHS_EN[1]}</p>
           </article>
 
           <aside className="md:col-span-5 rounded-2xl border border-brand-divider p-5 sm:p-6 bg-brand-surface">

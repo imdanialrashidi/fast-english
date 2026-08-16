@@ -14,9 +14,17 @@ const pwaSteps = [
   'روی صفحهٔ وب‌اپ (در مرورگر) به دنبال گزینهٔ نصب بگردید؛ روش آن در مرورگرهای مختلف فرق می‌کند و ممکن است این گزینه اصلاً نمایش داده نشود.',
   'اندروید/کروم: وقتی مرورگر وب‌اپ را قابل نصب تشخیص دهد، نوار نصب نشان می‌دهد یا در منو ⋮ گزینهٔ «Add to Home screen» / «Install app» قرار می‌گیرد.',
   'دسکتاپ (کروم/اج): آیکن نصب در نوار آدرس یا منوی مرورگر («Install…») نمایش داده می‌شود.',
-  'آیفون/آیپد (سافاری): دکمهٔ Share و سپس «Add to Home Screen». سافاری روی iOS همان پنجرهٔ نصب اندروید را ندارد.',
+  'آیفون/آیپد (سافاری): راهنمای کامل در بخش «نصب روی iPhone / iPad» همین صفحه آمده است.',
   'سایر مرورگرها (مثل فایرفاکس) ممکن است روش نصب جداگانه‌ای نداشته باشند؛ در آن صورت وب‌اپ به‌صورت عادی در مرورگر کار می‌کند.',
   'نصب وب‌اپ درس‌ها را آفلاین نمی‌کند؛ پخش صوت همچنان به اتصال اینترنت نیاز دارد.',
+];
+
+const iosSteps = [
+  'در سافاری، آدرس وب‌اپ را باز کنید و وارد حساب خود شوید.',
+  'روی دکمهٔ Share (مربع با پیکان رو به بالا) در پایین صفحه ضربه بزنید.',
+  '«Add to Home Screen» (افزودن به صفحه اصلی) را انتخاب کنید.',
+  'روی «Add» (افزودن) بزنید تا وب‌اپ روی صفحهٔ اصلی دستگاه قرار گیرد.',
+  'برای باز کردن به‌عنوان وب‌اپ، روی آیکن ضربه بزنید؛ اگر سافاری گزینهٔ «Open as Web App» را پیشنهاد داد، آن را انتخاب کنید.',
 ];
 
 const apkSteps = [
@@ -47,6 +55,27 @@ export function InstallPage() {
         lead="دو راه برای استفاده از فست انگلیش پادکست: وب‌اپ در مرورگر، یا نسخهٔ اندروید به‌صورت مستقیم. هر دو به اتصال اینترنت نیاز دارند."
       />
       <div className="mx-auto max-w-3xl px-4 sm:px-6 pb-12 sm:pb-20 space-y-4">
+        <nav aria-label="پرش به راهنمای نصب" className="flex flex-wrap gap-2">
+          <a
+            href="#install-pwa"
+            className="rounded-xl border border-brand-divider bg-white px-4 py-2 text-sm font-semibold text-brand-text hover:bg-brand-surface"
+          >
+            نصب وب‌اپ
+          </a>
+          <a
+            href="#ios"
+            className="rounded-xl bg-brand-midnight px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+          >
+            نصب روی iPhone / iPad
+          </a>
+          <a
+            href="#install-apk"
+            className="rounded-xl border border-brand-divider bg-white px-4 py-2 text-sm font-semibold text-brand-text hover:bg-brand-surface"
+          >
+            نسخهٔ اندروید
+          </a>
+        </nav>
+
         <section
           aria-labelledby="install-web"
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
@@ -95,11 +124,37 @@ export function InstallPage() {
         </section>
 
         <section
+          id="ios"
+          aria-labelledby="ios-title"
+          className="rounded-2xl bg-brand-midnight p-5 sm:p-6 text-white"
+        >
+          <h2 id="ios-title" className="text-xl font-extrabold">
+            ۳. نصب روی iPhone / iPad
+          </h2>
+          <p className="mt-3 text-sm text-white/75 leading-relaxed">
+            نسخهٔ iOS در فروشگاه اپل وجود ندارد و لینک مستقیم نصب هم ارائه نشده است؛ تنها راه، افزودن
+            وب‌اپ از مرورگر سافاری به صفحهٔ اصلی دستگاه است. مراحل:
+          </p>
+          <ol className="mt-3 space-y-2 text-sm text-white/85 leading-relaxed">
+            {iosSteps.map((s, i) => (
+              <li key={s} className="flex gap-2">
+                <span className="font-bold text-white/60">{i + 1}.</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs text-white/60">
+            نصب از سافاری، وب‌اپ را به‌صورت یک آیکن روی صفحهٔ اصلی قرار می‌دهد؛ همچنان برای پخش صوت به
+            اتصال اینترنت نیاز است.
+          </p>
+        </section>
+
+        <section
           aria-labelledby="install-apk"
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-apk" className="text-xl font-extrabold">
-            ۳. نسخهٔ اندروید — نصب مستقیم
+            ۴. نسخهٔ اندروید — نصب مستقیم
           </h2>
           {hasApk ? (
             <>
@@ -138,7 +193,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-permission" className="text-xl font-extrabold">
-            ۴. وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد
+            ۵. وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد
           </h2>
           <p className="mt-3 text-sm text-brand-muted leading-relaxed">
             اندروید برای محافظت از شما، نصب برنامه‌های خارج از فروشگاه را به‌صورت پیش‌فرض محدود می‌کند.
@@ -155,7 +210,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-verify" className="text-xl font-extrabold">
-            ۵. بررسی اصالت دانلود
+            ۶. بررسی اصالت دانلود
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
             {verifySteps.map((s) => (
@@ -174,7 +229,7 @@ export function InstallPage() {
           className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
         >
           <h2 id="install-update" className="text-xl font-extrabold">
-            ۶. به‌روزرسانی
+            ۷. به‌روزرسانی
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
             {updateSteps.map((s) => (

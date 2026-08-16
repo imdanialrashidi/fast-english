@@ -6,7 +6,8 @@
 // block for ordinary payment information; the amount sits on the
 // surfaceContainer role and the card number on surfaceContainerHighest.
 
-import { Box, Card, CardContent, Stack, Typography } from '@mui/material';
+import { Box, Card, CardContent, Link, Stack, Typography } from '@mui/material';
+import { DEFAULT_REVIEW_SLA_TEXT } from '../../../../../shared/lib/businessDefaults';
 import { CopyValue } from '../../../../../shared/ui/CopyValue';
 import { formatCardNumber, formatDurationDays, formatToman } from '../formatters';
 import type { PaymentDestination, Plan } from '../types';
@@ -20,6 +21,7 @@ export function PaymentDetailsCard({
 }) {
   const formattedCard = destination ? formatCardNumber(destination.cardNumber) : '';
   const amount = plan ? formatToman(plan.priceToman) : '';
+  const isFree = plan !== null && plan.priceToman === 0;
 
   return (
     <Card data-testid="payment-details-card">
@@ -45,7 +47,7 @@ export function PaymentDetailsCard({
               color="var(--mui-palette-onPrimaryContainer)"
               component="div"
             >
-              مبلغ پرداختی
+              {isFree ? 'قیمت طرح' : 'مبلغ پرداختی'}
             </Typography>
             <Stack
               direction="row"
@@ -61,9 +63,9 @@ export function PaymentDetailsCard({
                 }}
                 data-testid="payment-amount"
               >
-                {amount ? `${amount} تومان` : '—'}
+                {isFree ? 'رایگان' : amount ? `${amount} تومان` : '—'}
               </Typography>
-              {plan && amount ? (
+              {plan && !isFree && amount ? (
                 <CopyValue
                   value={String(plan.priceToman)}
                   label="کپی مبلغ"
@@ -82,7 +84,14 @@ export function PaymentDetailsCard({
             ) : null}
           </Box>
 
-          {destination ? (
+          {isFree ? (
+            <Box data-testid="free-plan-note">
+              <Typography variant="body2" color="text.secondary">
+                این طرح کاملاً رایگان است؛ نیازی به انتقال کارت‌به‌کارت، بارگذاری رسید یا تأیید
+                پشتیبانی ندارد و دسترسی بلافاصله فعال می‌شود.
+              </Typography>
+            </Box>
+          ) : destination ? (
             <>
               <Box>
                 <Typography variant="caption" color="text.secondary" component="div">
@@ -156,27 +165,45 @@ export function PaymentDetailsCard({
                   <Typography variant="caption" color="text.secondary" component="div">
                     راه ارتباطی پشتیبانی
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 0.5 }}
-                    dir="ltr"
-                    lang="en"
-                  >
-                    {destination.supportContact}
-                  </Typography>
+                  {/^(https?:\/\/|mailto:|tel:)/i.test(destination.supportContact) ? (
+                    <Link
+                      href={destination.supportContact}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="body2"
+                      sx={{ mt: 0.5, display: 'inline-block' }}
+                      dir="ltr"
+                      lang="en"
+                      data-testid="payment-support-link"
+                    >
+                      {destination.supportContact}
+                    </Link>
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 0.5 }}
+                      dir="ltr"
+                      lang="en"
+                    >
+                      {destination.supportContact}
+                    </Typography>
+                  )}
                 </Box>
               ) : null}
-              {destination.reviewSlaText ? (
-                <Box>
-                  <Typography variant="caption" color="text.secondary" component="div">
-                    زمان تقریبی بررسی
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    {destination.reviewSlaText}
-                  </Typography>
-                </Box>
-              ) : null}
+              <Box>
+                <Typography variant="caption" color="text.secondary" component="div">
+                  زمان تقریبی بررسی
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 0.5 }}
+                  data-testid="payment-review-sla"
+                >
+                  {destination.reviewSlaText || DEFAULT_REVIEW_SLA_TEXT}
+                </Typography>
+              </Box>
             </>
           ) : (
             <Typography variant="body2" color="text.secondary">

@@ -84,6 +84,17 @@ fastenglishpodcast.com {
 		header @meta Cache-Control "public, max-age=3600"
 	}
 
+	# Single public API boundary for the static Landing: the business-settings
+	# endpoint (active plans + support contact). Scoped to this exact path so
+	# the landing domain never proxies Student/Staff APIs or admin surfaces.
+	# GET-only; the PocketBase route rate-limits per client IP.
+	handle /api/fast-english/public/settings {
+		request_body {
+			max_size 1MB
+		}
+		reverse_proxy 127.0.0.1:8090
+	}
+
 	handle {
 		root * /opt/fast-english/current/landing
 		# Static multi-page landing: canonical URLs are extensionless

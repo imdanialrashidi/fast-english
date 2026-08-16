@@ -1,5 +1,11 @@
 import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
+import {
+  SAMPLE_LEVEL,
+  SAMPLE_PARAGRAPHS_EN,
+  SAMPLE_TITLE_EN,
+  SAMPLE_TITLE_FA,
+} from '../content/sampleContent';
 import { SITE_NAME } from '../content/siteContent';
 import { SiteLayout } from '../layouts/SiteLayout';
 import { publicSampleUrl } from '../lib/siteConfig';
@@ -22,24 +28,25 @@ export function SamplePage() {
               className="inline-flex items-center justify-center rounded-md px-2 py-0.5 text-xs font-bold"
               style={{ background: 'var(--color-cefr-b1-bg)', color: 'var(--color-cefr-b1-fg)' }}
             >
-              B1
+              {SAMPLE_LEVEL}
             </span>
             <h2 className="mt-3 text-xl sm:text-2xl font-bold text-brand-text">
-              A Typical Workday
+              {SAMPLE_TITLE_EN}
             </h2>
             <p className="text-sm text-brand-muted mt-1" lang="fa" dir="rtl">
-              یک روز کاری معمولی
+              {SAMPLE_TITLE_FA}
             </p>
           </header>
-          <p className="text-brand-text leading-loose">
-            Sara starts her day at half past seven. She drinks a cup of tea, checks her email, and
-            leaves the house at a quarter to nine. Her office is in the city centre, so she takes
-            the metro every morning.
-          </p>
-          <p className="mt-3 text-brand-text leading-loose">
-            In the evening, Sara spends an hour with her English podcast. She listens to one lesson,
-            repeats a few sentences, and then writes two short paragraphs in her notebook.
-          </p>
+          {SAMPLE_PARAGRAPHS_EN.map((paragraph, i) => (
+            <p
+              key={i}
+              className={
+                i > 0 ? 'mt-3 text-brand-text leading-loose' : 'text-brand-text leading-loose'
+              }
+            >
+              {paragraph}
+            </p>
+          ))}
         </article>
 
         <section
