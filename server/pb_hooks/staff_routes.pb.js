@@ -480,15 +480,14 @@ routerAdd(
 
       var internalNote = "";
       try {
-        var rawBytes = toBytes(e.request.body, 2048);
-        if (rawBytes && rawBytes.length > 0) {
-          var bodyStr = "";
-          for (var bi = 0; bi < rawBytes.length; bi++) bodyStr += String.fromCharCode(rawBytes[bi]);
-          var rb = JSON.parse(bodyStr);
-          if (rb && rb.internal_note) {
-            internalNote = String(rb.internal_note).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, "");
-            if (internalNote.length > 1000) internalNote = internalNote.substring(0, 1000);
-          }
+        // UTF-8 decode via the shared core (String.fromCharCode over the
+        // raw bytes would mojibake Persian text — see e2e test 17 comment).
+        var bodyCore = null;
+        try { bodyCore = require(__hooks + '/content_admin_core.pb.js'); } catch (_) { bodyCore = null; }
+        var rb = (bodyCore && bodyCore.readJsonBody) ? bodyCore.readJsonBody(e, 2048) : null;
+        if (rb && rb.internal_note) {
+          internalNote = String(rb.internal_note).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, "");
+          if (internalNote.length > 1000) internalNote = internalNote.substring(0, 1000);
         }
       } catch (_) {
         // Body is optional; ignore parse errors
@@ -664,14 +663,13 @@ routerAdd(
       var publicRejectionReason = "";
       var internalNote = "";
       try {
-        var rawBytes = toBytes(e.request.body, 2048);
-        if (rawBytes && rawBytes.length > 0) {
-          var bodyStr = "";
-          for (var bi = 0; bi < rawBytes.length; bi++) bodyStr += String.fromCharCode(rawBytes[bi]);
-          var rb = JSON.parse(bodyStr);
-          if (rb && rb.public_rejection_reason) { publicRejectionReason = String(rb.public_rejection_reason).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); }
-          if (rb && rb.internal_note) { internalNote = String(rb.internal_note).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); if (internalNote.length > 1000) internalNote = internalNote.substring(0, 1000); }
-        }
+        // UTF-8 decode via the shared core (String.fromCharCode over the
+        // raw bytes would mojibake the student-visible Persian reason).
+        var bodyCore = null;
+        try { bodyCore = require(__hooks + '/content_admin_core.pb.js'); } catch (_) { bodyCore = null; }
+        var rb = (bodyCore && bodyCore.readJsonBody) ? bodyCore.readJsonBody(e, 2048) : null;
+        if (rb && rb.public_rejection_reason) { publicRejectionReason = String(rb.public_rejection_reason).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); }
+        if (rb && rb.internal_note) { internalNote = String(rb.internal_note).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); if (internalNote.length > 1000) internalNote = internalNote.substring(0, 1000); }
       } catch (_) {}  // Parse error = treat as empty body
       if (!publicRejectionReason || publicRejectionReason.length < 3) return e.json(400, { code: "rejection_reason_required", message: "Public rejection reason is required (minimum 3 characters)." });
       if (publicRejectionReason.length > 500) publicRejectionReason = publicRejectionReason.substring(0, 500);

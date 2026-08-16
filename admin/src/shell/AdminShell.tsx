@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { to: '/content/import', label: 'ورود محتوا', end: true },
   { to: '/payments', label: 'پرداختها', end: false },
   { to: '/settings', label: 'تنظیمات', end: false },
+  { to: '/help', label: 'راهنما', end: true },
 ];
 
 export function AdminShell() {
