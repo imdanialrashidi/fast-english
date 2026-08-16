@@ -184,3 +184,156 @@ production mutation, or privileged credential creation.
 - Visual redesign may churn landing tests that pin copy/components — update tests only where
   the accepted contract legitimately changes (never weaken assertions of behavior).
 - Native vision review of Persian typography/rendering is the authoritative visual judge.
+
+---
+
+## Final delivery verdict (section Z — 2026-08-16)
+
+| Axis | Verdict | Basis |
+|---|---|---|
+| REPOSITORY READINESS | **READY** | RC commit `bafd4f0` on `feat/release-candidate-v1` (base `main` @ `accbf45`); CI run 31952607179 all lanes green (static, backend = project-verify with 18 parallel real-PB smokes incl. record-level restore-proof + deterministic builds + bundle/PWA/Android/deploy gates, e2e 1–5/5, verify); local project-verify green; 858 unit tests; landing e2e 28/28; version identity 1.0.0 across Web/Landing/Admin/server (PB 0.39.9 pinned)/Android. |
+| INFRASTRUCTURE READINESS | **BLOCKED** | No VPS/SSH, DNS records do not resolve, ACME contact email, off-VPS backup destination, failure-injection rollback drill — all operator actions (`deploy/` package itself READY and audited). |
+| BUSINESS/CONFIGURATION READINESS | **HUMAN INPUT REQUIRED** | Destination card values, reviewed placement bank, launch content library, privacy/terms final copy, support contact value, first staff admin bootstrap, plan seeding to production. |
+| ANDROID READINESS | **UNPROVEN** (config READY) | versionName 1.0.0/versionCode 1 consistent; assembleDebug green; signing gate fails safely (no fake keystore); existing v1.0.0 APK re-verified; physical-device checklist NOT exercised (needs a device); keystore custody unconfirmed. |
+| LIVE PRODUCTION READINESS | **UNPROVEN** | Nothing deployed or exercised over the real domains; `smoke-prod.sh` (58 scenarios) + restore-drill + ops-check + real-browser journey must run post-deploy by the operator. |
+
+All unresolved items use exactly READY / BLOCKED / UNPROVEN / HUMAN INPUT REQUIRED.
+
+## Handoff note (execution session)
+
+- Working tree: only the user-owned `.pi/settings.json` change remains uncommitted (intentionally excluded from the PR).
+- Screenshots for the human visual review: `.artifacts/landing-v2/` (390/768/1024/1440 full-page + section shots).
+- Native-vision review of rendered screenshots was environment-BLOCKED (vision model returned 400 for every request across all configured models; see `~/.pi/agent/vision-audit.log`); deterministic machine QA (contrast/overflow/fonts/touch-targets/console) and the 28-test landing e2e suite stand in for it.
+- The one locally-failing e2e (`mini player: one audio element`) is proven pre-existing on pristine main in this environment and passes in CI.
+
+## Launch-item classification (audit session 2026-08-15 — still current)
+
+| # | Item | Class | Evidence / requirement |
+|---|---|---|---|
+| 1 | Authoritative full CI on exact RC | READY | Run 31952607179 all green on `bafd4f0` (PR #10) |
+| 2 | Version identity (Landing/App/Admin/server/Android) | READY | 1.0.0 everywhere; markers + android:check:version + bundle gate |
+| 3 | Server layout, service user, systemd, Caddy, health checks, disk | READY (tooling) | `deploy/` audited; execution needs VPS (below) |
+| 4 | VPS / SSH access + ports 80/443 | BLOCKED | No credentials/access in this environment; owner selects provider |
+| 5 | DNS records (root, www, app, admin) | BLOCKED | None resolve today |
+| 6 | HTTPS / canonical redirects / cert renewal | READY (config) | Caddy auto-HTTPS + www 308 + HSTS; **ACME contact email placeholder — HUMAN INPUT REQUIRED** |
+| 7 | Security headers | READY | nosniff/Referrer-Policy/XFO/HSTS; CSP intentionally absent (documented deferral) |
+| 8 | Production env-var inventory / secrets vs config | READY | `.env.example` (classified) + `deploy/env.production.example` (names only) |
+| 9 | First production Staff Admin bootstrap | READY (tooling) / HUMAN INPUT | `pnpm staff:bootstrap`; operator picks identity |
+| 10 | Superuser creation + `PB_ENCRYPTION_KEY` | READY (tooling) / HUMAN INPUT | `install.sh` from secrets file; key BEFORE first `configure.sh` |
+| 11 | SMTP | READY (default) | Honest disabled state; enable only with approved provider |
+| 12 | Plans + prices | READY (decision + tooling) / HUMAN INPUT for seeding | monthly 299,000 / quarterly 807,300; NO yearly; `pnpm seed:plans` |
+| 13 | Card-to-card destination | READY (Admin surface) / HUMAN INPUT for values | Admin → تنظیمات → تنظیمات کسبوکار; review ETA default «حداکثر تا ۲۴ ساعت» |
+| 14 | Placement questions | READY (tooling + demo) / HUMAN INPUT for reviewed bank | `pnpm seed:placement` guards; reviewed bank must be committed as kind=reviewed |
+| 15 | Minimum launch content | READY (pipeline + demo sample) / HUMAN INPUT for library | `pnpm content:import`; final quantity open |
+| 16 | Support/contact URL | READY (configurable) / HUMAN INPUT for value | `site_settings.support_contact` via Admin; unset = honest state |
+| 17 | Privacy & Terms final copy | HUMAN INPUT REQUIRED | pages keep `data-legal-status="needs-review"` |
+| 18 | Telemetry endpoint | READY (default OFF) | beacon only when `VITE_TELEMETRY_ENDPOINT` set |
+| 19 | Pre-deploy backup + retention + restore proof | READY (tooling + proof) | `backup.sh`/`restore-drill.sh` + record-level `restore-proof`; execution on real server pending |
+| 20 | Off-VPS backup destination | BLOCKED | `FEP_BACKUP_S3_*` or approved equivalent |
+| 21 | Failure-injection rollback drill | UNPROVEN | staging twin before first deploy |
+| 22 | Android release config | READY | gradle 1/1.0.0, signing fail-safe, prod API origin, `/releases/*` |
+| 23 | Android keystore custody | HUMAN INPUT REQUIRED | same cert for all future updates |
+| 24 | Android physical-device verification | BLOCKED | no device attached; checklist in docs/ANDROID_RELEASE.md |
+| 25 | Production smoke across real domains | READY (tooling); execution BLOCKED | `smoke-prod.sh --full` (58 scenarios) + browser journey |
+| 26 | Rollback procedure | READY | auto-rollback + manual §6; pb_data untouched; migration caveat documented |
+| 27 | No test users/fixtures/dev config in production | READY | smoke/e2e disposable-only; bundle gate scans; demo seeds guarded |
+| 28 | Owner placeholders in ops docs + ACME email | HUMAN INPUT REQUIRED | `<TODO: operator>` in 6 docs + Caddyfile email |
+
+## Ordered deployment procedure (exact, from audited scripts)
+
+Pre-flight (all HUMAN):
+1. Provide VPS (Debian/Ubuntu/Arch, x86_64, ≥1 GiB RAM, ≥10 GB free), SSH access,
+   operator email for ACME, and create DNS: `fastenglishpodcast.com` + `www` +
+   `app` + `admin` → server IP (www → canonical root 308 handled by Caddy).
+2. Fill server secrets `/opt/fast-english/shared/secrets/pocketbase.env`
+   (root:root 0600): `FEP_SUPERUSER_EMAIL`, `FEP_SUPERUSER_PASSWORD`,
+   `PB_ENCRYPTION_KEY` (32 chars, BEFORE first configure), optional
+   `FEP_BACKUP_S3_*` (off-VPS backup), `FEP_SMOKE_STAFF_EMAIL/PASSWORD`.
+3. Replace Caddyfile ACME contact email; replace `<TODO: operator>` in the 6 ops
+   docs (docs/DEPLOYMENT, OPERATIONS, BACKUP_RESTORE, INCIDENT_RUNBOOK,
+   PRODUCTION_CHECKLIST, ANDROID_RELEASE).
+4. Build the release bundle with production values (RC = this PR):
+   `VITE_WEB_APP_URL=https://app.fastenglishpodcast.com`,
+   `VITE_ANDROID_APK_URL=https://fastenglishpodcast.com/releases/fast-english-podcast-v1.0.0.apk`,
+   `VITE_ANDROID_APK_VERSION=1.0.0`; `pnpm build`
+   + `bash scripts/verify.sh` + `scripts/check-production-bundle.sh`, stage bundle
+   `<id>/{landing,app,admin,server,android}` incl. `RELEASE.json`.
+
+Server (as root, from repo deploy/):
+5. `bash deploy/install.sh` → user/topology/binary (PB 0.39.9)/units/Caddyfile/
+   superuser; `systemd-analyze verify` the unit.
+6. `caddy validate --config /etc/caddy/Caddyfile && caddy fmt --overwrite`.
+7. `bash deploy/configure.sh` → settings (backups cron keep 14, trustedProxy,
+   smtp off/approved, S3 when approved).
+8. `bash deploy/backup.sh` → initial verified backup BEFORE first release.
+9. `bash deploy/deploy.sh /path/to/bundle` → bundle+APK checksum verify → disk →
+   pre-deploy backup → immutable install → atomic `current` symlink → PB restart
+   (migrations on startup) → health → caddy reload → publish APK+metadata → smoke.
+10. `systemctl enable --now caddy`; `bash deploy/restore-drill.sh`;
+    `bash deploy/smoke-prod.sh --full`; `bash deploy/ops-check.sh`; wire ops-check
+    into cron (07:17 daily).
+11. Seed production business data: `pnpm seed:plans --target=production
+    --confirm-production --yes`; Admin → تنظیمات → تنظیمات کسبوکار for destination
+    card + support contact; placement: the reviewed bank (HUMAN INPUT) via
+    `pnpm seed:placement --file … --replace --target=production
+    --confirm-production --yes` (demo bank never seeded without --allow-demo);
+    staff admin via `pnpm staff:bootstrap`; import content packages via
+    `pnpm content:import`; verify `is_active`/published flags.
+
+## Backup and rollback procedure (exact)
+
+- Backup: `bash deploy/backup.sh [name]` (authenticates via secrets file; verifies
+  size + storage tree; copies to `shared/backups`, keeps 14). Automatic: PB cron
+  02:30 UTC (keep 14) + copy timer 02:40 UTC. Pre-deploy backup runs automatically
+  in `deploy.sh` (step 4). Off-VPS copy: configure `FEP_BACKUP_S3_*` (approved
+  bucket) via `configure.sh`; local-only copies do NOT satisfy the Gate.
+- Restore proof: `bash deploy/restore-drill.sh [backup]` (counts) and the new
+  record-level `pnpm smoke:restore-proof` (IDs/fields/files/auth) — both disposable,
+  never live data.
+- Rollback (automatic): any post-switch failure in `deploy.sh` triggers the
+  EXIT-trap rollback to the previous release (exit 2; exit 3 if rollback itself
+  fails). Manual: read `/opt/fast-english/.current.previous`,
+  `ln -sfn "$OLD" current.tmp && mv -Tf current.tmp current`,
+  `systemctl restart fast-english-pocketbase`, health check,
+  `systemctl reload caddy`, `smoke-prod.sh --quick`.
+- **Rollback never touches `pb_data`.** Migrations are NOT automatically
+  reversible: rolling back past a release that introduced migrations requires
+  hook/migration compatibility verification or restoring the pre-deployment
+  backup (`docs/BACKUP_RESTORE.md`). Distinguish application rollback (symlink),
+  migration recovery (forward-fix or restore), and data recovery (backup restore).
+
+## Production smoke procedure (exact)
+
+1. API/asset/entitlement layer: `bash deploy/smoke-prod.sh --full` (58 scenarios):
+   landing routes/canonicals/sitemap/robots/APK checksum + Content-Length + CTA;
+   app loads + manifest + SW + no localhost; signup/login/refresh; pending-denial;
+   receipt upload + protected preview; staff queue/detail/preview/approve →
+   activation; placement; lessons + audio 200/206/seek + progress; entitlement
+   denial (expired/future/suspended/wrong-role); admin domain (`/_/` 404).
+2. Real-browser journey (operator runbook): Landing → signup CTA → Student signup
+   (phone+name+password) → durable `fep_users` record → logout → login → choose
+   plan → upload receipt → Staff queue → approve → activation → placement (20 Qs,
+   resume once, submit) → Home (continue/featured/progress) → Library → Episode
+   playback (play/pause/seek/mini-player) → progress persists after reload →
+   Account → reload (session restore) → logout. Admin isolation both ways;
+   published content/artwork/audio load; PWA install + offline shell; `api/health`
+   200; HTTPS/canonical redirects; no critical browser/server errors. Designated
+   smoke account contract — never destructive cleanup of real users.
+3. Log redaction proof: `bash deploy/test-log-redaction.sh` + live grep.
+
+## Android physical-device release procedure (exact)
+
+1. Human: physical Android device (API ≥24) with USB debugging; `adb devices`
+   shows it; operator confirms keystore custody + backup before any build.
+2. Build: export `FEP_ANDROID_KEYSTORE_PATH/KEY_ALIAS/KEYSTORE_PASSWORD/
+   KEY_PASSWORD`; `pnpm android:check:version`; `pnpm android:build:release`
+   (fails safely without signing material); `pnpm android:verify:release`.
+3. Install: `adb install -r releases/fast-english-podcast-v1.0.0.apk` (verify
+   sha256 against release-metadata.json).
+4. On-device checklist: first launch, signup → login, receipt upload, pending
+   state, placement 20Q, Home/Library, Episode playback (audio + seek),
+   background/foreground resume honesty, lock-screen Media Session controls
+   (documented UNPROVEN), call/notification interruption, progress persists after
+   kill/reopen, session restore, upgrade-over-existing (same cert, versionCode+1).
+5. Record results against `docs/ANDROID_RELEASE.md` §7; gate closes when every
+   item passes on hardware. Items not physically exercised stay UNPROVEN.
