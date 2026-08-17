@@ -56,6 +56,14 @@ routerAdd(
       var authErr = opCheck(e);
       if (authErr) return e.json(authErr.status, authErr.body);
 
+      // 1b. Per-operator rate limit on the queue scan (the handler loads up
+      //      to 5000 payment_requests plus the user batch per request; a
+      //      leaked or compromised operator token must not drive unbounded
+      //      full-table scans). Mirrors the approve/reject windows.
+      var rlQ = require(__hooks + '/rate_limit.pb.js');
+      var rateErrQ = rlQ.checkRate(rlQ.window('__fepOperatorQueue'), String(e.auth.id || ''), 60, 300000);
+      if (rateErrQ) return e.json(rateErrQ.status, rateErrQ.body);
+
       // 2. Parse query params with safe defaults
       var rawPage = String(e.request.formValue("page") || "1");
       var rawPerPage = String(e.request.formValue("perPage") || "20");
@@ -668,8 +676,12 @@ routerAdd(
         var bodyCore = null;
         try { bodyCore = require(__hooks + '/content_admin_core.pb.js'); } catch (_) { bodyCore = null; }
         var rb = (bodyCore && bodyCore.readJsonBody) ? bodyCore.readJsonBody(e, 2048) : null;
-        if (rb && rb.public_rejection_reason) { publicRejectionReason = String(rb.public_rejection_reason).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); }
-        if (rb && rb.internal_note) { internalNote = String(rb.internal_note).replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); if (internalNote.length > 1000) internalNote = internalNote.substring(0, 1000); }
+        // Edge-trim AND strip control characters (mirrors the payment POST
+        // safeTrim contract): a student-visible reason or an internal note
+        // must never carry control bytes that could be interpreted by a
+        // renderer. ZWNJ (U+200C) is intentionally preserved.
+        if (rb && rb.public_rejection_reason) { publicRejectionReason = String(rb.public_rejection_reason).replace(/[\u0000-\u001f\u007f]/g, "").replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); }
+        if (rb && rb.internal_note) { internalNote = String(rb.internal_note).replace(/[\u0000-\u001f\u007f]/g, "").replace(/^[\s\u00a0\u2000-\u200b]+|[\s\u00a0\u2000-\u200b]+$/g, ""); if (internalNote.length > 1000) internalNote = internalNote.substring(0, 1000); }
       } catch (_) {}  // Parse error = treat as empty body
       if (!publicRejectionReason || publicRejectionReason.length < 3) return e.json(400, { code: "rejection_reason_required", message: "Public rejection reason is required (minimum 3 characters)." });
       if (publicRejectionReason.length > 500) publicRejectionReason = publicRejectionReason.substring(0, 500);

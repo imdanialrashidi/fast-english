@@ -337,10 +337,24 @@ async function main() {
     dest.status === 200 && dest.body?.destination?.cardNumber === '6037991234567890',
     `B17: staff PUT destination (normalized card) (${dest.status})`,
   );
-  const studentDest = await jf('/api/collections/payment_destination/records');
+  // The destination read surface is student-authenticated (migration
+  // 1700000030): the active row is served to a logged-in Student (the App
+  // reader) and denied to anonymous visitors — the PAN must never be
+  // harvestable by unauthenticated clients.
+  const b18Student = await createPlainStudent();
+  const studentDest = await jf('/api/collections/payment_destination/records', {
+    headers: { authorization: b18Student.token },
+  });
   check(
-    studentDest.body?.items?.length === 1 && studentDest.body.items[0].is_active === true,
-    'B18: student-facing destination list shows exactly the active one',
+    studentDest.status === 200 &&
+      studentDest.body?.items?.length === 1 &&
+      studentDest.body.items[0].is_active === true,
+    `B18: authenticated student reads exactly the active destination (${studentDest.status})`,
+  );
+  const anonDest = await jf('/api/collections/payment_destination/records');
+  check(
+    anonDest.status === 200 && (anonDest.body?.items || []).length === 0,
+    'B18b: anonymous visitors see NO destination rows (PAN hidden; PB denies by empty list)',
   );
   // Single-active invariant: PUT a second active destination → first is deactivated.
   await jf('/api/fast-english/staff/business-settings/destination', {

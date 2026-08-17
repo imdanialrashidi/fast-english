@@ -64,6 +64,13 @@ export function AdminShell() {
             paddingInline: 2,
             borderTop: '1px solid',
             borderColor: 'outlineVariant',
+            // Six nav items — on narrow viewports the row scrolls INSIDE
+            // its own bar instead of pushing the document wider (390px QA
+            // gate: zero horizontal overflow at document level).
+            minWidth: 0,
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            flexWrap: 'nowrap',
           }}
         >
           {NAV_ITEMS.map((item) => (
@@ -75,6 +82,8 @@ export function AdminShell() {
               size="small"
               sx={{
                 minHeight: 40,
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
                 color: 'onSurfaceVariant',
                 '&.active': {
                   color: 'primary.main',
