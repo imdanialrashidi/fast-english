@@ -123,8 +123,6 @@ routerAdd(
 
       var userId = String(e.auth.id || "");
       var now = new Date();
-      var expiresAt = new Date(now.getTime());
-      expiresAt.setUTCDate(expiresAt.getUTCDate() + durationDays);
 
       var txError = null;
       var result = null;
@@ -146,11 +144,24 @@ routerAdd(
           //      re-loaded here so a concurrent operator price edit
           //      between the request-time read and the write cannot mint
           //      a free entitlement for a plan that is no longer free.
+          //      The SNAPSHOT fields are also derived from this in-transaction
+          //      read (txPlan), never from the request-time read: a concurrent
+          //      name/duration edit between the two reads cannot be recorded
+          //      into the minted entitlement with stale values.
           var txPlan = null;
           try { txPlan = txApp.findRecordById(PLANS_COLLECTION, planId); } catch (_) { txPlan = null; }
           if (!txPlan || !txPlan.get("is_active") || Number(txPlan.get("price_toman") || 0) !== 0) {
             throw new BadRequestError("invalid_plan", { code: "invalid_plan" });
           }
+          var txPlanName = String(txPlan.get("name") || "");
+          var txDurationDays = Number(txPlan.get("duration_days") || 0);
+          if (!txPlanName || txDurationDays < 1) {
+            throw new BadRequestError("invalid_plan", { code: "invalid_plan" });
+          }
+          // Expiry is derived from the in-transaction duration read so the
+          // stored entitlement window always matches its snapshot.
+          var txExpiresAt = new Date(now.getTime());
+          txExpiresAt.setUTCDate(txExpiresAt.getUTCDate() + txDurationDays);
 
           // 1. Idempotency pre-check: an existing VALID entitlement is
           //    authoritative — never manufacture a second one.
@@ -213,12 +224,12 @@ routerAdd(
           var subsColl = txApp.findCollectionByNameOrId(SUBS_COLLECTION);
           var sub = new Record(subsColl);
           sub.set("user", userId);
-          sub.set("plan", String(plan.id));
-          sub.set("plan_name_snapshot", planName);
+          sub.set("plan", String(txPlan.id));
+          sub.set("plan_name_snapshot", txPlanName);
           sub.set("amount_snapshot", 0);
-          sub.set("duration_days_snapshot", durationDays);
+          sub.set("duration_days_snapshot", txDurationDays);
           sub.set("starts_at", now.toISOString());
-          sub.set("expires_at", expiresAt.toISOString());
+          sub.set("expires_at", txExpiresAt.toISOString());
           sub.set("status", "active");
           sub.set("source", "free");
           txApp.save(sub);

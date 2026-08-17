@@ -54,27 +54,27 @@ function CollaborationPageStatic({ hasSupport }: { hasSupport: boolean }) {
         {categories.map((c) => (
           <section
             key={c.title}
-            className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+            className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
           >
             <h2 className="text-lg font-extrabold">{c.title}</h2>
-            <p className="mt-2 text-sm text-brand-muted leading-relaxed">{c.desc}</p>
+            <p className="mt-2 text-sm text-muted leading-relaxed">{c.desc}</p>
           </section>
         ))}
-        <section className="rounded-2xl bg-brand-midnight p-5 sm:p-6 text-white">
+        <section className="rounded-2xl bg-midnight p-5 sm:p-6 text-ice">
           <h2 className="text-lg font-extrabold">ارسال پیشنهاد همکاری</h2>
           {hasSupport ? (
-            <p className="mt-2 text-sm text-white/75 leading-relaxed">
+            <p className="mt-2 text-sm text-ice-muted leading-relaxed">
               پیشنهاد خود را از طریق کانال پشتیبانی ارسال کنید.
             </p>
           ) : (
-            <p className="mt-2 text-sm text-white/75 leading-relaxed">
+            <p className="mt-2 text-sm text-ice-muted leading-relaxed">
               کانال ارتباطی همکاری هنوز اعلام نشده است؛ به‌زودی در همین صفحه منتشر می‌شود.
             </p>
           )}
           {hasSupport ? (
             <SupportContact label="تماس برای همکاری" onIntent={() => trackCollaborationIntent()} />
           ) : (
-            <span className="mt-4 inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white/70 min-h-12">
+            <span className="mt-4 inline-flex items-center justify-center rounded-[10px] border border-ice-soft bg-ice-soft px-5 py-3 text-sm font-semibold text-ice/70 min-h-12">
               کانال همکاری — به‌زودی
             </span>
           )}

@@ -48,6 +48,7 @@ import { EpisodePreviewRoute } from './features/content/routes/EpisodePreviewRou
 import { EpisodesRoute } from './features/content/routes/EpisodesRoute';
 import { ImportRoute } from './features/content/routes/ImportRoute';
 import { VariantEditorRoute } from './features/content/routes/VariantEditorRoute';
+import { HelpRoute } from './features/help/HelpRoute';
 import { PaymentsRoute } from './features/payments/PaymentsRoute';
 import { AdminDashboardRoute } from './routes/AdminDashboardRoute';
 import { AdminLoginRoute } from './routes/AdminLoginRoute';
@@ -106,6 +107,7 @@ const router = createBrowserRouter(
         <Route path="content/import" element={<ImportRoute />} />
         <Route path="content/preview/:episodeId" element={<EpisodePreviewRoute />} />
         <Route path="settings" element={<AdminSettingsRoute />} />
+        <Route path="help" element={<HelpRoute />} />
       </Route>
       <Route path="*" element={<AdminNotFoundRoute />} />
     </Route>,

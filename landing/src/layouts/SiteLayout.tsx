@@ -22,11 +22,11 @@ export function SiteLayout({ children }: { children: ReactNode }) {
     trackAcquisition(ACQUISITION_EVENTS.routeChange, {});
   }, []);
   return (
-    <div className="min-h-dvh bg-brand-surface text-brand-text">
+    <div className="min-h-dvh bg-surface-muted text-text">
       <PwaInstallProbe />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded-xl focus:bg-brand-midnight focus:px-4 focus:py-2 focus:text-white"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded-[10px] focus:bg-midnight focus:px-4 focus:py-2 focus:text-ice"
       >
         پرش به محتوای اصلی
       </a>

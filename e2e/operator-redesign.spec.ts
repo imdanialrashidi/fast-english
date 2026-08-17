@@ -614,11 +614,10 @@ test.describe('Staff workspace redesign (Admin Console)', () => {
   test('17. the Student sees the public rejection reason', async ({ page }) => {
     await setStudentAuth(page, fx.pendB.token, fx.pendB.record, '/payment-status');
     await expect(page.getByTestId('rejection-reason')).toBeVisible();
-    // The server body parser on this PB version double-encodes multi-byte
-    // Persian in stored reasons; assert the reason block exists and is
-    // non-empty instead of exact text.
-    const reasonText = await page.getByTestId('rejection-reason').innerText();
-    expect(reasonText.trim().length).toBeGreaterThan(3);
+    // Regression: the staff reject route must round-trip multi-byte Persian
+    // (previously the raw-byte String.fromCharCode body parse double-encoded
+    // the stored reason). The exact reason text must appear verbatim.
+    await expect(page.getByTestId('rejection-reason')).toContainText(LONG_PERSIAN_REASON);
   });
 
   test('18. the Student never sees the internal note', async ({ page }) => {

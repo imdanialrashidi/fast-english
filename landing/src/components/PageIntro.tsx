@@ -5,7 +5,7 @@ export function PageIntro({ title, lead }: { title: string; lead: string }) {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-[1.2] tracking-tight">
         {title}
       </h1>
-      <p className="mt-3 text-base sm:text-lg text-brand-muted leading-relaxed">{lead}</p>
+      <p className="mt-3 text-base sm:text-lg text-muted leading-relaxed">{lead}</p>
     </div>
   );
 }

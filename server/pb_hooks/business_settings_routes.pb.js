@@ -306,8 +306,12 @@ routerAdd("PUT", "/api/fast-english/staff/business-settings/destination", functi
 
   // Single-active invariant, enforced ATOMICALLY: deactivate other active
   // rows and save the target in ONE transaction; any failure rolls back and
-  // returns 5xx (never a silently broken destination set). The partial
-  // unique index (migration 1700000027) is the DB-level backstop.
+  // returns 5xx (never a silently broken destination set). SQLite serializes
+  // write transactions, so the post-check below observes committed rows and
+  // the product boundary holds without a partial unique index (a partial
+  // index was deliberately NOT added — migration 1700000027 documents why:
+  // the e2e/superuser fixture contract creates parallel destinations
+  // freely). The in-transaction check + post-check is the defense.
   var saved = null;
   var txFailed = null;
   try {

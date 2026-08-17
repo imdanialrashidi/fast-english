@@ -894,9 +894,11 @@ async function main() {
   });
 
   await runScenario('42-rejection-sets-fields', async () => {
+    const persianReason =
+      'مبلغ واریزی با مبلغ اعلام‌شدهٔ طرح مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.';
     const r = await rejectAs(staff.token, reqId7, {
-      public_rejection_reason: 'Transfer does not match records.',
-      internal_note: 'Checked with bank, no matching deposit.',
+      public_rejection_reason: persianReason,
+      internal_note: 'این یادداشت داخلی فارسی باید بدون دوبار رمزنگاری ذخیره شود.',
     });
     check(r.status === 200, `reject succeeds (got ${r.status})`);
     check(r.body?.kind === 'rejected', 'kind = rejected');
@@ -905,6 +907,12 @@ async function main() {
     check(detail.body?.status === 'rejected', 'request status = rejected');
     check(detail.body?.reviewedAt !== null, 'reviewed_at set');
     check(detail.body?.reviewer?.id === staff.id, 'reviewer set');
+    // Regression: multi-byte Persian must round-trip (raw-byte
+    // String.fromCharCode body parsing double-encoded it before).
+    check(
+      detail.body?.publicRejectionReason === persianReason,
+      `Persian rejection reason round-trips exactly (got ${detail.body?.publicRejectionReason})`,
+    );
   });
 
   await runScenario('43-rejection-no-subscription', async () => {
@@ -1093,7 +1101,8 @@ async function main() {
     const detail = await detailAs(staff.token, reqId7);
     check(detail.body?.status === 'rejected', 'old request still rejected');
     check(
-      detail.body?.publicRejectionReason === 'Transfer does not match records.',
+      detail.body?.publicRejectionReason ===
+        'مبلغ واریزی با مبلغ اعلام‌شدهٔ طرح مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.',
       'old rejection reason preserved',
     );
   });

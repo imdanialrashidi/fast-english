@@ -10,7 +10,12 @@ export function LegalNotice() {
     <div
       role="note"
       data-legal-status="needs-review"
-      className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900"
+      className="rounded-2xl border px-4 py-4 text-sm leading-relaxed"
+      style={{
+        borderColor: 'var(--color-warning)',
+        background: 'var(--color-warning-container)',
+        color: 'var(--color-warning)',
+      }}
     >
       <p className="font-bold">{LEGAL_REVIEW_TEXT}</p>
       <p className="mt-1">

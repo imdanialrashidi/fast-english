@@ -156,7 +156,13 @@ test.describe('Admin Business Settings', () => {
     await page.getByTestId('settings-save-destination').click();
     await expect(page.getByText('ذخیره شد.')).toBeVisible({ timeout: 10_000 });
 
-    const dest = await fetch(`${PB_URL}/api/collections/payment_destination/records`);
+    // The destination read API is student/staff-authenticated (migration
+    // 1700000030): verify the saved values through an authorized identity —
+    // an anonymous caller never sees the PAN.
+    const su = await suToken();
+    const dest = await fetch(`${PB_URL}/api/collections/payment_destination/records`, {
+      headers: { authorization: su },
+    });
     const body = (await dest.json()) as { items: Array<Record<string, unknown>> };
     expect(body.items[0].card_number).toBe('6037991234567890');
     expect(body.items[0].review_sla_text).toBe('حداکثر تا ۲۴ ساعت');

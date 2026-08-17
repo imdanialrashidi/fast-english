@@ -107,6 +107,12 @@ Durable constraints only. Not a diary.
   `payment_destination_unavailable`), and NEVER deletes the stored card
   config — re-enabling reuses the same values. The public settings
   endpoint exposes only the boolean `payment.cardTransferEnabled`.
+  The destination collection's standard read API is student-AUTHENTICATED
+  (migration 1700000030: `is_active = true && @request.auth.id != ''`);
+  anonymous visitors see no destination rows, so the full pay-to card
+  number is never harvestable by unauthenticated clients. The Student App
+  reads it through the SDK with the logged-in student session; the
+  staff routes read it server-side (rule-free).
 - Price-change protection: every paid payment request stores
   `plan_name_snapshot`/`amount_snapshot`/`duration_days_snapshot` at
   submission time, so later operator price edits never rewrite the

@@ -22,33 +22,34 @@ export function AboutPage() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pb-12 sm:pb-20 space-y-4">
         <section
           aria-labelledby="about-product"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="about-product" className="text-xl font-extrabold">
             محصول چیست؟
           </h2>
-          <p className="mt-3 text-brand-muted leading-relaxed">
+          <p className="mt-3 text-muted leading-relaxed">
             هر موضوع آموزشی در شش سطح CEFR (A1 تا C2) ارائه می‌شود: یک متن کوتاه انگلیسی به‌همراه صوت
             همان متن. با یک آزمون بیست‌سؤالی، سطح پیشنهادی برای شما مشخص می‌شود و می‌توانید آن را تغییر
             دهید. پیشرفت شما در درس‌ها ذخیره می‌شود و پخش صوت از جای قبلی ادامه پیدا می‌کند.
           </p>
-          <p className="mt-3 text-brand-muted leading-relaxed">
+          <p className="mt-3 text-muted leading-relaxed">
             پرداخت به‌صورت دستی کارت‌به‌کارت است: پس از بارگذاری رسید و تأیید اپراتور، اشتراک شما فعال
-            می‌شود. این محصول در فروشگاه‌های اپلیکیشن رسمی در دسترس نیست و دسترسی از طریق وب‌اپ یا نصب
-            مستقیم نسخهٔ اندروید انجام می‌شود.
+            می‌شود (وضعیت فعلی پرداخت در بخش «اشتراک» صفحهٔ اصلی اعلام می‌شود). این محصول در فروشگاه‌های
+            اپلیکیشن رسمی در دسترس نیست و دسترسی از طریق وب‌اپ یا نصب مستقیم نسخهٔ اندروید انجام
+            می‌شود؛ نسخهٔ اندروید به‌زودی از همین وب‌سایت ارائه می‌شود.
           </p>
         </section>
 
         <section
           aria-labelledby="about-approach"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="about-approach" className="text-xl font-extrabold">
             رویکرد آموزشی
           </h2>
-          <ul className="mt-3 space-y-3 text-sm text-brand-text">
+          <ul className="mt-3 space-y-3 text-sm text-text">
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>
@@ -57,7 +58,7 @@ export function AboutPage() {
               </span>
             </li>
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>
@@ -66,7 +67,7 @@ export function AboutPage() {
               </span>
             </li>
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>
@@ -75,7 +76,7 @@ export function AboutPage() {
               </span>
             </li>
             <li className="flex gap-2">
-              <span aria-hidden className="text-brand-primary">
+              <span aria-hidden className="text-accent">
                 ▸
               </span>
               <span>
@@ -88,20 +89,20 @@ export function AboutPage() {
 
         <section
           aria-labelledby="about-identity"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="about-identity" className="text-xl font-extrabold">
             اطلاعات هویتی
           </h2>
-          <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+          <p className="mt-3 text-sm text-muted leading-relaxed">
             برخی اطلاعات مربوط به هویت حقوقی مجموعه هنوز از سوی مالک محصول اعلام نشده است و به‌محض
             مشخص‌شدن در همین صفحه منتشر می‌شود:
           </p>
           <dl className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             {identityItems.map((item) => (
-              <div key={item.label} className="rounded-xl bg-brand-surface p-3">
-                <dt className="text-xs font-semibold text-brand-muted">{item.label}</dt>
-                <dd className="mt-1 text-sm font-bold text-brand-text">{item.value}</dd>
+              <div key={item.label} className="rounded-[10px] bg-surface-muted p-3">
+                <dt className="text-xs font-semibold text-muted">{item.label}</dt>
+                <dd className="mt-1 text-sm font-bold text-text">{item.value}</dd>
               </div>
             ))}
           </dl>
@@ -109,24 +110,24 @@ export function AboutPage() {
 
         <section
           aria-labelledby="about-cta"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="about-cta" className="text-xl font-extrabold">
             شروع یادگیری
           </h2>
-          <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+          <p className="mt-3 text-sm text-muted leading-relaxed">
             ثبت‌نام و پرداخت در داخل اپلیکیشن انجام می‌شود. نمونهٔ درس را ببینید یا وارد وب‌اپ شوید.
           </p>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
             <AppCta
               place="about"
-              className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
+              className="inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
             >
               ورود به وب‌اپ
             </AppCta>
             <a
               href="/sample"
-              className="inline-flex items-center justify-center rounded-xl border border-brand-divider bg-white px-5 py-3 text-sm font-semibold text-brand-text hover:bg-brand-surface min-h-12"
+              className="inline-flex items-center justify-center rounded-[10px] border border-outline-soft bg-surface px-5 py-3 text-sm font-semibold text-text hover:bg-surface-strong min-h-12"
             >
               دیدن نمونهٔ درس
             </a>

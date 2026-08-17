@@ -15,15 +15,15 @@ const NAV_LINKS = [
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur border-b border-brand-divider">
+    <header className="sticky top-0 z-40 border-b border-outline-soft bg-canvas/90 backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <BrandMark />
-        <nav aria-label="ناوبری اصلی" className="hidden md:flex items-center gap-1">
+        <nav aria-label="ناوبری اصلی" className="hidden lg:flex items-center gap-1">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-brand-text hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-text hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-11 inline-flex items-center"
             >
               {link.label}
             </a>
@@ -32,14 +32,14 @@ export function Header() {
         <div className="flex items-center gap-2">
           <AppCta
             place="header"
-            className="hidden sm:inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary min-h-11"
+            className="hidden sm:inline-flex items-center justify-center rounded-[10px] bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-11"
           >
             ورود به وب‌اپ
           </AppCta>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-brand-text hover:bg-brand-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary min-h-11 min-w-11"
+            className="lg:hidden inline-flex items-center justify-center rounded-lg p-2 text-text hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-11 min-w-11"
             aria-label="باز/بستن منو"
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -77,21 +77,21 @@ export function Header() {
         <nav
           id="mobile-nav"
           aria-label="ناوبری موبایل"
-          className="md:hidden border-t border-brand-divider bg-white"
+          className="lg:hidden border-t border-outline-soft bg-canvas"
         >
           <div className="mx-auto max-w-6xl px-4 py-2 flex flex-col">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-3 py-3 text-sm font-medium hover:bg-brand-surface"
+                className="rounded-lg px-3 py-3 text-sm font-medium hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-11 inline-flex items-center"
               >
                 {link.label}
               </a>
             ))}
             <AppCta
               place="header"
-              className="mt-1 mb-2 inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark"
+              className="mt-1 mb-2 inline-flex items-center justify-center rounded-[10px] bg-primary px-4 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
             >
               ورود به وب‌اپ
             </AppCta>

@@ -9,7 +9,7 @@ const steps = [
   },
   {
     title: '۲. پرداخت کارت‌به‌کارت و بارگذاری رسید',
-    desc: 'طرح ماهانه (۳۰ روز) یا ۹۰ روزه را انتخاب می‌کنید و مبلغ را کارت‌به‌کارت منتقل می‌کنید. سپس یک تصویر از رسید انتقال (JPEG، PNG یا WebP تا حداکثر ۵ مگابایت) بارگذاری می‌کنید. هیچ پرداخت آنلاین خودکاری وجود ندارد.',
+    desc: 'طرح ماهانه (۳۰ روز) یا ۹۰ روزه را انتخاب می‌کنید و مبلغ را کارت‌به‌کارت منتقل می‌کنید. سپس یک تصویر از رسید انتقال (JPEG، PNG یا WebP تا حداکثر ۵ مگابایت) بارگذاری می‌کنید. هیچ پرداخت آنلاین خودکاری وجود ندارد. وضعیت فعلی پرداخت (فعال یا غیرفعال بودن) در بخش «اشتراک» صفحهٔ اصلی اعلام می‌شود.',
   },
   {
     title: '۳. تأیید اپراتور',
@@ -40,20 +40,20 @@ export function HowItWorksPage() {
         {steps.map((step) => (
           <section
             key={step.title}
-            className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+            className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
           >
             <h2 className="text-lg font-extrabold">{step.title}</h2>
-            <p className="mt-2 text-sm text-brand-muted leading-relaxed">{step.desc}</p>
+            <p className="mt-2 text-sm text-muted leading-relaxed">{step.desc}</p>
           </section>
         ))}
-        <div className="rounded-2xl bg-brand-midnight p-5 sm:p-6 text-white">
+        <div className="rounded-2xl bg-midnight p-5 sm:p-6 text-ice">
           <h2 className="text-lg font-extrabold">شروع کنید</h2>
-          <p className="mt-2 text-sm text-white/75 leading-relaxed">
+          <p className="mt-2 text-sm text-ice-muted leading-relaxed">
             ثبت‌نام در وب‌اپ رایگان است؛ هزینه فقط پس از انتخاب طرح پرداخت می‌شود.
           </p>
           <AppCta
             place="how-it-works"
-            className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
+            className="mt-4 inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
           >
             ورود به وب‌اپ
           </AppCta>

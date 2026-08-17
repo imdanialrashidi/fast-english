@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/verify-smokes-parallel.sh
-# Run all 17 real-PocketBase smoke suites concurrently for the CI backend
+# Run all 18 real-PocketBase smoke suites concurrently for the CI backend
 # lane. Every suite gets its OWN disposable PocketBase on a UNIQUE port,
 # so no suite can observe another suite's fixtures or data (the wrappers
 # already clean up their own PB process and data dir on exit).
@@ -48,6 +48,7 @@ SUITES=(
   "content-admin|scripts/smoke-placement.sh|scripts/smoke-content-admin.mjs|PB_SMOKE_PLACEMENT_PORT"
   "library|scripts/smoke-placement.sh|scripts/smoke-library.mjs|PB_SMOKE_PLACEMENT_PORT"
   "business-settings|scripts/smoke-placement.sh|scripts/smoke-business-settings.mjs|PB_SMOKE_PLACEMENT_PORT"
+  "restore-proof|scripts/restore-proof.sh|scripts/restore-proof.mjs|PB_RESTORE_PROOF_PORT"
 )
 
 export LOG_DIR RESULT_FILE

@@ -14,10 +14,12 @@ import { deflateSync } from 'node:zlib';
 const WIDTH = 1200;
 const HEIGHT = 630;
 
+// Midnight/ice palette (shared/ui/tokens/colors.ts + the landing tokens):
+// the same family as the Student App Dark canvas and the PWA theme.
 const MIDNIGHT = [11, 18, 32]; // #0B1220
-const GRADIENT_TOP = [29, 78, 216]; // #1D4ED8
-const GRADIENT_BOTTOM = [124, 58, 237]; // #7C3AED
-const BAND_HEIGHT = 470;
+const ICE_MUTED = [179, 193, 200]; // #B3C1C8
+const PRIMARY = [42, 111, 140]; // #2A6F8C
+const ACCENT = [46, 112, 146]; // #2E7092
 
 // CEFR level stripe colors (backgrounds from the landing tokens).
 const STRIPES = [
@@ -33,6 +35,11 @@ const STRIPE_GAP = 20;
 const STRIPE_Y = 500;
 const STRIPE_H = 60;
 
+// Waveform motif (deterministic; mirrored from the hero visual).
+const WAVE = [14, 22, 34, 24, 42, 30, 18, 46, 38, 52, 26, 40, 20, 32, 48, 26, 36, 44, 22, 30];
+const WAVE_Y = 330;
+const WAVE_H = 90;
+
 const lerp = (a, b, t) => Math.round(a + (b - a) * t);
 const lerpColor = (c1, c2, t) => [
   lerp(c1[0], c2[0], t),
@@ -44,7 +51,26 @@ const totalStripes = STRIPES.length;
 const stripesWidth = totalStripes * STRIPE_W + (totalStripes - 1) * STRIPE_GAP;
 const stripesX = Math.floor((WIDTH - stripesWidth) / 2);
 
+// Waveform bar geometry: bar i occupies x in [x0, x0+barW] with rounded
+// ends approximated by vertical bars (the encoder is minimal).
+const barW = 16;
+const barGap = 14;
+const barsWidth = WAVE.length * barW + (WAVE.length - 1) * barGap;
+const barsX = Math.floor((WIDTH - barsWidth) / 2);
+
+// Soft radial accent glow behind the waveform (blended toward midnight).
+function glow(x, y) {
+  const cx = WIDTH * 0.5;
+  const cy = WAVE_Y;
+  const r = 340;
+  const d = Math.hypot(x - cx, y - cy) / r;
+  if (d > 1) return null;
+  const t = (1 - d) * (1 - d) * 0.28;
+  return lerpColor(MIDNIGHT, PRIMARY, t);
+}
+
 function pixelAt(x, y) {
+  // CEFR stripe band (the signature element).
   if (y >= STRIPE_Y && y < STRIPE_Y + STRIPE_H) {
     const rel = x - stripesX;
     if (rel >= 0 && rel < stripesWidth) {
@@ -55,9 +81,24 @@ function pixelAt(x, y) {
       }
     }
   }
-  if (y < BAND_HEIGHT) {
-    return lerpColor(GRADIENT_TOP, GRADIENT_BOTTOM, y / BAND_HEIGHT);
+  // Waveform bars.
+  if (y >= WAVE_Y && y < WAVE_Y + WAVE_H) {
+    const rel = x - barsX;
+    if (rel >= 0 && rel < barsWidth) {
+      const slot = Math.floor(rel / (barW + barGap));
+      const within = rel - slot * (barW + barGap);
+      if (within < barW && slot < WAVE.length) {
+        const h = WAVE[slot];
+        const barTop = WAVE_Y + WAVE_H - h;
+        if (y >= barTop) {
+          // The middle bars are the "playing" accent.
+          return slot >= 7 && slot <= 9 ? ACCENT : ICE_MUTED;
+        }
+      }
+    }
   }
+  const g = glow(x, y);
+  if (g) return g;
   return MIDNIGHT;
 }
 

@@ -41,20 +41,58 @@ else
 fi
 
 # --- 1. configured production values --------------------------------------
-if grep -rq "https://fastenglishpodcast.com/releases/fast-english-podcast-v1.0.0.apk" "$LANDING"; then
-  note "landing embeds the official APK URL"
+# The APK checks apply ONLY when VITE_ANDROID_APK_URL is configured at
+# build time; an unconfigured build must show the honest "coming soon"
+# state instead (never a fabricated or dead download link).
+if [[ -n "${VITE_ANDROID_APK_URL:-}" ]]; then
+  if grep -rq "$VITE_ANDROID_APK_URL" "$LANDING"; then
+    note "landing embeds the official APK URL"
+  else
+    bad "landing does not embed the configured APK URL ($VITE_ANDROID_APK_URL)"
+  fi
+  if [[ -n "${VITE_ANDROID_APK_VERSION:-}" ]] && grep -rq "$VITE_ANDROID_APK_VERSION" "$LANDING/install.html" 2>/dev/null; then
+    note "landing shows APK version $VITE_ANDROID_APK_VERSION"
+  else
+    bad "landing APK version missing"
+  fi
 else
-  bad "landing does not embed the official APK URL"
-fi
-if grep -rq "1\.0\.0" "$LANDING/install.html" 2>/dev/null; then
-  note "landing shows APK version 1.0.0"
-else
-  bad "landing APK version missing"
+  if grep -rq "نسخهٔ اندروید به‌زودی منتشر می‌شود" "$LANDING"; then
+    note "landing shows the honest Android coming-soon state (no APK configured)"
+  else
+    bad "landing missing the honest Android coming-soon state"
+  fi
+  if grep -rq '\.apk' "$LANDING"; then
+    bad "landing contains an APK link without a configured official URL"
+  fi
 fi
 if grep -rq "https://app.fastenglishpodcast.com" "$LANDING"; then
   note "landing uses the production web-app URL"
 else
   bad "landing web-app URL missing"
+fi
+
+# --- 1b. release identity (version markers) -------------------------------
+# Every surface must identify its deployed release from the served HTML and
+# must NEVER report the pre-release 0.0.0 identity in a production build.
+# The exact expected version comes from the root package.json (the single
+# canonical web version; Android versionName is cross-checked separately by
+# scripts/check-android-version.mjs).
+PKG_VERSION="$(node -p "require('./package.json').version" 2>/dev/null || echo '0.0.0')"
+if [[ "$PKG_VERSION" == "0.0.0" || ! "$PKG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  bad "root package.json version is not a real release version: '$PKG_VERSION'"
+else
+  note "root package.json version: $PKG_VERSION"
+  for pair in "$APP:data-app-version" "$LANDING:data-landing-version" "$ADMIN:data-admin-version"; do
+    dir="${pair%%:*}"; marker="${pair##*:}"
+    if grep -rq "$marker=\"$PKG_VERSION\"" "$dir" 2>/dev/null; then
+      note "$dir embeds $marker=$PKG_VERSION"
+    else
+      bad "$dir missing $marker=\"$PKG_VERSION\" release marker"
+    fi
+    if grep -rqE "$marker=\"0\.0\.0" "$dir" 2>/dev/null; then
+      bad "$dir still reports the pre-release $marker=0.0.0"
+    fi
+  done
 fi
 
 # --- 2. hard-forbidden tokens ----------------------------------------------

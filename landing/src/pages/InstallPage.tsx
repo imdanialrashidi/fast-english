@@ -58,19 +58,19 @@ export function InstallPage() {
         <nav aria-label="پرش به راهنمای نصب" className="flex flex-wrap gap-2">
           <a
             href="#install-pwa"
-            className="rounded-xl border border-brand-divider bg-white px-4 py-2 text-sm font-semibold text-brand-text hover:bg-brand-surface"
+            className="rounded-[10px] border border-outline-soft bg-surface px-4 py-2 text-sm font-semibold text-text hover:bg-surface-strong"
           >
             نصب وب‌اپ
           </a>
           <a
             href="#ios"
-            className="rounded-xl bg-brand-midnight px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            className="rounded-[10px] bg-midnight px-4 py-2 text-sm font-semibold text-ice hover:bg-primary-hover"
           >
             نصب روی iPhone / iPad
           </a>
           <a
             href="#install-apk"
-            className="rounded-xl border border-brand-divider bg-white px-4 py-2 text-sm font-semibold text-brand-text hover:bg-brand-surface"
+            className="rounded-[10px] border border-outline-soft bg-surface px-4 py-2 text-sm font-semibold text-text hover:bg-surface-strong"
           >
             نسخهٔ اندروید
           </a>
@@ -78,22 +78,22 @@ export function InstallPage() {
 
         <section
           aria-labelledby="install-web"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="install-web" className="text-xl font-extrabold">
             ۱. وب‌اپ — بدون نصب
           </h2>
-          <ol className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+          <ol className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
             {webAppSteps.map((s, i) => (
               <li key={s} className="flex gap-2">
-                <span className="font-bold text-brand-primary">{i + 1}.</span>
+                <span className="font-bold text-accent">{i + 1}.</span>
                 <span>{s}</span>
               </li>
             ))}
           </ol>
           <AppCta
             place="install"
-            className="mt-4 inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-primary-dark min-h-12"
+            className="mt-4 inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
           >
             باز کردن وب‌اپ
           </AppCta>
@@ -101,24 +101,24 @@ export function InstallPage() {
 
         <section
           aria-labelledby="install-pwa"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="install-pwa" className="text-xl font-extrabold">
             ۲. نصب وب‌اپ روی صفحهٔ اصلی (PWA)
           </h2>
-          <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+          <p className="mt-3 text-sm text-muted leading-relaxed">
             مرورگرهای مدرن می‌توانند وب‌اپ را مانند یک برنامه نصب کنند. روش نصب در مرورگرهای مختلف
             یکسان نیست و هیچ مرورگری تضمین نمی‌کند که این گزینه را نشان دهد:
           </p>
-          <ol className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+          <ol className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
             {pwaSteps.map((s, i) => (
               <li key={s} className="flex gap-2">
-                <span className="font-bold text-brand-primary">{i + 1}.</span>
+                <span className="font-bold text-accent">{i + 1}.</span>
                 <span>{s}</span>
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs text-brand-muted">
+          <p className="mt-3 text-xs text-muted">
             نصب وب‌اپ اختیاری است؛ بدون نصب هم می‌توانید از همهٔ امکانات در مرورگر استفاده کنید.
           </p>
         </section>
@@ -126,24 +126,24 @@ export function InstallPage() {
         <section
           id="ios"
           aria-labelledby="ios-title"
-          className="rounded-2xl bg-brand-midnight p-5 sm:p-6 text-white"
+          className="rounded-2xl bg-midnight p-5 sm:p-6 text-ice"
         >
           <h2 id="ios-title" className="text-xl font-extrabold">
             ۳. نصب روی iPhone / iPad
           </h2>
-          <p className="mt-3 text-sm text-white/75 leading-relaxed">
+          <p className="mt-3 text-sm text-ice-muted leading-relaxed">
             نسخهٔ iOS در فروشگاه اپل وجود ندارد و لینک مستقیم نصب هم ارائه نشده است؛ تنها راه، افزودن
             وب‌اپ از مرورگر سافاری به صفحهٔ اصلی دستگاه است. مراحل:
           </p>
-          <ol className="mt-3 space-y-2 text-sm text-white/85 leading-relaxed">
+          <ol className="mt-3 space-y-2 text-sm text-ice leading-relaxed">
             {iosSteps.map((s, i) => (
               <li key={s} className="flex gap-2">
-                <span className="font-bold text-white/60">{i + 1}.</span>
+                <span className="font-bold text-ice-muted">{i + 1}.</span>
                 <span>{s}</span>
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs text-white/60">
+          <p className="mt-3 text-xs text-ice-muted">
             نصب از سافاری، وب‌اپ را به‌صورت یک آیکن روی صفحهٔ اصلی قرار می‌دهد؛ همچنان برای پخش صوت به
             اتصال اینترنت نیاز است.
           </p>
@@ -151,20 +151,20 @@ export function InstallPage() {
 
         <section
           aria-labelledby="install-apk"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="install-apk" className="text-xl font-extrabold">
             ۴. نسخهٔ اندروید — نصب مستقیم
           </h2>
           {hasApk ? (
             <>
-              <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+              <p className="mt-3 text-sm text-muted leading-relaxed">
                 فایل APK امضاشدهٔ رسمی را از همین صفحه دانلود کنید. مراحل نصب:
               </p>
-              <ol className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+              <ol className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
                 {apkSteps.map((s, i) => (
                   <li key={s} className="flex gap-2">
-                    <span className="font-bold text-brand-primary">{i + 1}.</span>
+                    <span className="font-bold text-accent">{i + 1}.</span>
                     <span>{s}</span>
                   </li>
                 ))}
@@ -176,13 +176,13 @@ export function InstallPage() {
           ) : (
             <div className="mt-3">
               <ApkButton />
-              <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+              <p className="mt-3 text-sm text-muted leading-relaxed">
                 نسخهٔ اندروید هنوز منتشر نشده است. تا آن زمان می‌توانید از وب‌اپ استفاده کنید؛ پس از
                 انتشار، همین صفحه به‌روزرسانی می‌شود.
               </p>
             </div>
           )}
-          <p className="mt-3 text-xs text-brand-muted">
+          <p className="mt-3 text-xs text-muted">
             این محصول در فروشگاه‌های اپلیکیشن رسمی (مثل Google Play) در دسترس نیست و تنها مرجع
             دانلود، همین وب‌سایت است.
           </p>
@@ -190,32 +190,32 @@ export function InstallPage() {
 
         <section
           aria-labelledby="install-permission"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="install-permission" className="text-xl font-extrabold">
             ۵. وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد
           </h2>
-          <p className="mt-3 text-sm text-brand-muted leading-relaxed">
+          <p className="mt-3 text-sm text-muted leading-relaxed">
             اندروید برای محافظت از شما، نصب برنامه‌های خارج از فروشگاه را به‌صورت پیش‌فرض محدود می‌کند.
             وقتی پنجرهٔ «نصب برنامه‌های ناشناخته» را می‌بینید، فقط اجازهٔ نصب از همان مرورگری که فایل را
             از آن دانلود کرده‌اید بدهید و سپس فایل را اجرا کنید.
           </p>
-          <p className="mt-2 text-sm text-brand-muted leading-relaxed">
+          <p className="mt-2 text-sm text-muted leading-relaxed">
             هرگز برای نصب این برنامه، محافظ‌های امنیتی اندروید را به‌صورت کلی غیرفعال نکنید.
           </p>
         </section>
 
         <section
           aria-labelledby="install-verify"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="install-verify" className="text-xl font-extrabold">
             ۶. بررسی اصالت دانلود
           </h2>
-          <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+          <ul className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
             {verifySteps.map((s) => (
               <li key={s} className="flex gap-2">
-                <span aria-hidden className="text-brand-primary">
+                <span aria-hidden className="text-accent">
                   ▸
                 </span>
                 <span>{s}</span>
@@ -226,15 +226,15 @@ export function InstallPage() {
 
         <section
           aria-labelledby="install-update"
-          className="rounded-2xl border border-brand-divider bg-white p-5 sm:p-6"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="install-update" className="text-xl font-extrabold">
             ۷. به‌روزرسانی
           </h2>
-          <ul className="mt-3 space-y-2 text-sm text-brand-muted leading-relaxed">
+          <ul className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
             {updateSteps.map((s) => (
               <li key={s} className="flex gap-2">
-                <span aria-hidden className="text-brand-primary">
+                <span aria-hidden className="text-accent">
                   ▸
                 </span>
                 <span>{s}</span>
