@@ -1,4 +1,12 @@
-#!/usr/bin/env bash
+## ===========================================================================
+# LEGACY PROOF (kept) — Caddy access-log token redaction drill.
+#
+# Status: KEEP — still wired into the canonical quality gate
+# (scripts/project-verify.sh step 23) and into CI (FEP_REQUIRE_CADDY=1).
+# The Coolify-era proof for the new logging path is
+# deploy/test-nginx-log-redaction.sh. Both must stay green.
+# ===========================================================================
+!/usr/bin/env bash
 # Fast English Podcast — executable access-log token-redaction test.
 #
 # Proves that the production access-log query filter removes the `token`

@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+# ===========================================================================
+# LEGACY FALLBACK — Caddy + systemd + release-symlink deployment script.
+#
+# Status: LEGACY FALLBACK. The accepted production release path is the
+# Coolify-era pipeline (GitHub -> GHCR -> Coolify -> Traefik -> containers),
+# orchestrated by .github/workflows/release-deploy.yml with the immutable
+# images in docker/*. This script is preserved for historical fallback and
+# is NOT part of new production installs (see docs/COOLIFY_DEPLOYMENT.md).
+# ===========================================================================
+!/usr/bin/env bash
 # Fast English Podcast — repeatable atomic release deployment.
 #
 # Runs on the production server as root. Verifies the release bundle,

@@ -1,5 +1,12 @@
 # Fast English Podcast — Production Deployment
 
+> **LEGACY / RETIRED (2026-08-17).** This document describes the Caddy +
+> systemd + release-symlink architecture. The canonical production
+> deployment guide is now **`docs/COOLIFY_DEPLOYMENT.md`** (Coolify Cloud →
+> owned VPS → Coolify-managed Traefik → four immutable container images).
+> This page is kept ONLY as historical fallback reference; do not use it for
+> a new production install.
+
 Responsible owner: **<TODO: replace with the named operator/owner>**
 Last updated: 2026-08-01 (P4-S3 package; deployment Gate OPEN — see §9).
 

@@ -1,5 +1,11 @@
 # Fast English Podcast — Operations
 
+> **COOLIFY MIGRATION STATUS (2026-08-17):** production now runs the
+> Coolify-era architecture — see **`docs/COOLIFY_DEPLOYMENT.md`** (canonical)
+> and `deploy/ops-check.sh` (adapted to containers + public HTTPS). The
+> Caddy/systemd references in this document describe the retired legacy
+> layer and are kept only for historical reference.
+
 Responsible owner: **<TODO: replace with the named operator>**
 Last updated: 2026-08-01.
 
@@ -9,7 +15,8 @@ Last updated: 2026-08-01.
 bash /opt/fast-english/../deploy/ops-check.sh   # or deploy/ops-check.sh from the repo
 ```
 
-Covers: PocketBase + Caddy activity, restart counts, certificate expiry
+Covers: PocketBase container + public HTTPS activity, restart counts,
+certificate expiry
 (<14 days warns), disk usage (≥75% warn, ≥90% crit), backup freshness
 (>26h crit), backup errors in the journal, HTTP 5xx visibility from the
 access logs, local health endpoint. Exit code: `0` ok / `1` warn / `2` crit.
@@ -19,13 +26,13 @@ Suitable for cron:
 17 6 * * * root bash /opt/fast-english/shared/scripts/ops-check.sh >> /var/log/fep-ops.log 2>&1
 ```
 
-## 2. Health checks
+## 2. Health checks (Coolify era)
 
 | Check | Command |
 |---|---|
-| PocketBase | `systemctl is-active fast-english-pocketbase && curl -fsS http://127.0.0.1:8090/api/health` |
-| Caddy | `systemctl is-active caddy` |
-| Public | `curl -fsSI https://app.fastenglishpodcast.com/api/health` |
+| PocketBase container | `docker ps | grep fast-english` + `curl -fsS http://127.0.0.1:8090/api/health` |
+| Proxy (Traefik/Coolify) | Coolify dashboard application status (public HTTPS below) |
+| Public | `curl -fsSI https://app.fastenglishpodcast.com/api/health` (JSON body = real PB: `curl -fsS …/api/health \| grep '"code":200'`) |
 | Certificates | `bash deploy/ops-check.sh` (or `openssl s_client` per domain) |
 
 ## 3. Logs

@@ -1,10 +1,31 @@
 # Fast English Podcast — Incident Runbook
 
+> **COOLIFY MIGRATION STATUS (2026-08-17):** production now runs the
+> Coolify-era architecture — see **`docs/COOLIFY_DEPLOYMENT.md`** (canonical)
+> and `docs/INCIDENT_RUNBOOK.md` + `docs/TECHNICAL_OWNER_RUNBOOK_FA.md` for
+> the operator-facing adaptation. Commands below that reference systemd/Caddy
+> describe the retired legacy layer; the Coolify-era equivalents replace
+> `systemctl …` with the Coolify dashboard / `docker …` and `caddy …` with
+> Coolify-managed Traefik + the frontend containers.
+
 Responsible owner: **<TODO: replace with the on-call operator>**
 Severity guide: SEV1 = production down / data at risk; SEV2 = degraded;
 SEV3 = cosmetic/observability. Last updated: 2026-08-01.
 
-## 0. First five minutes
+## 0. First five minutes (Coolify era)
+
+1. Coolify dashboard → application status; `docker ps | grep fast-english` — what is down?
+2. `docker logs <container> -n 100 --no-pager` — why?
+3. `curl -fsS http://127.0.0.1:8090/api/health` — backend reachable?
+4. `curl -fsSI https://app.fastenglishpodcast.com/api/health` — public path?
+5. `bash deploy/ops-check.sh` — disk, certs, backups, 5xx.
+6. Announce: time, scope, owner <TODO>.
+
+Do NOT run a restore or rollback before reading the matching section below.
+
+---
+
+## 0a. Legacy reference (pre-Coolify first five minutes)
 
 1. `systemctl is-active fast-english-pocketbase caddy` — what is down?
 2. `journalctl -u <unit> -n 100 --no-pager` — why?

@@ -1,19 +1,19 @@
 # راهنمای مسئول فنی — Fast English Podcast
 
 > **مخاطب:** مسئول فنی / Technical Owner (مدیر سرور)
-> **نسخه:** ۱٫۰ — **آخرین به‌روزرسانی:** ۲۰۲۶-۰۸-۱۶
-> این سند فقط برای شخصی است که به سرور و ابزارهای استقرار دسترسی دارد. اپراتورهای عادی به دستورهای این سند نیاز ندارند و نباید آن‌ها را اجرا کنند.
-> منابع انگلیسی/فنی مرتبط: `docs/DEPLOYMENT.md`، `docs/OPERATIONS.md`، `docs/BACKUP_RESTORE.md`، `docs/INCIDENT_RUNBOOK.md`، `docs/ANDROID_RELEASE.md`.
+> **نسخه:** ۲٫۰ (دوران Coolify) — **آخرین به‌روزرسانی:** ۲۰۲۶-۰۸-۱۷
+> این سند فقط برای شخصی است که به سرور، Coolify و ابزارهای استقرار دسترسی دارد. اپراتورهای عادی به دستورهای این سند نیاز ندارند و نباید آن‌ها را اجرا کنند — آن‌ها از پنل مدیریت (`admin.fastenglishpodcast.com`) کار می‌کنند.
+> منبع اصلی انگلیسی/فنی: `docs/COOLIFY_DEPLOYMENT.md` (راهنمای رسمی و روزآمد استقرار). اسناد قدیمی `docs/DEPLOYMENT.md` و `deploy/deploy.sh` مربوط به معماری قبلی (Caddy + systemd) هستند و فقط به‌عنوان سابقهٔ تاریخی/بازگشت اضطراری نگهداری می‌شوند.
 
 ---
 
 ## فهرست
 
 1. [نقش و مرزها](#۱-نقش-و-مرزها)
-2. [توپولوژی تولید](#۲-توپولوژی-تولید)
-3. [چیدمان سرور](#۳-چیدمان-سرور)
-4. [چرا pb_data بیرون از release نگهداری می‌شود](#۴-چرا-pb_data-بیرون-از-release-نگهداری-میشود)
-5. [نصب اول سرور](#۵-نصب-اول-سرور)
+2. [توپولوژی تولید (Coolify)](#۲-توپولوژی-تولید-coolify)
+3. [چیدمان سرور و دیتا](#۳-چیدمان-سرور-و-دیتا)
+4. [چرا pb_data بیرون از کانتینر نگهداری می‌شود](#۴-چرا-pb_data-بیرون-از-کانتینر-نگهداری-میشود)
+5. [نصب اول (تأمین سرور و اتصال به Coolify)](#۵-نصب-اول-تأمین-سرور-و-اتصال-به-coolify)
 6. [استقرار عادی نسخه‌های جدید](#۶-استقرار-عادی-نسخههای-جدید)
 7. [چه تغییری به چه نوع استقراری نیاز دارد](#۷-چه-تغییری-به-چه-نوع-استقراری-نیاز-دارد)
 8. [بازگشت به نسخهٔ قبل (Rollback)](#۸-بازگشت-به-نسخه-قبل-rollback)
@@ -29,8 +29,8 @@
 
 مسئول فنی تنها شخصی است که:
 
-- به سرور (SSH) دسترسی دارد؛
-- استقرارها و بازگشت‌ها را اجرا می‌کند؛
+- به داشبورد Coolify و GitHub (محیط `production`) دسترسی دارد؛
+- انتشارهای تولید را از طریق workflow دستی GitHub اجرا می‌کند؛
 - پشتیبان‌گیری/بازیابی را تضمین می‌کند؛
 - سوپریوزر PocketBase را فقط از طریق تانل SSH مدیریت می‌کند؛
 - نسخهٔ اندروید را می‌سازد و منتشر می‌کند.
@@ -39,179 +39,145 @@
 
 ---
 
-## ۲. توپولوژی تولید
+## ۲. توپولوژی تولید (Coolify)
 
 ```text
-کاربر (مرورگر / اپ اندروید)
-        │  HTTPS (443)
-        ▼
-      DNS:  fastenglishpodcast.com
-            www.fastenglishpodcast.com   → 308 به دامنهٔ اصلی
-            app.fastenglishpodcast.com
-            admin.fastenglishpodcast.com
-        │
-        ▼
-      Caddy (سرور، پرت 80/443، گواهی خودکار TLS)
-        │
-        ├── fastenglishpodcast.com  →  /opt/fast-english/current/landing
-        │                             + /releases/* از shared/releases (APK)
-        ├── app.fastenglishpodcast.com → current/app
-        │      └── /api/*  →  پروکسی به PocketBase 127.0.0.1:8090
-        ├── admin.fastenglishpodcast.com → current/admin
-        │      └── /api/*  →  پروکسی به PocketBase 127.0.0.1:8090
-        │
-        ▼
-      PocketBase 0.39.9 (سرویس systemd، فقط 127.0.0.1:8090، کاربر غیرroot)
-        │
-        ├── /opt/fast-english/shared/pb_data   (SQLite + فایل‌ها — ذخیرهٔ دائمی)
-        ├── مهاجرت‌ها و هوک‌ها از release فعلی (current/server)
-        └── پشتیبان‌های خودکار داخل pb_data/backups
+توسعه‌دهنده                      مسئول فنی
+   │  PR → merge → CI سبز          │  انتخاب exact commit
+   ▼                               ▼
+GitHub (گیت + کیفیت + بیلد ایمج)   │  workflow_dispatch دستی
+   │  ایمج‌های تغییرناپذیر          │  (release-deploy)
+   ▼  sha-<commit>                 ▼
+GHCR (GitHub Container Registry) → Coolify Cloud (کنترل‌پلن)
+                                     │  SSH به سرور خودتان
+                                     ▼
+                    سرور VPS شما (فقط 22/80/443 باز)
+                    └─ Coolify-managed Traefik (یک لایهٔ پروکسی؛ TLS خودکار)
+                         ├─ fastenglishpodcast.com       → Landing (nginx, ایمج)
+                         ├─ www.fastenglishpodcast.com   → 308 به دامنهٔ اصلی
+                         ├─ app.fastenglishpodcast.com   → Student App (nginx, ایمج)
+                         │     └─ /api/* → PocketBase (مسیر داخلی)
+                         ├─ admin.fastenglishpodcast.com → Admin Console (nginx, ایمج)
+                         │     └─ /api/* → PocketBase (مسیر داخلی)
+                         └─ PocketBase کانتینر (غیرroot، UID 10001)
+                               ├─ /pb/pb_data  ← bind mount میزبان:
+                               │      /opt/fast-english/shared/pb_data
+                               ├─ مهاجرت‌ها + هوک‌ها + باینری داخل ایمج (تغییرناپذیر)
+                               └─ دسترسی نگهداری: فقط 127.0.0.1:8090 (loopback)
 ```
 
 نکته‌های حیاتی:
 
-- PocketBase **فقط روی loopback** گوش می‌دهد؛ هیچ راه عمومی‌ای به آن وجود ندارد. همهٔ درخواست‌های API از طریق Caddy می‌آیند.
-- داشبورد سوپریوزر (`/_/`) روی دامنه‌های عمومی ۴۰۴ می‌دهد.
-- Caddy حجم بدنهٔ `/api/*` را به ۶ مگابایت محدود می‌کند (رسید ۵ مگابایت + حاشیهٔ مستند).
-- CORS فقط برای سه دامنهٔ عمومی + منشأ Capacitor مجاز است.
-- توکن‌های فایل صوتی (پارامتر `token`) در لاگ‌های Caddy با `[REDACTED]` جایگزین می‌شوند (اثبات: `bash deploy/test-log-redaction.sh`).
+- **یک لایهٔ پروکسی:** Coolify-managed Traefik. Caddy بازنشسته شده است؛ نقش سرو کردن استاتیک داخل کانتینرهای nginx (`docker/*/nginx.conf`) است.
+- PocketBase **هیچ پورت عمومی‌ای ندارد**؛ فقط شبکهٔ داخلی Coolify + نگاشت loopback `127.0.0.1:8090` برای اسکریپت‌های نگهداری.
+- داشبورد سوپریوزر (`/_/`) روی همهٔ دامنه‌ها ۴۰۴ است.
+- چهار سطح مستقل از هم استقرار می‌یابند؛ استقرار لندینگ/اپ/پنل **هیچ‌وقت** PocketBase را ری‌استارت نمی‌کند.
+- CORS فقط برای دامنه‌های app/admin + منشأ Capacitor مجاز است.
+- لاگ‌های nginx **بدون** کوئری‌استرینگ نوشته می‌شوند (توکن صوتی هرگز در لاگ نمی‌آید؛ اثبات: `bash deploy/test-nginx-log-redaction.sh`).
 
 ---
 
-## ۳. چیدمان سرور
+## ۳. چیدمان سرور و دیتا
 
 ```text
 /opt/fast-english/
-  releases/<release-id>/
-    landing/        خروجی built لندینگ
-    app/            خروجی built اپ دانشجو
-    admin/          خروجی built پنل مدیریت
-    server/         pb_migrations/ + pb_hooks/ + VERSION
-    android/        APK امضاشده + release-metadata.json + RELEASE-NOTES.md
-  current -> releases/<release-id>      ← لینک نمادین اتمیک (توسط deploy.sh جابه‌جا می‌شود)
   shared/
-    pb_data/        دادهٔ PocketBase (دیتابیس + فایل‌ها + پشتیبان‌های خودکار)
+    pb_data/        دادهٔ PocketBase (SQLite + فایل‌ها + پشتیبان‌های خودکار)
+                    ← bind mount کانتینر؛ مالکیت UID/GID ثابت 10001
     backups/        کپی‌های تأییدشدهٔ پشتیبان (جدا از pb_data؛ ۱۴ نگهداری)
-    releases/       APK عمومی + متادیتا (فایل‌های تغییرناپذیر نسخه‌بندی‌شده)
-    logs/           لاگ‌های دسترسی Caddy (چرخش ۱۰×۱۰MiB، ۳۰ روز)
-    secrets/pocketbase.env   اسرار — root:root 0600، هرگز در گیت
-    scripts/fep-backup-copy.sh
-  bin/pocketbase    باینری PocketBase 0.39.9 (root-owned، read-only)
-  .current.previous شناسهٔ release قبلی (برای بازگشت)
+    releases/       APK عمومی + متادیتا (سرو می‌شود در /releases/* لندینگ)
+    secrets/pocketbase.env   اسرار اپراتور — root:root 0600، هرگز در گیت
+    scripts/fep-backup-copy.sh   (تایمر میزبان — مستقل از کانتینر)
 ```
 
-- Releaseها پس از نصب **تغییرناپذیر** می‌شوند (`chmod -R a-w`).
-- `current` با «لینک موقت + rename اتمیک» جابه‌جا می‌شود: `ln -sfn … current.tmp && mv -Tf … current`.
-- release قبلی **هرگز حذف نمی‌شود** (بازگشت به آن وابسته است).
+- چهار ایمج تغییرناپذیر: `landing`، `app`، `admin`، `pocketbase` — همه از GHCR با تگ `sha-<commit>`؛ تگ `production` فقط یک نام مستعار مدیریت‌شده است و `latest` هرگز معتبر نیست.
+- باینری PocketBase، مهاجرت‌ها و هوک‌ها **داخل ایمج** از همان commit ساخته می‌شوند (نسخه‌هماهنگ؛ `server/VERSION` = 0.39.9).
+- کانتینر قبلی هرگز به‌طور خودکار `pb_data` را حذف/جایگزین نمی‌کند؛ Coolify فقط ایمج را عوض می‌کند.
 
 ---
 
-## ۴. چرا pb_data بیرون از release نگهداری می‌شود
+## ۴. چرا pb_data بیرون از کانتینر نگهداری می‌شود
 
-- release یک «نسخهٔ بی‌حال» است: هر استقرار، پوشهٔ جدیدی می‌سازد و `current` را عوض می‌کند. اگر داده داخل release بود، هر استقرار یا بازگشتی به یک «دیتابیس دیگر» می‌افتاد — یعنی دانشجویان، رسیدها و اشتراک‌ها از بین می‌رفتند یا کپی‌های گمراه‌کننده ساخته می‌شد.
-- بازگشت (rollback) فقط لینک را برمی‌گرداند و **هیچ‌وقت** `pb_data` را لمس نمی‌کند؛ داده باید مستقل از نسخه‌ها زندگی کند.
-- پشتیبان‌های خودکار PocketBase داخل `pb_data/backups` ساخته می‌شوند و سپس کپی تأییدشده‌شان به `shared/backups` (بیرون از `pb_data`) منتقل می‌شود تا خرابی/بازیابی اشتباهِ `pb_data` تنها نسخه‌ها را نابود نکند.
+- کانتینرها دورریختنی‌اند: هر استقرار/بازگشت، کانتینر جدیدی می‌سازد. اگر داده داخل کانتینر بود، هر استقراری «دیتابیس دیگری» می‌ساخت.
+- `pb_data` روی میزبان در `/opt/fast-english/shared/pb_data` با bind mount می‌ماند و مالکیت آن UID/GID ثابت 10001 است (ایمج با root اجرا نمی‌شود؛ خطای مالکیت با پیام واضح از ورود جلوگیری می‌کند).
+- بازگشت فقط ایمج را عوض می‌کند و **هیچ‌وقت** `pb_data` را لمس نمی‌کند.
+- پشتیبان‌های خودکار داخل `pb_data/backups` ساخته می‌شوند و کپی تأییدشده‌شان به `shared/backups` (بیرون از `pb_data`) می‌رود.
 
 ---
 
-## ۵. نصب اول سرور
+## ۵. نصب اول (تأمین سرور و اتصال به Coolify)
 
-> پیش‌نیازها: سرور Debian/Ubuntu/Arch با `curl`، `python3`، `unzip`؛ پکیج Caddy نصب؛ DNS هر چهار نام به سرور؛ پرت‌های ۸۰/۴۴۳ باز.
+> جزئیات کامل و گام‌به‌گام: `docs/COOLIFY_DEPLOYMENT.md` §۵–§۹ (این بخش فقط خلاصهٔ اجرایی است).
+> سرور واقعی هنوز تهیه نشده — این بخش برای فاز بعدی (Provisioning) است.
+
+۱. **DNS:** چهار رکورد A به آی‌پی سرور (زمانی که سرور وجود دارد): `fastenglishpodcast.com`، `www`، `app`، `admin` (+ رکوردهای `staging*` برای محیط تست).
+۲. **فایروال سرویس‌دهنده:** فقط ۲۲ (SSH محدود به آی‌پی‌های Coolify Cloud + آی‌پی شما)، ۸۰، ۴۴۳. پورت ۸۰۹۰ هرگز عمومی نیست.
+۳. **Coolify Cloud → Servers → Connect:** سرور را با SSH متصل و تأیید کنید (Docker توسط Coolify نصب می‌شود).
+۴. **آماده‌سازی میزبان (یک‌بار، به‌عنوان root):**
 
 ```bash
-# ۱) فایل اسرار FIRST (فقط نام‌ها — نمونه: deploy/env.production.example)
-install -d -m 0700 /opt/fast-english/shared/secrets
+mkdir -p /opt/fast-english/shared/{pb_data,backups,releases,secrets}
+chown -R 10001:10001 /opt/fast-english/shared/pb_data /opt/fast-english/shared/backups
+chmod 700 /opt/fast-english/shared/secrets
+# فایل اسرار: root:root 0600 (نام‌ها در deploy/env.production.example)
 install -m 0600 /dev/stdin /opt/fast-english/shared/secrets/pocketbase.env <<'EOF'
 FEP_SUPERUSER_EMAIL=<اینجا>
 FEP_SUPERUSER_PASSWORD=<اینجا>
+PB_ENCRYPTION_KEY=<اینجا>
 EOF
-
-# ۲) بوت‌استرپ + پیکربندی + اولین نسخه
-bash deploy/install.sh
-systemd-analyze verify /etc/systemd/system/fast-english-pocketbase.service
-caddy validate --config /etc/caddy/Caddyfile && caddy fmt --overwrite /etc/caddy/Caddyfile
-bash deploy/configure.sh          # تنظیمات تولید (backups cron، hideControls، …)
-bash deploy/backup.sh             # پشتیبان اولیهٔ تأییدشده BEFORE اولین استقرار
-bash deploy/deploy.sh /path/to/release-bundle
-systemctl enable --now caddy
-bash deploy/smoke-prod.sh         # اسموک کامل HTTPS (حساب‌های دورریختنی)
-bash deploy/restore-drill.sh      # آزمایش بازیابی روی نمونهٔ جداگانه
 ```
 
-بعد از استقرار اول، داده‌های کسب‌وکار:
+۵. **چهار Application در Coolify بسازید** (نوع Docker Image؛ جزئیات دقیق هر اپ در `docs/COOLIFY_DEPLOYMENT.md` §۱۰): Landing، Student App، Admin، PocketBase — با دامنه‌ها، health checkها، mount ها و مقادیر env مطابق runbook. PocketBase فقط: storage bind mount + `PB_ENCRYPTION_KEY` در env اپ.
+۶. **سوپریوزر:** بعد از اولین اجرای PocketBase: `docker exec <pb-container> /pb/pocketbase superuser upsert ... --encryptionEnv=PB_ENCRYPTION_KEY` (یا از طریق dashboard در تانل).
+۷. `bash deploy/configure.sh` (تنظیمات رسمی: backups cron، hideControls، trustedProxy…) روی `127.0.0.1:8090` (loopback).
+۸. `bash deploy/backup.sh` (پشتیبان اولیهٔ تأییدشده) + `bash deploy/restore-drill.sh`.
+۹. دانه‌های کسب‌وکار (طرح‌ها، Staff Admin، مقصد کارت) — مطابق بخش ۵ سند قبلی و `docs/COOLIFY_DEPLOYMENT.md`.
+۱۰. انتشار اول از طریق GitHub (بخش ۶).
 
-```bash
-# طرح‌های رسمی (ماهانه/سه‌ماهه — بدون سالانه):
-export FEP_PB_URL=https://app.fastenglishpodcast.com
-export FEP_PB_SUPERUSER_EMAIL=... FEP_PB_SUPERUSER_PASSWORD=...
-pnpm seed:plans --target=production --confirm-production --yes
-
-# بانک سؤال تعیین سطح: دمو هرگز در تولید؛ بانک بازبینی‌شده (در صورت تأمین):
-#   pnpm seed:placement --file seeds/placement/reviewed-bank.v1.json \
-#     --replace --target=production --confirm-production --yes
-```
-
-و در پنل مدیریت (`admin.fastenglishpodcast.com` → تنظیمات → تنظیمات کسب‌وکار): مقصد کارت‌به‌کارت و کانال پشتیبانی/همکاری. اولین Staff Admin: `pnpm staff:bootstrap`.
-
-> ⚠️ **الزام Gate پیش از اولین استقرار واقعی:** مقصد پشتیبان خارج از سرور (S3 یا معادل تأییدشده) با آزمایش بازیابی تأیید شود؛ کپی فقط روی سرور «پشتیبان خارج از سرور» محسوب نمی‌شود.
+> ⚠️ **الزام Gate:** مقصد پشتیبان خارج از سرور (S3 یا معادل تأییدشده) با آزمایش بازیابی تأیید شود.
 
 ---
 
 ## ۶. استقرار عادی نسخه‌های جدید
 
-### ساخت باندل روی ماشین بیلد
+### جریان عادی (بدون SSH، از GitHub)
 
-```bash
-pnpm install --frozen-lockfile
-pnpm typecheck && pnpm check && pnpm test
-VITE_WEB_APP_URL=https://app.fastenglishpodcast.com \
-VITE_ANDROID_APK_URL=https://fastenglishpodcast.com/releases/fast-english-podcast-v1.0.0.apk \
-VITE_ANDROID_APK_VERSION=1.0.0 \
-pnpm build:landing && pnpm build:app && pnpm build:admin && node scripts/prerender-landing.mjs
-bash scripts/verify.sh
-bash scripts/check-production-bundle.sh dist-landing dist-app dist-admin
+```text
+کد → PR → CI سبز (quality) → merge → انتخاب exact commit در
+GitHub → Actions → Deploy Production (release-deploy) →
+بیلد ۴ ایمج در GHCR (sha-<commit>) → Coolify deploy → پایش وضعیت
+→ health عمومی → smoke-prod → گزارش سبز/قرمز
 ```
 
-سپس باندل `<id>/{landing,app,admin,server,android}` را بچینید و به سرور کپی کنید.
+مراحل دقیق برای مسئول فنی:
 
-### استقرار (روی سرور، root)
+1. در GitHub: **Actions → Deploy Production (release-deploy) → Run workflow**.
+2. ورودی `ref` = همان commit دلخواه (یا تگ)؛ سطوح (پیش‌فرض هر چهار)؛ حالت اسموک (`quick` = عمومی، `full` = با حساب‌های دورریختنی).
+3. workflow ابتدا **وضعیت کیفیت** همان commit را چک می‌کند (quality سبز الزامی — CI قرمز هرگز تولید نمی‌شود)؛ سپس **گیت زیرساخت** (`pnpm test:infra:coolify`) را اجرا می‌کند (اثبات‌های persistence/بازیابی/مهاجرت/روتینگ/اسکن اسرار)؛ سپس ایمج‌ها را به GHCR می‌فرستد.
+4. اگر تغییر، backend/مهاجرت باشد، **پشتیبان پیش از استقرار** به‌صورت خودکار روی سرور گرفته می‌شود (تنها موردی که SSH خودکار لازم است).
+5. Coolify deploy + پایش تا `finished` + **health مستقل** + **smoke**؛ نتیجه در summary اعلام می‌شود.
 
-```bash
-bash deploy/deploy.sh /opt/release-bundles/<release-id>
-```
+> دستور محلی معادل گیت زیرساخت: `pnpm test:infra:coolify` (روی commit موردنظر).
 
-کاری که `deploy.sh` می‌کند، به ترتیب:
+### بازگشت سریع برای فرانت‌اند
 
-1. اعتبارسنجی باندل + چک‌سام APK (در صورت وجود)؛
-2. بررسی فضای دیسک؛
-3. **پشتیبان پیش از استقرار** (`fep-backup-predeploy-*`)؛
-4. نصب release به‌صورت تغییرناپذیر؛
-5. جابه‌جایی اتمیک لینک `current` (قبلی در `.current.previous` ثبت می‌شود)؛
-6. ری‌استارت PocketBase (**مهاجرت‌ها هنگام راه‌اندازی اجرا می‌شوند**)؛
-7. چک سلامت؛
-8. `systemctl reload caddy`؛
-9. انتشار APK + متادیتا در `shared/releases`؛
-10. `smoke-prod.sh --quick` (نبود متادیتا = FAIL سخت).
-
-کدهای خروج: `0` موفق · `1` اعتبارسنجی ناموفق (قبل از جابه‌جایی) · `2` استقرار شد ولی بازگشت خودکار انجام شد · `3` بازگشت خودکار هم ناموفق (مداخلهٔ دستی لازم).
-
-گزینه‌ها: `--dry-run`، `--skip-backup`، `--skip-smoke`.
-
-> بعد از راه‌اندازی اولیه، استقرار ویژگی‌های عادی دقیقاً همین یک دستور است: باندل بساز → کپی کن → `deploy.sh` → اسموک خودکار. اگر اسموک شکست بخورد، خودش برمی‌گردد (بخش ۸).
+فرانت‌اند خراب؟ همان workflow `rollback-deploy` با `image_sha` قبلی (فرانت‌اند = بدون ری‌استارت PocketBase).
 
 ---
 
 ## ۷. چه تغییری به چه نوع استقراری نیاز دارد
 
-| نوع تغییر | مسیر | نکته |
+طبقه‌بندی خودکار در workflow از diff گیت استخراج می‌شود (A–E):
+
+| نوع | معنی | رفتار استقرار |
 |---|---|---|
-| متن/ظاهر لندینگ، اپ یا پنل (کد سمت کاربر) | بیلد + استقرار عادی (باندل جدید) | نیاز به بازگشت مهاجرت ندارد |
-| هوک‌های سرور (منطق API) | باندل جدید شامل `server/pb_hooks` + ری‌استارت | با استقرار عادی انجام می‌شود |
-| **مهاجرت دیتابیس** (فایل جدید در `pb_migrations`) | باندل جدید — مهاجرت هنگام ری‌استارت اجرا می‌شود | **این یک استقرار عادی و بی‌خطر نیست**: مهاجرت‌ها برگشت‌پذیر نیستند؛ قبل از استقرار، پشتیبان `fep-backup-predeploy-*` گرفته می‌شود و برنامهٔ بازگشت باید مشخص باشد (بخش ۸) |
-| متغیر محیطی/تنظیمات سرور (مثلاً SMTP، S3، encryption key) | ویرایش `shared/secrets/pocketbase.env` + ری‌استارت سرویس | `configure.sh` برای بازنویسی تنظیمات رسمی |
-| پیکربندی Caddy | ویرایش `/etc/caddy/Caddyfile` + `systemctl reload caddy` | `caddy validate` قبل از reload |
-| تغییر تنظیمات کسب‌وکار (قیمت/کارت/پشتیبانی) | **بدون استقرار** — از پنل مدیریت | در لحظه از سرور خوانده می‌شود |
-| نسخهٔ جدید اندروید | بیلد + امضا + باندل + به‌روزرسانی لندینگ (بخش ۱۲) | APK قبلی هرگز بازنویسی نمی‌شود |
+| **A** | فقط Landing/Student/Admin (UI/CSS/JS) | بدون ری‌استارت PocketBase؛ بدون نیاز به پشتیبان صرفاً برای ظاهر |
+| **B** | هوک‌های سرور/backend بدون مهاجرت | **پشتیبان پیش از استقرار** طبق سیاست؛ استقرار ایمج PocketBase؛ health + backend smoke |
+| **C** | مهاجرت دیتابیس (فایل جدید در `pb_migrations`) | **پشتیبان تأییدشدهٔ پیش از استقرار اجباری**؛ هشدار سازگاری مهاجرت؛ بازگشت، مهاجرت را برنمی‌گرداند |
+| **D** | پیکربندی/اسرار | به‌روزرسانی کنترل‌شدهٔ runtime؛ فقط سرویس مربوطه |
+| **E** | اندروید | از طریق جریان کانتینر عادی مستقر نمی‌شود (بخش ۱۲) |
+
+> اتوماسیون هرگز دربارهٔ مهاجرت‌های دیتابیس «فرض امن» نمی‌کند: هر تغییری در `server/pb_migrations` = نوع C.
 
 ---
 
@@ -221,87 +187,80 @@ bash deploy/deploy.sh /opt/release-bundles/<release-id>
 
 > **بازگشت اپلیکیشن ≠ بازگشت دیتابیس.**
 
-- بازگشت نرم‌افزاری: لینک `current` به release قبلی برمی‌گردد + ری‌استارت PocketBase + reload کادی. `pb_data` دست‌نخورده می‌ماند.
-- بازگشت دیتابیس: مهاجرت‌های اجراشده **خودکار برنمی‌گردند**. اگر release معیوب مهاجرت داشته باشد، هوک‌های نسخهٔ قدیمی ممکن است با شمای جدید سازگار نباشند؛ در آن صورت مسیر درست، بازیابی از پشتیبان پیش از استقرار است (نه «مهاجرت معکوس» دستی).
+- بازگشت نرم‌افزاری: ایمج قبلی (`sha-<commit>` شناخته‌شده) در Coolify → deploy → health → smoke. `pb_data` دست‌نخورده می‌ماند.
+- بازگشت دیتابیس: مهاجرت‌های اجراشده **خودکار برنمی‌گردند** (ایمج قبلی شِما را برنمی‌گرداند؛ اثبات خودکار در `tests/infra/06-pb-migration.sh`). اگر release معیوب مهاجرت داشته باشد، مسیر درست **بازیابی از پشتیبان پیش از استقرار** است (بند ۹٫۵)، نه «مهاجرت معکوس» دستی.
 
-### بازگشت خودکار
+### بازگشت خودکار در استقرار جدید
 
-هر شکستی **بعد از** جابه‌جایی لینک (ری‌استارت، سلامت، reload کادی، یا اسموک اجباری) بازگشت خودکار را فعال می‌کند (خروجی ۲). شکست قبل از جابه‌جایی، بدون دست‌زدن به چیزی متوقف می‌شود (خروجی ۱).
+- Coolify فقط به کانتینر سالم مسیر می‌دهد (health check)؛ استقرار ناموفق در dashboard مشخص می‌شود.
+- workflow «قرمز» می‌شود و راهنمای اقدام بعدی را می‌نویسد — **هرگز به‌طور خودکار بازیابی مخرب داده نمی‌کند.**
 
-### بازگشت دستی (در صورت لزوم)
+### بازگشت دستی
 
-```bash
-cd /opt/fast-english
-OLD=$(cat .current.previous)             # target قبل از آخرین استقرار
-ln -sfn "$OLD" current.tmp && mv -Tf current.tmp current
-systemctl restart fast-english-pocketbase
-curl -fsS http://127.0.0.1:8090/api/health
-systemctl reload caddy
-bash deploy/smoke-prod.sh --quick
-```
+1. فرانت‌اند: GitHub → **rollback-deploy** → سطح + `image_sha` قبلی.
+2. PocketBase بدون مهاجرت: همان workflow با سطح pocketbase (تأیید `confirm_migration_safe`).
+3. PocketBase با مهاجرت: **ایست!** بازبینی سازگاری؛ در صورت نیاز بازیابی پشتیبان پیش از استقرار (بند ۹٫۵).
 
 قوانین:
 
-- release قبلی هرگز حذف نمی‌شود؛
-- `pb_data` در بازگشت دست‌نخورده می‌ماند؛
-- اگر بخواهید از روی **پشتیبان پیش از استقرار** برگردید، بند ۹٫۵ را بخوانید و **هرگز** دیتابیس قدیمی را کورکورانه روی دادهٔ زنده بازیابی نکنید (بازیابی، تغییرات بعد از پشتیبان را از بین می‌برد).
+- `pb_data` در بازگشت دست‌نخورده می‌ماند؛ Coolify هرگز آن را حذف/جایگزین نمی‌کند.
+- هرگز دیتابیس قدیمی را کورکورانه روی دادهٔ زنده بازیابی نکنید (بازیابی، تغییرات بعد از پشتیبان را از بین می‌برد).
 
 ---
 
 ## ۹. پشتیبان‌گیری و بازیابی
 
-### ۹٫۱ سه لایهٔ پشتیبان
+### ۹٫۱ سه لایهٔ پشتیبان (تغییر نکرده)
 
 | لایه | کجا | نقش |
 |---|---|---|
-| دادهٔ زنده | `shared/pb_data` | دیتابیس فعال — این «پشتیبان» نیست |
+| دادهٔ زنده | `/opt/fast-english/shared/pb_data` | دیتابیس فعال — این «پشتیبان» نیست |
 | پشتیبان محلی | `pb_data/backups` + کپی در `shared/backups` | محافظت در برابر خرابی/بازیابی اشتباه دایرکتوری زنده |
-| پشتیبان خارج از سرور | S3 (در صورت تأیید اعتبار) یا معادل مصوب | محافظت در برابر از دست رفتن خود سرور — **الزام Gate** |
+| پشتیبان خارج از سرور | S3 (پس از تأیید) یا معادل مصوب | محافظت در برابر از دست رفتن خود سرور — **الزام Gate** |
+
+پشتیبان PocketBase «بومی» باقی می‌ماند (ZIP از `pb_data` شامل فایل‌های آپلودی/رسیدها)؛ پشتیبان عمومی Coolify برای دیتابیس‌هایش جایگزین آن نمی‌شود.
 
 ### ۹٫۲ پشتیبان خودکار
 
-- PocketBase: روزانه ۰۲:۳۰ UTC (`backups.cron`)، نگهداری ۱۴ (`cronMaxKeep`).
-- کپی تأییدشده: تایمر `fast-english-backup-copy` ساعت ۰۲:۴۰ UTC — جدیدترین ۱۴ فایل ZIP در `shared/backups` (جدا از `pb_data`).
-- یک ZIP پشتیبان = عکس فوری از `pb_data` (SQLite + فایل‌های آپلودی؛ پشتیبان‌ها و S3 خودکاراً حذف می‌شوند).
+- PocketBase: روزانه ۰۲:۳۰ UTC (`backups.cron`)، نگهداری ۱۴ (`cronMaxKeep`) — داخل کانتینر.
+- کپی تأییدشده: **تایمر میزبان** `fast-english-backup-copy` ساعت ۰۲:۴۰ UTC (systemd timer روی میزبان — مستقل از چرخهٔ زندگی کانتینرها؛ از هر استقراری جان به‌در می‌برد). جدیدترین ۱۴ فایل ZIP در `shared/backups`.
+- خارج از سرور: از طریق تنظیمات S3 پاکت‌بیس (`configure.sh`).
 
 ### ۹٫۳ پشتیبان دستی (تأییدشده)
 
 ```bash
-bash deploy/backup.sh                 # نام پیش‌فرض fep-backup-<UTC>.zip
-bash deploy/backup.sh my-name         # [a-z0-9_-]، .zip خودکار اضافه می‌شود
+bash deploy/backup.sh                 # از طریق loopback 127.0.0.1:8090
+bash deploy/backup.sh my-name
 ```
-
-اسکریپت: اعتبارسنجی → ساخت پشتیبان از طریق API → بررسی وجود/غیرخالی بودن → بررسی وجود درخت `storage/` داخل ZIP → کپی به `shared/backups` + نگهداری ۱۴.
 
 ### ۹٫۴ آزمایش بازیابی (drill) — اثبات، نه ادعا
 
 ```bash
 bash deploy/restore-drill.sh                # جدیدترین پشتیبان در shared/backups
-bash deploy/restore-drill.sh <name-or-path> # پشتیبان مشخص
+bash deploy/restore-drill.sh <name-or-path>
 ```
 
-drill روی یک دایرکتوری موقت/دورریختنی اجرا می‌شود: بازیابی ZIP → اجرای همان باینری (۰٫۳۹٫۹) با مهاجرت‌ها و هوک‌های release فعلی → چک سلامت → احراز هویت سوپریوزر (باید موفق شود) → شمارش همهٔ مجموعه‌ها (فقط عدد، هرگز مقدار رکورد) → پاک‌سازی. **دادهٔ زنده هرگز لمس نمی‌شود.**
+drill روی دایرکتوری موقت اجرا می‌شود: بازیابی ZIP → همان باینری 0.39.9 با مهاجرت‌ها/هوک‌های **ریپو** (همان منابع ایمج) → سلامت → احراز سوپریوزر → شمارش مجموعه‌ها → پاک‌سازی. دادهٔ زنده هرگز لمس نمی‌شود.
 
-اثبات سطح رکورد (گیت): `pnpm smoke:restore-proof` — در محیط دورریختنی، زنجیرهٔ کامل (ثبت‌نام → درخواست پرداخت با فایل رسید → تأیید Staff → اشتراک → پیشرفت → تنظیمات) را ساخته، پشتیبان می‌گیرد، دایرکتوری را پاک می‌کند و بعد از بازیابی همان رکوردها/فایل رسید (sha256 یکسان) را تأیید می‌کند.
+اثبات سطح رکورد: `pnpm smoke:restore-proof` + `pnpm test:infra:coolify` (اثبات کامل «حذف کانتینر → ساخت دوباره» و «بازیابی در دایرکتوری کاملاً جدید»).
 
 ### ۹٫۵ بازیابی اضطراری تولید
 
 ```text
-۱) توقف نوشتن‌ها:            systemctl stop fast-english-pocketbase
-۲) کنار گذاشتن دادهٔ زنده (حذف نکنید):
+۱) از طریق Coolify کانتینر PocketBase را متوقف کن (یا scale به 0).
+۲) دادهٔ زنده را کنار بگذار (حذف نکن):
      mv /opt/fast-english/shared/pb_data /opt/fast-english/shared/pb_data.broken-<ts>
-۳) بازیابی ZIP در دایرکتوری تازه:
+۳) دایرکتوری تازه بساز و ZIP را بازیابی کن:
      mkdir /opt/fast-english/shared/pb_data
      unzip -q /opt/fast-english/shared/backups/<name>.zip -d /opt/fast-english/shared/pb_data
-۴) مالکیت:                  chown -R fastenglish:fastenglish /opt/fast-english/shared/pb_data
-۵) شروع:                    systemctl start fast-english-pocketbase
+۴) مالکیت:                  chown -R 10001:10001 /opt/fast-english/shared/pb_data
+۵) کانتینر را در Coolify دوباره شروع کن (همان ایمج).
 ۶) سلامت:                   curl -fsS http://127.0.0.1:8090/api/health
 ۷) اسموک:                   bash deploy/smoke-prod.sh --quick
 ```
 
 > ⚠️ **هشدار مطلق:** هرگز بازیابی مخرب را روی تنها دیتابیس زندهٔ تولید آزمایش نکنید. فقط روی نمونهٔ جداگانه (drill) یا بعد از تأیید drill برای همان پشتیبان مشخص.
-
-> **پشتیبانِ هرگز بازیابی‌نشده، شواهد کافی نیست.** پشتیبان باید دوره‌ای (حداقل ماهانه) با `restore-drill.sh` اثبات شود.
+> **پشتیبانِ هرگز بازیابی‌نشده، شواهد کافی نیست.**
 
 ---
 
@@ -313,35 +272,34 @@ drill روی یک دایرکتوری موقت/دورریختنی اجرا می�
 bash deploy/ops-check.sh      # خروجی: 0 = سالم، 1 = هشدار، 2 = بحرانی
 ```
 
-چه چیزهایی را بررسی می‌کند: فعال بودن سرویس‌های PocketBase و Caddy، تعداد ری‌استارت‌های PocketBase (بیش از ۱۰ = هشدار)، انقضای گواهی هر چهار دامنه (کمتر از ۱۴ روز = هشدار)، فضای دیسک (≥۷۵٪ هشدار، ≥۹۰٪ بحرانی)، تازگی پشتیبان (بیش از ۲۶ ساعت = بحرانی) و خطاهای پشتیبان در ژورنال ۴۸ ساعت، دیدن 5xx در لاگ‌های دسترسی، و سلامت `http://127.0.0.1:8090/api/health`.
+چه چیزهایی را بررسی می‌کند (نسخهٔ Coolify): وضعیت کانتینر PocketBase (docker) + تعداد ری‌استارت، سلامت loopback و عمومی، گواهی هر چهار دامنه، فضای دیسک (≥۷۵٪ هشدار، ≥۹۰٪ بحرانی)، تازگی پشتیبان (>۲۶ ساعت = بحرانی) + خطاهای پشتیبان در لاگ کانتینر، دیدن 5xx در لاگ کانتینرهای فرانت‌اند، و (اختیاری) سطح API کولایفای.
 
 ### ۱۰٫۲ جدول «اگر این را دیدی → این کار را بکن»
 
 | نشانه | معنی | اقدام (مسئول فنی) |
 |---|---|---|
-| PocketBase down | سرویس مرده/خطا | `journalctl -u fast-english-pocketbase -n 100` → علت را بیاب → `systemctl restart fast-english-pocketbase` → سلامت. اگر مهاجرت خطا داد: **قبل از شروع، لینک را rollback کن** (هرگز `pb_data` را حذف نکن) |
-| Caddy down | سایت‌ها در دسترس نیستند | `systemctl status caddy` + `journalctl -u caddy -n 100` → `systemctl reload caddy`/restart |
-| هشدار گواهی | کمتر از ۱۴ روز مانده | Caddy خودکار تمدید می‌کند؛ DNS و باز بودن پرت ۴۴۳ را چک کن (`dig`، `ss -tlnp`)؛ دایرکتوری `/var/lib/caddy` را هرگز حذف نکن |
-| هشدار دیسک ≥۷۵٪ / بحرانی ≥۹۰٪ | فضا کم است | releaseهای قدیمی را حذف کن (فقط با حفظ قبلی برای rollback)، چرخش `shared/backups` و لاگ‌ها را بررسی کن |
-| پشتیبان کهنه (>۲۶h) یا خطای پشتیبان | کرون/کپی از کار افتاده | `journalctl -u fast-english-pocketbase --since -48h \| grep -i backup` → `bash deploy/backup.sh` دستی → تایمر `systemctl list-timers fast-english-backup-copy` |
-| 5xx در لاگ‌ها | خطای سرور | `grep '"status":5' shared/logs/access-*.log \| tail -50` → با زمان استقرارها همبستگی بده |
-| شکست health endpoint | PocketBase پاسخ نمی‌دهد | `curl -fsS http://127.0.0.1:8090/api/health` → ژورنال → طبق بند «PocketBase down» |
-| هشدار ری‌استارت زیاد | چرخهٔ crash | ژورنال را باز کن؛ علت را پیش از restart بیاب |
+| `app/api/health` خطا | PocketBase پایین/مهاجرت خطا | داشبورد Coolify → وضعیت اپ PocketBase → لاگ کانتینر (`docker logs <pb-container>`) → علت را بیاب. اگر مهاجرت خطا داد: بازگشت ایمج ≠ رفع مهاجرت؛ بازیابی پشتیبان (۹٫۵). هرگز `pb_data` را حذف نکن |
+| دامنه‌ها در دسترس نیستند | Traefik/Coolify | وضعیت پروکسی در Coolify؛ گواهی‌ها (DNS/پرت ۴۴۳)؛ `dig` هر چهار نام |
+| هشدار گواهی | کمتر از ۱۴ روز مانده | Coolify/Traefik خودکار تمدید می‌کند؛ DNS و پرت ۴۴۳ را چک کن |
+| هشدار دیسک ≥۷۵٪ / بحرانی ≥۹۰٪ | فضا کم است | چرخش `shared/backups` و لاگ‌ها؛ حجم docker را بررسی کن (`docker system df`) |
+| پشتیبان کهنه (>۲۶h) | کرون/کپی از کار افتاده | `docker logs <pb-container> --since -48h \| grep -i backup` → `bash deploy/backup.sh` دستی → `systemctl list-timers fast-english-backup-copy` |
+| 5xx در لاگ‌ها | خطای سرور | `docker logs <frontend-container> --tail 2000 \| grep '" 5'` → با زمان استقرارها همبستگی بده |
+| ری‌استارت زیاد PocketBase | چرخهٔ crash | لاگ کانتینر را باز کن؛ علت را پیش از restart بیاب |
 
 ### ۱۰٫۳ ابزارهای فرمانی (فقط مسئول فنی)
 
 ```bash
-systemctl status fast-english-pocketbase caddy
-journalctl -u fast-english-pocketbase -n 100 --no-pager
-journalctl -u caddy -n 100 --no-pager
-curl -fsS http://127.0.0.1:8090/api/health          # سلامت محلی
+docker ps | grep fast-english                 # وضعیت ۴ کانتینر
+docker logs <pb-container> -n 100 --no-pager  # لاگ PocketBase
+curl -fsS http://127.0.0.1:8090/api/health    # سلامت محلی (loopback)
 curl -fsSI https://app.fastenglishpodcast.com/api/health   # سلامت عمومی
-bash deploy/smoke-prod.sh [--quick]                 # اسموک کامل/سریع
+bash deploy/smoke-prod.sh [--quick]           # اسموک کامل/سریع
 bash deploy/backup.sh && bash deploy/restore-drill.sh
 bash deploy/ops-check.sh
+bash deploy/test-nginx-log-redaction.sh       # اثبات حذف توکن از لاگ
 ```
 
-**محدودیت صادقانه:** هیچ پلتفرم مانیتورینگ مستقر نشده است (مصوب نشده). دید = systemd + journald + لاگ‌های چرخشی Caddy + `ops-check.sh`؛ هشداردهی دستی یا کرون است. کرون پیشنهادی:
+**محدودیت صادقانه:** هیچ پلتفرم مانیتورینگ مستقر نشده است. دید = Coolify + لاگ‌های کانتینر + `ops-check.sh`؛ هشداردهی دستی یا کرون.
 
 ```cron
 17 6 * * * root bash /opt/fast-english/shared/scripts/ops-check.sh >> /var/log/fep-ops.log 2>&1
@@ -349,29 +307,31 @@ bash deploy/ops-check.sh
 
 ### ۱۰٫۴ توکن‌های صوتی در لاگ‌ها
 
-توکن فایل صوتی در پارامتر `token` سفر می‌کند؛ هر بلوک لاگ دامنه، آن را با `[REDACTED]` جایگزین می‌کند و `log_credentials` روشن نیست. اثبات: `bash deploy/test-log-redaction.sh` + بررسی زندهٔ سرور (جستجوی مقدار جعلی در `shared/logs/access-app.log` باید صفر باشد).
+توکن فایل صوتی در پارامتر `token` سفر می‌کند. در معماری جدید: nginx فرانت‌اندها **هرگز کوئری‌استرینگ را لاگ نمی‌کند** (قوی‌تر از قبل)، لاگ دسترسی Traefik باید خاموش بماند (پیش‌فرض Coolify)، و لاگ داخلی PocketBase (فقط سوپریوزر، از طریق loopback، نگهداری ۳۰ روز) مانند گذشته است. اثبات: `bash deploy/test-nginx-log-redaction.sh`.
 
 ---
 
 ## ۱۱. ایمنی سوپریوزر PocketBase
 
 - دسترسی سوپریوزر = دسترسی ممتاز زیرساخت. **هرگز** با اپراتورهای عادی به اشتراک گذاشته نمی‌شود.
-- داشبورد `/_/` از هر دامنهٔ عمومی ۴۰۴ می‌دهد (Caddy + اتصال loopback).
-- مسیر امن (فقط شما):
+- داشبورد `/_/` از هر دامنهٔ عمومی ۴۰۴ است.
+- مسیر امن (فقط شما): تانل SSH به loopback سرور:
 
 ```bash
 ssh -L 8090:127.0.0.1:8090 <user>@<server>
 # سپس در مرورگر خودتان: http://127.0.0.1:8090/_/
 ```
 
-- تغییرات schema در تولید قفل است (`meta.hideControls=true` توسط `configure.sh`). مسیر عادی تغییرات: **مهاجرت‌های بازبینی‌شده در یک release**، نه ویرایش پراکنده در داشبورد.
-- توصیه: whitelist آی‌پی سوپریوزر وقتی آی‌پی ثابت شما مشخص شد: `./pocketbase superuser ips <ip> --dir=…`.
-- اگر سوپریوزر به خطر افتاد: چرخش رمز `FEP_SUPERUSER_PASSWORD` در فایل اسرار + ری‌استارت PocketBase.
+- تغییرات schema در تولید قفل است (`meta.hideControls=true`). مسیر عادی تغییرات: **مهاجرت‌های بازبینی‌شده در یک release**.
+- توصیه: whitelist آی‌پی سوپریوزر وقتی آی‌پی ثابت شما مشخص شد.
+- اگر سوپریوزر به خطر افتاد: چرخش رمز `FEP_SUPERUSER_PASSWORD` در فایل اسرار + بازگشت‌دهی کانتینر PocketBase در Coolify + به‌روزرسانی اسرار GitHub.
 - هرگز `pb_data` را در گیت یا خارج از سرور کپی نکنید؛ هرگز لاگ‌ها را عمومی نکنید.
 
 ---
 
 ## ۱۲. عملیات اندروید
+
+(تغییر نکرده — جریان انتشار APK همان است؛ فقط انتشار فایل APK اکنون از طریق mount میزبان `shared/releases` در لندینگ انجام می‌شود، نه اسکریپت deploy قدیمی.)
 
 ### ۱۲٫۱ سطح کسب‌وکار (اپراتور/مالک)
 
@@ -381,24 +341,23 @@ ssh -L 8090:127.0.0.1:8090 <user>@<server>
 | آدرس عمومی | `https://fastenglishpodcast.com/releases/fast-english-podcast-v1.0.0.apk` |
 | متادیتا | `/releases/release-metadata.json` + `/releases/RELEASE-NOTES.md` |
 | نسخهٔ لندینگ | باید با `VITE_ANDROID_APK_VERSION` هماهنگ باشد (چک خودکار) |
-| گیت فیزیکی | **انجام نشده** — تست روی دستگاه فیزیکی (نصب، ورود، بارگذاری رسید، تعیین سطح، پخش/جستجو، حفظ پیشرفت پس از ری‌استارت) هنوز باز است |
+| گیت فیزیکی | **انجام نشده** — تست روی دستگاه فیزیکی هنوز باز است |
 
 ### ۱۲٫۲ سطح فنی
 
-- هویت: `com.fastenglishpodcast.app`؛ `versionName`/`versionCode` فعلاً ۱٫۰٫۰/۱ (در `android/app/build.gradle`).
-- امضا: APK امضاشده با **کی‌استور تولید** (RSA 4096، طرح v2). کلیدها در گیت نیستند؛ از محیط می‌آیند: `FEP_ANDROID_KEYSTORE_PATH`، `FEP_ANDROID_KEY_ALIAS`، `FEP_ANDROID_KEYSTORE_PASSWORD`، `FEP_ANDROID_KEY_PASSWORD`. بدون آن‌ها بیلد با پیام «Production signing material: REQUIRED» **با خیال راحت شکست می‌خورد** — کی‌استور دیباگ هرگز منتشر نمی‌شود.
-- منشأ API در APK: صریح `https://app.fastenglishpodcast.com` (نه `window.location.origin`).
-- APK/AAB: خروجی توزیع APK است (فایل تغییرناپذیر با نام نسخه).
+- هویت: `com.fastenglishpodcast.app`؛ `versionName`/`versionCode` فعلاً ۱٫۰٫۰/۱.
+- امضا: APK امضاشده با کی‌استور تولید (RSA 4096، طرح v2). کلیدها در گیت نیستند؛ از محیط می‌آیند: `FEP_ANDROID_KEYSTORE_PATH`، `FEP_ANDROID_KEY_ALIAS`، `FEP_ANDROID_KEYSTORE_PASSWORD`، `FEP_ANDROID_KEY_PASSWORD`. بدون آن‌ها بیلد با خیال راحت شکست می‌خورد.
+- منشأ API در APK: صریح `https://app.fastenglishpodcast.com`.
 
 ### ۱۲٫۳ ساخت نسخهٔ جدید
 
 ```bash
-pnpm android:check:version        # هماهنگی gradle ↔ Capacitor ↔ نام APK ↔ نسخهٔ لندینگ
+pnpm android:check:version
 bash scripts/build-release-apk.sh       # نیاز به FEP_ANDROID_* (امضای تولید)
-bash scripts/verify-release-apk.sh      # apksigner/zipalign/aapt/sha256sum + بازتولید متادیتا
+bash scripts/verify-release-apk.sh      # apksigner/zipalign/aapt/sha256sum + متادیتا
 ```
 
-روال نسخهٔ بعدی: `versionCode` (حداقل ۱+)/`versionName` را در gradle و `VITE_ANDROID_APK_VERSION` لندینگ زیاد کن → بیلد/تأیید (همان applicationId و همان گواهی امضا) → **نام فایل جدید** (مثلاً `v1.1.0.apk`) → APK + متادیتا در باندل بعدی → استقرار (`deploy.sh` چک‌سام APK و انتشار در `shared/releases` را خودکار انجام می‌دهد) → اسموک (طول محتوا + sha256 + CTA لندینگ) → تست دستگاه فیزیکی.
+سپس فایل‌های APK + متادیتا را در `/opt/fast-english/shared/releases` میزبان قرار بده (نام فایل جدید و تغییرناپذیر) و لندینگ را با URL/نسخهٔ جدید از طریق جریان عادی (بخش ۶) منتشر کن. اسموک، چک‌سام و CTA لندینگ را تأیید می‌کند.
 
 ### ۱۲٫۴ چک‌لیست انتشار نسخهٔ اندروید
 
@@ -407,23 +366,23 @@ bash scripts/verify-release-apk.sh      # apksigner/zipalign/aapt/sha256sum + ب
 - [ ] بیلد امضاشده با کی‌استور تولید (نه دیباگ)
 - [ ] `verify-release-apk.sh` سبز؛ متادیتا بازتولید شده
 - [ ] نام فایل جدید و تغییرناپذیر؛ فایل قبلی دست‌نخورده
-- [ ] لندینگ با URL/نسخهٔ جدید بیلد شده
-- [ ] `deploy.sh` سبز (چک‌سام + انتشار + اسموک)
+- [ ] لندینگ با URL/نسخهٔ جدید بیلد و منتشر شده (جریان Coolify)
+- [ ] اسموک سبز (چک‌سام + انتشار + CTA)
 - [ ] `sha256sum` فایل دانلودی با `release-metadata.json` یکی است
 - [ ] تست دستگاه فیزیکی (گیت باز تا انجام)
-- [ ] کی‌استور و رمزها فقط در اختیار امن (هیچ‌وقت در گیت/لاگ/مستندات)
+- [ ] کی‌استور و رمزها فقط در اختیار امن
 
 ---
 
 ## ۱۳. متغیرهای محیطی و اسرار
 
-نام‌ها (مقادیر فقط در `shared/secrets/pocketbase.env` یا محیط CI، هرگز در گیت/مستندات):
+نام‌ها (مقادیر هرگز در گیت/مستندات):
 
-`FEP_SUPERUSER_EMAIL`، `FEP_SUPERUSER_PASSWORD`، `PB_ENCRYPTION_KEY`، `FEP_SMTP_HOST/PORT/USERNAME/PASSWORD/TLS`، `FEP_BACKUP_S3_*`، `FEP_SMOKE_STUDENT_*`، `FEP_SMOKE_OPERATOR_*`، `FEP_ANDROID_KEYSTORE_PATH`، `FEP_ANDROID_KEY_ALIAS`، `FEP_ANDROID_KEYSTORE_PASSWORD`، `FEP_ANDROID_KEY_PASSWORD`.
-
-- فایل اسرار: root:root 0600؛ فقط root می‌خواند.
+- فایل اسرار سرور (`shared/secrets/pocketbase.env`، root:root 0600): `FEP_SUPERUSER_EMAIL`، `FEP_SUPERUSER_PASSWORD`، `PB_ENCRYPTION_KEY`، `FEP_SMTP_*`، `FEP_BACKUP_S3_*`، `FEP_SMOKE_*`.
+- اسرار GitHub Environment «production» (فقط نام‌ها در `deploy/env.production.example`): `COOLIFY_BASE_URL`، `COOLIFY_API_TOKEN` (محدود به deploy؛ چرخش با MFA)، `COOLIFY_APP_UUID_{LANDING,APP,ADMIN,POCKETBASE}`، `GHCR_PUBLISH_TOKEN` (اختیاری)، `FEP_SSH_HOST/USER/KEY` (فقط برای پشتیبان پیش از استقرار)، `FEP_SMOKE_STAFF_*`، `FEP_SUPERUSER_EMAIL/PASSWORD` (آینهٔ سرور).
+- env اپ PocketBase در Coolify: `PB_ENCRYPTION_KEY` — **باید با فایل سرور یکی باشد** (هر دو را با هم بچرخان).
+- `VITE_*` تنظیمات build-time: در GitHub Actions (یا پیش‌فرض‌های تولید)، هرگز در Coolify.
 - `server/pb_data`، کی‌استورها و `releases/` در گیت نیستند.
-- لاگ‌های دسترسی فقط root/Caddy می‌خوانند (`shared/logs` 0750).
 
 ---
 
@@ -431,11 +390,13 @@ bash scripts/verify-release-apk.sh      # apksigner/zipalign/aapt/sha256sum + ب
 
 این موارد هنوز انجام نشده‌اند و در هیچ‌کجای این مستندات «انجام‌شده» فرض نمی‌شوند:
 
-- تهیهٔ سرور (VPS) + ثبت DNS هر چهار نام؛
+- تهیهٔ سرور VPS (تولید + استقرار) + اتصال به Coolify Cloud + اجرای چک‌لیست پذیرش استیجینگ (`docs/STAGING.md`)؛
+- ثبت DNS هر چهار نام (و دامنه‌های استیجینگ)؛
 - مقصد کارت‌به‌کارت واقعی و متن راهنمای آن؛
 - بانک سؤال تعیین سطح بازبینی‌شده (دمو هرگز در تولید)؛
 - کتابخانهٔ نهایی محتوا (بسته‌های فعلی نمونه/دمو هستند)؛
 - متن حقوقی حریم خصوصی/قوانین؛
 - نگهداری امن کی‌استور اندروید + تست دستگاه فیزیکی؛
 - اعتبار S3 و تأیید بازیابی خارج از سرور؛
-- هویت اپراتورها و سیاست رد/بازگشت وجه.
+- هویت اپراتورها و سیاست رد/بازگشت وجه؛
+- تأیید زندهٔ نقاط باز Coolify (loopback mapping، path routing، rollback با ایمج GHCR) در استیجینگ — فهرست کامل در `docs/COOLIFY_DEPLOYMENT.md`.

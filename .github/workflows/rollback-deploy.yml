@@ -1,0 +1,118 @@
+name: rollback-deploy
+
+# Manual rollback workflow (task §20). Deploys a PREVIOUS known-good
+# immutable image for one surface via Coolify, then independently verifies
+# health + smoke. Never touches /opt/fast-english/shared/pb_data.
+#
+# Rollback contract:
+#   * Frontends (landing/app/admin): point the Coolify app back to the
+#     previous `sha-<commit>` tag and redeploy — no PocketBase impact.
+#   * PocketBase WITHOUT a migration in the bad release: point the app back
+#     to the previous image; the same persistent pb_data is reused; then
+#     health + backend smoke.
+#   * PocketBase AFTER a migration: STOP automatic rollback. An image
+#     rollback does NOT reverse an applied migration. Recovery = restore the
+#     verified pre-deploy backup through the documented emergency procedure
+#     (docs/BACKUP_RESTORE.md §5). The operator must explicitly confirm
+#     `confirm_migration_safe` by attesting the compatibility decision.
+#
+# NOTE: entering any migration applied by the bad release is OUT OF SCOPE
+# for rollback-deploy.yml — it is a compatibility decision, not automation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      surface:
+        description: 'Surface to roll back: landing | app | admin | pocketbase'
+        required: true
+        type: choice
+        options:
+          - landing
+          - app
+          - admin
+          - pocketbase
+      image_sha:
+        description: 'Previous known-good image commit (e.g. 0123456789ab) to redeploy'
+        required: true
+        type: string
+      confirm_migration_safe:
+        description: 'PocketBase only — attest that no applied migration blocks this image; otherwise rollback is refused'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rollback-${{ github.ref }}-${{ github.event.inputs.surface }}
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Refuse risky PocketBase rollback without the migration attestation
+        if: github.event.inputs.surface == 'pocketbase' && github.event.inputs.confirm_migration_safe != 'true'
+        run: |
+          echo "Refusing: an automatic PocketBase image rollback may not reverse an applied migration.
+          Set confirm_migration_safe=true only after the migration-compatibility decision; or restore the pre-deploy backup (docs/BACKUP_RESTORE.md)." >&2
+          exit 1
+
+      - name: Point the Coolify app at the previous immutable image
+        id: retag
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          FEP_COOLIFY_APP_UUID_LANDING: ${{ secrets.COOLIFY_APP_UUID_LANDING }}
+          FEP_COOLIFY_APP_UUID_APP: ${{ secrets.COOLIFY_APP_UUID_APP }}
+          FEP_COOLIFY_APP_UUID_ADMIN: ${{ secrets.COOLIFY_APP_UUID_ADMIN }}
+          FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
+        run: |
+          set -euo pipefail
+          SURFACE="${{ github.event.inputs.surface }}"
+          VAR="FEP_COOLIFY_APP_UUID_$(printf '%s' "$SURFACE" | tr '[:lower:]' '[:upper:]')"
+          UUID="${!VAR:?missing Coolify app UUID for $SURFACE}"
+          IMAGE="ghcr.io/${{ github.repository_owner }}/fast-english/${SURFACE}:sha-${{ github.event.inputs.image_sha }}"
+          HDR="$(mktemp)"; printf 'Authorization: Bearer %s\n' "$COOLIFY_API_TOKEN" > "$HDR"; chmod 600 "$HDR"
+          trap 'rm -f "$HDR"' EXIT
+          BASE="${COOLIFY_BASE_URL:-https://app.coolify.io}"
+          curl -fsS -m 90 -X PATCH "${BASE}/api/v1/applications/${UUID}" \
+            -H @"$HDR" -H 'Content-Type: application/json' \
+            --data "{\"docker_registry_image_tag\":\"sha-${{ github.event.inputs.image_sha }}\"}" > /dev/null
+          echo "Coolify app $SURFACE image set to \`$IMAGE\`." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Coolify deploy (previous image)
+        id: deploy
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          FEP_COOLIFY_APP_UUID_LANDING: ${{ secrets.COOLIFY_APP_UUID_LANDING }}
+          FEP_COOLIFY_APP_UUID_APP: ${{ secrets.COOLIFY_APP_UUID_APP }}
+          FEP_COOLIFY_APP_UUID_ADMIN: ${{ secrets.COOLIFY_APP_UUID_ADMIN }}
+          FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
+        run: |
+          set -euo pipefail
+          bash scripts/coolify-deploy.sh "${{ github.event.inputs.surface }}" --force
+
+      - name: Independent public HTTPS health
+        run: bash scripts/prod-health-check.sh
+
+      - name: Quick public smoke
+        run: bash deploy/smoke-prod.sh --quick
+
+      - name: Verdict
+        if: always()
+        run: |
+          if [[ "${{ steps.deploy.outcome }}" == "success" && "${{ job.status }}" == "success" ]]; then
+            echo "VERDICT: GREEN — ${{ github.event.inputs.surface }} rolled back to sha-${{ github.event.inputs.image_sha }}." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "VERDICT: RED — rollback failed. See the step results above; pb_data was NOT touched." >> "$GITHUB_STEP_SUMMARY"
+          exit 1

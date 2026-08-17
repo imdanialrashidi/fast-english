@@ -1,11 +1,39 @@
 # Fast English Podcast — production deployment package
 
-Everything needed to run the four production domains on a single Linux
-server (Debian/Ubuntu/Arch) with Caddy + systemd + PocketBase.
+> **Status (Coolify migration):** the accepted production architecture is now
+> **Coolify Cloud + owned VPS + Coolify-managed Traefik + four immutable
+> container images** (`docker/*`), released through
+> `.github/workflows/release-deploy.yml` and documented in
+> **`docs/COOLIFY_DEPLOYMENT.md`** (the canonical deployment guide).
+> The Caddy + systemd + release-symlink layer below is **LEGACY/RETIRED**
+> (kept as historical fallback + the legacy redaction proof); do not use it
+> for a new production install.
+>
+> What survives unchanged: `backup.sh`, `backup-copy.sh` (+ its host timer),
+> `restore-drill.sh` (adapted to repo-relative hooks/migrations), `smoke-prod.sh`
+> (adapted), `ops-check.sh` (adapted to containers), `configure.sh` (loopback),
+> `test-nginx-log-redaction.sh` (new logging-path proof).
 
-See `docs/DEPLOYMENT.md` for the full runbook and `docs/OPERATIONS.md` for
-day-to-day operations. This file is the quick index.
+See `docs/COOLIFY_DEPLOYMENT.md` for the canonical runbook and
+`docs/OPERATIONS.md` for day-to-day operations. This file is the quick index.
 
+## Script classification (post-migration)
+
+| Path | Status | Note |
+|---|---|---|
+| `Caddyfile` | LEGACY / RETIRED | historical fallback; new proxies live in `docker/*/nginx.conf` |
+| `systemd/fast-english-pocketbase.service` | LEGACY / RETIRED | PB runs as the Coolify container (UID 10001) |
+| `systemd/fast-english-backup-copy.{service,timer}` | KEEP | host-level file copy, container-independent |
+| `install.sh` | LEGACY / RETIRED | provisioning is the Coolify runbook checklist |
+| `configure.sh` | KEEP/ADAPT | works against the loopback 127.0.0.1:8090 mapping |
+| `deploy.sh` | LEGACY FALLBACK | replaced by the GHCR + release-deploy pipeline |
+| `backup.sh` / `backup-copy.sh` | KEEP | unchanged (loopback port) |
+| `restore-drill.sh` | ADAPT | repo-relative migrations/hooks/binary + guards |
+| `smoke-prod.sh` | KEEP/ADAPT | unchanged surface; admin marker corrected |
+| `ops-check.sh` | ADAPT | container + public-HTTPS checks instead of systemd |
+| `test-log-redaction.sh` | LEGACY PROOF (KEEP) | still wired into the canonical gate |
+| `test-nginx-log-redaction.sh` | KEEP (new) | Coolify-era logging-path proof |
+| `check-offsite.sh` | KEEP (new) | off-VPS backup gate check (C15), host-side |
 ## Layout
 
 | Path | Purpose |

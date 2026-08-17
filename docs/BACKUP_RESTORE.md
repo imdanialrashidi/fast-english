@@ -1,5 +1,13 @@
 # Fast English Podcast — Backup and Restore
 
+> **COOLIFY MIGRATION STATUS (2026-08-17):** the backup policy, PocketBase
+> native backups, `backup.sh`, `backup-copy.sh` (+ host timer), and the
+> restore drill are UNCHANGED in the Coolify era (host paths identical).
+> The PocketBase restore procedure in §5 now targets the Coolify-managed
+> container (stop/start via Coolify, ownership UID/GID **10001** instead of
+> the retired `fastenglish` system user). Canonical deployment guide:
+> `docs/COOLIFY_DEPLOYMENT.md`.
+
 Responsible owner: **<TODO: replace with the named operator>**
 Last updated: 2026-08-01.
 
@@ -116,19 +124,18 @@ chain end-to-end:
 Wired into `scripts/project-verify.sh` (step 13h) and the CI backend lane.
 Never touches `server/pb_data` or any live database.
 
-## 5. Restoring production (manual, emergency)
+## 5. Restoring production (manual, emergency — Coolify era)
 
 ```text
-1. STOP writes: systemctl stop fast-english-pocketbase
+1. STOP writes: stop the PocketBase container in the Coolify dashboard
+   (scale to 0 / stop) — never delete the container's storage.
 2. Move the live data aside (do NOT delete):
      mv /opt/fast-english/shared/pb_data /opt/fast-english/shared/pb_data.broken-<ts>
 3. Restore the backup ZIP into a fresh dir:
      mkdir /opt/fast-english/shared/pb_data
      unzip -q /opt/fast-english/shared/backups/<name>.zip -d /opt/fast-english/shared/pb_data
-   (or POST /api/backups/<name>/restore against a healthy instance — this
-    restarts PocketBase, so do it under systemd)
-4. chown -R fastenglish:fastenglish /opt/fast-english/shared/pb_data
-5. systemctl start fast-english-pocketbase
+4. chown -R 10001:10001 /opt/fast-english/shared/pb_data   (fixed backend UID/GID)
+5. Start the PocketBase container again in Coolify (same image).
 6. curl -fsS http://127.0.0.1:8090/api/health
 7. bash deploy/smoke-prod.sh --quick
 ```
@@ -138,10 +145,11 @@ Only restore over live data after a verified drill of that exact backup.
 ## 6. Migration rollback limitation (documented)
 
 Database migrations applied by a release are **not automatically
-reversible**: rollback of the static release does not undo schema changes.
-If a bad release applied migrations, prefer restoring the pre-deployment
-backup (deploy.sh creates `fep-backup-predeploy-*` before every deploy) over
-a schema "downgrade". Restores lose changes made after the backup.
+reversible**: rolling the image back does not undo schema changes (proven
+by `tests/infra/06-pb-migration.sh`). If a bad release applied migrations,
+prefer restoring the pre-deploy backup (the `release-deploy` workflow
+creates `fep-backup-predeploy-*` before every backend/migration deploy)
+over a schema "downgrade". Restores lose changes made after the backup.
 
 ## 7. S3 off-site copy (when approved)
 

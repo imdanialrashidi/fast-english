@@ -93,6 +93,10 @@ const router = createBrowserRouter(
         }
       >
         <Route index element={<AdminDashboardRoute />} />
+        {/* Accepted routing contract (Coolify era): the edge/nginx layer
+            redirects admin root / -> /operator (308); /operator must render
+            the operator surface (the dashboard), not the not-found page. */}
+        <Route path="operator" element={<AdminDashboardRoute />} />
         <Route path="payments" element={<PaymentsRoute />} />
         <Route path="payments/:requestId" element={<PaymentsRoute />} />
         <Route path="content" element={<ContentDashboardRoute />} />
