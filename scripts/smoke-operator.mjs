@@ -894,7 +894,8 @@ async function main() {
   });
 
   await runScenario('42-rejection-sets-fields', async () => {
-    const persianReason = 'مبلغ واریزی با مبلغ اعلام‌شدهٔ طرح مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.';
+    const persianReason =
+      'مبلغ واریزی با مبلغ اعلام‌شدهٔ طرح مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.';
     const r = await rejectAs(staff.token, reqId7, {
       public_rejection_reason: persianReason,
       internal_note: 'این یادداشت داخلی فارسی باید بدون دوبار رمزنگاری ذخیره شود.',
@@ -1100,7 +1101,8 @@ async function main() {
     const detail = await detailAs(staff.token, reqId7);
     check(detail.body?.status === 'rejected', 'old request still rejected');
     check(
-      detail.body?.publicRejectionReason === 'مبلغ واریزی با مبلغ اعلام‌شدهٔ طرح مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.',
+      detail.body?.publicRejectionReason ===
+        'مبلغ واریزی با مبلغ اعلام‌شدهٔ طرح مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.',
       'old rejection reason preserved',
     );
   });
