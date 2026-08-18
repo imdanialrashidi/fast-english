@@ -253,15 +253,35 @@ if (rd) {
     pass('W12 workflow refuses alias-publish on a staging run');
   else fail('W12 missing guard refusing publish_production_alias on staging');
   if (
+    rdText.includes(
+      "environment == 'production' && github.event.inputs.publish_production_alias != 'true'",
+    )
+  )
+    pass('W12 workflow refuses a production release that cannot ship the alias');
+  else fail('W12 missing guard refusing production without alias-publish');
+  if (
     rdText.includes('Pin staging apps to the immutable sha- tag') &&
     rdText.includes('docker_registry_image_tag')
   )
     pass('W12 staging runs pin Coolify apps to sha-<commit> tags');
   else fail('W12 staging pin step missing');
+  if (
+    rdText.includes('staging verification must target staging domains') &&
+    rdText.includes('FEP_PROD_HEALTH_ROOT required for staging') &&
+    rdText.includes('FEP_SMOKE_ROOT required for staging')
+  )
+    pass('W12 staging health/smoke fail closed to staging domains (never production)');
+  else fail('W12 staging verification must fail closed when staging domains are unset');
+  if (rdText.includes('FORCE_FLAG') && rdText.includes('== "staging"'))
+    pass('W12 staging deploys force the sha-<commit> re-pull');
+  else fail('W12 staging deploy must force the re-pull');
   const rbText = yamlText('.github/workflows/rollback-deploy.yml');
   if (rbText.includes('options:') && rbText.includes('- staging'))
     pass('W12 rollback-deploy also targets staging');
   else fail('W12 rollback-deploy lacks the staging option');
+  if (rbText.includes('staging verification must target staging domains'))
+    pass('W12 rollback-deploy staging verification fails closed too');
+  else fail('W12 rollback-deploy lacks the staging fail-closed guard');
 }
 
 // ---- W9 orchestrator scripts ------------------------------------------------------

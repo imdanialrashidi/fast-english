@@ -1109,11 +1109,14 @@ test.describe('lesson detail and player', () => {
       timeout: 10_000,
     });
     // The saved position is still honored: the deck's resume prompt derives
-    // from the SAVED progress (150s). This is the stable contract here —
-    // whether the phase-1 end-of-clip save landed before the route change
-    // is inherently racy (the 2s fixture can end while the detail route is
-    // unmounted and its callbacks are dropped by design).
-    await expect(page.getByTestId('deck-primary-cta')).toContainText('ادامه از 2:30', {
+    // from the SAVED progress (150s). Both honest labels are possible here:
+    // the phase-1 end-of-clip save may or may not have landed before the
+    // route change (the 2s fixture can end while the detail route is
+    // unmounted and its callbacks are dropped by design) — «ادامه از 2:30»
+    // when the save was dropped, «پخش» when it landed. Either way the label
+    // derives from genuine saved progress; the deterministic end-of-clip
+    // proof is the second phase below.
+    await expect(page.getByTestId('deck-primary-cta')).toContainText(/ادامه از 2:30|پخش/, {
       timeout: 10_000,
     });
     // Resume again while the route is mounted: the 2s fixture clip clamps

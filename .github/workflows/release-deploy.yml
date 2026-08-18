@@ -105,6 +105,15 @@ jobs:
           echo "sha-<commit> tags; the \`production\` alias moves only on the production path." >&2
           exit 1
 
+      - name: Guard — refuse a production release that cannot ship
+        if: github.event.inputs.environment == 'production' && github.event.inputs.publish_production_alias != 'true'
+        run: |
+          echo "REFUSED: environment=production with publish_production_alias=false would" >&2
+          echo "verify and report a complete release whose images never reach the" >&2
+          echo "production apps (they track the :production alias). Set" >&2
+          echo "publish_production_alias=true (or use rollback-deploy for a previous image)." >&2
+          exit 1
+
   gate-quality:
     # C12 / §15: a RED canonical quality run must never reach production.
     runs-on: ubuntu-latest
@@ -330,16 +339,45 @@ jobs:
         run: |
           set -euo pipefail
           SURFACES="${{ github.event.inputs.surfaces }}"
+          # Staging pins a fresh sha-<commit> tag before this step, so the
+          # deploy must force the re-pull (same contract as rollback-deploy).
+          FORCE_FLAG=""
+          [[ "${{ github.event.inputs.environment }}" == "staging" ]] && FORCE_FLAG="--force"
           rc=0
           for s in ${SURFACES//,/ }; do
             case "$s" in landing|app|admin|pocketbase) ;; *) echo "IGNORED unknown surface: $s"; continue ;; esac
-            if ! bash scripts/coolify-deploy.sh "$s"; then
+            if ! bash scripts/coolify-deploy.sh "$s" $FORCE_FLAG; then
               rc=1
             fi
           done
           echo "deploy_all=$([ "$rc" -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           echo "surfaces=$SURFACES" >> "$GITHUB_OUTPUT"
           exit "$rc"
+
+      - name: Guard — staging verification must target staging domains (fail closed)
+        # An unset environment secret evaluates to an empty string and the
+        # health/smoke scripts fall back to the production domains — a staging
+        # run without these overrides could verify (and smoke with real
+        # disposable accounts against) PRODUCTION. Refuse instead.
+        if: github.event.inputs.environment == 'staging'
+        env:
+          FEP_PROD_HEALTH_ROOT: ${{ secrets.FEP_PROD_HEALTH_ROOT }}
+          FEP_PROD_HEALTH_WWW: ${{ secrets.FEP_PROD_HEALTH_WWW }}
+          FEP_PROD_HEALTH_APP: ${{ secrets.FEP_PROD_HEALTH_APP }}
+          FEP_PROD_HEALTH_ADMIN: ${{ secrets.FEP_PROD_HEALTH_ADMIN }}
+          FEP_SMOKE_ROOT: ${{ secrets.FEP_SMOKE_ROOT }}
+          FEP_SMOKE_APP: ${{ secrets.FEP_SMOKE_APP }}
+          FEP_SMOKE_ADMIN: ${{ secrets.FEP_SMOKE_ADMIN }}
+        run: |
+          set -euo pipefail
+          : "${FEP_PROD_HEALTH_ROOT:?FEP_PROD_HEALTH_ROOT required for staging (fail closed — never verify production domains from a staging run)}"
+          : "${FEP_PROD_HEALTH_WWW:?FEP_PROD_HEALTH_WWW required for staging}"
+          : "${FEP_PROD_HEALTH_APP:?FEP_PROD_HEALTH_APP required for staging}"
+          : "${FEP_PROD_HEALTH_ADMIN:?FEP_PROD_HEALTH_ADMIN required for staging}"
+          : "${FEP_SMOKE_ROOT:?FEP_SMOKE_ROOT required for staging}"
+          : "${FEP_SMOKE_APP:?FEP_SMOKE_APP required for staging}"
+          : "${FEP_SMOKE_ADMIN:?FEP_SMOKE_ADMIN required for staging}"
+          echo "staging verification domains: $FEP_PROD_HEALTH_ROOT / $FEP_PROD_HEALTH_APP / $FEP_PROD_HEALTH_ADMIN"
 
       - name: Independent public HTTPS health checks
         id: health
@@ -407,7 +445,7 @@ jobs:
         run: |
           set -euo pipefail
           {
-            echo "## Production release verdict"
+            echo "## ${{ github.event.inputs.environment }} release verdict"
             echo "| Stage | Result |"
             echo "| --- | --- |"
             echo "| Coolify deploy (trigger + status poll) | $DEPLOY_OK |"

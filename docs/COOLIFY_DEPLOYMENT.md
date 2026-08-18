@@ -89,12 +89,16 @@ Environment semantics:
   smoke pass.
 - **staging**: the workflow first PATCHes the requested Coolify apps to the
   immutable `sha-<commit>` tag (same contract as `rollback-deploy.yml`, O5),
-  then deploys. The `production` alias is NEVER moved from a staging run —
-  the workflow refuses `environment=staging` combined with
-  `publish_production_alias=true`. Health/smoke target the staging domains
-  through the `FEP_PROD_HEALTH_*` / `FEP_SMOKE_*` secrets of the `staging`
-  environment (unset in `production` ⇒ the production-domain script defaults
-  apply, so production behavior is unchanged).
+  then deploys with `force` (guaranteed re-pull of the pinned tag). The
+  `production` alias is NEVER moved from a staging run — the workflow
+  refuses `environment=staging` combined with
+  `publish_production_alias=true`. Staging verification FAILS CLOSED: the
+  `staging` environment must define `FEP_PROD_HEALTH_{ROOT,WWW,APP,ADMIN}`
+  and `FEP_SMOKE_{ROOT,APP,ADMIN}` (staging domains) or the workflow
+  refuses to run — an unset secret would otherwise fall back to the
+  production domains in the health/smoke scripts. `environment=production`
+  with `publish_production_alias=false` is also refused (a production
+  release that cannot ship the alias would report a false GREEN).
 
 Pipeline (all evidence in the job summary):
 
