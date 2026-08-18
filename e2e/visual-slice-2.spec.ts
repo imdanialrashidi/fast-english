@@ -1109,10 +1109,21 @@ test.describe('lesson detail and player', () => {
       timeout: 10_000,
     });
     // The saved position is still honored: the deck's resume prompt derives
-    // from the SAVED progress. The 2s fixture clip clamps the 150s seek, so
-    // the honest saved position is the real played one (~1-3s) and the
-    // honest CTA is «پخش» (deriveDeckCta <5s rule). The end-of-clip save
-    // lands a moment after the return load, so the CTA is polled.
+    // from the SAVED progress (150s). This is the stable contract here —
+    // whether the phase-1 end-of-clip save landed before the route change
+    // is inherently racy (the 2s fixture can end while the detail route is
+    // unmounted and its callbacks are dropped by design).
+    await expect(page.getByTestId('deck-primary-cta')).toContainText('ادامه از 2:30', {
+      timeout: 10_000,
+    });
+    // Resume again while the route is mounted: the 2s fixture clip clamps
+    // the 150s seek, plays to its real end, and the element's own pause
+    // event (the single pause-save writer) persists the honest played
+    // position (~1-3s). The deck CTA then derives from the NEW saved
+    // progress and becomes «پخش» (deriveDeckCta <5s rule) — the honest
+    // end-of-clip save is proven deterministically, without racing the
+    // route change.
+    await page.getByTestId('deck-primary-cta').click();
     await expect
       .poll(async () => (await page.getByTestId('deck-primary-cta').textContent()) ?? '', {
         timeout: 10_000,

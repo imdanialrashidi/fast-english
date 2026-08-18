@@ -69,7 +69,7 @@ accepted static-serving, cache, header, redirect and log-redaction contracts.
 
 ## 3. Repository release workflows
 
-### 3.1 `release-deploy.yml` (manual production release)
+### 3.1 `release-deploy.yml` (manual release: production + staging)
 
 `Actions → Deploy Production → Run workflow` with:
 
@@ -79,6 +79,22 @@ accepted static-serving, cache, header, redirect and log-redaction contracts.
 | `surfaces` | `landing,app,admin,pocketbase` (default all) |
 | `smoke` | `quick` (public) or `full` (disposable accounts) |
 | `publish_production_alias` | publish the `production` image alias (default true) |
+| `environment` | `production` (default) or `staging` — selects the GitHub
+  Environment whose secrets the release uses and the deploy behavior |
+
+Environment semantics:
+
+- **production** (default): unchanged legacy behavior — Coolify apps track the
+  moving `production` alias, which the workflow publishes ONLY after health +
+  smoke pass.
+- **staging**: the workflow first PATCHes the requested Coolify apps to the
+  immutable `sha-<commit>` tag (same contract as `rollback-deploy.yml`, O5),
+  then deploys. The `production` alias is NEVER moved from a staging run —
+  the workflow refuses `environment=staging` combined with
+  `publish_production_alias=true`. Health/smoke target the staging domains
+  through the `FEP_PROD_HEALTH_*` / `FEP_SMOKE_*` secrets of the `staging`
+  environment (unset in `production` ⇒ the production-domain script defaults
+  apply, so production behavior is unchanged).
 
 Pipeline (all evidence in the job summary):
 
@@ -122,8 +138,9 @@ Secrets (names only; values in GitHub Environment `production`):
 
 ### 3.2 `rollback-deploy.yml` (manual rollback)
 
-Inputs: `surface`, `image_sha` (previous known-good commit), and — PocketBase
-only — `confirm_migration_safe` (default false ⇒ the workflow **refuses** a
+Inputs: `surface`, `image_sha` (previous known-good commit), `environment`
+(`production` default / `staging`), and — PocketBase only —
+`confirm_migration_safe` (default false ⇒ the workflow **refuses** a
 PocketBase rollback unless the operator attests migration compatibility).
 Mechanics: `PATCH /api/v1/applications/{uuid}` with
 `docker_registry_image_tag: sha-<image_sha>` → `coolify-deploy.sh` → health →

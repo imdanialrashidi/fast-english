@@ -66,10 +66,20 @@ if (rd) {
   else pass('W1 commit resolution is input or SHA-driven');
 
   const text = yamlText('.github/workflows/release-deploy.yml');
+  const envOptions = Array.isArray(dispatchInputs.environment?.options)
+    ? dispatchInputs.environment.options
+    : [];
   const hasProdEnv =
-    JSON.stringify(rd).includes('"environment":"production"') || rd.environment === 'production';
-  if (hasProdEnv) pass('W2 uses the production environment (job-level approval gate)');
+    JSON.stringify(rd).includes('"environment":"production"') ||
+    JSON.stringify(rd).includes('environment: "production"') ||
+    /"environment"\s*:\s*"\$\{\{\s*(?:github\.event\.inputs|inputs)\.environment/.test(
+      JSON.stringify(rd),
+    );
+  if (hasProdEnv) pass('W2 production environment required on the release jobs (approval gate)');
   else fail('W2 production environment missing');
+  if (envOptions.includes('production'))
+    pass('W2 `environment` input exists and offers `production`');
+  else fail('W2 `environment` input missing/does not offer `production`');
   if (text.includes('${{ secrets.') && !/(password|token|key)\s*:\s*["'][^$]/.test(text)) {
     pass('W2 secrets referenced only by name (no literals)');
   } else {
@@ -197,7 +207,7 @@ if (rb) {
   fail('W7 rollback-deploy.yml missing');
 }
 
-// ---- W10/W11 deployment-ordering guards (reviewer-class defects) -----------------
+// ---- W10/W11 deployment-ordering guards (reviewer-class defects) -------------
 // W10: the `production` alias must be published AFTER the smoke step (a step
 // referencing steps.<later>.outcome is always false/skipped).
 // W11: the deploy job must tolerate a SKIPPED predeploy-backup (class A/D/E).
@@ -221,6 +231,37 @@ if (rd) {
   if (deployJson.includes("predeploy-backup.result == 'skipped'"))
     pass('W11 deploy job tolerates a skipped predeploy-backup');
   else fail('W11 deploy job must allow a skipped predeploy-backup (class A/D/E)');
+
+  // W12 staging-path isolation (runbook STAGING.md §2.6): staging runs pin
+  // immutable sha-<commit> tags, never move the `production` alias, and the
+  // workflow refuses the dangerous combination.
+  const stagingEnvOptions = Array.isArray(rd.on?.workflow_dispatch?.inputs?.environment?.options)
+    ? rd.on.workflow_dispatch.inputs.environment.options
+    : [];
+  const hasStagingOption = stagingEnvOptions.includes('staging');
+  if (hasStagingOption) pass('W12 `environment` input offers `staging`');
+  else fail('W12 `environment` input must offer `staging` (runbook staging override)');
+  const rdText = yamlText('.github/workflows/release-deploy.yml');
+  if (
+    rdText.includes(
+      "publish_production_alias == 'true' && github.event.inputs.environment == 'production'",
+    )
+  )
+    pass('W12 `production` alias publish is gated to the production path');
+  else fail('W12 `production` alias publish must be gated to environment=production');
+  if (/refuses?|REFUSED/.test(rdText) && rdText.includes("environment == 'staging'"))
+    pass('W12 workflow refuses alias-publish on a staging run');
+  else fail('W12 missing guard refusing publish_production_alias on staging');
+  if (
+    rdText.includes('Pin staging apps to the immutable sha- tag') &&
+    rdText.includes('docker_registry_image_tag')
+  )
+    pass('W12 staging runs pin Coolify apps to sha-<commit> tags');
+  else fail('W12 staging pin step missing');
+  const rbText = yamlText('.github/workflows/rollback-deploy.yml');
+  if (rbText.includes('options:') && rbText.includes('- staging'))
+    pass('W12 rollback-deploy also targets staging');
+  else fail('W12 rollback-deploy lacks the staging option');
 }
 
 // ---- W9 orchestrator scripts ------------------------------------------------------

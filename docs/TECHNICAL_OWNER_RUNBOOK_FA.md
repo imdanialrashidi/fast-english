@@ -152,7 +152,8 @@ GitHub → Actions → Deploy Production (release-deploy) →
 مراحل دقیق برای مسئول فنی:
 
 1. در GitHub: **Actions → Deploy Production (release-deploy) → Run workflow**.
-2. ورودی `ref` = همان commit دلخواه (یا تگ)؛ سطوح (پیش‌فرض هر چهار)؛ حالت اسموک (`quick` = عمومی، `full` = با حساب‌های دورریختنی).
+2. ورودی `ref` = همان commit دلخواه (یا تگ)؛ سطوح (پیش‌فرض هر چهار)؛ حالت اسموک (`quick` = عمومی، `full` = با حساب‌های دورریختنی)؛ ورودی `environment` = `production` (پیش‌فرض) یا `staging` برای محیط تست.
+   - در محیط `staging`، workflow اپ‌های Coolify استیجینگ را به تگ نامتغیر `sha-<commit>` پین می‌کند و **هرگز** alias تولید (`production`) را جابه‌جا نمی‌کند (ترکیب خطرناک همان‌جا رد می‌شود).
 3. workflow ابتدا **وضعیت کیفیت** همان commit را چک می‌کند (quality سبز الزامی — CI قرمز هرگز تولید نمی‌شود)؛ سپس **گیت زیرساخت** (`pnpm test:infra:coolify`) را اجرا می‌کند (اثبات‌های persistence/بازیابی/مهاجرت/روتینگ/اسکن اسرار)؛ سپس ایمج‌ها را به GHCR می‌فرستد.
 4. اگر تغییر، backend/مهاجرت باشد، **پشتیبان پیش از استقرار** به‌صورت خودکار روی سرور گرفته می‌شود (تنها موردی که SSH خودکار لازم است).
 5. Coolify deploy + پایش تا `finished` + **health مستقل** + **smoke**؛ نتیجه در summary اعلام می‌شود.

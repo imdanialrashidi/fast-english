@@ -1,6 +1,6 @@
 name: release-deploy
 
-# MANUAL production release workflow (task §15). There is NO automatic
+# MANUAL release workflow (task §15). There is NO automatic
 # deploy on push: the operator intentionally runs this against an exact
 # commit, the canonical quality gate must be green for that commit, the
 # four immutable images are built/published to GHCR, Coolify deploys them,
@@ -8,6 +8,13 @@ name: release-deploy
 #   1. Coolify deployment status polling reaches `finished`;
 #   2. independent public HTTPS health checks pass;
 #   3. smoke-prod.sh passes.
+#
+# Environments: `production` (default) releases through the moving
+# `production` GHCR alias (published ONLY after smoke passes); `staging`
+# pins the four Coolify apps to the immutable sha-<commit> tags and never
+# moves the `production` alias (the workflow REFUSES the combination).
+# Secrets come from the selected GitHub Environment, so staging secrets
+# are never mixed with production ones (docs/STAGING.md §2.6).
 #
 # Change classification (A–E) is derived from the Git diff and drives the
 # pre-deploy backup step (mandatory before any PocketBase/hooks/migration
@@ -45,6 +52,14 @@ on:
         required: false
         default: true
         type: boolean
+      environment:
+        description: 'Target environment: production (moving alias release) or staging (immutable sha- deploy)'
+        required: false
+        default: production
+        type: choice
+        options:
+          - production
+          - staging
 
 permissions:
   contents: read
@@ -77,10 +92,18 @@ jobs:
           echo "sha=$SHA" | tee -a "$GITHUB_OUTPUT"
           echo "short=$SHORT" | tee -a "$GITHUB_OUTPUT"
           echo "version=$VER" | tee -a "$GITHUB_OUTPUT"
-          echo "## Manual production release requested" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Manual ${{ github.event.inputs.environment }} release requested" >> "$GITHUB_STEP_SUMMARY"
           echo "- Commit: \`$SHA\` ($SHORT)" >> "$GITHUB_STEP_SUMMARY"
           echo "- Version: \`$VER\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Surfaces: ${{ github.event.inputs.surfaces }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guard — never move the production alias from a staging run
+        if: github.event.inputs.environment == 'staging' && github.event.inputs.publish_production_alias == 'true'
+        run: |
+          echo "REFUSED: publish_production_alias=true with environment=staging would move the" >&2
+          echo "production GHCR alias from a staging run. Staging deploys pin immutable" >&2
+          echo "sha-<commit> tags; the \`production\` alias moves only on the production path." >&2
+          exit 1
 
   gate-quality:
     # C12 / §15: a RED canonical quality run must never reach production.
@@ -196,7 +219,7 @@ jobs:
     # fep-backup-copy.sh (deploy/backup-copy.sh) and fep-check-offsite.sh
     # (deploy/check-offsite.sh — verifies the off-VPS backup gate, C15).
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.event.inputs.environment }}
     needs: [classify, resolve]
     if: contains(needs.classify.outputs.class, 'B') || contains(needs.classify.outputs.class, 'C')
     steps:
@@ -249,7 +272,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.event.inputs.environment }}
     timeout-minutes: 120
     needs: [resolve, build-images, predeploy-backup, classify]
     # A skipped predeploy-backup (class A/D/E — no backend change) must NOT
@@ -262,6 +285,37 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref }}
           persist-credentials: false
+
+      - name: Pin staging apps to the immutable sha- tag (staging only)
+        # Staging Coolify apps never track a moving alias: each release
+        # re-pins the requested surfaces to sha-<commit> (the same PATCH
+        # contract rollback-deploy.yml uses, O5) and then deploys them.
+        # Production apps keep tracking the `production` alias, which the
+        # alias-publish step below moves only after health + smoke pass.
+        if: github.event.inputs.environment == 'staging'
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          FEP_COOLIFY_APP_UUID_LANDING: ${{ secrets.COOLIFY_APP_UUID_LANDING }}
+          FEP_COOLIFY_APP_UUID_APP: ${{ secrets.COOLIFY_APP_UUID_APP }}
+          FEP_COOLIFY_APP_UUID_ADMIN: ${{ secrets.COOLIFY_APP_UUID_ADMIN }}
+          FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
+        run: |
+          set -euo pipefail
+          SURFACES="${{ github.event.inputs.surfaces }}"
+          SHORT="${{ needs.resolve.outputs.short }}"
+          BASE="${COOLIFY_BASE_URL:-https://app.coolify.io}"
+          HDR="$(mktemp)"; printf 'Authorization: Bearer %s\n' "$COOLIFY_API_TOKEN" > "$HDR"; chmod 600 "$HDR"
+          trap 'rm -f "$HDR"' EXIT
+          for s in ${SURFACES//,/ }; do
+            case "$s" in landing|app|admin|pocketbase) ;; *) continue ;; esac
+            VAR="FEP_COOLIFY_APP_UUID_$(printf '%s' "$s" | tr '[:lower:]' '[:upper:]')"
+            UUID="${!VAR:?missing Coolify app UUID for $s}"
+            curl -fsS -m 90 -X PATCH "${BASE}/api/v1/applications/${UUID}" \
+              -H @"$HDR" -H 'Content-Type: application/json' \
+              --data "{\"docker_registry_image_tag\":\"sha-${SHORT}\"}" > /dev/null
+            echo "staging: $s pinned to ghcr.io/${{ github.repository_owner }}/fast-english/$s:sha-$SHORT"
+          done
 
       - name: Trigger + poll Coolify deployments (per surface)
         id: deploy
@@ -289,6 +343,11 @@ jobs:
 
       - name: Independent public HTTPS health checks
         id: health
+        env:
+          FEP_PROD_HEALTH_ROOT: ${{ secrets.FEP_PROD_HEALTH_ROOT }}
+          FEP_PROD_HEALTH_WWW: ${{ secrets.FEP_PROD_HEALTH_WWW }}
+          FEP_PROD_HEALTH_APP: ${{ secrets.FEP_PROD_HEALTH_APP }}
+          FEP_PROD_HEALTH_ADMIN: ${{ secrets.FEP_PROD_HEALTH_ADMIN }}
         run: |
           if bash scripts/prod-health-check.sh; then
             echo "health=healthy" >> "$GITHUB_OUTPUT"
@@ -300,6 +359,9 @@ jobs:
       - name: Production smoke (${{ github.event.inputs.smoke }})
         id: smoke
         env:
+          FEP_SMOKE_ROOT: ${{ secrets.FEP_SMOKE_ROOT }}
+          FEP_SMOKE_APP: ${{ secrets.FEP_SMOKE_APP }}
+          FEP_SMOKE_ADMIN: ${{ secrets.FEP_SMOKE_ADMIN }}
           FEP_SMOKE_STAFF_EMAIL: ${{ secrets.FEP_SMOKE_STAFF_EMAIL }}
           FEP_SMOKE_STAFF_PASSWORD: ${{ secrets.FEP_SMOKE_STAFF_PASSWORD }}
           FEP_SUPERUSER_EMAIL: ${{ secrets.FEP_SUPERUSER_EMAIL }}
@@ -314,11 +376,13 @@ jobs:
           fi
 
       - name: Publish the production image alias (post-verification)
-        # Runs only after smoke succeeded; steps.smoke.outcome is populated
-        # now that the smoke step has completed (it must NOT reference a
-        # later step). Coolify apps pull ...:production, so this is what
-        # makes the release actually ship.
-        if: github.event.inputs.publish_production_alias == 'true' && success()
+        # Runs only after smoke succeeded and ONLY on the production path:
+        # a staging run must never move the `production` alias (the resolve
+        # guard also refuses that combination). steps.smoke.outcome is
+        # populated now that the smoke step has completed (it must NOT
+        # reference a later step). Coolify apps pull ...:production, so
+        # this is what makes the release actually ship.
+        if: github.event.inputs.publish_production_alias == 'true' && github.event.inputs.environment == 'production' && success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -349,10 +413,10 @@ jobs:
             echo "| Coolify deploy (trigger + status poll) | $DEPLOY_OK |"
             echo "| Independent public HTTPS health | $HEALTH_OK |"
             echo "| smoke-prod (${{ github.event.inputs.smoke }}) | $SMOKE_OK |"
-            echo "Release: commit ${{ needs.resolve.outputs.sha }} / version ${{ needs.resolve.outputs.version }} / class ${{ needs.classify.outputs.class }}"
+            echo "Release: environment ${{ github.event.inputs.environment }} / commit ${{ needs.resolve.outputs.sha }} / version ${{ needs.resolve.outputs.version }} / class ${{ needs.classify.outputs.class }}"
           } >> "$GITHUB_STEP_SUMMARY"
           if [[ "$SMOKE_OK" == "success" ]]; then
-            echo "VERDICT: GREEN — production release complete (sha-${{ needs.resolve.outputs.short }})." >> "$GITHUB_STEP_SUMMARY"
+            echo "VERDICT: GREEN — ${{ github.event.inputs.environment }} release complete (sha-${{ needs.resolve.outputs.short }})." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           echo "VERDICT: RED" >> "$GITHUB_STEP_SUMMARY"

@@ -40,6 +40,14 @@ on:
         required: false
         default: false
         type: boolean
+      environment:
+        description: 'Target environment whose Coolify apps/secrets to use: production or staging'
+        required: false
+        default: production
+        type: choice
+        options:
+          - production
+          - staging
 
 permissions:
   contents: read
@@ -51,7 +59,7 @@ concurrency:
 jobs:
   rollback:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.event.inputs.environment }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
@@ -102,9 +110,18 @@ jobs:
           bash scripts/coolify-deploy.sh "${{ github.event.inputs.surface }}" --force
 
       - name: Independent public HTTPS health
+        env:
+          FEP_PROD_HEALTH_ROOT: ${{ secrets.FEP_PROD_HEALTH_ROOT }}
+          FEP_PROD_HEALTH_WWW: ${{ secrets.FEP_PROD_HEALTH_WWW }}
+          FEP_PROD_HEALTH_APP: ${{ secrets.FEP_PROD_HEALTH_APP }}
+          FEP_PROD_HEALTH_ADMIN: ${{ secrets.FEP_PROD_HEALTH_ADMIN }}
         run: bash scripts/prod-health-check.sh
 
       - name: Quick public smoke
+        env:
+          FEP_SMOKE_ROOT: ${{ secrets.FEP_SMOKE_ROOT }}
+          FEP_SMOKE_APP: ${{ secrets.FEP_SMOKE_APP }}
+          FEP_SMOKE_ADMIN: ${{ secrets.FEP_SMOKE_ADMIN }}
         run: bash deploy/smoke-prod.sh --quick
 
       - name: Verdict
