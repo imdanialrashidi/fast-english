@@ -30,8 +30,17 @@
 5. Four Coolify Applications (same table as §6 of `docs/COOLIFY_DEPLOYMENT.md`)
    with the staging domains + staging UUIDs.
 6. GitHub `staging` environment secrets (same names as production, staging
-   values) OR dispatch release-deploy with a staging override — prefer a
-   second environment so production secrets are never mixed.
+   values). The release workflows support the staging override natively:
+   dispatch `release-deploy.yml` / `rollback-deploy.yml` with
+   `environment = staging` (and UNCHECK `publish_production_alias` — the
+   workflow refuses that combination) — secrets are read from the `staging`
+   environment only (never mixed with production), Coolify apps are pinned
+   to the immutable `sha-<commit>` tag and deployed with `force`, and the
+   `production` image alias is never moved by a staging run. Staging
+   domain overrides for health/smoke — `FEP_PROD_HEALTH_{ROOT,WWW,APP,ADMIN}`
+   and `FEP_SMOKE_{ROOT,APP,ADMIN}` secrets in the `staging` environment —
+   are MANDATORY: the workflow fails closed when they are unset, so a
+   staging run can never verify/smoke the production domains.
 7. Release the current candidate to staging via `release-deploy.yml`
    (surfaces all, smoke full) — must go GREEN.
 

@@ -40,6 +40,14 @@ on:
         required: false
         default: false
         type: boolean
+      environment:
+        description: 'Target environment whose Coolify apps/secrets to use: production or staging'
+        required: false
+        default: production
+        type: choice
+        options:
+          - production
+          - staging
 
 permissions:
   contents: read
@@ -51,7 +59,7 @@ concurrency:
 jobs:
   rollback:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.event.inputs.environment }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
@@ -101,10 +109,40 @@ jobs:
           set -euo pipefail
           bash scripts/coolify-deploy.sh "${{ github.event.inputs.surface }}" --force
 
+      - name: Guard — staging verification must target staging domains (fail closed)
+        if: github.event.inputs.environment == 'staging'
+        env:
+          FEP_PROD_HEALTH_ROOT: ${{ secrets.FEP_PROD_HEALTH_ROOT }}
+          FEP_PROD_HEALTH_WWW: ${{ secrets.FEP_PROD_HEALTH_WWW }}
+          FEP_PROD_HEALTH_APP: ${{ secrets.FEP_PROD_HEALTH_APP }}
+          FEP_PROD_HEALTH_ADMIN: ${{ secrets.FEP_PROD_HEALTH_ADMIN }}
+          FEP_SMOKE_ROOT: ${{ secrets.FEP_SMOKE_ROOT }}
+          FEP_SMOKE_APP: ${{ secrets.FEP_SMOKE_APP }}
+          FEP_SMOKE_ADMIN: ${{ secrets.FEP_SMOKE_ADMIN }}
+        run: |
+          set -euo pipefail
+          : "${FEP_PROD_HEALTH_ROOT:?FEP_PROD_HEALTH_ROOT required for staging (fail closed — never verify production domains from a staging run)}"
+          : "${FEP_PROD_HEALTH_WWW:?FEP_PROD_HEALTH_WWW required for staging}"
+          : "${FEP_PROD_HEALTH_APP:?FEP_PROD_HEALTH_APP required for staging}"
+          : "${FEP_PROD_HEALTH_ADMIN:?FEP_PROD_HEALTH_ADMIN required for staging}"
+          : "${FEP_SMOKE_ROOT:?FEP_SMOKE_ROOT required for staging}"
+          : "${FEP_SMOKE_APP:?FEP_SMOKE_APP required for staging}"
+          : "${FEP_SMOKE_ADMIN:?FEP_SMOKE_ADMIN required for staging}"
+          echo "staging verification domains: $FEP_PROD_HEALTH_ROOT / $FEP_PROD_HEALTH_APP / $FEP_PROD_HEALTH_ADMIN"
+
       - name: Independent public HTTPS health
+        env:
+          FEP_PROD_HEALTH_ROOT: ${{ secrets.FEP_PROD_HEALTH_ROOT }}
+          FEP_PROD_HEALTH_WWW: ${{ secrets.FEP_PROD_HEALTH_WWW }}
+          FEP_PROD_HEALTH_APP: ${{ secrets.FEP_PROD_HEALTH_APP }}
+          FEP_PROD_HEALTH_ADMIN: ${{ secrets.FEP_PROD_HEALTH_ADMIN }}
         run: bash scripts/prod-health-check.sh
 
       - name: Quick public smoke
+        env:
+          FEP_SMOKE_ROOT: ${{ secrets.FEP_SMOKE_ROOT }}
+          FEP_SMOKE_APP: ${{ secrets.FEP_SMOKE_APP }}
+          FEP_SMOKE_ADMIN: ${{ secrets.FEP_SMOKE_ADMIN }}
         run: bash deploy/smoke-prod.sh --quick
 
       - name: Verdict
