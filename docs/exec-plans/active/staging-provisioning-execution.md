@@ -109,9 +109,11 @@ redesign.
 6. GitHub: create `staging` AND `production` environments; add the
    environment secrets (names in `deploy/env.production.example`); protect
    `production` with required reviewers. Staging secrets = staging values.
-7. Dispatch `build-images` (or run `release-deploy` with
-   `environment=staging`, `ref=6699439…` — the exact commit whose canonical
-   quality run is green AFTER the merged e2e fix re-run).
+7. After PR #12 merges, note the NEW `main` tip SHA (its canonical quality
+   run must be green — the `6699439` run is red and can never be the
+   release base). Dispatch `release-deploy` with `environment=staging`,
+   `ref=<new main tip>`, `smoke=full`. (The product artifact tree is
+   unchanged since `6699439`; the merge only carries the e2e gate repair.)
 8. Execute `docs/STAGING.md` F1–F17 + O1–O5 + backup/restore drills + the
    full staging product journey; record evidence into this plan.
 9. Return the GO/NO-GO verdict; only then proceed to the Production phase.
