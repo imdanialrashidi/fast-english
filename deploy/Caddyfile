@@ -1,3 +1,14 @@
+# ===========================================================================
+# LEGACY / RETIRED — Caddy era production proxy configuration.
+#
+# Status: RETIRED for new production installs. The accepted production
+# architecture is now Coolify-managed Traefik + the nginx runtime configs
+# in docker/*/nginx.conf (see docs/COOLIFY_DEPLOYMENT.md, the canonical
+# deployment guide). This file is preserved ONLY as historical fallback
+# reference and for the legacy redaction proof (deploy/test-log-redaction.sh
+# still runs it inside the canonical quality gate).
+# DO NOT install this on a new production server.
+# ===========================================================================
 # Fast English Podcast — Production Caddyfile (Caddy v2.10.x)
 #
 # Served domains:

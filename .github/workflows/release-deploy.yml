@@ -1,0 +1,377 @@
+name: release-deploy
+
+# MANUAL production release workflow (task §15). There is NO automatic
+# deploy on push: the operator intentionally runs this against an exact
+# commit, the canonical quality gate must be green for that commit, the
+# four immutable images are built/published to GHCR, Coolify deploys them,
+# and success is declared ONLY after:
+#   1. Coolify deployment status polling reaches `finished`;
+#   2. independent public HTTPS health checks pass;
+#   3. smoke-prod.sh passes.
+#
+# Change classification (A–E) is derived from the Git diff and drives the
+# pre-deploy backup step (mandatory before any PocketBase/hooks/migration
+# deploy) and the failure-handling guidance.
+#
+# Secrets: stored in GitHub Environment "production" secrets — names only
+# in this file. Coolify token is deploy-scoped. Never in code.
+#
+# Environment protection: the repository should protect the `production`
+# environment with one or more required reviewers (Approvals) so this
+# workflow is the manual approval gate itself.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Exact commit/ref to release (e.g. a full SHA or tag)'
+        required: true
+        type: string
+      surfaces:
+        description: 'Surfaces to deploy (comma separated): landing,app,admin,pocketbase'
+        required: false
+        default: 'landing,app,admin,pocketbase'
+        type: string
+      smoke:
+        description: 'Smoke depth: quick (public only) or full (with disposable accounts)'
+        required: false
+        default: quick
+        type: choice
+        options:
+          - quick
+          - full
+      publish_production_alias:
+        description: 'Publish the moving `production` image alias on GHCR'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+  checks: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+      short: ${{ steps.resolve.outputs.short }}
+      version: ${{ steps.resolve.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Resolve exact commit
+        id: resolve
+        run: |
+          SHA="$(git rev-parse HEAD)"
+          SHORT="$(git rev-parse --short=12 HEAD)"
+          VER="$(node -p "require('./package.json').version")"
+          echo "sha=$SHA" | tee -a "$GITHUB_OUTPUT"
+          echo "short=$SHORT" | tee -a "$GITHUB_OUTPUT"
+          echo "version=$VER" | tee -a "$GITHUB_OUTPUT"
+          echo "## Manual production release requested" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`$SHA\` ($SHORT)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Version: \`$VER\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Surfaces: ${{ github.event.inputs.surfaces }}" >> "$GITHUB_STEP_SUMMARY"
+
+  gate-quality:
+    # C12 / §15: a RED canonical quality run must never reach production.
+    runs-on: ubuntu-latest
+    needs: resolve
+    outputs:
+      status: ${{ steps.gate.outputs.status }}
+    steps:
+      - name: Check canonical quality status for the exact commit
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          URL="repos/${{ github.repository }}/commits/${{ needs.resolve.outputs.sha }}/check-runs"
+          JSON="$(gh api "$URL" --jq '.check_runs')"
+          echo "$JSON" | jq -r '.[] | [.name, .status, .conclusion] | @tsv' | sed 's/^/  quality-run: /'
+          # The canonical `quality` workflow's merge-gate JOB is named `verify`
+          # (it aggregates the static/backend/e2e lanes with if: always());
+          # GitHub names check-runs after jobs, so the gate is `verify`.
+          NUM_GATE="$(echo "$JSON" | jq '[.[] | select(.name=="verify")] | length')"
+          PASSED="$(echo "$JSON" | jq '[.[] | select(.name=="verify" and .status=="completed" and .conclusion=="success")] | length')"
+          if [[ "$NUM_GATE" -eq 0 ]]; then
+            echo "FATAL: no canonical 'quality' merge-gate run found for ${{ needs.resolve.outputs.sha }} — a red/missing canonical gate can never deploy to production." >&2
+            echo "status=blocked" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          if [[ "$PASSED" -lt 1 ]]; then
+            echo "FATAL: canonical 'quality' merge-gate run for ${{ needs.resolve.outputs.sha }} is not green." >&2
+            echo "status=blocked" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "status=green" >> "$GITHUB_OUTPUT"
+          echo "Canonical quality gate GREEN for ${{ needs.resolve.outputs.sha }}" >> "$GITHUB_STEP_SUMMARY"
+
+  classify:
+    runs-on: ubuntu-latest
+    needs: resolve
+    outputs:
+      class: ${{ steps.classify.outputs.class }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Classify the change (A–E)
+        id: classify
+        run: |
+          BASE="$(git tag --list 'releases/*' 2>/dev/null | sort -V | tail -1 || true)"
+          CLASS="$(bash scripts/release-classify.sh "$BASE" "${{ github.event.inputs.ref }}")"
+          echo "class=$CLASS" >> "$GITHUB_OUTPUT"
+          echo "## Deployment change classification" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Base for diff: \`${BASE:-<whole-tree/first-release>}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Classification: \`$CLASS\`" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$CLASS" == *C* ]]; then
+            echo "- ⚠ MIGRATION: pre-deploy verified backup is MANDATORY; rollback does NOT reverse schema migrations (restore the pre-deploy backup instead)." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$CLASS" == *B* ]]; then
+            echo "- Backend (hooks) change: pre-deploy backup recommended/required by policy." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  infra-gate:
+    # Full local infrastructure verification for the EXACT release commit:
+    # builds the four images locally, runs the persistence + backup/restore +
+    # migration + routing-contract + secret-scan + log-redaction + Coolify
+    # contract proofs. This is the per-release infra gate (see the quiet
+    # PR-gate decision in docs/COOLIFY_DEPLOYMENT.md).
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [resolve, gate-quality]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Provision PocketBase test binary (for gate scripts that need it)
+        run: bash scripts/setup-pocketbase.sh
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Install dependencies (for the workflow contract node checks)
+        env:
+          CI_SKIP_PLAYWRIGHT: '1'
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+      - name: Run the Coolify-era infrastructure verification gate
+        env:
+          CI_SKIP_PLAYWRIGHT: '1'
+        run: bash scripts/verify-coolify-infra.sh
+
+  build-images:
+    uses: ./.github/workflows/build-images.yml
+    needs: [resolve, infra-gate, classify]
+    with:
+      # The moving `production` alias is NOT published here: it must not
+      # move before the production-environment approval gate (the deploy
+      # job publishes it after health + smoke pass — see below).
+      ref: ${{ github.event.inputs.ref }}
+      version: ${{ needs.resolve.outputs.version }}
+      publish_production_alias: false
+    secrets:
+      GHCR_PUBLISH_TOKEN: ${{ secrets.GHCR_PUBLISH_TOKEN }}
+
+  predeploy-backup:
+    # Runs ONLY when the release touches the backend (TYPE B) or migrations
+    # (TYPE C) — mandated pre-deploy verified backup on the production host.
+    #
+    # Host scripts invoked here are installed by the host init checklist
+    # (docs/COOLIFY_DEPLOYMENT.md §5): fep-backup.sh (deploy/backup.sh),
+    # fep-backup-copy.sh (deploy/backup-copy.sh) and fep-check-offsite.sh
+    # (deploy/check-offsite.sh — verifies the off-VPS backup gate, C15).
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [classify, resolve]
+    if: contains(needs.classify.outputs.class, 'B') || contains(needs.classify.outputs.class, 'C')
+    steps:
+      - name: Pre-deploy verified backup via SSH to the production host
+        env:
+          FEP_SSH_HOST: ${{ secrets.FEP_SSH_HOST }}
+          FEP_SSH_USER: ${{ secrets.FEP_SSH_USER }}
+          FEP_SSH_KEY: ${{ secrets.FEP_SSH_KEY }}
+          FEP_SSH_KNOWN_HOSTS: ${{ secrets.FEP_SSH_KNOWN_HOSTS }}
+          SUFFIX: predeploy-${{ needs.resolve.outputs.short }}
+        run: |
+          set -euo pipefail
+          : "${FEP_SSH_HOST:?FEP_SSH_HOST environment secret is required for a backend deploy}"
+          : "${FEP_SSH_USER:?FEP_SSH_USER is required}"
+          : "${FEP_SSH_KEY:?FEP_SSH_KEY is required}"
+          KEY="$(mktemp)"; KNOWN="$(mktemp)"
+          printf '%s\n' "$FEP_SSH_KEY" > "$KEY"
+          chmod 600 "$KEY"
+          trap 'rm -f "$KEY" "$KNOWN"' EXIT
+          # Host-key pinning: FEP_SSH_KNOWN_HOSTS carries the ssh-keyscan
+          # line for the production host (never TOFU). Falls back to
+          # accept-new ONLY when the secret is not configured yet.
+          if [[ -n "${FEP_SSH_KNOWN_HOSTS:-}" ]]; then
+            printf '%s\n' "$FEP_SSH_KNOWN_HOSTS" > "$KNOWN"
+            chmod 600 "$KNOWN"
+            HOST_CHECK=(-o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN")
+          else
+            HOST_CHECK=(-o StrictHostKeyChecking=accept-new)
+            echo "WARNING: FEP_SSH_KNOWN_HOSTS not set — host key NOT pinned (set it for production hardening)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          ssh -i "$KEY" -o BatchMode=yes "${HOST_CHECK[@]}" \
+            "${FEP_SSH_USER}@${FEP_SSH_HOST}" \
+            "bash /opt/fast-english/shared/scripts/fep-backup.sh fep-backup-${SUFFIX} && bash /opt/fast-english/shared/scripts/fep-backup-copy.sh"
+          # verify the artifact actually exists on the host (fail closed)
+          ARTIFACT="$(ssh -i "$KEY" -o BatchMode=yes "${HOST_CHECK[@]}" \
+            "${FEP_SSH_USER}@${FEP_SSH_HOST}" \
+            "ls -1t /opt/fast-english/shared/backups/fep-backup-${SUFFIX}*.zip 2>/dev/null | head -1")"
+          [[ -n "$ARTIFACT" ]] || { echo "FATAL: pre-deploy backup artifact missing on the host" >&2; exit 1; }
+          echo "Pre-deploy verified backup: $ARTIFACT" >> "$GITHUB_STEP_SUMMARY"
+          # Off-VPS backup gate (C15): the release must not proceed when the
+          # S3 destination is not configured+reachable (read-only check).
+          if ssh -i "$KEY" -o BatchMode=yes "${HOST_CHECK[@]}" \
+              "${FEP_SSH_USER}@${FEP_SSH_HOST}" \
+              "bash /opt/fast-english/shared/scripts/fep-check-offsite.sh"; then
+            echo "Off-VPS backup destination: configured and reachable." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "FATAL: off-VPS backup gate failed (see deploy/check-offsite.sh)." >&2
+            exit 1
+          fi
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 120
+    needs: [resolve, build-images, predeploy-backup, classify]
+    # A skipped predeploy-backup (class A/D/E — no backend change) must NOT
+    # skip the deploy job. Run only when the mandatory dependencies really
+    # succeeded AND predeploy-backup is either success (backup taken) or
+    # skipped (no backend change). Never run on a failed dependency.
+    if: needs.resolve.result == 'success' && needs.build-images.result == 'success' && needs.classify.result == 'success' && (needs.predeploy-backup.result == 'success' || needs.predeploy-backup.result == 'skipped')
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          persist-credentials: false
+
+      - name: Trigger + poll Coolify deployments (per surface)
+        id: deploy
+        shell: bash
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          FEP_COOLIFY_APP_UUID_LANDING: ${{ secrets.COOLIFY_APP_UUID_LANDING }}
+          FEP_COOLIFY_APP_UUID_APP: ${{ secrets.COOLIFY_APP_UUID_APP }}
+          FEP_COOLIFY_APP_UUID_ADMIN: ${{ secrets.COOLIFY_APP_UUID_ADMIN }}
+          FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
+        run: |
+          set -euo pipefail
+          SURFACES="${{ github.event.inputs.surfaces }}"
+          rc=0
+          for s in ${SURFACES//,/ }; do
+            case "$s" in landing|app|admin|pocketbase) ;; *) echo "IGNORED unknown surface: $s"; continue ;; esac
+            if ! bash scripts/coolify-deploy.sh "$s"; then
+              rc=1
+            fi
+          done
+          echo "deploy_all=$([ "$rc" -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "surfaces=$SURFACES" >> "$GITHUB_OUTPUT"
+          exit "$rc"
+
+      - name: Independent public HTTPS health checks
+        id: health
+        run: |
+          if bash scripts/prod-health-check.sh; then
+            echo "health=healthy" >> "$GITHUB_OUTPUT"
+          else
+            echo "health=unhealthy" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Production smoke (${{ github.event.inputs.smoke }})
+        id: smoke
+        env:
+          FEP_SMOKE_STAFF_EMAIL: ${{ secrets.FEP_SMOKE_STAFF_EMAIL }}
+          FEP_SMOKE_STAFF_PASSWORD: ${{ secrets.FEP_SMOKE_STAFF_PASSWORD }}
+          FEP_SUPERUSER_EMAIL: ${{ secrets.FEP_SUPERUSER_EMAIL }}
+          FEP_SUPERUSER_PASSWORD: ${{ secrets.FEP_SUPERUSER_PASSWORD }}
+        run: |
+          ARGS="--${{ github.event.inputs.smoke }}"
+          if bash deploy/smoke-prod.sh "$ARGS"; then
+            echo "smoke=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "smoke=failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Publish the production image alias (post-verification)
+        # Runs only after smoke succeeded; steps.smoke.outcome is populated
+        # now that the smoke step has completed (it must NOT reference a
+        # later step). Coolify apps pull ...:production, so this is what
+        # makes the release actually ship.
+        if: github.event.inputs.publish_production_alias == 'true' && success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SURFACES="${{ github.event.inputs.surfaces }}"
+          SHORT="${{ needs.resolve.outputs.short }}"
+          docker login ghcr.io -u "${{ github.actor }}" --password-stdin <<< "$GH_TOKEN"
+          for s in ${SURFACES//,/ }; do
+            case "$s" in landing|app|admin|pocketbase) ;; *) continue ;; esac
+            docker buildx imagetools create \
+              -t "ghcr.io/${{ github.repository_owner }}/fast-english/${s}:production" \
+              "ghcr.io/${{ github.repository_owner }}/fast-english/${s}:sha-${SHORT}"
+          done
+          echo "Production image alias published for the verified surfaces (sha-$SHORT)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Final verdict
+        if: always()
+        env:
+          DEPLOY_OK: ${{ steps.deploy.outcome }}
+          HEALTH_OK: ${{ steps.health.outcome }}
+          SMOKE_OK: ${{ steps.smoke.outcome }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Production release verdict"
+            echo "| Stage | Result |"
+            echo "| --- | --- |"
+            echo "| Coolify deploy (trigger + status poll) | $DEPLOY_OK |"
+            echo "| Independent public HTTPS health | $HEALTH_OK |"
+            echo "| smoke-prod (${{ github.event.inputs.smoke }}) | $SMOKE_OK |"
+            echo "Release: commit ${{ needs.resolve.outputs.sha }} / version ${{ needs.resolve.outputs.version }} / class ${{ needs.classify.outputs.class }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$SMOKE_OK" == "success" ]]; then
+            echo "VERDICT: GREEN — production release complete (sha-${{ needs.resolve.outputs.short }})." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "VERDICT: RED" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$DEPLOY_OK" != "success" ]]; then
+            printf '%s\n' "### Failure class: deploy trigger / build / deploy" \
+              "CHECK the Coolify dashboard deployment logs. Roll back to the previous" \
+              "immutable image with rollback-deploy.yml. Frontend rollback never touches PocketBase." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ "$HEALTH_OK" != "success" ]]; then
+            printf '%s\n' "### Failure class: public health" \
+              "Traefik/Coolify health gate or the backend is unhealthy. Check the Coolify app" \
+              "status + PocketBase container logs. Do NOT run a data restore automatically." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [[ "$SMOKE_OK" != "success" ]]; then
+            printf '%s\n' "### Failure class: smoke" \
+              "Smoke failed against the real HTTPS domains. Do NOT run a data restore." \
+              "- Frontends: rollback-deploy.yml -> previous image (no PocketBase impact)." \
+              "- PocketBase WITHOUT migration: previous image -> same pb_data -> health -> smoke." \
+              "- PocketBase AFTER migration: STOP automatic rollback — migration-compatibility" \
+              "  review first; recovery = restore the pre-deploy backup via docs/BACKUP_RESTORE.md §5." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit 1

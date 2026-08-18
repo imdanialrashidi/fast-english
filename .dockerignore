@@ -1,2 +1,88 @@
-**
-!Dockerfile.pi
+# Fast English Podcast — Docker build context excludes.
+# Root-context builds (docker/landing, docker/app, docker/admin,
+# docker/pocketbase) must never ship VCS metadata, secrets, local data,
+# dev databases, test artifacts or private material into an image layer.
+
+# VCS / CI metadata
+.git
+.gitignore
+.github
+**/.gitkeep
+
+# Local configuration / secrets (names only are committed under .env.example)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.jks
+*.keystore
+keystore.properties
+keystore.properties.*
+*.storepass
+*.keypass
+
+# Dependencies and caches
+node_modules
+.pnpm-store
+.venv
+venv
+vendor
+.npm
+.yarn
+.pnpm-store
+
+# Build / test output
+dist
+dist-app
+dist-landing
+dist-landing-apk
+dist-admin
+build
+coverage
+target
+.turbo
+.vite
+.artifacts
+playwright-report
+test-results
+*.log
+*.tsbuildinfo
+
+# PocketBase local data and binary (the image downloads its own pinned
+# binary; server/pb_data must NEVER enter an image layer)
+server/pb_data
+server/pocketbase
+server/pocketbase.exe
+
+# Runtime artifacts that belong on the host, never in an image
+releases
+fast_english_logo_assets
+
+# Non-build sources (kept out of the context to shrink layers)
+docs
+plans
+openspec
+evals
+content-packages
+tests
+e2e
+scripts/smoke-*.mjs
+scripts/restore-proof.*
+scripts/dev.sh
+seeds
+android
+.pi
+.ruff_cache
+__pycache__
+.mcp.json
+capacitor.config.json
+Dockerfile.pi
+
+# schemas/ is REQUIRED at build time (shared/content-package/schema.ts imports
+# schemas/episode-package.schema.json for the Admin import validator).
+
+# Editor / OS files
+.idea
+.vscode
+.DS_Store

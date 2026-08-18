@@ -1,3 +1,11 @@
+# ===========================================================================
+# LEGACY / RETIRED — PocketBase systemd unit (Caddy + systemd era).
+#
+# Status: RETIRED for new production installs. PocketBase now runs as the
+# Coolify-managed container from the immutable docker/pocketbase image
+# (non-root UID 10001, /pb/pb_data host bind mount). The backup-copy timer
+# below remains KEEP (host-level file copy, container-independent).
+# ===========================================================================
 # Fast English Podcast — PocketBase production service (systemd).
 #
 # Hardening rationale (all verified against the server's systemd version):

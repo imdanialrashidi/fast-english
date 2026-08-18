@@ -487,7 +487,9 @@ c="$(code "$ADMIN_BASE/_/")"
 c="$(code "$ADMIN_BASE/api/health")"
 [[ "$c" == "200" ]] && ok "admin API proxy healthy" || bad "admin api/health -> $c"
 ADMIN_HTML="$(curl "${CURL_OPTS[@]}" "$ADMIN_BASE/operator")" || ADMIN_HTML=""
-[[ "$ADMIN_HTML" == *"app-surface"* ]] && ok "operator SPA served" || bad "admin operator page missing app marker"
+# The Admin surface carries the admin-surface marker (the same contract
+# enforced by scripts/project-verify.sh topology checks).
+[[ "$ADMIN_HTML" == *"admin-surface"* ]] && ok "operator SPA served" || bad "admin operator page missing admin marker"
 if [[ -n "${OP_TOKEN:-}" ]]; then
   c="$(code "$ADMIN_BASE/api/fast-english/operator/payment-requests?page=1&perPage=5" -H "Authorization: $OP_TOKEN")"
   [[ "$c" == "200" ]] && ok "operator API reachable through admin domain" || bad "admin operator api -> $c"

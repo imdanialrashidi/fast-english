@@ -1,0 +1,66 @@
+# Fast English Podcast — disposable Coolify-equivalent local twin.
+#
+# Purpose (see docs/COOLIFY_DEPLOYMENT.md): prove application/container/
+# network behaviour and the routing contracts BEFORE a real Coolify server
+# exists. This is a VERIFICATION environment, NOT the production deployment
+# model — production runs four independent Coolify Applications; Coolify
+# itself is never recreated here. The edge router is a stand-in for
+# Coolify's managed Traefik (infra/edge-router/nginx.conf).
+#
+# Required env (set by tests/infra/run-all.sh; fails closed when missing):
+#   FEP_INFRA_PB_DATA   host directory bind-mounted as the PocketBase data
+#                       dir (creation + ownership handled by the harness —
+#                       please do not point this at server/pb_data)
+#   FEP_INFRA_RELEASES  host directory with APK + release metadata
+#   FEP_INFRA_PB_UID    runtime uid for the pocketbase container
+#   FEP_INFRA_PB_GID    runtime gid for the pocketbase container
+#
+# Images: built once by tests/infra/01-build-images.sh (fep-infra/*:test,
+# commit-tagged; `latest` is never used).
+
+services:
+  edge:
+    build:
+      context: ./edge-router
+    image: fep-infra/edge-router:test
+    pull_policy: never
+    ports:
+      - "127.0.0.1:18150:80"
+    depends_on:
+      - pocketbase
+      - landing
+      - app
+      - admin
+    restart: "no"
+
+  landing:
+    image: fep-infra/landing:test
+    pull_policy: never
+    volumes:
+      - "${FEP_INFRA_RELEASES}:/srv/releases:ro"
+    restart: "no"
+
+  app:
+    image: fep-infra/app:test
+    pull_policy: never
+    restart: "no"
+
+  admin:
+    image: fep-infra/admin:test
+    pull_policy: never
+    restart: "no"
+
+  pocketbase:
+    image: fep-infra/pocketbase:test
+    pull_policy: never
+    user: "${FEP_INFRA_PB_UID:-10001}:${FEP_INFRA_PB_GID:-10001}"
+    volumes:
+      - "${FEP_INFRA_PB_DATA}:/pb/pb_data"
+    environment:
+      # exactly 32 chars (PocketBase AES-256 requires key size 32)
+      PB_ENCRYPTION_KEY: "twin-encryption-key-0123456789ab"
+    ports:
+      # loopback-only maintenance access (backup/configure scripts) — the
+      # same 127.0.0.1:8090 pattern proven in docs; never exposed publicly.
+      - "127.0.0.1:18140:8090"
+    restart: "no"

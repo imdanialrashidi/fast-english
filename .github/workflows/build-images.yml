@@ -1,0 +1,138 @@
+name: build-images
+
+# Builds and publishes the four immutable Fast English production images to
+# GHCR. Callers:
+#   * release-deploy.yml (workflow_call) — the exact-commit release path;
+#   * manual workflow_dispatch "Build images" — operator-initiated build
+#     (never deploys anything by itself).
+#
+# Contract:
+#   * images are tagged IMMUTABLY sha-<commit> ALWAYS;
+#   * the moving `production` alias is published ONLY on the release path —
+#     `latest` is never used and never the authoritative identity;
+#   * the caller (release-deploy) enforces a green canonical `quality` run
+#     before this workflow is invoked, so a red canonical gate can never
+#     reach production;
+#   * digests are reported in the job summary;
+#   * builds run on GHCR-hosted runners — the production VPS never builds.
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: exact git ref/commit to build from
+        required: true
+        type: string
+      version:
+        description: Fast English package version at that ref
+        required: true
+        type: string
+      publish_production_alias:
+        description: publish the moving `production` tag
+        required: false
+        default: false
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'exact git ref/commit to build (default: main)'
+        required: false
+        default: 'main'
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-images-${{ inputs.ref || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - surface: landing
+            dockerfile: docker/landing/Dockerfile
+          - surface: app
+            dockerfile: docker/app/Dockerfile
+          - surface: admin
+            dockerfile: docker/admin/Dockerfile
+          - surface: pocketbase
+            dockerfile: docker/pocketbase/Dockerfile
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+
+      - name: Resolve target ref + version + immutable tag
+        id: meta
+        run: |
+          set -euo pipefail
+          SHA="$(git rev-parse HEAD)"
+          SHORT="$(git rev-parse --short=12 HEAD)"
+          echo "sha=$SHA" | tee -a "$GITHUB_OUTPUT"
+          echo "short=$SHORT" | tee -a "$GITHUB_OUTPUT"
+          # version defaults to package.json at THIS ref when the caller
+          # (manual dispatch) did not pass one
+          VERSION="${{ inputs.version }}"
+          if [[ -z "$VERSION" ]]; then VERSION="$(node -p "require('./package.json').version")"; fi
+          echo "version=$VERSION" | tee -a "$GITHUB_OUTPUT"
+          TAGS="ghcr.io/${{ github.repository_owner }}/fast-english/${{ matrix.surface }}:sha-${SHORT}"
+          if [[ "${{ inputs.publish_production_alias }}" == "true" ]]; then
+            TAGS="${TAGS},ghcr.io/${{ github.repository_owner }}/fast-english/${{ matrix.surface }}:production"
+          fi
+          echo "tags=$TAGS" | tee -a "$GITHUB_OUTPUT"
+          if [[ "${{ matrix.surface }}" == "pocketbase" ]]; then
+            echo "pb_version=$(tr -d '[:space:]' < server/VERSION)" | tee -a "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PUBLISH_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.surface }}
+        uses: docker/build-push-action@v7
+        id: build
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          provenance: true
+          sbom: false
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            GIT_SHA=${{ steps.meta.outputs.sha }}
+            FEP_VERSION=${{ steps.meta.outputs.version }}
+            FEP_PB_VERSION=${{ steps.meta.outputs.pb_version }}
+          cache-from: type=gha,scope=${{ matrix.surface }}
+          cache-to: type=gha,scope=${{ matrix.surface }},mode=max
+
+      - name: Emit digest summary
+        if: always()
+        run: |
+          echo "| Surface | Immutable tag | Digest |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ${{ matrix.surface }} | \`ghcr.io/${{ github.repository_owner }}/fast-english/${{ matrix.surface }}:sha-${{ steps.meta.outputs.short }}\` | \`${{ steps.build.outputs.digest }}\` |" >> "$GITHUB_STEP_SUMMARY"
+
+  report:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    steps:
+      - name: Report build outcome
+        run: |
+          echo "## GHCR image build" >> "$GITHUB_STEP_SUMMARY"
+          echo "Result: ${{ needs.build.result }} — each surface published under an immutable sha-<commit> tag (digests in the per-surface steps)." >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${{ needs.build.result }}" != "success" ]]; then exit 1; fi

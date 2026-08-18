@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+# ===========================================================================
+# LEGACY / RETIRED — first-time server bootstrap for the Caddy + systemd
+# architecture.
+#
+# Status: RETIRED for new production installs. Server provisioning now
+# follows docs/COOLIFY_DEPLOYMENT.md (Coolify Cloud -> owned VPS -> four
+# Coolify Applications; host initialization is a short checklist, not this
+# script). Preserved for historical fallback only.
+# ===========================================================================
+!/usr/bin/env bash
 # Fast English Podcast — first-time production server bootstrap.
 #
 # Creates the dedicated non-root service account, the /opt/fast-english
