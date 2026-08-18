@@ -67,12 +67,19 @@ redesign.
   be executed from here.
 - **Staging release path (E8):** `release-deploy.yml` + `rollback-deploy.yml`
   gained an `environment` input (`production` default / `staging`); staging
-  runs PATCH the Coolify apps to `sha-<commit>` and are refused from moving
-  the `production` alias; health/smoke domain overrides pass through
-  `FEP_PROD_HEALTH_*`/`FEP_SMOKE_*` secrets. `environment:` expressions are
+  runs PATCH the Coolify apps to `sha-<commit>` and deploy with `--force`;
+  the `production` alias can never move from a staging run and a production
+  run without alias-publish is refused; staging health/smoke FAIL CLOSED
+  (the staging environment must define the `FEP_PROD_HEALTH_*`/`FEP_SMOKE_*`
+  staging-domain overrides or the workflow refuses — unset secrets would
+  otherwise fall back to production domains). `environment:` expressions are
   officially supported (GitHub docs). `tests/infra/check-workflows.mjs` W2
-  updated + W12 added; `node tests/infra/check-workflows.mjs` ALL PASS;
-  `pnpm verify:fast` green.
+  updated + W12 added (12 checks); ALL PASS; `pnpm verify:fast` green.
+- **Independent review (E9):** reviewer subagent on the PR — no
+  BLOCKER/MAJOR; two real gaps fixed (staging verification fail-open to
+  production domains; e2e assertion still assuming one race branch) plus
+  two hardening items (production-without-alias false GREEN; staging
+  `--force` re-pull). CI on the PR head `0381012` green (run 32124461034).
 
 ## Decisions
 
@@ -133,8 +140,10 @@ redesign.
 ## Handoff
 
 - What changed: e2e mini-player test de-racing (gate repair), staging
-  release path in both deploy workflows + contract checks, docs
+  release path in both deploy workflows + fail-closed verification guards +
+  contract checks W12, docs
   (COOLIFY_DEPLOYMENT/STAGING/TECHNICAL_OWNER_RUNBOOK_FA/env example).
+  Delivery: PR #12 (branch `feat/staging-provisioning-phase`).
 - What remains: everything on the HUMAN INPUT REQUIRED list above; then the
   S1–S28 acceptance evidence; then the verdict.
 - Must not be overwritten: the exact release base `6699439`; staging-only
