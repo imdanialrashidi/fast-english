@@ -162,38 +162,31 @@ export function LessonDetailRoute() {
           if (level) setAnnouncement(productCopy.episodeSurface.variantLoaded(level));
         }
 
-        // Progress (non-fatal — the surface stays usable without it).
-        try {
-          const prog = await progressApi.getLessonProgress(targetId);
-          if (seqRef.current !== seq) return;
-          setProgress(prog);
-        } catch {
-          // non-fatal
-        }
-
-        // Vocabulary (non-fatal; retry is offered inline).
-        try {
-          const vocab = await api.getLessonVocabulary(targetId);
-          if (seqRef.current !== seq) return;
-          setVocabItems(vocab.items);
-        } catch {
-          if (seqRef.current !== seq) return;
-          setVocabFailed(true);
-        }
-
-        // Protected audio URL (non-fatal; the Deck offers retry).
-        if (data.audio?.url) {
-          rawAudioUrlRef.current = data.audio.url;
-          try {
-            const url = await api.buildProtectedAudioUrl(data.audio.url);
-            if (seqRef.current !== seq) return;
-            setAudioUrl(url);
-          } catch {
-            if (seqRef.current !== seq) return;
-            setAudioError(true);
-          }
-        } else {
-          rawAudioUrlRef.current = null;
+        // Progress, vocabulary and audio token in parallel after detail (perf).
+        const progressP = progressApi.getLessonProgress(targetId).then(
+          (v) => ({ ok: true as const, value: v }),
+          () => ({ ok: false as const }),
+        );
+        const vocabP = api.getLessonVocabulary(targetId).then(
+          (v) => ({ ok: true as const, value: v }),
+          () => ({ ok: false as const }),
+        );
+        const rawUrl = data.audio?.url ?? null;
+        rawAudioUrlRef.current = rawUrl;
+        const audioP = rawUrl
+          ? api.buildProtectedAudioUrl(rawUrl).then(
+              (v) => ({ ok: true as const, value: v }),
+              () => ({ ok: false as const }),
+            )
+          : Promise.resolve({ ok: true as const, value: null as string | null });
+        const [progRes, vocabRes, audioRes] = await Promise.all([progressP, vocabP, audioP]);
+        if (seqRef.current !== seq) return;
+        if (progRes.ok && progRes.value) setProgress(progRes.value);
+        if (vocabRes.ok && vocabRes.value) setVocabItems(vocabRes.value.items);
+        else if (!vocabRes.ok) setVocabFailed(true);
+        if (rawUrl) {
+          if (audioRes.ok && audioRes.value) setAudioUrl(audioRes.value);
+          else setAudioError(true);
         }
       } catch (err) {
         if (seqRef.current !== seq) return;

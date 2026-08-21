@@ -38,6 +38,7 @@ const landingFiles = [
   'src/components/ApkButton.tsx',
   'src/components/AppCta.tsx',
   'src/components/PwaInstallProbe.tsx',
+  'src/components/PlanPricing.tsx',
   'src/lib/siteConfig.ts',
   'src/lib/campaign.ts',
   'src/lib/telemetry/index.ts',
@@ -68,7 +69,15 @@ describe('build boundary isolation', () => {
     for (const rel of landingFiles) {
       const src = readFileSync(resolve(repoRoot, 'landing', rel), 'utf8');
       expect(src, `${rel} must not import from app/`).not.toMatch(/from\s+['"][^'"]*app\//);
-      expect(src, `${rel} must not import from shared/`).not.toMatch(/from\s+['"][^'"]*shared\//);
+      // Allow shared/lib/formatters, shared/lib/date and shared/lib/telemetry — the only landing→shared couplings.
+      const sharedImports = [...src.matchAll(/from\s+['"]([^'"]*shared\/[^'"]*)['"]/g)].map(
+        (m) => m[1],
+      );
+      for (const imp of sharedImports) {
+        expect(imp, `${rel} unexpected shared import ${imp}`).toMatch(
+          /shared\/lib\/(formatters|date|telemetry)/,
+        );
+      }
     }
   });
 

@@ -22,12 +22,14 @@ server logic live in `server/pb_migrations/` and `server/pb_hooks/`
 
 ```bash
 pnpm install
-pnpm setup-pocketbase        # downloads the pinned PB binary (server/VERSION)
+pnpm setup:pocketbase        # downloads the pinned PB binary (server/VERSION)
 pnpm dev:server              # starts PocketBase against persistent server/pb_data
 pnpm dev:app                 # Student app with /api proxy
 pnpm dev:landing             # landing
 pnpm dev:admin               # Staff console
 ```
+
+Requires `corepack enable` for pnpm 11.17 (see `scripts/ci-install.sh`).
 
 Node ≥ 24 (`.nvmrc`); pnpm 11. Android debug: `pnpm android:build:debug`.
 
@@ -36,10 +38,10 @@ Node ≥ 24 (`.nvmrc`); pnpm 11. Android debug: `pnpm android:build:debug`.
 ```bash
 pnpm verify:fast     # everyday gate: typecheck + Biome + Vitest (~30s)
 pnpm verify:feature  # fast + affected real-backend smokes + @critical Playwright
-pnpm verify:full     # canonical full gate: all 16 smoke suites + builds + full Playwright
+pnpm verify:full     # canonical full gate: all 18 smoke suites + builds + full Playwright
 ```
 
-Real-PocketBase smoke suites (`pnpm smoke:*`, 16 suites) each run a
+Real-PocketBase smoke suites (`pnpm smoke:*`, 18 suites) each run a
 disposable PocketBase in `/tmp` — they never touch `server/pb_data/`.
 CI runs the same gates in parallel lanes (`.github/workflows/quality.yml`).
 

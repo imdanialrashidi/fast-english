@@ -14,7 +14,7 @@ import AutoStoriesRoundedIcon from '@mui/icons-material/AutoStoriesRounded';
 import PlayCircleRoundedIcon from '@mui/icons-material/PlayCircleRounded';
 import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
 import { Box, Button, Card, Chip, LinearProgress, Stack, Typography } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { getRecommendedLevel } from '../../../../../shared/podcast/domain';
 import { PageContainer } from '../../../../../shared/ui/PageContainer';
@@ -46,20 +46,35 @@ export function HomeRoute() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [data, setData] = useState<HomeData | null>(null);
   const [summaryFailed, setSummaryFailed] = useState(false);
+  const cacheRef = useRef<HomeData | null>(null);
+  const lastLoadRef = useRef(0);
 
-  const load = useCallback(async () => {
-    setPhase('loading');
-    setSummaryFailed(false);
-    try {
-      const recommended = user ? getRecommendedLevel(user) : '';
-      const result = await loadHomeData(recommended);
-      setData(result.data);
-      setSummaryFailed(result.summaryFailed);
-      setPhase('ready');
-    } catch {
-      setPhase('error');
-    }
-  }, [user]);
+  const load = useCallback(
+    async (force = false) => {
+      const now = Date.now();
+      if (!force && cacheRef.current && now - lastLoadRef.current < 60_000) {
+        setData(cacheRef.current);
+        setPhase('ready');
+        return;
+      }
+      setPhase('loading');
+      setSummaryFailed(false);
+      try {
+        const recommended = user ? getRecommendedLevel(user) : '';
+        const result = await loadHomeData(recommended);
+        if (result.data) {
+          cacheRef.current = result.data;
+          lastLoadRef.current = Date.now();
+        }
+        setData(result.data);
+        setSummaryFailed(result.summaryFailed);
+        setPhase('ready');
+      } catch {
+        setPhase('error');
+      }
+    },
+    [user],
+  );
 
   useEffect(() => {
     void load();
@@ -81,7 +96,7 @@ export function HomeRoute() {
           title={productCopy.errors.episodesFailed}
           description={productCopy.errors.checkConnection}
           action={
-            <Button variant="outlined" onClick={load}>
+            <Button variant="outlined" onClick={() => load(true)}>
               {productCopy.actions.retry}
             </Button>
           }
@@ -174,7 +189,7 @@ export function HomeRoute() {
         <ProgressPanel
           data={data}
           summaryFailed={summaryFailed}
-          onRetry={load}
+          onRetry={() => load(true)}
           onOpenProgress={() => navigate('/progress')}
         />
 

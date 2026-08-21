@@ -42,6 +42,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}-1.62.0
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       # Pi harness validation: repository workflow contract, package pins,
       # MCP policy, launcher policy, secret scan, harness behavior tests.
@@ -79,6 +88,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}-1.62.0
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install dependencies
         run: bash scripts/ci-install.sh
@@ -100,7 +118,7 @@ jobs:
           caddy version
 
       # The real Fast English backend + operations gate: typecheck + Biome +
-      # Vitest + all 16 real-PocketBase smoke suites (concurrent, isolated) +
+      # Vitest + all 18 real-PocketBase smoke suites (concurrent, isolated) +
       # deterministic three-surface builds + topology/boundary checks + PWA
       # output checks + Android version/signing fail-safes + deploy
       # token-redaction proofs. Never replaced by a generic or fast lane.
@@ -139,6 +157,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}-1.62.0
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install dependencies
         run: bash scripts/ci-install.sh

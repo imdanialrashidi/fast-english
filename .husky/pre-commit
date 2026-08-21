@@ -1,0 +1,3 @@
+# Fast English Podcast — local gate; mirrors CI static lane's cheapest checks.
+# Runs only on staged files; never on server/pb_hooks (biome excludes those by design).
+npx lint-staged

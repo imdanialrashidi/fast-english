@@ -4,6 +4,11 @@
 // sites pass the unit label via the shared `suffix` option so the
 // operator screens keep rendering «تومان» exactly as before.
 
+import {
+  formatDate as sharedFormatDate,
+  formatDateTime as sharedFormatDateTime,
+} from '../../../../shared/lib/date';
+
 export { formatToman } from '../../../../shared/lib/formatters';
 
 export function formatAge(seconds: number): string {
@@ -18,33 +23,11 @@ export function formatAge(seconds: number): string {
 }
 
 export function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    const d = new Date(iso);
-    return new Intl.DateTimeFormat('fa-IR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(d);
-  } catch {
-    return iso;
-  }
+  return sharedFormatDateTime(iso, { style: 'long', fallback: '—' });
 }
 
 export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    const d = new Date(iso);
-    return new Intl.DateTimeFormat('fa-IR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(d);
-  } catch {
-    return iso;
-  }
+  return sharedFormatDate(iso, { fallback: '—' });
 }
 
 export function statusLabel(status: string): string {

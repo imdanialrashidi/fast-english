@@ -1,3 +1,4 @@
+// @ts-nocheck
 // server/pb_hooks/placement_routes.pb.js
 // P2-S1 — Placement attempt custom routes.
 //

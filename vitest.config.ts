@@ -20,5 +20,12 @@ export default defineConfig({
       'scripts/content/**/*.test.mjs',
       'tests/**/*.test.mjs',
     ],
+    coverage: {
+      provider: 'v8',
+      include: ['app/src/**/*.{ts,tsx}', 'shared/**/*.{ts,tsx}', 'admin/src/**/*.{ts,tsx}'],
+      exclude: ['**/*.test.{ts,tsx}', '**/dist-*', '**/build-boundary.test.ts'],
+      thresholds: { statements: 25, branches: 20, functions: 15, lines: 25 },
+      reporter: ['text', 'lcov', 'html'],
+    },
   },
 });

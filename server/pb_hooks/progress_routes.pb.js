@@ -180,7 +180,7 @@ routerAdd(
         });
       }
 
-      // Use stored duration if valid, otherwise authoritative
+      // Use authoritative duration for percent (fixes stale denominator after re-import)
       var dur = Number(progress.get("duration_seconds") || 0);
       if (!(dur > 0)) dur = authoritativeDuration;
 
@@ -190,7 +190,7 @@ routerAdd(
       var completedAt = progress.get("completed_at") || null;
       var revision = Number(progress.get("revision") || 0);
       var lastPlayedAt = progress.get("last_played_at") || null;
-      var percent = dur > 0 ? Math.round((furthest / dur) * 100) : 0;
+      var percent = authoritativeDuration > 0 ? Math.round((furthest / authoritativeDuration) * 100) : 0;
 
       try { e.response.header().set("Cache-Control", "private, no-store"); } catch (_) {}
       try { e.response.header().set("Pragma", "no-cache"); } catch (_) {}
@@ -533,14 +533,11 @@ routerAdd(
           }
 
           // 8. Calculate position, furthest, completion, timestamps
-          // Use stored duration if valid, otherwise authoritative
-          var storedDuration = Number(existing.get("duration_seconds") || 0);
-          if (!(storedDuration > 0)) {
-            storedDuration = authoritativeDuration;
-          }
+          // Use authoritative duration (single source of truth, lazy backfill)
+          var effectiveDuration = authoritativeDuration;
 
           existing.set("position_seconds", positionSeconds);
-          existing.set("duration_seconds", storedDuration);
+          existing.set("duration_seconds", authoritativeDuration);
 
           // Furthest position is monotonic (never decreases)
           var currentFurthest = Number(existing.get("furthest_seconds") || 0);
@@ -549,7 +546,7 @@ routerAdd(
 
           // Completion is monotonic (once true, stays true)
           var wasCompleted = Boolean(existing.get("completed"));
-          var isCompletedNow = wasCompleted || (storedDuration > 0 && newFurthest >= storedDuration * COMPLETION_THRESHOLD);
+          var isCompletedNow = wasCompleted || (effectiveDuration > 0 && newFurthest >= effectiveDuration * COMPLETION_THRESHOLD);
           existing.set("completed", isCompletedNow);
 
           if (isCompletedNow && !wasCompleted) {
@@ -572,12 +569,12 @@ routerAdd(
           }
 
           // Build result
-          var updatedPercent = storedDuration > 0 ? Math.round((newFurthest / storedDuration) * 100) : 0;
+          var updatedPercent = effectiveDuration > 0 ? Math.round((newFurthest / effectiveDuration) * 100) : 0;
           txResult = {
             lessonId: lessonId,
             positionSeconds: positionSeconds,
             furthestSeconds: newFurthest,
-            durationSeconds: storedDuration,
+            durationSeconds: effectiveDuration,
             percent: updatedPercent,
             completed: isCompletedNow,
             completedAt: isCompletedNow ? (existing.get("completed_at") || nowStr) : null,
@@ -1069,9 +1066,8 @@ routerAdd(
         if (bestProgress) {
           positionSeconds = Number(bestProgress.get("position_seconds") || 0);
           furthestSeconds = Number(bestProgress.get("furthest_seconds") || 0);
-          var storedDur = Number(bestProgress.get("duration_seconds") || 0);
-          if (storedDur > 0) durationSeconds = storedDur;
-          progressPercent = durationSeconds > 0 ? Math.round((furthestSeconds / durationSeconds) * 100) : 0;
+          progressPercent = authoritativeDur > 0 ? Math.round((furthestSeconds / authoritativeDur) * 100) : 0;
+          durationSeconds = authoritativeDur;
         }
 
         var isCompleted = Boolean(bestProgress && bestProgress.get("completed"));

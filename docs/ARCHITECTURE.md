@@ -11,12 +11,15 @@ Durable constraints only. Not a diary.
 
 ## Repository/build topology
 - One repo, one root `package.json`, one `pnpm-lock.yaml`. No workspace/monorepo framework.
-- Two isolated Vite configs (clearest isolated outputs + separate dep sets):
+- Three isolated Vite configs (clearest isolated outputs + separate dep sets):
   - `vite.landing.config.ts` → builds `landing/` → `dist-landing/` (Tailwind allowed here only).
   - `vite.app.config.ts` → builds `app/` → `dist-app/` (MUI only).
+  - `vite.admin.config.ts` → builds `admin/` → `dist-admin/` (MUI, Staff console, no PWA).
+
+Each uses an isolated `cacheDir` (`node_modules/.vite-*`) so dev servers do not clobber.
 - Shared: small `shared/brand.ts` brand constants + CSS variables only. No shared cross-surface component framework.
 - Capacitor `webDir = "dist-app"` only.
-- Commands (confirmed current set): `pnpm dev:landing|dev:app|dev:admin`, `pnpm build:landing` (incl. prerender) | `build:app` | `build:admin` | `build` (all three), `pnpm typecheck`, `pnpm check` (Biome), `pnpm test` (Vitest), `pnpm verify:fast` / `verify:feature` / `verify:full` (canonical gates, see `docs/QUALITY.md`), `pnpm test:e2e:fast` (PW_FAST low-resource lane) / `test:e2e:full` (CI=1), the `pnpm smoke:*` family (15 real-PocketBase suites), `pnpm setup:pocketbase`, `pnpm staff:bootstrap`, `pnpm content:new|validate|plan|import`. `scripts/verify.sh` is the CI/release compatibility entry that delegates to the full gate.
+- Commands (confirmed current set): `pnpm dev:landing|dev:app|dev:admin`, `pnpm build:landing` (incl. prerender) | `build:app` | `build:admin` | `build` (all three), `pnpm typecheck`, `pnpm check` (Biome), `pnpm test` (Vitest), `pnpm verify:fast` / `verify:feature` / `verify:full` (canonical gates, see `docs/QUALITY.md`), `pnpm test:e2e:fast` (PW_FAST low-resource lane) / `test:e2e:full` (CI=1), the `pnpm smoke:*` family (18 real-PocketBase suites), `pnpm setup:pocketbase`, `pnpm staff:bootstrap`, `pnpm content:new|validate|plan|import`. `scripts/verify.sh` is the CI/release compatibility entry that delegates to the full gate.
 
 ## API and environment topology
 - Browser/PWA production: same-origin `https://app.fastenglishpodcast.com/api/*`; Caddy reverse-proxies `/api/*` → PocketBase `127.0.0.1:8090`.

@@ -6,6 +6,8 @@
 // paths, tokens) is ever exposed. `details` is a deliberately technical
 // support-details area the UI may show collapsed.
 
+import { extractApiError } from '../../../../shared/lib/apiError';
+
 export interface ApiErrorDetails {
   issues?: string[];
   errorJson?: string;
@@ -138,8 +140,9 @@ export function contentDiagnosticCopy(code: string, message: string): string {
   return DIAG_COPY[code] ?? message;
 }
 
-/** Safe display string for an unknown thrown value. */
 export function safeErrorMessage(err: unknown): string {
+  const env = extractApiError(err);
+  if (env.code) return contentErrorCopy(env.code, env.message ?? '');
   if (err instanceof ApiError) {
     return contentErrorCopy(err.code, err.message);
   }
@@ -156,6 +159,14 @@ export interface ResolvedError {
 }
 
 export function resolveContentError(err: unknown): ResolvedError {
+  const env = extractApiError(err);
+  if (env.code || env.status !== undefined) {
+    const code = env.code || 'unexpected_error';
+    const message = contentErrorCopy(code, env.message ?? '');
+    const details = err instanceof ApiError ? err.details : undefined;
+    const issues = details?.issues && details.issues.length > 0 ? details.issues : undefined;
+    return { message, code, issues, auditId: details?.auditId };
+  }
   if (err instanceof ApiError) {
     const issues =
       err.details?.issues && err.details.issues.length > 0 ? err.details.issues : undefined;

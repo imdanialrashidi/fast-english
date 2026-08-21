@@ -15,8 +15,7 @@
 //     نمایش داده میشود" (no fabricated values).
 
 import { useMemo } from 'react';
-import { formatToman } from '../../../shared/lib/formatters';
-import { toPersianDigits } from '../lib/persianDigits';
+import { formatToman, toPersianDigits } from '../../../shared/lib/formatters';
 import type { PublicPlan } from '../lib/publicSettings';
 import { usePublicSettings } from '../lib/usePublicSettings';
 

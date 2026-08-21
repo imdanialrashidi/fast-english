@@ -143,19 +143,21 @@ routerAdd(
       var pageItems = allHits.slice(startIdx, startIdx + perPage);
 
       // 8. Shape items
-      // Batch student lookups: one bulk fep_users fetch + byId map instead
-      // of a findRecordById per row (library_routes pattern).
+      // Page-scoped users: fetch only IDs for the current page (not all users).
+      // Per-id point lookups (perPage ≤ 50) avoid scanning 20k users.
       var usersById = {};
-      try {
-        var allUsers = $app.findRecordsByFilter(USERS_COLLECTION, "1=1", "", 0, 0);
-        if (allUsers) {
-          for (var ui = 0; ui < allUsers.length; ui++) {
-            var uRec = allUsers[ui];
-            if (!uRec) continue;
-            usersById[String(uRec.id || "")] = uRec;
-          }
-        }
-      } catch (_) {}
+      var seenUids = {};
+      var uniqUids = [];
+      for (var piu = 0; piu < pageItems.length; piu++) {
+        var pu = String(pageItems[piu].get("user") || "");
+        if (pu && !seenUids[pu]) { seenUids[pu] = 1; uniqUids.push(pu); }
+      }
+      for (var ui2 = 0; ui2 < uniqUids.length; ui2++) {
+        try {
+          var uRec2 = $app.findRecordById(USERS_COLLECTION, uniqUids[ui2]);
+          if (uRec2) usersById[String(uRec2.id || "")] = uRec2;
+        } catch (_) {}
+      }
       var items = [];
       for (var ii = 0; ii < pageItems.length; ii++) {
         var rec = pageItems[ii];

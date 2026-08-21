@@ -69,3 +69,36 @@ test('every shared window name is __fep-prefixed', () => {
     );
   }
 });
+
+test('rate-limit active-key cap stays at EVICT_AT under distinct-key cycling', async () => {
+  // Load the shared module without relying on CJS require (repo is type:module, .pb.js is not CJS).
+  // Evaluate the file in a vm if global not yet populated.
+  if (!globalThis.__fepRateLimit || typeof globalThis.__fepRateLimit.checkRate !== 'function') {
+    const src = fs.readFileSync(path.join(hooksDir, 'rate_limit.pb.js'), 'utf8');
+    const vm = await import('node:vm');
+    vm.runInThisContext(src, { filename: 'rate_limit.pb.js' });
+  }
+  const rl = globalThis.__fepRateLimit;
+  assert.ok(rl && typeof rl.checkRate === 'function', 'rate_limit module loaded');
+  assert.equal(rl.EVICT_AT, 2048);
+  const win = {};
+  const max = 1000;
+  const ms = 60 * 1000;
+  for (let i = 0; i < 3000; i++) {
+    rl.checkRate(win, `k${i}`, max, ms);
+  }
+  assert.ok(
+    Object.keys(win).length <= rl.EVICT_AT,
+    `expected <= ${rl.EVICT_AT}, got ${Object.keys(win).length}`,
+  );
+  const win2 = {};
+  for (let i = 0; i < rl.EVICT_AT; i++) {
+    rl.checkRate(win2, `k${i}`, max, ms);
+  }
+  assert.equal(Object.keys(win2).length, rl.EVICT_AT);
+  rl.checkRate(win2, 'k-next', max, ms);
+  assert.ok(
+    Object.keys(win2).length <= rl.EVICT_AT,
+    `expected cap after oldest eviction, got ${Object.keys(win2).length}`,
+  );
+});

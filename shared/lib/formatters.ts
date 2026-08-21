@@ -37,9 +37,17 @@ const ARABIC_TO_LATIN: Record<string, string> = {
  * Convert any ASCII digit in the input to its Persian digit. All other
  * characters pass through unchanged. Returns '' for null/undefined.
  */
-export function toPersianDigits(input: string | number | null | undefined): string {
+export function toPersianDigits(
+  input: string | number | null | undefined,
+  opts?: { padTo?: number },
+): string {
   if (input === null || input === undefined) return '';
-  const s = String(input);
+  let s: string;
+  if (typeof input === 'number' && opts?.padTo) {
+    s = String(Math.abs(input)).padStart(opts.padTo, '0');
+  } else {
+    s = String(input);
+  }
   let out = '';
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
@@ -57,7 +65,8 @@ export function toPersianDigits(input: string | number | null | undefined): stri
  * through unchanged. Ported from `app/src/lib/phone.ts`'s
  * `toLatinDigits` (the shared module must not import from app/).
  */
-export function toLatinDigits(input: string): string {
+export function toLatinDigits(input: string | null | undefined): string {
+  if (typeof input !== 'string') return '';
   let out = '';
   for (const ch of input) {
     const latin = PERSIAN_TO_LATIN[ch] ?? ARABIC_TO_LATIN[ch];

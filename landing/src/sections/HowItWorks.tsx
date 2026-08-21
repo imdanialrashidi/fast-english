@@ -1,5 +1,5 @@
 // landing/src/sections/HowItWorks.tsx
-import { toPersianDigits } from '../lib/persianDigits';
+import { toPersianDigits } from '../../../shared/lib/formatters';
 
 // The activation journey in four honest steps. The runtime-truthful
 // payment states live in PaymentSection (card-to-card availability and
@@ -51,7 +51,7 @@ export function HowItWorks() {
                 className="sm:col-span-2 text-3xl font-extrabold tabular-nums text-primary/70"
                 aria-hidden
               >
-                {toPersianDigits(i + 1, 2)}
+                {toPersianDigits(i + 1, { padTo: 2 })}
               </span>
               <div className="sm:col-span-10">
                 <h3 className="text-lg font-bold text-text">{s.title}</h3>

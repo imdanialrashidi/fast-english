@@ -5,7 +5,7 @@
 # Does not install or modify dependencies. Does not auto-format.
 # Fails on the first real failure. Preserves readable command output.
 #
-# CI backend lane: set FEP_VERIFY_PARALLEL_SMOKES=1 to run the 17 smoke
+# CI backend lane: set FEP_VERIFY_PARALLEL_SMOKES=1 to run the 18 smoke
 # suites concurrently (each on its own disposable PocketBase; see
 # scripts/verify-smokes-parallel.sh). The default serial order below is
 # unchanged for local/review runs.
