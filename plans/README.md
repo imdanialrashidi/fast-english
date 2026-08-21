@@ -48,14 +48,14 @@ your row when done.
 | 028 | Add CI pnpm/Playwright cache + pre-commit hook + editorconfig | P2 | S | — | DONE |
 | 029 | Unify date/duration formatters, centralize telemetry, delegate admin errors to shared envelope | P2 | M | 027 | DONE |
 | 030 | Re-enable static checks for server hooks (`tsconfig.server.json` + Biome override) | P2 | M | — | DONE |
-| 031 | Add Vitest coverage threshold + pure unit layer for hooks | P2 | M | 030 | TODO |
-| 032 | Stream premium audio via chunked reads (remove full-file buffering) | P2 | L | 025, 031 | TODO |
-| 033 | Compute progress percent from authoritative lesson duration (fix stale `duration_seconds`) | P2 | M | — | TODO |
-| 034 | Home SWR cache + library pagination batching + bundle manualChunks probe | P3 | S | 026 | TODO |
-| 035 | Extract Vite base, audit deps, fix Android SDK pin and placeholder | P3 | M | 028 | TODO |
-| 036 | Direction spike — content export loop (unblocks launch library) | P3 | M | 033, 025 | TODO |
-| 037 | Direction spike — vocabulary-aware discovery + saved episode | P3 | M | 025, 036 | TODO |
-| 038 | Direction spike — re-placement window + honest streak | P3 | S-M | 033, 025 | TODO |
+| 031 | Add Vitest coverage threshold + pure unit layer for hooks | P2 | M | 030 | DONE |
+| 032 | Stream premium audio via chunked reads (remove full-file buffering) | P2 | L | 025, 031 | DONE (spike: no streaming API, documented) |
+| 033 | Compute progress percent from authoritative lesson duration (fix stale `duration_seconds`) | P2 | M | — | DONE |
+| 034 | Home SWR cache + library pagination batching + bundle manualChunks probe | P3 | S | 026 | DONE |
+| 035 | Extract Vite base, audit deps, fix Android SDK pin and placeholder | P3 | M | 028 | DONE |
+| 036 | Direction spike — content export loop (unblocks launch library) | P3 | M | 033, 025 | DONE |
+| 037 | Direction spike — vocabulary-aware discovery + saved episode | P3 | M | 025, 036 | DONE |
+| 038 | Direction spike — re-placement window + honest streak | P3 | S-M | 033, 025 | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 

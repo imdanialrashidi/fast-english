@@ -1393,6 +1393,70 @@ async function main() {
   );
 
   // ==================================================================
+  // 31. Stale duration after re-import (authoritative duration) — plan 033
+  // ==================================================================
+  const staleTopic = await makeTopic(su, {
+    slug: `t-stale-${randomId()}`,
+    status: 'published',
+    sort_order: 20,
+  });
+  const staleLesson = await makeLesson(su, staleTopic.id, {
+    level: 'B1',
+    title: 'Stale duration',
+    audio_duration_seconds: 120,
+  });
+  const stalePut1 = await jf(`/api/fast-english/lessons/${staleLesson.id}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${sToken}` },
+    body: JSON.stringify({ positionSeconds: 108, expectedRevision: 0 }),
+  });
+  aScenario('stale-duration: initial PUT 108/120 completed', async () => {
+    await assertHttp(stalePut1, 200, 'stale-put1');
+    assert(
+      stalePut1.body?.completed === true,
+      `expected completed true, got ${stalePut1.body?.completed}`,
+    );
+    assert(stalePut1.body?.percent === 90, `expected 90, got ${stalePut1.body?.percent}`);
+    assert(
+      stalePut1.body?.durationSeconds === 120,
+      `expected 120, got ${stalePut1.body?.durationSeconds}`,
+    );
+  });
+  const patchDur = await jf(`/api/collections/lessons/records/${staleLesson.id}`, {
+    method: 'PATCH',
+    headers: { authorization: `Bearer ${su}` },
+    body: JSON.stringify({ audio_duration_seconds: 200 }),
+  });
+  aScenario('stale-duration: lesson duration updated to 200', async () => {
+    assert(patchDur.status === 200, `patch status ${patchDur.status}`);
+  });
+  const staleGet = await jf(`/api/fast-english/lessons/${staleLesson.id}/progress`, {
+    headers: { authorization: `Bearer ${sToken}` },
+  });
+  aScenario('stale-duration: GET percent uses authoritative 200 (54 not 90)', async () => {
+    await assertHttp(staleGet, 200, 'stale-get');
+    assert(staleGet.body?.percent === 54, `expected 54, got ${staleGet.body?.percent}`);
+    assert(
+      staleGet.body?.audioDurationSeconds === 200,
+      `expected 200, got ${staleGet.body?.audioDurationSeconds}`,
+    );
+  });
+  const stalePut2 = await jf(`/api/fast-english/lessons/${staleLesson.id}/progress`, {
+    method: 'PUT',
+    headers: { authorization: `Bearer ${sToken}` },
+    body: JSON.stringify({ positionSeconds: 180, expectedRevision: staleGet.body?.revision }),
+  });
+  aScenario('stale-duration: PUT backfills duration to 200 and keeps completed', async () => {
+    await assertHttp(stalePut2, 200, 'stale-put2');
+    assert(
+      stalePut2.body?.durationSeconds === 200,
+      `expected 200, got ${stalePut2.body?.durationSeconds}`,
+    );
+    assert(stalePut2.body?.percent === 90, `expected 90, got ${stalePut2.body?.percent}`);
+    assert(stalePut2.body?.completed === true, `expected completed true`);
+  });
+
+  // ==================================================================
   // 29. No raw internal fields leak
   // ==================================================================
   const readStr = JSON.stringify(read1.body);

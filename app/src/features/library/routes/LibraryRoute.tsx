@@ -169,26 +169,40 @@ export function LibraryRoute() {
     void (async () => {
       try {
         let latestMeta: LibraryMeta | null = null;
-        for (let page = loadedPagesRef.current + 1; page <= query.page; page++) {
-          const response = await getLibrary({
-            q: query.q || undefined,
-            category: query.category || undefined,
-            level: query.level,
-            progress: query.progress,
-            sort: query.sort,
-            page,
-            perPage: DEFAULT_LIBRARY_PER_PAGE,
-          });
+        const missing: number[] = [];
+        for (let p = loadedPagesRef.current + 1; p <= query.page; p++) missing.push(p);
+        if (missing.length > 0) {
+          const results = await Promise.all(
+            missing.map((page) =>
+              getLibrary({
+                q: query.q || undefined,
+                category: query.category || undefined,
+                level: query.level,
+                progress: query.progress,
+                sort: query.sort,
+                page,
+                perPage: DEFAULT_LIBRARY_PER_PAGE,
+              })
+                .then((value) => ({ ok: true as const, value, page }))
+                .catch(() => ({ ok: false as const, page })),
+            ),
+          );
           if (seqRef.current !== seq) return;
-          itemsRef.current = page === 1 ? response.items : itemsRef.current.concat(response.items);
-          loadedPagesRef.current = page;
-          latestMeta = {
-            categories: response.categories,
-            continueListening: response.continueListening,
-            totalItems: response.totalItems,
-            recommendedLevel: response.recommendedLevel,
-            preferredLevel: response.preferredLevel,
-          };
+          const sorted = results.sort((a, b) => a.page - b.page);
+          for (const res of sorted) {
+            if (!res.ok) continue;
+            const response = res.value;
+            itemsRef.current =
+              res.page === 1 ? response.items : itemsRef.current.concat(response.items);
+            loadedPagesRef.current = res.page;
+            latestMeta = {
+              categories: response.categories,
+              continueListening: response.continueListening,
+              totalItems: response.totalItems,
+              recommendedLevel: response.recommendedLevel,
+              preferredLevel: response.preferredLevel,
+            };
+          }
         }
         if (seqRef.current !== seq) return;
         setItems(itemsRef.current.slice());

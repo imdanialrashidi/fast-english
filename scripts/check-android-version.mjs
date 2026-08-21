@@ -37,6 +37,27 @@ if (!versionName || !versionCode || !applicationId) {
   fail('could not parse versionName/versionCode/applicationId from android/app/build.gradle');
 }
 
+// --- 1a. Android SDK pins (Capacitor 8.4.2 template GA) ---
+const variables = readFileSync(join(ROOT, 'android/variables.gradle'), 'utf8');
+const compileSdk = Number(variables.match(/compileSdkVersion\s*=\s*(\d+)/)?.[1]);
+const targetSdk = Number(variables.match(/targetSdkVersion\s*=\s*(\d+)/)?.[1]);
+if (!compileSdk || compileSdk > 35) {
+  fail(`compileSdkVersion ${compileSdk || 'missing'} must be <=35 (GA 35, not preview 36)`);
+}
+if (!targetSdk || targetSdk > 35) {
+  fail(`targetSdkVersion ${targetSdk || 'missing'} must be <=35`);
+}
+const wrapper = readFileSync(
+  join(ROOT, 'android/gradle/wrapper/gradle-wrapper.properties'),
+  'utf8',
+);
+if (!wrapper.includes('gradle-8.12')) {
+  fail('gradle-wrapper must be 8.12 (GA, not preview 8.14.3)');
+}
+if (!readFileSync(join(ROOT, 'android/build.gradle'), 'utf8').includes('gradle:8.7')) {
+  fail('android/build.gradle must use AGP 8.7 (GA)');
+}
+
 // --- 1b. Web version identity (release strategy v1) ---
 // The root package.json version is the single canonical WEB release
 // identity (embedded by the App/Landing/Admin builds + telemetry). It must

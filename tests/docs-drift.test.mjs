@@ -86,3 +86,17 @@ test('package.json smoke:* count is 18 and docs match', () => {
     `expected 18 smoke:* scripts, got ${smokes.length}: ${smokes.join(', ')}`,
   );
 });
+
+test('vite configs import vite.base and Android pins are GA', () => {
+  for (const cfg of ['vite.app.config.ts', 'vite.admin.config.ts', 'vite.landing.config.ts']) {
+    const src = read(cfg);
+    assert.ok(src.includes('vite.base'), `${cfg} must import vite.base`);
+  }
+  const variables = read('android/variables.gradle');
+  assert.ok(variables.includes('compileSdkVersion = 35'), 'compileSdk must be 35');
+  assert.ok(variables.includes('targetSdkVersion = 35'), 'targetSdk must be 35');
+  const buildGradle = read('android/build.gradle');
+  assert.ok(buildGradle.includes('gradle:8.7'), 'AGP must be 8.7');
+  const wrapper = read('android/gradle/wrapper/gradle-wrapper.properties');
+  assert.ok(wrapper.includes('gradle-8.12'), 'Gradle must be 8.12');
+});

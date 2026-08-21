@@ -1,46 +1,10 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { apiProxyConfig, cacheDirConfig, versionDiagnostics } from './vite.base';
 
-// App/build version diagnostics: injected into the bundle (define) and
-// into the served index.html (transformIndexHtml) so the deployed
-// version is readable even before JavaScript executes (deployment health
-// checks and support sessions can assert it). No secrets — the root
-// package version plus the build timestamp only.
-const pkgVersion = (() => {
-  try {
-    return JSON.parse(readFileSync(resolve(import.meta.dirname, 'package.json'), 'utf8')).version;
-  } catch {
-    return '0.0.0';
-  }
-})();
-const buildTime = new Date().toISOString();
-
-// The version marker is interpolated into an HTML attribute; only a
-// strict semver may reach the served markup.
-if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(pkgVersion)) {
-  throw new Error(`invalid package.json version for the release marker: "${pkgVersion}"`);
-}
-
-// Product application surface: builds `app/` into `dist-app/`.
-// Used for the Web App, PWA, and the Capacitor `webDir`.
-//
-// The API target is parameterised so the same config works for
-// the dev server, the preview server, and end-to-end tests
-// against a disposable PocketBase. The target port is read from
-// `VITE_API_TARGET` at build time, with a sensible default for
-// the local dev workflow.
-const apiTarget = process.env.VITE_API_TARGET ?? 'http://127.0.0.1:8090';
-
-const apiProxy = {
-  '/api': {
-    target: apiTarget,
-    changeOrigin: true,
-    // Do not rewrite the path; the SDK builds `/api/...` already.
-  },
-};
+const { pkgVersion, buildTime } = versionDiagnostics(import.meta.dirname);
+const apiProxy = apiProxyConfig();
 
 // P4-S2 — Product App PWA (Web only; never inside the Capacitor WebView,
 // see app/src/pwa/register.ts). `injectManifest` gives precise control of
@@ -94,11 +58,7 @@ const pwaManifest = {
 
 export default defineConfig({
   root: 'app',
-  // Isolated dep-optimizer cache: the Admin dev server (vite.admin.config.ts)
-  // must never invalidate the Student dev server's optimized deps mid-run
-  // (they share the repo node_modules; a shared cache causes 504
-  // "Outdated Optimize Dep" races when both servers are up).
-  cacheDir: '../node_modules/.vite-app',
+  cacheDir: cacheDirConfig('app'),
   plugins: [
     react(),
     VitePWA({
