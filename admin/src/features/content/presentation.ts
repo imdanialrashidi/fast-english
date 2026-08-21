@@ -7,6 +7,10 @@
 // remains the authoritative readiness source.
 
 import type { ContentDiagnostic } from '../../../../shared/content-package/types';
+import {
+  formatDateTime as sharedFormatDateTime,
+  formatDuration as sharedFormatDuration,
+} from '../../../../shared/lib/date';
 import { CEFR_ORDER } from '../../../../shared/podcast/domain';
 import type { EpisodeDetail, ImportPlanResponse, ReadinessIssue, VariantReadiness } from './types';
 
@@ -77,24 +81,12 @@ export function episodeBlockers(detail: EpisodeDetail): ReadinessIssue[] {
   return detail.readiness?.episode?.errors ?? [];
 }
 
-/** Duration formatting (e.g. 12:34). */
 export function formatDuration(totalSeconds: number): string {
-  const s = Math.max(0, Math.floor(totalSeconds));
-  const m = Math.floor(s / 60);
-  const r = s % 60;
-  return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+  return sharedFormatDuration(totalSeconds, { fallback: '—' });
 }
 
-/** Persian date-time (short). */
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  try {
-    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short' }).format(
-      new Date(value),
-    );
-  } catch {
-    return '—';
-  }
+  return sharedFormatDateTime(value, { style: 'short', fallback: '—' });
 }
 
 // --- Import plan presentation ---------------------------------------------

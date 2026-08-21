@@ -16,6 +16,7 @@
     "build:app": "vite build --config vite.app.config.ts",
     "build": "pnpm run build:landing && pnpm run build:app && pnpm run build:admin",
     "typecheck": "tsc --noEmit",
+    "typecheck:server": "tsc --project tsconfig.server.json --noEmit",
     "check": "biome check .",
     "test": "vitest run --passWithNoTests",
     "verify:fast": "bash scripts/verify-fast.sh",
@@ -69,7 +70,11 @@
     "smoke:business-settings": "PB_SMOKE_PLACEMENT_PORT=18100 bash scripts/smoke-placement.sh node scripts/smoke-business-settings.mjs",
     "smoke:restore-proof": "bash scripts/restore-proof.sh",
     "test:infra:coolify": "bash tests/infra/run-all.sh",
-    "verify:coolify-infra": "bash scripts/verify-coolify-infra.sh"
+    "verify:coolify-infra": "bash scripts/verify-coolify-infra.sh",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs,json}": "biome check --write --no-errors-on-unmatched"
   },
   "dependencies": {
     "@capacitor/core": "8.4.2",
@@ -99,7 +104,9 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.4",
     "ajv": "^8.20.0",
+    "husky": "^9.1.7",
     "image-size": "^2.0.2",
+    "lint-staged": "^17.3.0",
     "music-metadata": "^11.14.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",

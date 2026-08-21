@@ -53,6 +53,9 @@ routerAdd(
     var MAX_PER_PAGE = 50;
     var DEFAULT_PER_PAGE = 20;
     var MAX_CONTINUE = 3;
+    // Bounded hybrid: PB 0.39.9 limit/offset on this collection is not relied on for correct pagination;
+    // we fetch at most MAX_LIBRARY_LOAD rows then JS filter/sort/slice, keeping enrichment page-scoped.
+    var MAX_LIBRARY_LOAD = 2000;
 
     // Inline rate limit (per user). The Library is a search surface
     // (debounced queries, filter changes), so the window is larger than
@@ -248,7 +251,8 @@ routerAdd(
       // -----------------------------------------------------------------
       var categories = [];
       try {
-        categories = $app.findRecordsByFilter(CATS_C, "publication_status = 'published'", "", 0, 0);
+        categories = $app.findRecordsByFilter(CATS_C, "publication_status = 'published'", "", MAX_LIBRARY_LOAD, 0);
+        if (categories && categories.length >= MAX_LIBRARY_LOAD) categories = categories.slice(0, MAX_LIBRARY_LOAD);
       } catch (_) {}
       var categoryById = {};
       var categoryRows = [];
@@ -269,7 +273,8 @@ routerAdd(
       }
       var topics = [];
       try {
-        topics = $app.findRecordsByFilter(TOPICS_C, topicFilter, "", 0, 0, topicParams);
+        topics = $app.findRecordsByFilter(TOPICS_C, topicFilter, "", MAX_LIBRARY_LOAD, 0, topicParams);
+        if (topics && topics.length >= MAX_LIBRARY_LOAD) topics = topics.slice(0, MAX_LIBRARY_LOAD);
       } catch (_) {}
       var topicById = {};
       if (topics && topics.length > 0) {
@@ -283,7 +288,8 @@ routerAdd(
       var lessonFilter = "status = 'published'";
       var lessons = [];
       try {
-        lessons = $app.findRecordsByFilter(LESSONS_C, lessonFilter, "", 0, 0, {});
+        lessons = $app.findRecordsByFilter(LESSONS_C, lessonFilter, "", MAX_LIBRARY_LOAD, 0, {});
+        if (lessons && lessons.length >= MAX_LIBRARY_LOAD) lessons = lessons.slice(0, MAX_LIBRARY_LOAD);
       } catch (_) {}
       var lessonsByTopic = {};
       var lessonById = {};

@@ -719,18 +719,37 @@ routerAdd(
         var status = CURRENT_PRIORITY[pi];
         var rec = null;
         try {
-          // Sort by plan_name_snapshot desc (a stable, user-declared
-          // field). PB 0.39.9's filter resolver does not expose the
-          // system "created"/"updated" columns for sort in this
-          // collection.
           var hits = $app.findRecordsByFilter(
             REQUESTS_COLLECTION,
             "user = {:uid} && status = {:st}",
-            "-plan_name_snapshot",
-            1,
+            "",
+            20,
             0,
             { uid: userId, st: status }
           );
+          if (hits && hits.length > 1) {
+            hits.sort(function (a, b) {
+              var aUp = String(a.get("updated") || a.get("created") || "");
+              var bUp = String(b.get("updated") || b.get("created") || "");
+              var aMs = 0;
+              var bMs = 0;
+              try { aMs = new Date(aUp).getTime(); } catch (_) { aMs = 0; }
+              try { bMs = new Date(bUp).getTime(); } catch (_) { bMs = 0; }
+              if (bMs !== aMs) return bMs - aMs;
+              var aCr = String(a.get("created") || "");
+              var bCr = String(b.get("created") || "");
+              var aCrMs = 0;
+              var bCrMs = 0;
+              try { aCrMs = new Date(aCr).getTime(); } catch (_) { aCrMs = 0; }
+              try { bCrMs = new Date(bCr).getTime(); } catch (_) { bCrMs = 0; }
+              if (bCrMs !== aCrMs) return bCrMs - aCrMs;
+              var aId = String(a.id || "");
+              var bId = String(b.id || "");
+              if (aId < bId) return 1;
+              if (aId > bId) return -1;
+              return 0;
+            });
+          }
           rec = hits && hits.length > 0 ? hits[0] : null;
         } catch (qe) {
           rec = null;

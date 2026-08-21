@@ -10,8 +10,9 @@
 //     visitor can start for free.
 // No hard-coded prices, no temporary marketing copy that could become
 // false after an operator edit.
+
+import { toPersianDigits } from '../../../shared/lib/formatters';
 import { PlanPricing } from '../components/PlanPricing';
-import { toPersianDigits } from '../lib/persianDigits';
 import { usePublicSettings } from '../lib/usePublicSettings';
 
 export function PaymentSection() {
@@ -137,7 +138,7 @@ function LivePaymentSection() {
                 aria-hidden
                 className="inline-block text-xs font-extrabold text-primary/70 tabular-nums"
               >
-                {toPersianDigits(i + 1, 2)}
+                {toPersianDigits(i + 1, { padTo: 2 })}
               </span>
               <h3 className="mt-2 text-base font-bold text-text">{f.title}</h3>
               <p className="mt-1 text-sm text-muted leading-relaxed">{f.desc}</p>

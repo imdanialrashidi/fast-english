@@ -6,6 +6,10 @@
 // live in shared/lib/formatters (single home); the feature keeps its
 // display helpers that are payment-specific.
 
+import {
+  formatDateTime as sharedFormatDateTime,
+  formatDurationDays as sharedFormatDurationDays,
+} from '../../../../shared/lib/date';
 import { formatToman, normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
 
 export { formatToman, normalizeLastFour, toPersianDigits } from '../../../../shared/lib/formatters';
@@ -56,30 +60,11 @@ export function formatCardNumber(raw: string | null | undefined): string {
  * cards and the status page snapshot.
  */
 export function formatDurationDays(days: number | null | undefined): string {
-  if (typeof days !== 'number' || !Number.isFinite(days) || days <= 0) return '';
-  // Keep it simple: days are integer per the server contract.
-  const n = Math.trunc(days);
-  return `${toPersianDigits(n)} روز`;
+  return sharedFormatDurationDays(days, { fallback: '' });
 }
 
-/**
- * Format an ISO timestamp as a short Persian date+time in the
- * app's default timezone. Returns an empty string for null/invalid
- * input — never throws.
- */
 export function formatPersianDateTime(iso: string | null | undefined): string {
-  if (typeof iso !== 'string' || !iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  try {
-    return new Intl.DateTimeFormat('fa-IR', {
-      dateStyle: 'short',
-      timeStyle: 'short',
-    }).format(d);
-  } catch {
-    // Old runtimes without fa-IR — fall back to ISO.
-    return d.toISOString();
-  }
+  return sharedFormatDateTime(iso, { style: 'short', fallback: '' });
 }
 
 export { formatFileSize } from '../../../../shared/lib/formatters';

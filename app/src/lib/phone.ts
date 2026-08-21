@@ -2,41 +2,11 @@
 // Iranian phone normalization. Mirrors the server-side canonical form
 // (`+989XXXXXXXXX`) used by the PocketBase hook. Used client-side for
 // immediate UX feedback and to derive the internal auth identity.
-const CANONICAL_PHONE = /^\+989[0-9]{9}$/;
-const PERSIAN_DIGITS: Record<string, string> = {
-  '۰': '0',
-  '۱': '1',
-  '۲': '2',
-  '۳': '3',
-  '۴': '4',
-  '۵': '5',
-  '۶': '6',
-  '۷': '7',
-  '۸': '8',
-  '۹': '9',
-};
-const ARABIC_DIGITS: Record<string, string> = {
-  '٠': '0',
-  '١': '1',
-  '٢': '2',
-  '٣': '3',
-  '٤': '4',
-  '٥': '5',
-  '٦': '6',
-  '٧': '7',
-  '٨': '8',
-  '٩': '9',
-};
+export { toLatinDigits } from '../../../shared/lib/formatters';
 
-export function toLatinDigits(input: string): string {
-  let out = '';
-  for (const ch of input) {
-    if (PERSIAN_DIGITS[ch] !== undefined) out += PERSIAN_DIGITS[ch]!;
-    else if (ARABIC_DIGITS[ch] !== undefined) out += ARABIC_DIGITS[ch]!;
-    else out += ch;
-  }
-  return out;
-}
+import { toLatinDigits } from '../../../shared/lib/formatters';
+
+const CANONICAL_PHONE = /^\+989[0-9]{9}$/;
 
 export function normalizeIranianPhone(raw: string | undefined | null): string | null {
   if (typeof raw !== 'string') return null;

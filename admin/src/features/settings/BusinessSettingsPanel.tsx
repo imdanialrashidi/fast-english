@@ -33,7 +33,7 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_REVIEW_SLA_TEXT } from '../../../../shared/lib/businessDefaults';
-import { toPersianDigits } from '../../../../shared/lib/formatters';
+import { formatToman } from '../../../../shared/lib/formatters';
 import { getPocketBase } from '../../auth/pocketbase';
 import {
   createBusinessPlan,
@@ -52,10 +52,6 @@ import {
   validateSiteContact,
 } from './logic';
 import type { BusinessDestination, BusinessPlan, BusinessSettings, BusinessSite } from './types';
-
-function formatToman(value: number): string {
-  return `${toPersianDigits(value.toLocaleString('en-US'))}`;
-}
 
 interface SaveState {
   kind: 'idle' | 'saving' | 'saved' | 'error';
@@ -248,7 +244,8 @@ function PlansSection({
                       dir="ltr"
                       sx={{ textAlign: 'start', display: 'block' }}
                     >
-                      {p.slug} — {p.durationDays} روز — {formatToman(p.priceToman)} تومان
+                      {p.slug} — {p.durationDays} روز —{' '}
+                      {formatToman(p.priceToman, { suffix: 'تومان' })}
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>

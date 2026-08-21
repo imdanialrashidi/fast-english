@@ -1,3 +1,4 @@
+// @ts-nocheck
 // server/pb_hooks/rate_limit.pb.js
 // Shared sliding-window rate limiter for custom routes.
 //
@@ -29,6 +30,17 @@ if (typeof globalThis.__fepRateLimit === "undefined") {
         for (var ki = 0; ki < keys.length; ki++) {
           var w2 = win[keys[ki]];
           if (!w2 || !w2.length || w2[w2.length - 1] <= ws) delete win[keys[ki]];
+        }
+        if (Object.keys(win).length >= EVICT_AT) {
+          var oldestKey = null;
+          var oldestTs = Infinity;
+          var allKeys = Object.keys(win);
+          for (var k2 = 0; k2 < allKeys.length; k2++) {
+            var w3 = win[allKeys[k2]];
+            var last = w3 && w3.length ? w3[w3.length - 1] : 0;
+            if (last < oldestTs) { oldestTs = last; oldestKey = allKeys[k2]; }
+          }
+          if (oldestKey !== null) { try { delete win[oldestKey]; } catch (_) {} }
         }
       }
     } catch (_) {}

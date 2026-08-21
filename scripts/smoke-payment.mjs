@@ -974,6 +974,126 @@ async function scenario23RateLimit({ planId }) {
   );
 }
 
+async function scenario24TwoRejectedRecency({ planId, suToken }) {
+  // Two rejected requests → current must be most-recently-updated rejected.
+  // Bug was lex sort by plan_name_snapshot desc; we use two distinct plan names
+  // where lexicographically larger is older, so recency is the only correct answer.
+  const student = await signupUser('دو-رد');
+  const studentToken = student.token;
+  // Create a staff admin for operator reject (minimal, like smoke-operator makeStaff)
+  const suT = suToken || (await getSuperuserToken());
+  const email = `staff-24-${randomBytes(4).toString('hex')}@fep-smoke.invalid`;
+  const password = 'Test1234!';
+  const sr = await jsonFetch('/api/collections/staff_admins/records', {
+    method: 'POST',
+    headers: { authorization: suT, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      password,
+      passwordConfirm: password,
+      display_name: 'Staff 24',
+      is_active: true,
+      verified: true,
+    }),
+  });
+  if (sr.status !== 200) {
+    check(false, `24: staff create failed (got ${sr.status})`);
+    return;
+  }
+  const loginRes = await jsonFetch('/api/collections/staff_admins/auth-with-password', {
+    method: 'POST',
+    body: JSON.stringify({ identity: email, password }),
+  });
+  if (loginRes.status !== 200 || !loginRes.body?.token) {
+    check(false, `24: staff login failed (got ${loginRes.status})`);
+    return;
+  }
+  const staffToken = loginRes.body.token;
+  async function rejectRequest(requestId) {
+    return jsonFetch(`/api/fast-english/operator/payment-requests/${requestId}/reject`, {
+      method: 'POST',
+      headers: { authorization: staffToken, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        public_rejection_reason:
+          'مبلغ واریزی با مبلغ اعلام‌شده مغایرت دارد؛ لطفاً رسید صحیح را بارگذاری کنید.',
+      }),
+    });
+  }
+  // Create a second plan with lexicographically smaller name than the main plan
+  // Main plan is "Test Monthly" (T...), second will be "Alpha Test Plan" (A...) — lex larger is older, so bug would pick wrong.
+  let alphaPlanId = null;
+  try {
+    const pr = await jsonFetch('/api/collections/plans/records', {
+      method: 'POST',
+      headers: { authorization: suT, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Alpha Test Plan',
+        slug: `alpha-${randomBytes(3).toString('hex')}`,
+        duration_days: 30,
+        price_toman: 7654321,
+        is_active: true,
+        display_order: 1,
+      }),
+    });
+    if (pr.status === 200) alphaPlanId = pr.body.id;
+  } catch (_) {}
+  if (!alphaPlanId) {
+    check(false, '24: alpha plan creation failed');
+    return;
+  }
+  // First rejected: use main plan (lex larger = Z-ish vs Alpha lex smaller)
+  const r1 = await postPaymentRequest({
+    token: studentToken,
+    planId,
+    files: [{ field: 'receipt_file', blob: blobOf(JPEG_BYTES, 'image/jpeg'), filename: 'r.jpg' }],
+  });
+  if (!check(r1.status === 201, `24: first create 201 (got ${r1.status})`)) return;
+  const id1 = r1.body?.request?.id;
+  const planName1 = r1.body?.request?.planName;
+  const rej1 = await rejectRequest(id1);
+  if (!check(rej1.status === 200, `24: first reject 200 (got ${rej1.status} ${rej1.body?.code})`))
+    return;
+  // Ensure updated timestamps differ (PB second resolution)
+  await new Promise((res) => setTimeout(res, 1100));
+  // Second rejected: use alpha plan (lex smaller, but newer)
+  const r2 = await postPaymentRequest({
+    token: studentToken,
+    planId: alphaPlanId,
+    files: [{ field: 'receipt_file', blob: blobOf(PNG_BYTES, 'image/png'), filename: 'r.png' }],
+  });
+  if (!check(r2.status === 201, `24: second create 201 (got ${r2.status} ${r2.body?.code})`))
+    return;
+  const id2 = r2.body?.request?.id;
+  const planName2 = r2.body?.request?.planName;
+  const rej2 = await rejectRequest(id2);
+  if (!check(rej2.status === 200, `24: second reject 200 (got ${rej2.status} ${rej2.body?.code})`))
+    return;
+  const cur = await getCurrentRequest(studentToken);
+  check(
+    cur.status === 200 && cur.body?.kind === 'request',
+    `24: current returns request (got ${cur.status} ${cur.body?.kind})`,
+  );
+  check(
+    cur.body?.request?.status === 'rejected',
+    `24: current status rejected (got ${cur.body?.request?.status})`,
+  );
+  check(
+    cur.body?.request?.id === id2,
+    `24: current is most recent rejected (expected ${id2} got ${cur.body?.request?.id})`,
+  );
+  check(
+    cur.body?.request?.planName === planName2,
+    `24: current planName matches most recent (expected ${planName2} got ${cur.body?.request?.planName})`,
+  );
+  // Lexicographic trap: older planName1 is lex larger, but current must not be it
+  if (planName1 !== planName2) {
+    check(
+      cur.body?.request?.planName !== planName1,
+      `24: current not stale lex larger (bug would be ${planName1})`,
+    );
+  }
+}
+
 async function main() {
   console.log(`smoke-payment: target = ${URL}`);
   const ready = await waitForHealth();
@@ -1013,7 +1133,7 @@ async function main() {
 
   // SCENARIO_RANGE lets us run a subset of the suite for debugging
   // (e.g. "1-12" or "13-23"). When unset we run the whole thing.
-  const rangeRaw = (process.env.SCENARIO_RANGE || '1-23').trim();
+  const rangeRaw = (process.env.SCENARIO_RANGE || '1-24').trim();
   const rangeMatch = rangeRaw.match(/^(\d+)\s*-\s*(\d+)$/);
   if (!rangeMatch) {
     console.error(`smoke-payment: bad SCENARIO_RANGE "${rangeRaw}" (expected "N-M")`);
@@ -1089,6 +1209,8 @@ async function main() {
     await runScenario('22-no-internal-note', scenario22NoInternalNoteInResponse, { planId });
   if (rangeStart <= 23 && rangeEnd >= 23)
     await runScenario('23-rate-limit', scenario23RateLimit, { planId });
+  if (rangeStart <= 24 && rangeEnd >= 24)
+    await runScenario('24-two-rejected-recency', scenario24TwoRejectedRecency, { planId, suToken });
 
   if (exitCode) {
     console.error('smoke-payment: FAIL');
