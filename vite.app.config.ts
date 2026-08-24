@@ -1,10 +1,6 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { apiProxyConfig, cacheDirConfig, versionDiagnostics } from './vite.base';
-
-const { pkgVersion, buildTime } = versionDiagnostics(import.meta.dirname);
-const apiProxy = apiProxyConfig();
+import { createSurfaceConfig } from './vite.base';
 
 // P4-S2 — Product App PWA (Web only; never inside the Capacitor WebView,
 // see app/src/pwa/register.ts). `injectManifest` gives precise control of
@@ -21,12 +17,7 @@ const pwaManifest = {
   start_url: '/',
   scope: '/',
   display: 'standalone' as const,
-  // Compatible with phones and tablets in any orientation.
   orientation: 'any' as const,
-  // Theme tokens from app/src/app/theme/tokens (kept as literals so the
-  // app build stays fully isolated): light-mode AppBar surface + page
-  // background. The dynamic <meta name="theme-color"> follows the active
-  // scheme at runtime (theme/ThemeHost.tsx); the manifest is static.
   theme_color: '#e9f1f4',
   background_color: '#f5f9fa',
   icons: [
@@ -39,7 +30,6 @@ const pwaManifest = {
       purpose: 'maskable',
     },
   ],
-  // Shortcuts only for real Product App routes.
   shortcuts: [
     {
       name: 'داشبورد',
@@ -56,62 +46,28 @@ const pwaManifest = {
   ],
 };
 
-export default defineConfig({
-  root: 'app',
-  cacheDir: cacheDirConfig('app'),
+export default createSurfaceConfig({
+  rootDir: import.meta.dirname,
+  surface: 'app',
+  viteRoot: 'app',
+  versionDefineKey: '__APP_VERSION__',
+  dataAttr: 'data-app-version',
+  serverPort: 5173,
+  previewPort: 4173,
+  outDir: '../dist-app',
   plugins: [
     react(),
     VitePWA({
       strategies: 'injectManifest',
-      // Explicit update prompt (PwaManager): never auto-update/reload.
       registerType: 'prompt',
       srcDir: 'src/pwa',
       filename: 'sw.ts',
       manifest: pwaManifest,
       injectManifest: {
-        // Public App-shell assets only: versioned JS/CSS, HTML, self-hosted
-        // fonts, icons and static images. Never /api/** (the Service Worker
-        // also enforces this at runtime; see app/src/pwa/sw.ts).
         globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico,webmanifest}'],
         globIgnores: ['**/*.map'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
     }),
-    {
-      // Deployment health/version diagnostics: expose the app version and
-      // build time on the root element (readable without JS) and in the
-      // bundle (telemetry payloads).
-      name: 'fep-version-diagnostics',
-      transformIndexHtml(html) {
-        return html.replace(
-          '<div id="root"',
-          `<div id="root" data-app-version="${pkgVersion}" data-build-time="${buildTime}"`,
-        );
-      },
-    },
   ],
-  define: {
-    __APP_VERSION__: JSON.stringify(pkgVersion),
-    __BUILD_TIME__: JSON.stringify(buildTime),
-  },
-  build: {
-    outDir: '../dist-app',
-    emptyOutDir: true,
-  },
-  server: {
-    port: 5173,
-    strictPort: true,
-    // Browser dev: proxy `/api/*` to the local PocketBase so the SDK
-    // can use same-origin (window.location.origin) requests. Caddy
-    // does the same in production.
-    proxy: apiProxy,
-  },
-  preview: {
-    port: 4173,
-    strictPort: true,
-    // The preview server mirrors the dev server's API proxy so
-    // Playwright (and ad-hoc manual review of a built bundle) can
-    // drive the app against a real backend without CORS gymnastics.
-    proxy: apiProxy,
-  },
 });

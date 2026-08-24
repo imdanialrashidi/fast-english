@@ -1,15 +1,11 @@
-// app/src/lib/telemetry/index.ts — wrapper delegating to shared telemetry.
-// Single source is shared/lib/telemetry (sinks, redact, events, create).
+// app/src/lib/telemetry/index.ts — thin adapter over the shared telemetry module.
+// The deep module is shared/lib/telemetry/create.ts; this file only adds
+// app-specific event vocab (FUNNEL_EVENTS, MediaFailure) and funnel helpers.
 
 export { redactPath, sanitizeMessage, truncate } from '../../../../shared/lib/telemetry/redact';
 
 import { createTelemetry as createSharedTelemetry } from '../../../../shared/lib/telemetry/create';
-import type {
-  MediaFailureKind,
-  TelemetryEvent,
-  TelemetryFields,
-  TelemetryLevel,
-} from '../../../../shared/lib/telemetry/events';
+import type { MediaFailureKind, TelemetryLevel } from '../../../../shared/lib/telemetry/events';
 import { redactPath, sanitizeMessage, truncate } from '../../../../shared/lib/telemetry/redact';
 
 declare const __APP_VERSION__: string | undefined;
@@ -28,42 +24,25 @@ const sharedHandle = createSharedTelemetry({
       : undefined,
 });
 
-let surface = '';
+// Deep module delegation — interface is the test surface; no duplicated baseEvent.
+export const track = sharedHandle.track;
+export const setSurface = sharedHandle.setSurface;
+export const getDiagnosticSnapshot = sharedHandle.getSnapshot;
+export const initTelemetry = sharedHandle.initTelemetry;
+export const _resetTelemetryForTests = sharedHandle._resetForTests;
+export const _setSinksForTests = sharedHandle._setSinksForTests;
 
-function baseEvent(name: string, level: TelemetryLevel, fields: TelemetryFields): TelemetryEvent {
-  return {
-    name,
-    level,
-    ts: Date.now(),
-    surface,
-    appVersion: APP_VERSION,
-    buildTime: BUILD_TIME,
-    fields,
-  };
-}
+// ---------------------------------------------------------------------------
+// App-specific funnel / operational helpers (vocab lives here, transport lives in shared).
+// ---------------------------------------------------------------------------
 
-export function track(
-  name: string,
-  level: TelemetryLevel = 'info',
-  fields: TelemetryFields = {},
-): void {
-  try {
-    const event = baseEvent(name, level, fields);
-    for (const sink of sharedHandle.sinks) {
-      try {
-        sink.emit(event);
-      } catch {}
-    }
-  } catch {}
-}
-
-export function trackFunnel(name: string, fields: TelemetryFields = {}): void {
-  track(name, 'info', fields);
+export function trackFunnel(name: string, fields: Record<string, unknown> = {}): void {
+  track(name, 'info', fields as Record<string, string | number | boolean | null | undefined>);
 }
 
 export function reportError(
   err: unknown,
-  fields: TelemetryFields = {},
+  fields: Record<string, unknown> = {},
   level: TelemetryLevel = 'error',
 ): void {
   try {
@@ -74,7 +53,7 @@ export function reportError(
       ...fields,
       message: truncate(sanitizeMessage(message), 500),
       ...(stack ? { stack: truncate(sanitizeMessage(stack), 2000) } : {}),
-    });
+    } as Record<string, string | number | boolean | null | undefined>);
   } catch {}
 }
 
@@ -100,50 +79,6 @@ export function reportPlayerFailure(
 ): void {
   try {
     track('player_failure', 'warn', { lessonId: lessonId ?? '', code });
-  } catch {}
-}
-
-export function setSurface(pathname: string): void {
-  try {
-    surface = redactPath(pathname);
-  } catch {}
-}
-
-export function getDiagnosticSnapshot(): {
-  appVersion: string;
-  buildTime: string;
-  events: TelemetryEvent[];
-} {
-  try {
-    const ring = sharedHandle.sinks.find(
-      (s) => typeof (s as unknown as { snapshot?: unknown }).snapshot === 'function',
-    ) as unknown as { snapshot: () => TelemetryEvent[] } | undefined;
-    const events = ring ? ring.snapshot() : sharedHandle.buffer.snapshot();
-    return { appVersion: APP_VERSION, buildTime: BUILD_TIME, events };
-  } catch {
-    return { appVersion: APP_VERSION, buildTime: BUILD_TIME, events: [] };
-  }
-}
-
-export function _resetTelemetryForTests(): void {
-  sharedHandle.buffer.clear();
-  sharedHandle.sinks.length = 0;
-}
-
-export function _setSinksForTests(next: typeof sharedHandle.sinks): void {
-  sharedHandle.sinks.length = 0;
-  for (const s of next) sharedHandle.sinks.push(s);
-}
-
-export function initTelemetry(): void {
-  try {
-    sharedHandle.initTelemetry();
-    if (typeof window !== 'undefined') {
-      Object.defineProperty(window, '__fepTelemetry', {
-        configurable: true,
-        value: () => getDiagnosticSnapshot(),
-      });
-    }
   } catch {}
 }
 

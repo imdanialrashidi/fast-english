@@ -131,3 +131,114 @@ export function publicStatusOf(record: {
   const s = String(record.status ?? record.publication_status ?? '');
   return isPublicationState(s) ? s : '';
 }
+
+// ---------------------------------------------------------------------------
+// Deep Podcast Domain — Episode / Variant / Category anti-corruption layer
+// ---------------------------------------------------------------------------
+// The DB keeps legacy names `topics` / `lessons` / `categories`; callers
+// must speak `Episode` / `Variant` / `Category`. This seam hides the legacy
+// names forever — no rename migration needed (see PODCAST_DOMAIN.md).
+// ---------------------------------------------------------------------------
+
+export interface CategoryRef {
+  id: string;
+  key: string;
+  slug: string;
+  titleFa: string;
+}
+
+export interface EpisodeVariantInfo {
+  level: CefrLevel;
+  variantId: string;
+  isRecommended?: boolean;
+  isPreferred?: boolean;
+}
+
+export interface EpisodeDomain {
+  id: string;
+  slug: string;
+  contentKey: string;
+  title: string;
+  titleFa: string;
+  descriptionFa: string;
+  category: CategoryRef | null;
+  artwork: string;
+  featured: boolean;
+  contentVersion: number;
+  sortOrder: number;
+}
+
+export interface VariantDomain {
+  id: string;
+  level: CefrLevel;
+  summaryFa: string;
+  transcript: string;
+  audioDurationSeconds: number;
+  contentVersion: number;
+}
+
+/**
+ * Build a domain Episode from raw PB records. Hides `topics` / `lessons`
+ * naming — callers never see the DB names. The server remains the
+ * authority for publication filtering; this helper only shapes already-
+ * filtered records.
+ */
+export function toEpisodeDomain(
+  topic: {
+    id: string;
+    slug: string;
+    content_key?: string;
+    title?: string;
+    title_fa?: string;
+    description_fa?: string;
+    artwork_square?: string | null;
+    is_featured?: boolean;
+    content_version?: number;
+    sort_order?: number;
+  },
+  category: CategoryRef | null,
+  artworkUrl: string,
+): EpisodeDomain {
+  return {
+    id: String(topic.id || ''),
+    slug: String(topic.slug || ''),
+    contentKey: String(topic.content_key || ''),
+    title: String(topic.title || ''),
+    titleFa: String(topic.title_fa || ''),
+    descriptionFa: String(topic.description_fa || ''),
+    category,
+    artwork: artworkUrl || FALLBACK_ARTWORK_URL,
+    featured: Boolean(topic.is_featured),
+    contentVersion: Number(topic.content_version || 1),
+    sortOrder: Number(topic.sort_order || 0),
+  };
+}
+
+/**
+ * Podcast catalog helper — one call hides the topics→lessons→category
+ * bulk-load and CEFR-order stitching that library, home, and episode
+ * callers previously duplicated. Pure and testable (no I/O).
+ */
+export function buildAvailableLevels(
+  lessons: Array<{ level: string; id: string }>,
+  recommendedLevel: CefrLevel | '',
+  preferredLevel: CefrLevel | '',
+): EpisodeVariantInfo[] {
+  const byLevel: Record<string, string> = {};
+  for (const l of lessons) {
+    const norm = normalizeLevel(l.level);
+    if (norm && !byLevel[norm]) byLevel[norm] = l.id;
+  }
+  const out: EpisodeVariantInfo[] = [];
+  for (const lvl of CEFR_ORDER) {
+    if (byLevel[lvl]) {
+      out.push({
+        level: lvl,
+        variantId: byLevel[lvl],
+        isRecommended: lvl === recommendedLevel,
+        isPreferred: lvl === preferredLevel,
+      });
+    }
+  }
+  return out;
+}

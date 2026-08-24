@@ -316,6 +316,69 @@ var __podcastModule = (function () {
     return e;
   }
 
+  // ---------------------------------------------------------------------------
+  // Entitlement seam — single source for premium route authorization.
+  // Deep module: small interface hides Student + active + placement +
+  // live subscription window checks that were duplicated 7×.
+  // Returns null on success (entitled), or { status, body } on denial.
+  // opts.requirePlacement (default true) controls the placement gate.
+  // ---------------------------------------------------------------------------
+  function requireEntitlement(app, e, opts) {
+    var requirePlacement = true;
+    try { if (opts && opts.requirePlacement === false) requirePlacement = false; } catch (_) {}
+    if (!e || !e.auth || !e.auth.id) {
+      return { status: 401, body: { code: 'auth_required', message: 'Authentication required.' } };
+    }
+    var uid = String(e.auth.id || '');
+    var student = null;
+    try { student = app.findRecordById('fep_users', uid); } catch (_) {}
+    if (!student) {
+      return { status: 401, body: { code: 'user_not_found', message: 'User not found.' } };
+    }
+    var g = null;
+    try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
+    var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: 'unexpected_error', message: 'Internal error.' };
+    if (guardErr) {
+      return { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
+    }
+    var acct = '';
+    try { acct = String(student.get('account_status') || ''); } catch (_) {}
+    if (acct === 'suspended') {
+      return { status: 403, body: { code: 'account_suspended', message: 'Account is suspended.' } };
+    }
+    if (acct !== 'active') {
+      return { status: 403, body: { code: 'subscription_required', message: 'Active subscription required.' } };
+    }
+    if (requirePlacement) {
+      var pc = false;
+      try { pc = Boolean(student.get('placement_completed')); } catch (_) {}
+      var sel = '';
+      try { sel = String(student.get('selected_level') || ''); } catch (_) {}
+      if (!pc || !sel) {
+        return { status: 403, body: { code: 'placement_incomplete', message: 'Placement must be completed first.' } };
+      }
+    }
+    // Live subscription window: user active subscription where start <= now < expires.
+    var nowMs = Date.now();
+    var hasSub = false;
+    try {
+      var subs = app.findRecordsByFilter('subscriptions', "user = {:uid} && status = 'active'", '', 0, 0, { uid: uid });
+      for (var si = 0; si < subs.length; si++) {
+        var s = subs[si];
+        var expStr = String(s.get('expires_at') || '');
+        var startStr = String(s.get('starts_at') || '');
+        if (!expStr || !startStr) continue;
+        var expMs = new Date(expStr).getTime();
+        var startMs = new Date(startStr).getTime();
+        if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) { hasSub = true; break; }
+      }
+    } catch (_) {}
+    if (!hasSub) {
+      return { status: 403, body: { code: 'subscription_required', message: 'Active subscription required.' } };
+    }
+    return null;
+  }
+
   // Best-effort real client IP for rate limiting. In production PocketBase
   // binds to 127.0.0.1 behind Caddy, which appends the client IP as the LAST
   // X-Forwarded-For entry; client-supplied values always precede it and
@@ -352,6 +415,7 @@ var __podcastModule = (function () {
     artworkContentType: artworkContentType,
     fallbackArtworkSvg: fallbackArtworkSvg,
     serveArtworkBytes: serveArtworkBytes,
+    requireEntitlement: requireEntitlement,
     clientIp: clientIp,
   };
 })();

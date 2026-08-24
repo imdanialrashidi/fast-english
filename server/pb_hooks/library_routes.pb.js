@@ -46,8 +46,7 @@ routerAdd(
     var LESSONS_C = "lessons";
     var PROGRESS_C = "lesson_progress";
 
-    // Keep in sync with shared/podcast/domain.ts (tests/cefr-consistency.test.mjs).
-    var CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    // CEFR_ORDER + normalizeLevel are single-sourced from podcast_domain.pb.js (deep module).
     var MAX_QUERY_LEN = 60;
     var MAX_PAGE = 50;
     var MAX_PER_PAGE = 50;
@@ -62,14 +61,7 @@ routerAdd(
     // the lesson list route but still bounded: 120 requests / 5 min.
     var rl = require(__hooks + '/rate_limit.pb.js');
 
-    function normalizeLevel(lvl) {
-      var s = typeof lvl === 'string' ? lvl : String(lvl || '');
-      s = s.replace(/^\s+|\s+$/g, '');
-      for (var ci = 0; ci < CEFR_ORDER.length; ci++) {
-        if (s === CEFR_ORDER[ci]) return s;
-      }
-      return '';
-    }
+    // normalizeLevel is pd.normalizeLevel after the domain is loaded (see below).
 
     // Pure per-Variant progress state derivation (existing Progress
     // semantics — no new state machine): completed wins, then any saved
@@ -127,68 +119,20 @@ routerAdd(
     }
 
     try {
-      // -----------------------------------------------------------------
-      // 1. Full entitlement check (inlined, identical to lesson list).
-      // -----------------------------------------------------------------
-      var entitlementErr = null;
-      var uid = "";
-      if (!e.auth || !e.auth.id) {
-        entitlementErr = { status: 401, body: { code: "auth_required", message: "Authentication required." } };
-      } else {
-        uid = String(e.auth.id || "");
-        var student = null;
-        try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
-        if (!student) {
-          entitlementErr = { status: 401, body: { code: "user_not_found", message: "User not found." } };
-        } else {
-          var g = null;
-          try { g = require(__hooks + '/guards.pb.js'); } catch (_) { g = null; }
-          // Fail closed: an unavailable guard must not let the request through.
-          var guardErr = (g && g.requireStudent) ? g.requireStudent(e) : { status: 500, code: "unexpected_error", message: "Internal error." };
-          if (guardErr) {
-            entitlementErr = { status: guardErr.status, body: { code: guardErr.code, message: guardErr.message } };
-          } else {
-            var acct = String(student.get("account_status") || "");
-            if (acct === "suspended") {
-              entitlementErr = { status: 403, body: { code: "account_suspended", message: "Account is suspended." } };
-            } else if (acct !== "active") {
-              entitlementErr = { status: 403, body: { code: "subscription_required", message: "Active subscription required." } };
-            } else {
-              var pc = Boolean(student.get("placement_completed"));
-              var selLvl = String(student.get("selected_level") || "");
-              if (!pc || !selLvl) {
-                entitlementErr = { status: 403, body: { code: "placement_incomplete", message: "Placement must be completed first." } };
-              } else {
-                var nowMs = Date.now();
-                var hasSub = false;
-                try {
-                  var subs = $app.findRecordsByFilter(SUBS_C, "user = {:uid} && status = 'active'", "", 0, 0, { uid: uid });
-                  for (var si = 0; si < subs.length; si++) {
-                    var s = subs[si];
-                    var expStr = String(s.get("expires_at") || "");
-                    var startStr = String(s.get("starts_at") || "");
-                    if (!expStr || !startStr) continue;
-                    var expMs = new Date(expStr).getTime();
-                    var startMs = new Date(startStr).getTime();
-                    if (!isNaN(expMs) && !isNaN(startMs) && startMs <= nowMs && expMs > nowMs) {
-                      hasSub = true;
-                      break;
-                    }
-                  }
-                } catch (_) {}
-                if (!hasSub) {
-                  entitlementErr = { status: 403, body: { code: "subscription_required", message: "Active subscription required." } };
-                }
-              }
-            }
-          }
-        }
-      }
-      if (entitlementErr) return e.json(entitlementErr.status, entitlementErr.body);
-
+      // 1. Entitlement via deep Podcast Domain seam — single source for
+      // Student + active + placement + live subscription window.
       var pd = null;
       try { pd = require(__hooks + '/podcast_domain.pb.js'); } catch (_) { pd = null; }
       if (!pd) return e.json(500, { code: "unexpected_error", message: "Internal error." });
+      var CEFR_ORDER = pd.CEFR_ORDER;
+      function normalizeLevel(lvl) { return pd.normalizeLevel(lvl); }
+      var uid = "";
+      try { uid = String(e.auth && e.auth.id || ""); } catch (_) {}
+      var entitlementErr = pd.requireEntitlement($app, e, { requirePlacement: true });
+      if (entitlementErr) return e.json(entitlementErr.status, entitlementErr.body);
+      var student = null;
+      try { student = $app.findRecordById(USERS_C, uid); } catch (_) {}
+      if (!student) return e.json(401, { code: "user_not_found", message: "User not found." });
       var recommendedLevel = pd.getRecommendedLevel($app, student);
       var preferredLevel = pd.getPreferredLevel(student, recommendedLevel);
 

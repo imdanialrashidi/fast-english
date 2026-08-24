@@ -1,4 +1,5 @@
-// app/src/lib/apiOrigin.ts
+// shared/lib/apiOrigin.ts — single source for the browser / native origin seam.
+// app/src/lib/pocketbase.ts and admin/src/auth/pocketbase.ts are thin adapters.
 // Environment-aware PocketBase API origin resolver.
 //
 // - Browser development: Vite proxies `/api` to the local PB. We use
