@@ -14,7 +14,7 @@ $ARGUMENTS
 5. Implement one real end-to-end slice. No placeholder actions, fake persistence, dead controls, screenshot-only mockups, or decorative data.
 6. Verify narrowly while building. Exercise realistic content and required loading, empty, error, success, disabled, focus, and permission states.
 7. Through the real browser, run the product pass, then capture the minimum desktop/mobile/demanding-state evidence and run the studio pass from the visual-quality rubric.
-8. Use a fresh `reviewer` context for the final studio pass when available. Fix evidence-backed issues; use at most two critique/repair rounds.
+8. Use a fresh read-only `reviewer` context for the final studio pass only when subagents are available and the independent pass is justified; otherwise do a separate rubric pass yourself. Fix evidence-backed issues; use at most two critique/repair rounds.
 9. Run the feature verification lane once. Map every acceptance criterion to exact evidence.
 
 Return the design direction delivered, signature element, hard-gate status, craft score, browser evidence, checks, main files, and remaining risk.

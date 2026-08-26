@@ -287,7 +287,7 @@ describe('assemblePackageFromZip', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     const pkg = await assemblePackageFromZip(parsed.entries);
-    if (!pkg.ok) throw new Error('pkg errors: ' + JSON.stringify(pkg.errors));
+    if (!pkg.ok) throw new Error(`pkg errors: ${JSON.stringify(pkg.errors)}`);
     expect(pkg.ok).toBe(true);
     expect(pkg.errors).toEqual([]);
     expect(pkg.manifest?.contentKey).toBe('general.probe-episode');

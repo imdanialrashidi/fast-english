@@ -42,7 +42,7 @@ export function isStudentEntitled(
 export function maskPhone(phone: string): string {
   if (typeof phone !== 'string') return '';
   if (phone.length > 6) {
-    return phone.substring(0, 5) + '****' + phone.slice(-1);
+    return `${phone.substring(0, 5)}****${phone.slice(-1)}`;
   }
   return phone;
 }

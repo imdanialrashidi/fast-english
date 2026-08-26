@@ -69,7 +69,7 @@ describe('parsePublicSettings', () => {
       support: { supportContact: '' },
     });
     expect(parsed).not.toBeNull();
-    expect(parsed!.support.supportContact).toBe('');
+    expect(parsed?.support.supportContact).toBe('');
   });
 
   it('rejects malformed payloads', () => {

@@ -139,7 +139,7 @@ async function createPendingRequest(
   tag: string,
 ): Promise<{ requestId: string; studentName: string }> {
   const phone = uniquePhone();
-  const signup = await fetch(`${PB_URL}/api/collections/fep_users/records`, {
+  const _signup = await fetch(`${PB_URL}/api/collections/fep_users/records`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -281,7 +281,7 @@ for (const layout of LAYOUTS) {
       for (const item of pendingBody.items ?? []) {
         await fetch(`${PB_URL}/api/collections/payment_requests/records/${item.id}`, {
           method: 'DELETE',
-          headers: { authorization: shared!.su },
+          headers: { authorization: shared?.su },
         });
       }
       await setOpAuth(page, layout.mode, '/operator?status=pending');

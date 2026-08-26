@@ -107,7 +107,7 @@ export function SampleLesson() {
             </p>
             <a
               href="/sample"
-              className="mt-5 inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
+              className="mt-5 inline-flex items-center justify-center rounded-[10px] border border-ice-soft bg-transparent px-5 py-3 text-sm font-semibold text-ice hover:bg-ice-soft min-h-12"
             >
               مشاهدهٔ صفحهٔ نمونهٔ اپیزود
             </a>

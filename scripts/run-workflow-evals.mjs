@@ -2,8 +2,10 @@
 
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
+import { lstatSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   aggregateRecords,
   analyzeTrace,
@@ -59,7 +61,19 @@ function evaluationFiles() {
     ['ls-files', '-z', '--cached', '--others', '--exclude-standard'],
     { cwd: repositoryRoot, encoding: 'buffer', maxBuffer: 64 * 1024 * 1024 },
   );
-  return output.toString('utf8').split('\0').filter(Boolean);
+  return filterMaterializedEvaluationFiles(output.toString('utf8').split('\0').filter(Boolean));
+}
+
+export function filterMaterializedEvaluationFiles(files, root = repositoryRoot) {
+  return files.filter((relative) => {
+    try {
+      lstatSync(path.join(root, relative));
+      return true;
+    } catch (error) {
+      if (error?.code === 'ENOENT') return false;
+      throw error;
+    }
+  });
 }
 
 function assertSafeEvaluationPath(relative) {
@@ -75,8 +89,8 @@ function assertSafeEvaluationPath(relative) {
   return normalized;
 }
 
-async function copyRepository(destination) {
-  for (const relative of evaluationFiles()) {
+async function copyRepository(destination, files = evaluationFiles()) {
+  for (const relative of files) {
     const normalized = assertSafeEvaluationPath(relative);
     const source = path.join(repositoryRoot, relative);
     const target = path.join(destination, relative);
@@ -97,15 +111,6 @@ async function copyRepository(destination) {
       await fs.chmod(target, sourceStat.mode);
     }
   }
-}
-
-function initializeEvaluationRepository(workspace) {
-  execFileSync('git', ['init', '--quiet', '--initial-branch=main'], { cwd: workspace });
-  execFileSync('git', ['config', 'user.name', 'Pi Workflow Eval'], { cwd: workspace });
-  execFileSync('git', ['config', 'user.email', 'pi-eval.invalid'], { cwd: workspace });
-  execFileSync('git', ['config', 'commit.gpgsign', 'false'], { cwd: workspace });
-  execFileSync('git', ['add', '--all'], { cwd: workspace });
-  execFileSync('git', ['commit', '--quiet', '-m', 'evaluation baseline'], { cwd: workspace });
 }
 
 async function fileManifest(root) {
@@ -152,7 +157,17 @@ function runRpc({ cwd, prompt, model, thinking, timeoutMs }) {
 
     const child = spawn('pi', args, {
       cwd,
-      env: { ...process.env, PI_TELEMETRY: '0', PI_SKIP_VERSION_CHECK: '1' },
+      env: {
+        ...process.env,
+        PI_TELEMETRY: '0',
+        PI_SKIP_VERSION_CHECK: '1',
+        PI_GUARD_MODE: 'autonomous',
+        PI_GUARD_FILE_SCOPE: 'repository',
+        PI_GIT_MUTATION: 'deny',
+        AI_PR_DELIVERY: 'off',
+        PI_GUARD_EXTERNAL_MUTATION: 'deny',
+        PI_PROJECT_ROOT: cwd,
+      },
       stdio: ['pipe', 'pipe', 'pipe'],
     });
     const startedAt = Date.now();
@@ -195,13 +210,12 @@ function runRpc({ cwd, prompt, model, thinking, timeoutMs }) {
 
     child.stdout.on('data', (chunk) => {
       stdoutBuffer += chunk.toString('utf8');
-      let newlineIndex;
-      while (true) {
-        newlineIndex = stdoutBuffer.indexOf('\n');
-        if (newlineIndex < 0) break;
+      let newlineIndex = stdoutBuffer.indexOf('\n');
+      while (newlineIndex >= 0) {
         const line = stdoutBuffer.slice(0, newlineIndex).replace(/\r$/, '');
         stdoutBuffer = stdoutBuffer.slice(newlineIndex + 1);
         consumeLine(line);
+        newlineIndex = stdoutBuffer.indexOf('\n');
       }
     });
     child.stderr.on('data', (chunk) => {
@@ -228,7 +242,7 @@ function runRpc({ cwd, prompt, model, thinking, timeoutMs }) {
       });
     });
     child.stdin.write(
-      `${JSON.stringify({ id: 'eval-prompt', type: 'prompt', message: prompt })}\n`,
+      `${JSON.stringify({ id: 'eval-prompt', type: 'prompt', message: `This is an isolated local-only evaluation. Do not commit, push, open/update a PR, or invoke the PR delivery helper.\n\n${prompt}` })}\n`,
     );
   });
 }
@@ -238,10 +252,13 @@ async function validateDisposableCopy(files) {
   await fs.mkdir(dryRunRoot, { recursive: true });
   const workspace = await fs.mkdtemp(path.join(dryRunRoot, 'eval-dry-run-'));
   try {
-    await copyRepository(workspace);
-    initializeEvaluationRepository(workspace);
-    const status = execFileSync('git', ['status', '--short'], { cwd: workspace, encoding: 'utf8' });
-    if (status.trim()) throw new Error('Disposable evaluation baseline is not clean.');
+    await copyRepository(workspace, files);
+    const copied = await fileManifest(workspace);
+    const missing = files.filter(
+      (file) => !copied.has(file) && !lstatSync(path.join(workspace, file)).isSymbolicLink(),
+    );
+    if (missing.length)
+      throw new Error(`Disposable evaluation copy is incomplete: ${missing.join(', ')}`);
   } finally {
     await fs.rm(workspace, { recursive: true, force: true });
   }
@@ -325,8 +342,7 @@ async function main() {
       const trialRoot = path.join(outputRoot, `${item.id}--${trial}`);
       const workspace = path.join(trialRoot, 'workspace');
       await fs.mkdir(trialRoot, { recursive: true });
-      await copyRepository(workspace);
-      initializeEvaluationRepository(workspace);
+      await copyRepository(workspace, files);
       const before = await fileManifest(workspace);
       const result = await runRpc({
         cwd: workspace,
@@ -399,7 +415,10 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  process.stderr.write(`${error.stack ?? error.message}\n`);
-  process.exitCode = 1;
-});
+const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : null;
+if (invokedPath === path.resolve(fileURLToPath(import.meta.url))) {
+  main().catch((error) => {
+    process.stderr.write(`${error.stack ?? error.message}\n`);
+    process.exitCode = 1;
+  });
+}

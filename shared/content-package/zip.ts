@@ -232,7 +232,7 @@ async function doParse(bytes: Uint8Array, limits: ZipLimits): Promise<ZipEntry[]
       );
     }
     if (unsafeZipPath(name)) {
-      throw new ZipParseError('ZIP_ENTRY_UNSAFE_PATH', 'نام یک فایل داخل بسته ناامن است: ' + name);
+      throw new ZipParseError('ZIP_ENTRY_UNSAFE_PATH', `نام یک فایل داخل بسته ناامن است: ${name}`);
     }
     if (method !== 0 && method !== 8) {
       throw new ZipParseError(

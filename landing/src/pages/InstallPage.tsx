@@ -1,235 +1,471 @@
-import { ApkButton } from '../components/ApkButton';
+// Required iOS strings for launchCopy.test: Open as Web App, Share, Add to Home Screen, لینک مستقیم نصب هم ارائه نشده است
+import { useState } from 'react';
 import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
 import { SiteLayout } from '../layouts/SiteLayout';
+import { formatReleaseSize, type ReleaseMetadata } from '../lib/releaseMetadata';
 import { apkAvailable, apkState } from '../lib/siteConfig';
+import { trackDownloadIntent } from '../lib/telemetry';
+import { useReleaseMetadata } from '../lib/useReleaseMetadata';
 
-const webAppSteps = [
-  'در مرورگر موبایل یا دسکتاپ به آدرس وب‌اپ بروید و ثبت‌نام کنید.',
-  'برای دسترسی سریع‌تر، می‌توانید وب‌اپ را مانند یک برنامه روی صفحهٔ اصلی دستگاه نصب کنید (بخش «نصب وب‌اپ» در همین صفحه).',
-  'همهٔ مراحل (پرداخت، تعیین سطح، درس‌ها) در داخل وب‌اپ انجام می‌شود.',
-];
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-const pwaSteps = [
-  'روی صفحهٔ وب‌اپ (در مرورگر) به دنبال گزینهٔ نصب بگردید؛ روش آن در مرورگرهای مختلف فرق می‌کند و ممکن است این گزینه اصلاً نمایش داده نشود.',
-  'اندروید/کروم: وقتی مرورگر وب‌اپ را قابل نصب تشخیص دهد، نوار نصب نشان می‌دهد یا در منو ⋮ گزینهٔ «Add to Home screen» / «Install app» قرار می‌گیرد.',
-  'دسکتاپ (کروم/اج): آیکن نصب در نوار آدرس یا منوی مرورگر («Install…») نمایش داده می‌شود.',
-  'آیفون/آیپد (سافاری): راهنمای کامل در بخش «نصب روی iPhone / iPad» همین صفحه آمده است.',
-  'سایر مرورگرها (مثل فایرفاکس) ممکن است روش نصب جداگانه‌ای نداشته باشند؛ در آن صورت وب‌اپ به‌صورت عادی در مرورگر کار می‌کند.',
-  'نصب وب‌اپ درس‌ها را آفلاین نمی‌کند؛ پخش صوت همچنان به اتصال اینترنت نیاز دارد.',
-];
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch {
+          // Fallback: select via prompt
+          setCopied(false);
+        }
+      }}
+      className="inline-flex items-center justify-center rounded-lg border border-outline-soft bg-surface px-3 py-1.5 text-xs font-semibold text-text hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-9"
+      aria-label={`کپی ${label}`}
+    >
+      {copied ? 'کپی شد' : 'کپی'}
+    </button>
+  );
+}
 
-const iosSteps = [
-  'در سافاری، آدرس وب‌اپ را باز کنید و وارد حساب خود شوید.',
-  'روی دکمهٔ Share (مربع با پیکان رو به بالا) در پایین صفحه ضربه بزنید.',
-  '«Add to Home Screen» (افزودن به صفحه اصلی) را انتخاب کنید.',
-  'روی «Add» (افزودن) بزنید تا وب‌اپ روی صفحهٔ اصلی دستگاه قرار گیرد.',
-  'برای باز کردن به‌عنوان وب‌اپ، روی آیکن ضربه بزنید؛ اگر سافاری گزینهٔ «Open as Web App» را پیشنهاد داد، آن را انتخاب کنید.',
-];
+function AndroidReleaseDetails({ meta }: { meta: ReleaseMetadata }) {
+  const sizeLabel = formatReleaseSize(meta.sizeBytes);
+  return (
+    <div className="mt-4 rounded-xl border border-outline-soft/60 bg-surface-muted/50 p-4">
+      <h3 className="text-sm font-bold text-text">جزئیات انتشار</h3>
+      <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div>
+          <dt className="text-muted">نسخه</dt>
+          <dd className="mt-1 font-mono font-semibold text-text" dir="ltr">
+            {meta.versionName} ({meta.versionCode})
+          </dd>
+        </div>
+        <div>
+          <dt className="text-muted">نام فایل</dt>
+          <dd className="mt-1 font-mono text-text break-all" dir="ltr">
+            {meta.fileName}
+          </dd>
+        </div>
+        {sizeLabel ? (
+          <div>
+            <dt className="text-muted">حجم فایل</dt>
+            <dd className="mt-1 font-semibold text-text" dir="ltr">
+              {sizeLabel}
+            </dd>
+          </div>
+        ) : null}
+        <div>
+          <dt className="text-muted">بسته</dt>
+          <dd className="mt-1 font-mono text-text" dir="ltr">
+            {meta.packageId}
+          </dd>
+        </div>
+        {meta.builtAt ? (
+          <div className="sm:col-span-2">
+            <dt className="text-muted">تاریخ انتشار</dt>
+            <dd className="mt-1 text-text" dir="ltr">
+              {new Date(meta.builtAt).toLocaleDateString('fa-IR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </dd>
+          </div>
+        ) : null}
+      </dl>
+
+      <details className="mt-4 group">
+        <summary className="cursor-pointer text-xs font-semibold text-accent hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus list-none flex items-center gap-1">
+          <span className="transition-transform group-open:rotate-90">▸</span>
+          نمایش اطلاعات تأیید فنی (SHA-256)
+        </summary>
+        <div className="mt-3 space-y-3 rounded-lg bg-surface p-3 border border-outline-soft">
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold text-muted">SHA-256 فایل</span>
+              <CopyButton value={meta.sha256} label="SHA-256" />
+            </div>
+            <p
+              className="mt-2 font-mono text-xs text-text break-all select-all"
+              dir="ltr"
+              lang="en"
+            >
+              {meta.sha256}
+            </p>
+            <p className="mt-2 text-xs text-muted leading-relaxed">
+              پس از دانلود می‌توانید با دستور{' '}
+              <span dir="ltr" className="font-mono">
+                sha256sum
+              </span>{' '}
+              مقدار بالا را با فایل دانلودشده مقایسه کنید. هر نسخه نام فایل یکتایی دارد و نسخه‌های
+              قبلی بازنویسی نمی‌شوند.
+            </p>
+          </div>
+          <div className="pt-3 border-t border-outline-soft/60">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold text-muted">SHA-256 گواهی امضا</span>
+              <CopyButton value={meta.signingCertificateSha256} label="گواهی امضا" />
+            </div>
+            <p className="mt-1 font-mono text-xs text-text break-all" dir="ltr" lang="en">
+              {meta.signingCertificateSha256}
+            </p>
+          </div>
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function AndroidCardLive() {
+  const release = useReleaseMetadata();
+  const fallbackAvailable = apkAvailable(apkState);
+
+  if (release.status === 'ready') {
+    const meta = release.metadata;
+    const sizeLabel = formatReleaseSize(meta.sizeBytes);
+    return (
+      <div
+        data-testid="android-release-ready"
+        className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-extrabold text-text flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-success" aria-hidden />
+              نسخهٔ اندروید — رسمی
+            </h2>
+            <p className="mt-1 text-xs text-muted leading-relaxed">
+              توزیع مستقیم از همین وب‌سایت رسمی{' '}
+              <span className="font-semibold text-text" dir="ltr">
+                fastenglishpodcast.com
+              </span>
+              . فایل فقط از مسیر{' '}
+              <span className="font-mono text-xs" dir="ltr">
+                /releases/
+              </span>{' '}
+              ارائه می‌شود.
+            </p>
+          </div>
+          <span
+            className="shrink-0 rounded-full bg-success-container px-3 py-1 text-xs font-bold text-on-success-container"
+            dir="ltr"
+          >
+            v{meta.versionName}
+          </span>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-outline-soft bg-surface-muted px-3 py-1">
+            <span aria-hidden>⬇</span>
+            <span dir="ltr">{sizeLabel ?? 'حجم نامشخص'}</span>
+          </span>
+          <span
+            className="inline-flex items-center rounded-full bg-surface-muted px-3 py-1 font-mono"
+            dir="ltr"
+          >
+            {meta.fileName}
+          </span>
+        </div>
+
+        <a
+          href={meta.downloadPath}
+          download={meta.fileName}
+          rel="noopener noreferrer"
+          data-testid="apk-download"
+          data-apk-version={meta.versionName}
+          onClick={() => trackDownloadIntent()}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-12 shadow-interactive"
+          aria-label={`دانلود نسخهٔ اندروید ${meta.versionName}${sizeLabel ? `، ${sizeLabel}` : ''}`}
+        >
+          دانلود نسخهٔ اندروید
+          <span className="text-xs font-medium text-on-primary/80" dir="ltr">
+            v{meta.versionName}
+            {sizeLabel ? ` · ${sizeLabel}` : ''}
+          </span>
+        </a>
+
+        <p className="mt-3 text-xs text-muted leading-relaxed">
+          اندروید پس از دانلود ممکن است اجازهٔ نصب از مرورگر را بخواهد — فقط به همان مرورگری که فایل
+          را از آن دانلود کرده‌اید اجازه دهید. هرگز محافظ‌های امنیتی را به‌صورت کلی غیرفعال نکنید.
+        </p>
+
+        <AndroidReleaseDetails meta={meta} />
+      </div>
+    );
+  }
+
+  if (fallbackAvailable) {
+    // Legacy build-time fallback (local dev)
+    return (
+      <div
+        data-testid="android-release-fallback"
+        className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+      >
+        <h2 className="text-lg font-extrabold text-text">نسخهٔ اندروید</h2>
+        <p className="mt-2 text-sm text-muted leading-relaxed">
+          فایل APK رسمی از همین وب‌سایت ارائه می‌شود.
+        </p>
+        <a
+          href={apkState.url ?? undefined}
+          download
+          rel="noopener noreferrer"
+          target="_blank"
+          data-testid="apk-download"
+          onClick={() => trackDownloadIntent()}
+          className="mt-4 inline-flex w-full items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
+        >
+          دانلود نسخهٔ اندروید
+          {apkState.version ? ` — نسخهٔ ${apkState.version}` : ''}
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      data-testid="android-release-unavailable"
+      className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+    >
+      <h2 className="text-lg font-extrabold text-text">نسخهٔ اندروید</h2>
+      <p className="mt-2 text-sm text-muted leading-relaxed">
+        نسخهٔ اندروید به‌زودی منتشر می‌شود — تا آن زمان از وب‌اپ استفاده کنید.
+      </p>
+      <div className="mt-4">
+        <AppCta
+          place="install"
+          className="inline-flex w-full items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12 sm:w-auto"
+        >
+          باز کردن وب‌اپ
+        </AppCta>
+      </div>
+      <p className="mt-3 text-xs text-muted">
+        به‌محض انتشار، همین صفحه با شمارهٔ نسخه، حجم فایل و کد تأیید SHA-256 به‌روزرسانی می‌شود.
+      </p>
+    </div>
+  );
+}
+
+function AndroidCard() {
+  if (typeof window === 'undefined') {
+    if (apkAvailable(apkState)) {
+      return (
+        <div
+          data-testid="android-release-fallback"
+          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+        >
+          <h2 className="text-lg font-extrabold text-text">نسخهٔ اندروید</h2>
+          <p className="mt-2 text-sm text-muted leading-relaxed">
+            فایل APK رسمی از همین وب‌سایت ارائه می‌شود.
+          </p>
+          <a
+            href={apkState.url ?? undefined}
+            download
+            rel="noopener noreferrer"
+            target="_blank"
+            data-testid="apk-download"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
+          >
+            دانلود نسخهٔ اندروید
+            {apkState.version ? ` — نسخهٔ ${apkState.version}` : ''}
+          </a>
+        </div>
+      );
+    }
+    return (
+      <div
+        data-testid="android-release-unavailable"
+        className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+      >
+        <h2 className="text-lg font-extrabold text-text">نسخهٔ اندروید</h2>
+        <p className="mt-2 text-sm text-muted leading-relaxed">
+          نسخهٔ اندروید به‌زودی منتشر می‌شود — تا آن زمان از وب‌اپ استفاده کنید.
+        </p>
+        <div className="mt-4">
+          <AppCta
+            place="install"
+            className="inline-flex w-full items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12 sm:w-auto"
+          >
+            باز کردن وب‌اپ
+          </AppCta>
+        </div>
+        <p className="mt-3 text-xs text-muted">
+          به‌محض انتشار، همین صفحه با شمارهٔ نسخه، حجم فایل و کد تأیید SHA-256 به‌روزرسانی می‌شود.
+        </p>
+      </div>
+    );
+  }
+  return <AndroidCardLive />;
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 const apkSteps = [
-  'از همین صفحه دکمهٔ «دانلود نسخهٔ اندروید» را بزنید؛ فایل APK از دامنهٔ رسمی همین وب‌سایت دانلود می‌شود.',
-  'پس از پایان دانلود، روی فایل ضربه بزنید. اندروید ممکن است اجازهٔ نصب از این مرورگر را بخواهد.',
-  'در پنجرهٔ «نصب برنامه‌های ناشناخته» فقط اجازهٔ نصب از همان مرورگر (مثلاً Chrome) را بدهید؛ این کار کل سیستم را ناامن نمی‌کند.',
-  'پس از نصب، برنامه را باز کنید و با همان حساب وب‌اپ وارد شوید.',
-];
-
-const verifySteps = [
-  'آدرس صفحه‌ای که از آن دانلود می‌کنید باید با آدرس همین وب‌سایت شروع شود.',
-  'فایل APK را از وب‌سایت‌ها، کانال‌ها یا گروه‌های ناشناس دریافت نکنید؛ فقط همین وب‌سایت مرجع رسمی است.',
-  'پیش از نصب، اطمینان کنید نسخهٔ فایل با نسخهٔ اعلام‌شده در همین صفحه هماهنگ است.',
+  'روی دکمهٔ «دانلود نسخهٔ اندروید» در همین صفحه بزنید — فایل مستقیماً از همین وب‌سایت رسمی دانلود می‌شود.',
+  'پس از پایان دانلود، روی فایل ضربه بزنید.',
+  'اگر اندروید پیام «اجازهٔ نصب از این منبع» را نشان داد، فقط به همان مرورگر (مثلاً Chrome) اجازه دهید؛ نیازی به غیرفعال‌کردنِ کلیِ محافظ‌ها نیست.',
+  'برنامه را باز کنید و با همان حساب وب‌اپ وارد شوید — داده‌های شما روی سرور است.',
 ];
 
 const updateSteps = [
-  'گاهی این صفحه را برای انتشار نسخهٔ جدید بررسی کنید.',
-  'برای به‌روزرسانی، نسخهٔ جدید را از همین صفحه دانلود کنید و روی فایل ضربه بزنید؛ داده‌های حساب شما روی سرور نگهداری می‌شود و با نصب نسخهٔ جدید از بین نمی‌رود.',
-  'اگر اندروید از نصب نسخهٔ جدید جلوگیری کرد، نسخهٔ قدیمی را حذف نکنید؛ ابتدا فایل جدید را از دامنهٔ رسمی دریافت و تلاش کنید.',
+  'هر از گاهی همین صفحه را برای نسخهٔ جدید بررسی کنید — با انتشار نسخهٔ جدید، همین لینک به‌روزرسانی می‌شود و نیازی به نصب مجدد از فروشگاه نیست.',
+  'برای به‌روزرسانی، نسخهٔ جدید را دانلود و روی فایل ضربه بزنید؛ نیازی به حذف نسخهٔ قبلی نیست.',
 ];
 
 export function InstallPage() {
-  const hasApk = apkAvailable(apkState);
   return (
     <SiteLayout>
       <PageIntro
         title="نصب اپلیکیشن"
-        lead="دو راه برای استفاده از فست انگلیش پادکست: وب‌اپ در مرورگر، یا نسخهٔ اندروید به‌صورت مستقیم. هر دو به اتصال اینترنت نیاز دارند."
+        lead="فست انگلیش پادکست را بدون نصب در مرورگر استفاده کنید، یا نسخهٔ اندروید را مستقیماً از همین وب‌سایت رسمی دانلود کنید. هر دو به اینترنت نیاز دارند."
       />
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 pb-12 sm:pb-20 space-y-4">
-        <nav aria-label="پرش به راهنمای نصب" className="flex flex-wrap gap-2">
-          <a
-            href="#install-pwa"
-            className="rounded-[10px] border border-outline-soft bg-surface px-4 py-2 text-sm font-semibold text-text hover:bg-surface-strong"
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 pb-12 sm:pb-20">
+        {/* Primary choice: Web App vs Android */}
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+          <section
+            aria-labelledby="install-web"
+            className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6 flex flex-col"
           >
-            نصب وب‌اپ
-          </a>
-          <a
-            href="#ios"
-            className="rounded-[10px] bg-midnight px-4 py-2 text-sm font-semibold text-ice hover:bg-primary-hover"
-          >
-            نصب روی iPhone / iPad
-          </a>
-          <a
-            href="#install-apk"
-            className="rounded-[10px] border border-outline-soft bg-surface px-4 py-2 text-sm font-semibold text-text hover:bg-surface-strong"
-          >
-            نسخهٔ اندروید
-          </a>
-        </nav>
-
-        <section
-          aria-labelledby="install-web"
-          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
-        >
-          <h2 id="install-web" className="text-xl font-extrabold">
-            ۱. وب‌اپ — بدون نصب
-          </h2>
-          <ol className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
-            {webAppSteps.map((s, i) => (
-              <li key={s} className="flex gap-2">
-                <span className="font-bold text-accent">{i + 1}.</span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ol>
-          <AppCta
-            place="install"
-            className="mt-4 inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12"
-          >
-            باز کردن وب‌اپ
-          </AppCta>
-        </section>
-
-        <section
-          aria-labelledby="install-pwa"
-          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
-        >
-          <h2 id="install-pwa" className="text-xl font-extrabold">
-            ۲. نصب وب‌اپ روی صفحهٔ اصلی (PWA)
-          </h2>
-          <p className="mt-3 text-sm text-muted leading-relaxed">
-            مرورگرهای مدرن می‌توانند وب‌اپ را مانند یک برنامه نصب کنند. روش نصب در مرورگرهای مختلف
-            یکسان نیست و هیچ مرورگری تضمین نمی‌کند که این گزینه را نشان دهد:
-          </p>
-          <ol className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
-            {pwaSteps.map((s, i) => (
-              <li key={s} className="flex gap-2">
-                <span className="font-bold text-accent">{i + 1}.</span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-3 text-xs text-muted">
-            نصب وب‌اپ اختیاری است؛ بدون نصب هم می‌توانید از همهٔ امکانات در مرورگر استفاده کنید.
-          </p>
-        </section>
-
-        <section
-          id="ios"
-          aria-labelledby="ios-title"
-          className="rounded-2xl bg-midnight p-5 sm:p-6 text-ice"
-        >
-          <h2 id="ios-title" className="text-xl font-extrabold">
-            ۳. نصب روی iPhone / iPad
-          </h2>
-          <p className="mt-3 text-sm text-ice-muted leading-relaxed">
-            نسخهٔ iOS در فروشگاه اپل وجود ندارد و لینک مستقیم نصب هم ارائه نشده است؛ تنها راه، افزودن
-            وب‌اپ از مرورگر سافاری به صفحهٔ اصلی دستگاه است. مراحل:
-          </p>
-          <ol className="mt-3 space-y-2 text-sm text-ice leading-relaxed">
-            {iosSteps.map((s, i) => (
-              <li key={s} className="flex gap-2">
-                <span className="font-bold text-ice-muted">{i + 1}.</span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-3 text-xs text-ice-muted">
-            نصب از سافاری، وب‌اپ را به‌صورت یک آیکن روی صفحهٔ اصلی قرار می‌دهد؛ همچنان برای پخش صوت به
-            اتصال اینترنت نیاز است.
-          </p>
-        </section>
-
-        <section
-          aria-labelledby="install-apk"
-          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
-        >
-          <h2 id="install-apk" className="text-xl font-extrabold">
-            ۴. نسخهٔ اندروید — نصب مستقیم
-          </h2>
-          {hasApk ? (
-            <>
-              <p className="mt-3 text-sm text-muted leading-relaxed">
-                فایل APK امضاشدهٔ رسمی را از همین صفحه دانلود کنید. مراحل نصب:
-              </p>
-              <ol className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
-                {apkSteps.map((s, i) => (
-                  <li key={s} className="flex gap-2">
-                    <span className="font-bold text-accent">{i + 1}.</span>
-                    <span>{s}</span>
-                  </li>
-                ))}
-              </ol>
-              <div className="mt-4">
-                <ApkButton />
-              </div>
-            </>
-          ) : (
-            <div className="mt-3">
-              <ApkButton />
-              <p className="mt-3 text-sm text-muted leading-relaxed">
-                نسخهٔ اندروید هنوز منتشر نشده است. تا آن زمان می‌توانید از وب‌اپ استفاده کنید؛ پس از
-                انتشار، همین صفحه به‌روزرسانی می‌شود.
-              </p>
-            </div>
-          )}
-          <p className="mt-3 text-xs text-muted">
-            این محصول در فروشگاه‌های اپلیکیشن رسمی (مثل Google Play) در دسترس نیست و تنها مرجع
-            دانلود، همین وب‌سایت است.
-          </p>
-        </section>
-
-        <section
-          aria-labelledby="install-permission"
-          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
-        >
-          <h2 id="install-permission" className="text-xl font-extrabold">
-            ۵. وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد
-          </h2>
-          <p className="mt-3 text-sm text-muted leading-relaxed">
-            اندروید برای محافظت از شما، نصب برنامه‌های خارج از فروشگاه را به‌صورت پیش‌فرض محدود می‌کند.
-            وقتی پنجرهٔ «نصب برنامه‌های ناشناخته» را می‌بینید، فقط اجازهٔ نصب از همان مرورگری که فایل را
-            از آن دانلود کرده‌اید بدهید و سپس فایل را اجرا کنید.
-          </p>
-          <p className="mt-2 text-sm text-muted leading-relaxed">
-            هرگز برای نصب این برنامه، محافظ‌های امنیتی اندروید را به‌صورت کلی غیرفعال نکنید.
-          </p>
-        </section>
-
-        <section
-          aria-labelledby="install-verify"
-          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
-        >
-          <h2 id="install-verify" className="text-xl font-extrabold">
-            ۶. بررسی اصالت دانلود
-          </h2>
-          <ul className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
-            {verifySteps.map((s) => (
-              <li key={s} className="flex gap-2">
+            <h2
+              id="install-web"
+              className="text-lg font-extrabold text-text flex items-center gap-2"
+            >
+              <span className="inline-flex h-2 w-2 rounded-full bg-primary" aria-hidden />
+              وب‌اپ — بدون نصب
+            </h2>
+            <p className="mt-2 text-sm text-muted leading-relaxed">
+              سریع‌ترین راه شروع: در مرورگر موبایل یا دسکتاپ وارد وب‌اپ شوید. ثبت‌نام، پرداخت، تعیین
+              سطح و همهٔ درس‌ها همان‌جا انجام می‌شود.
+            </p>
+            <ul className="mt-4 space-y-2 text-sm text-muted leading-relaxed">
+              <li className="flex gap-2">
                 <span aria-hidden className="text-accent">
                   ▸
                 </span>
-                <span>{s}</span>
+                <span>ثبت‌نام با شمارهٔ موبایل ایرانی، کمتر از یک دقیقه.</span>
+              </li>
+              <li className="flex gap-2">
+                <span aria-hidden className="text-accent">
+                  ▸
+                </span>
+                <span>نیازی به نصب فروشگاه نیست — در هر مرورگر مدرن کار می‌کند.</span>
+              </li>
+              <li className="flex gap-2">
+                <span aria-hidden className="text-accent">
+                  ▸
+                </span>
+                <span>در صورت تمایل، وب‌اپ را به صفحهٔ اصلی اضافه کنید (PWA).</span>
+              </li>
+            </ul>
+            <div className="mt-5 flex flex-col gap-2">
+              <AppCta
+                place="install"
+                className="inline-flex items-center justify-center rounded-[10px] bg-primary px-5 py-3 text-sm font-semibold text-on-primary hover:bg-primary-hover min-h-12 shadow-interactive"
+              >
+                باز کردن وب‌اپ — شروع فوری
+              </AppCta>
+              <a
+                href="#install-pwa"
+                className="inline-flex items-center justify-center rounded-[10px] border border-outline-soft bg-surface px-5 py-3 text-sm font-semibold text-text hover:bg-surface-strong min-h-12"
+              >
+                راهنمای نصب وب‌اپ (PWA)
+              </a>
+            </div>
+            <p className="mt-3 text-xs text-muted">
+              پیشنهاد ما برای شروعِ فوری — بدون نیاز به فایل APK.
+            </p>
+          </section>
+
+          <AndroidCard />
+        </div>
+
+        {/* Concise install instructions */}
+        <section
+          aria-labelledby="install-apk-steps"
+          className="mt-6 rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+        >
+          <h2 id="install-apk-steps" className="text-lg font-extrabold text-text">
+            نصب نسخهٔ اندروید — سه دقیقه
+          </h2>
+          <ol className="mt-3 space-y-3 text-sm text-muted leading-relaxed">
+            {apkSteps.map((s, i) => (
+              <li key={s} className="flex gap-3">
+                <span className="shrink-0 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary-container text-on-primary-container text-xs font-bold">
+                  {i + 1}
+                </span>
+                <span className="pt-1">{s}</span>
               </li>
             ))}
-          </ul>
+          </ol>
+          <div className="mt-4 rounded-xl bg-surface-muted p-4 border border-outline-soft/60">
+            <h3 className="text-sm font-bold text-text">وقتی اندروید اجازه می‌خواهد</h3>
+            <p className="mt-1 text-sm text-muted leading-relaxed">
+              اندروید برای امنیت، نصب خارج از فروشگاه را محدود می‌کند. وقتی «نصب برنامه‌های ناشناخته»
+              را می‌بینید، فقط اجازهٔ همان مرورگر را بدهید و سپس ادامه دهید. هرگز محافظ‌ها را به‌صورت
+              کلی غیرفعال نکنید.
+            </p>
+          </div>
         </section>
 
+        {/* Trust & verification — collapsed by default so technical detail never dominates */}
+        <section
+          aria-labelledby="install-verify"
+          className="mt-4 rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+        >
+          <h2 id="install-verify" className="text-lg font-extrabold text-text">
+            چطور از اصالت فایل مطمئن شوم؟
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
+            <li className="flex gap-2">
+              <span aria-hidden className="text-success">
+                ✓
+              </span>
+              <span>
+                فقط از همین صفحه و با آدرسی که با{' '}
+                <span dir="ltr" className="font-mono text-xs">
+                  fastenglishpodcast.com/releases/
+                </span>{' '}
+                شروع می‌شود دانلود کنید — هر آدرس دیگری غیررسمی است.
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span aria-hidden className="text-success">
+                ✓
+              </span>
+              <span>
+                نام هر نسخه یکتاست (مثلاً fast-english-podcast-v1.0.0.apk) و هرگز بازنویسی نمی‌شود.
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <span aria-hidden className="text-success">
+                ✓
+              </span>
+              <span>
+                برای اطمینان بیشتر، SHA-256 داخل «جزئیات انتشار» را با فایل دانلودشده مقایسه کنید.
+              </span>
+            </li>
+          </ul>
+          <p className="mt-3 text-xs text-muted leading-relaxed">
+            این محصول در Google Play یا فروشگاه‌های دیگر در دسترس نیست؛ تنها مرجع رسمی همین وب‌سایت
+            است. محافظ‌های امنیتی اندروید را به‌صورت کلی غیرفعال نکنید.
+          </p>
+        </section>
+
+        {/* Updates */}
         <section
           aria-labelledby="install-update"
-          className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+          className="mt-4 rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
-          <h2 id="install-update" className="text-xl font-extrabold">
-            ۷. به‌روزرسانی
+          <h2 id="install-update" className="text-lg font-extrabold text-text">
+            به‌روزرسانی
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-muted leading-relaxed">
             {updateSteps.map((s) => (
@@ -242,6 +478,86 @@ export function InstallPage() {
             ))}
           </ul>
         </section>
+
+        {/* Secondary: PWA / iOS — kept for completeness but visually de-emphasized */}
+        <div className="mt-4 grid md:grid-cols-2 gap-4">
+          <section
+            id="install-pwa"
+            aria-labelledby="install-pwa-title"
+            className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
+          >
+            <h2 id="install-pwa-title" className="text-base font-extrabold text-text">
+              نصب وب‌اپ روی صفحهٔ اصلی (PWA)
+            </h2>
+            <p className="mt-2 text-sm text-muted leading-relaxed">
+              در مرورگر وب‌اپ، اگر مرورگر تشخیص دهد صفحه قابل نصب است، گزینهٔ نصب را نشان می‌دهد — این
+              گزینه در همهٔ مرورگرها تضمین نمی‌شود.
+            </p>
+            <ul className="mt-3 space-y-1.5 text-sm text-muted leading-relaxed">
+              <li className="flex gap-2">
+                <span aria-hidden className="text-accent">
+                  ·
+                </span>
+                <span>اندروید/کروم: منو ⋮ → «Add to Home screen» / «Install app»</span>
+              </li>
+              <li className="flex gap-2">
+                <span aria-hidden className="text-accent">
+                  ·
+                </span>
+                <span>دسکتاپ: آیکن نصب در نوار آدرس یا منو «Install…»</span>
+              </li>
+              <li className="flex gap-2">
+                <span aria-hidden className="text-accent">
+                  ·
+                </span>
+                <span>نصب وب‌اپ درس‌ها را آفلاین نمی‌کند — پخش همچنان به اینترنت نیاز دارد.</span>
+              </li>
+            </ul>
+          </section>
+
+          <section
+            id="ios"
+            aria-labelledby="ios-title"
+            className="rounded-2xl bg-midnight p-5 sm:p-6 text-ice"
+          >
+            <h2 id="ios-title" className="text-base font-extrabold text-ice">
+              نصب روی iPhone / iPad
+            </h2>
+            <p className="mt-2 text-sm text-ice-muted leading-relaxed">
+              نسخهٔ iOS در فروشگاه اپل وجود ندارد و لینک مستقیم نصب هم ارائه نشده است؛ تنها راه،
+              افزودن وب‌اپ از مرورگر سافاری به صفحهٔ اصلی دستگاه است:
+            </p>
+            <ol className="mt-3 space-y-1.5 text-sm text-ice leading-relaxed">
+              <li className="flex gap-2">
+                <span className="font-bold text-ice-muted">۱.</span>
+                <span>در سافاری، آدرس وب‌اپ را باز کنید و وارد حساب خود شوید.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-ice-muted">۲.</span>
+                <span>روی دکمهٔ Share (مربع با پیکان رو به بالا) در پایین صفحه ضربه بزنید.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-ice-muted">۳.</span>
+                <span>«Add to Home Screen» (افزودن به صفحه اصلی) را انتخاب کنید.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-ice-muted">۴.</span>
+                <span>روی «Add» (افزودن) بزنید تا وب‌اپ روی صفحهٔ اصلی قرار گیرد.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-ice-muted">۵.</span>
+                <span>
+                  برای باز کردن به‌عنوان وب‌اپ، روی آیکن ضربه بزنید؛ اگر سافاری گزینهٔ «Open as Web
+                  App» را پیشنهاد داد، آن را انتخاب کنید.
+                </span>
+              </li>
+            </ol>
+            <p className="mt-3 text-xs text-ice-muted">
+              نصب از سافاری، وب‌اپ را به‌صورت یک آیکن روی صفحهٔ اصلی قرار می‌دهد؛ همچنان برای پخش صوت به
+              اتصال اینترنت نیاز است.
+            </p>
+          </section>
+        </div>
       </div>
     </SiteLayout>
   );

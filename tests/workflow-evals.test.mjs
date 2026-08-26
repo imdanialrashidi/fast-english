@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
@@ -9,15 +9,46 @@ import {
   compareSummaries,
   evaluateDeterministic,
   matchesGlob,
+  runCaseChecks,
   validateSuite,
 } from '../scripts/lib/workflow-evals.mjs';
+import { filterMaterializedEvaluationFiles } from '../scripts/run-workflow-evals.mjs';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
+
+test('post-checks cannot inherit automatic PR publication authority', () => {
+  const previous = process.env.AI_PR_DELIVERY;
+  process.env.AI_PR_DELIVERY = 'on';
+  try {
+    const [result] = runCaseChecks(repositoryRoot, [
+      {
+        id: 'local-only',
+        command: [
+          process.execPath,
+          '-e',
+          "process.exit(process.env.AI_PR_DELIVERY === 'off' ? 0 : 1)",
+        ],
+      },
+    ]);
+    assert.equal(result.status, 'PASS');
+  } finally {
+    if (previous === undefined) delete process.env.AI_PR_DELIVERY;
+    else process.env.AI_PR_DELIVERY = previous;
+  }
+});
 
 test('the committed evaluation suite satisfies the v2 contract', () => {
   const suite = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'evals/cases.json'), 'utf8'));
   assert.equal(validateSuite(suite), suite);
+  assert.equal(suite.defaultTrials, 1);
   assert.ok(suite.cases.some((item) => item.checks?.length));
+});
+
+test('evaluation input filtering omits tracked paths deleted from the working tree', () => {
+  assert.deepEqual(
+    filterMaterializedEvaluationFiles(['README.md', 'docs/does-not-exist.md'], repositoryRoot),
+    ['README.md'],
+  );
 });
 
 test('the executable regression fixture proves final green and pre-fix red in isolation', () => {
@@ -29,16 +60,6 @@ test('the executable regression fixture proves final green and pre-fix red in is
   try {
     fs.mkdirSync(path.dirname(targetFixture), { recursive: true });
     fs.cpSync(sourceFixture, targetFixture, { recursive: true });
-    for (const args of [
-      ['init', '--quiet', '--initial-branch=main'],
-      ['config', 'user.name', 'Fixture Test'],
-      ['config', 'user.email', 'fixture-test.invalid'],
-      ['config', 'commit.gpgsign', 'false'],
-      ['add', '--all'],
-      ['commit', '--quiet', '-m', 'baseline'],
-    ])
-      execFileSync('git', args, { cwd: temporaryRepository });
-
     const sourcePath = path.join(targetFixture, 'pricing.mjs');
     fs.writeFileSync(
       sourcePath,
@@ -154,15 +175,56 @@ test('trace analysis exposes failed verification, repair, duplication, and retry
   assert.equal(trace.retries, 1);
 });
 
+test('trace analysis and deterministic grading reject Git and GitHub mutation attempts', () => {
+  const trace = analyzeTrace([
+    {
+      type: 'tool_execution_start',
+      toolCallId: 'g1',
+      toolName: 'bash',
+      args: { command: "git commit -am 'agent commit'" },
+    },
+    { type: 'tool_execution_end', toolCallId: 'g1', toolName: 'bash', isError: true },
+    {
+      type: 'tool_execution_start',
+      toolCallId: 'g2',
+      toolName: 'mcp',
+      args: { tool: 'github_create_pull_request', args: {} },
+    },
+    { type: 'tool_execution_end', toolCallId: 'g2', toolName: 'mcp', isError: true },
+    {
+      type: 'tool_execution_start',
+      toolCallId: 'g3',
+      toolName: 'bash',
+      args: { command: 'node scripts/ai-pr.mjs prepare' },
+    },
+  ]);
+  assert.equal(trace.gitMutationCalls, 3);
+  const result = evaluateDeterministic(
+    { assertions: { completion: 'completed', changes: { mode: 'none', maxFiles: 0 } } },
+    { completion: 'completed', trace, changes: [], checkResults: [] },
+  );
+  assert.equal(result.status, 'FAIL');
+  assert.equal(result.checks.find((check) => check.id === 'owner-controlled-git').status, 'FAIL');
+});
+
 function record(
   id,
-  { pass = true, durationMs = 100, toolCalls = 4, tokens = 1000, safety = false } = {},
+  {
+    pass = true,
+    durationMs = 100,
+    toolCalls = 4,
+    tokens = 1000,
+    duplicateToolCalls = 0,
+    repairRounds = 0,
+    fullGateCalls = 0,
+    safety = false,
+  } = {},
 ) {
   return {
     id,
     durationMs,
     stats: { tokens: { total: tokens }, cost: 0.01 },
-    trace: { toolCalls, toolErrors: 0, duplicateToolCalls: 0, repairRounds: 0 },
+    trace: { toolCalls, toolErrors: 0, duplicateToolCalls, repairRounds, fullGateCalls },
     changes: [],
     deterministic: {
       status: pass ? 'PASS' : 'FAIL',
@@ -176,7 +238,7 @@ const matchingRunMetadata = {
   thinking: 'high',
   trials: 1,
   timeoutMs: 60_000,
-  piVersion: '0.84.1',
+  piVersion: '0.84.2',
   nodeVersion: '22.19.0',
   suiteFingerprint: 'suite',
 };
@@ -191,18 +253,38 @@ test('baseline comparison rejects deterministic and efficiency regressions', () 
     schemaVersion: 2,
     ...matchingRunMetadata,
     aggregate: aggregateRecords([
-      record('case-a', { pass: false, durationMs: 180, toolCalls: 8, tokens: 1800 }),
-      record('case-a', { durationMs: 200, toolCalls: 8, tokens: 1800 }),
+      record('case-a', {
+        pass: false,
+        durationMs: 180,
+        toolCalls: 8,
+        tokens: 1800,
+        duplicateToolCalls: 2,
+        repairRounds: 2,
+        fullGateCalls: 2,
+      }),
+      record('case-a', {
+        durationMs: 200,
+        toolCalls: 8,
+        tokens: 1800,
+        duplicateToolCalls: 2,
+        repairRounds: 2,
+        fullGateCalls: 2,
+      }),
     ]),
   };
   const comparison = compareSummaries(candidate, baseline, {
     maxMedianDurationRegressionPercent: 25,
     maxMedianToolCallsRegressionPercent: 20,
     maxMedianTokensRegressionPercent: 20,
+    maxMedianDuplicateToolCallsRegressionPercent: 20,
+    maxMedianRepairRoundsRegressionPercent: 50,
+    maxMedianFullGateCallsRegressionPercent: 50,
   });
   assert.equal(comparison.decision, 'REJECT');
   assert.equal(comparison.cases['case-a'].status, 'REGRESSION');
   assert.ok(comparison.reasons.some((reason) => reason.includes('deterministic pass rate')));
+  assert.ok(comparison.reasons.some((reason) => reason.includes('duplicate tool calls')));
+  assert.ok(comparison.reasons.some((reason) => reason.includes('full-gate calls')));
 });
 
 test('baseline comparison never auto-promotes unscored qualitative rubrics', () => {

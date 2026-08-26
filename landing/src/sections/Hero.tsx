@@ -39,14 +39,24 @@ export function Hero() {
               </AppCta>
               <a
                 href="/sample"
-                className="inline-flex items-center justify-center rounded-[10px] border border-outline-soft bg-surface px-6 py-3 text-sm font-semibold text-text hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-12"
+                className="inline-flex items-center justify-center rounded-[10px] px-6 py-3 text-sm font-semibold text-text hover:bg-surface-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus min-h-12"
               >
-                دیدن نمونهٔ اپیزود
+                دیدن نمونهٔ اپیزود{' '}
+                <span aria-hidden className="mr-1">
+                  ↗
+                </span>
               </a>
             </div>
             <p className="mt-4 text-xs text-muted">
               ثبت‌نام، تعیین سطح و پرداخت داخل اپلیکیشن انجام می‌شود؛ این صفحه فقط محصول را معرفی
-              می‌کند.
+              می‌کند.{' '}
+              <a
+                href="/install"
+                className="font-semibold text-accent hover:text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus rounded"
+              >
+                نسخهٔ اندروید را مستقیماً دانلود کنید
+              </a>{' '}
+              یا از وب‌اپ شروع کنید — هر دو رسمی‌اند.
             </p>
           </div>
 

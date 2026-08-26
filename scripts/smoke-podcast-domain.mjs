@@ -76,7 +76,7 @@ function scenario(name, fn) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label}`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message ? err.message : String(err)}`);
   }
 }
 
@@ -90,7 +90,7 @@ async function aScenario(name, fnPromise) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label}`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message ? err.message : String(err)}`);
   }
 }
 

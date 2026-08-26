@@ -536,7 +536,7 @@ async function main() {
   );
   const freeUserRec = await jf(
     `/api/collections/fep_users/records?filter=${encodeURIComponent(
-      "phone = '" + freeStudent.phone + "'",
+      `phone = '${freeStudent.phone}'`,
     )}`,
     { headers: { authorization: suToken } },
   );
@@ -546,7 +546,7 @@ async function main() {
   );
   const freeUserReqs = await jf(
     `/api/collections/payment_requests/records?filter=${encodeURIComponent(
-      "user = '" + freeUserRec.body.items[0].id + "'",
+      `user = '${freeUserRec.body.items[0].id}'`,
     )}`,
     { headers: { authorization: suToken } },
   );
@@ -567,7 +567,7 @@ async function main() {
   );
   const freeSubs = await jf(
     `/api/collections/subscriptions/records?filter=${encodeURIComponent(
-      "user = '" + freeUserRec.body.items[0].id + "'",
+      `user = '${freeUserRec.body.items[0].id}'`,
     )}`,
     { headers: { authorization: suToken } },
   );
@@ -620,7 +620,7 @@ async function main() {
   );
   const cSubs = await jf(
     `/api/collections/subscriptions/records?filter=${encodeURIComponent(
-      "user = '" + cLogin.body.record.id + "'",
+      `user = '${cLogin.body.record.id}'`,
     )}`,
     { headers: { authorization: suToken } },
   );
@@ -748,7 +748,7 @@ async function main() {
   );
   const freeSubStill = await jf(
     `/api/collections/subscriptions/records?filter=${encodeURIComponent(
-      "user = '" + freeUserRec.body.items[0].id + "'",
+      `user = '${freeUserRec.body.items[0].id}'`,
     )}`,
     { headers: { authorization: suToken } },
   );
@@ -943,7 +943,7 @@ async function main() {
   );
   const expireSubs = await jf(
     `/api/collections/subscriptions/records?filter=${encodeURIComponent(
-      "user = '" + expireStudent.id + "'",
+      `user = '${expireStudent.id}'`,
     )}`,
     { headers: { authorization: suToken } },
   );

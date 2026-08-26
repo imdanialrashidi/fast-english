@@ -19,7 +19,6 @@
 //  17.  Admin deep links survive refresh
 //  18.  Admin Service Worker is absent
 
-import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
@@ -27,7 +26,7 @@ import { ADMIN_URL } from '../playwright.config';
 import { createStaff, superuserAuth } from './fixtures';
 
 const PB_URL = readFileSync('test-results/pb-url.txt', 'utf8').trim();
-const PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
+const _PB_DATA_DIR = readFileSync('test-results/pb-data-dir.txt', 'utf8').trim();
 
 function uniquePhone(): string {
   const tail = String(Date.now()).slice(-4);

@@ -4,7 +4,7 @@ This document contains the detailed operating model for non-trivial Pi coding se
 
 ## Design principles
 
-1. **Intent steers; the agent finishes.** Convert the request into observable acceptance criteria, then execute reversible implementation and delivery decisions without intermediate approval loops.
+1. **Intent steers; the agent finishes.** Convert the request into observable acceptance criteria, then execute reversible implementation and evidence gathering without intermediate approval loops.
 2. **Repository knowledge is the system of record.** Durable product, architecture, quality, decision, and execution state belongs in versioned repository artifacts rather than chat memory.
 3. **Progressive disclosure beats giant prompts.** Keep always-loaded instructions small and retrieve code, docs, skills, and external facts just in time.
 4. **The interface is part of intelligence.** High-quality tools, focused outputs, browser evidence, diagnostics, and deterministic verification materially affect coding-agent performance.
@@ -19,8 +19,8 @@ This document contains the detailed operating model for non-trivial Pi coding se
 
 Use the task classes in `AGENTS.md`.
 
-- Localized: no ceremony.
-- Standard: compact acceptance contract and one evaluator pass.
+- Localized: load `/skill:quick-fix` when minimal ceremony is requested; use one direct patch, one targeted proof, and scoped diff review.
+- Standard: compact acceptance contract, focused implementation, and material self-review; add an independent evaluator only when its evidence justifies the cost.
 - Complex: planning plus persistent execution state when continuity is needed.
 - High risk: threat-boundary analysis, independent review, negative-path proof, full gate.
 
@@ -56,6 +56,10 @@ The agent derives the contract from available evidence. It asks a question only 
 
 Start from identifiers, not bulk context.
 
+The initial runtime surface is `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`, and `harness_tools`. Stay on that core for localized work. When the task needs planning, delegation, browser evidence, LSP, version-sensitive documentation, or current web evidence, call `harness_tools` once with every required capability instead of activating specialists one by one.
+
+An implicit read of a regular text file at or above 96 KiB is bounded to 400 lines and returns the next offset. An explicit `offset` or `limit` is always preserved. Prefer exact search/symbol lookup and focused ranges over walking the rest of a large file linearly.
+
 Preferred order:
 
 1. repository map and relevant project docs;
@@ -66,7 +70,7 @@ Preferred order:
 6. `doc_search_*` for version-sensitive official docs;
 7. web search for current upstream issues, advisories, regressions, or release notes.
 
-Use `scout` when the relevant surface or cross-module flow is genuinely unclear. Do not delegate the same discovery twice.
+If subagents are available, use `scout` only when the relevant surface or cross-module flow is genuinely unclear. Otherwise investigate directly. Do not delegate the same discovery twice.
 
 ### 4. Implement one coherent vertical slice
 
@@ -76,7 +80,7 @@ During implementation:
 
 - use the narrowest reliable verification after meaningful edits;
 - map the affected symbols/contracts/dependencies and nearest tests before editing;
-- when tests change, use `test-design` and require defect sensitivity where practical;
+- when tests change, use `test-design` and pass its Test Value Gate: distinct failure model, evidence gap, independent oracle, cheapest faithful layer, and defect sensitivity where practical; `no new test` is valid when existing evidence is already sufficient;
 - preserve existing architectural boundaries;
 - avoid speculative abstractions;
 - keep data validation at boundaries;
@@ -87,11 +91,11 @@ During implementation:
 
 After the slice is functionally complete and targeted checks pass, evaluate against the acceptance contract and `docs/QUALITY.md`.
 
-Use an independent `reviewer` for non-trivial user-facing, cross-module, production-bug, or material-regression work. Use `security-auditor` for High-risk work.
+Use an independent `reviewer` for non-trivial user-facing, cross-module, production-bug, or material-regression work only when subagents are available and isolated context adds value. Use `security-auditor` for High-risk work under the same condition; otherwise perform a separate evidence-focused pass directly.
 
-For browser-visible behavior, use the real application through the `browser-qa` workflow. Accessibility snapshots and interaction evidence come before screenshots; screenshots plus vision analysis are used when appearance materially matters.
+For browser-visible behavior, use the real application through the `browser-qa` workflow. Accessibility snapshots and interaction evidence come before screenshots. Screenshots are captured as reproducible artifacts; only make appearance claims that the active primary model can actually verify, otherwise mark appearance-dependent criteria `UNPROVEN`.
 
-For visually significant work, load `frontend-design` and evaluate in two passes. The product pass proves journey, states, accessibility, responsiveness, and measurable budgets. The studio pass compares rendered evidence with `docs/DESIGN.md`, runs the anti-template review, and scores visual craft. Novelty never cancels a hard-gate failure.
+For visually significant work, load `frontend-design` and evaluate in two passes. The product pass proves journey, states, accessibility, responsiveness, and measurable budgets. The studio pass compares rendered evidence with `docs/DESIGN.md`, runs the anti-template review, and scores visual craft where the evidence is actually inspectable. Novelty never cancels a hard-gate failure.
 
 The evaluator should answer:
 
@@ -115,11 +119,9 @@ Never convert these into the same status:
 - blocked by prerequisite;
 - not executed.
 
-### 7. Finish through reversible delivery
+### 7. Deliver the scoped pull request
 
-Do not stop after producing a patch when the accepted outcome includes repository delivery. If credentials and a configured remote are available, create or reuse a task branch, commit only the scoped diff, push it, and create or update the PR without requesting another confirmation.
-
-Direct protected-branch mutation, merging, releasing, deploying, production/data mutation, or real-money action still requires explicit scope because those cross a shared or difficult-to-reverse boundary. A missing publishing credential does not block local implementation and verification: finish those first and leave exact continuation state.
+For implementation, follow `docs/GIT_POLICY.md`: prepare the persistent `ai-changes` branch before editing, finish accepted verification, then run the scoped PR helper with explicit file paths and exact evidence. It commits/pushes and creates the PR or updates the same related PR. Do not create per-task branches, mix unrelated work into an open PR, write to `main`, or merge automatically. Read-only/local-only tasks and evals do not deliver. A missing credential blocks delivery, not safe local implementation; report both states accurately.
 
 ## Failure-recovery ladder
 
@@ -131,8 +133,10 @@ Repeated blind retries are a harness failure. When the same check or approach fa
 4. Choose the cheapest discriminating observation for each hypothesis.
 5. Use semantic/local evidence first; use official/current external sources only when needed.
 6. Revert only the agent's own failed local experiment when a safe targeted reversal exists; never overwrite unrelated user work.
-7. If the task is still unclear, delegate one focused read-only investigation rather than another broad implementation attempt.
+7. If the task is still unclear and subagents are available, delegate one focused read-only investigation rather than another broad implementation attempt; otherwise run that focused investigation directly.
 8. If the context has become noisy, the goal changed materially, or progress must survive a fresh session, use the handoff protocol.
+
+The runtime hashes the tool name plus canonical arguments and blocks a third identical call after two errored executions. It never persists the arguments themselves. A different successful evidence/action step clears the blind-retry counter; changing only wording without changing the actual tool input does not.
 
 A failure that recurs across different tasks should become a harness improvement: a regression test, clearer tool, structural check, documented invariant, or safety rule. Do not merely add another paragraph to the system prompt.
 
@@ -163,6 +167,8 @@ Handoff note
 ```
 
 Keep it concise and update facts, decisions, evidence, and next steps—not a transcript of every tool call.
+
+The runtime continuity capsule is a recovery aid, not the execution plan. It persists a bounded list of active specialist groups, repository-relative modified paths, recent recognized verification outcomes, hashed open failures, and Smart Read count. It is injected once after session restore or compaction. Pi's built-in compaction summary and the execution plan remain authoritative for goals, decisions, constraints, and unresolved reasoning.
 
 ## Handoff and context reset
 

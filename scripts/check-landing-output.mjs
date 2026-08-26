@@ -177,7 +177,7 @@ const allHtml = Object.values(htmls).join('\n');
 const apkLinks = [...allHtml.matchAll(/<a[^>]+href="([^"]*\.apk[^"]*)"[^>]*>/g)].map((m) => m[1]);
 if (APK_MODE) {
   if (!EXPECTED_APK_URL) fail('--apk-dir mode requires VITE_ANDROID_APK_URL env');
-  if (EXPECTED_APK_URL && EXPECTED_APK_URL.includes('debug'))
+  if (EXPECTED_APK_URL?.includes('debug'))
     fail(`configured APK URL must not be a debug build: ${EXPECTED_APK_URL}`);
   for (const file of ['index.html', 'install.html']) {
     const html = htmls[file];

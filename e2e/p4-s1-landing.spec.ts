@@ -74,11 +74,28 @@ test('homepage CTA targets are correct and safe', async ({ page }) => {
   const sampleLink = page.locator('a[href="/sample"]').first();
   await expect(sampleLink).toBeVisible();
 
-  // Android CTA: honest unavailable state in the default build.
-  await expect(page.getByText('نسخهٔ اندروید به‌زودی منتشر می‌شود').first()).toBeVisible();
-
-  // No fabricated APK links anywhere.
-  expect(await page.locator('a[href*=".apk"]').count()).toBe(0);
+  // Android CTA: either honest unavailable (no build-time APK) or validated
+  // same-origin download when release metadata is present (runtime source of
+  // truth). Never a fabricated external/localhost link.
+  const apkLinks = page.locator('a[href*=".apk"]');
+  const apkCount = await apkLinks.count();
+  const unavailable = page.getByText('نسخهٔ اندروید به‌زودی منتشر می‌شود');
+  if (apkCount === 0) {
+    await expect(unavailable.first()).toBeVisible();
+  } else {
+    // Validated same-origin download(s) present — verify safety.
+    for (let i = 0; i < apkCount; i++) {
+      const href = await apkLinks.nth(i).getAttribute('href');
+      expect(href).toMatch(
+        /^(\/releases\/|https:\/\/fastenglishpodcast\.com\/releases\/)fast-english-podcast-v\d+\.\d+\.\d+\.apk$/,
+      );
+      expect(href).not.toContain('localhost');
+      expect(href).not.toContain('debug');
+    }
+    // When a valid APK is offered, the honest unavailable text must not be the primary CTA.
+    // (The page may still contain the phrase in a secondary “coming soon” context, but the download is visible.)
+    await expect(apkLinks.first()).toBeVisible();
+  }
 });
 
 test('public sample page links to the live sample inside the web app', async ({ page }) => {
@@ -95,11 +112,22 @@ test('install page explains installation without unsafe guidance', async ({ page
   await expect(page.getByText('وب‌اپ — بدون نصب')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'نصب روی iPhone / iPad' })).toBeVisible();
   await expect(page.locator('#ios')).toContainText('Add to Home Screen');
-  await expect(page.getByText('وقتی اندروید اجازهٔ نصب از مرورگر را می‌خواهد')).toBeVisible();
-  await expect(page.getByText('بررسی اصالت دانلود')).toBeVisible();
+  await expect(page.getByText('نصب نسخهٔ اندروید — سه دقیقه')).toBeVisible();
+  await expect(page.getByText('چطور از اصالت فایل مطمئن شوم؟')).toBeVisible();
   // Never encourages disabling Android security globally.
   await expect(page.getByText('محافظ‌های امنیتی اندروید را به‌صورت کلی غیرفعال نکنید')).toBeVisible();
-  await expect(page.getByText('نسخهٔ اندروید به‌زودی منتشر می‌شود')).toBeVisible();
+  // Either honest unavailable or validated download — both must keep Web App usable.
+  const apkLinks = page.locator('a[href*=".apk"]');
+  const apkCount = await apkLinks.count();
+  if (apkCount === 0) {
+    await expect(page.getByText('نسخهٔ اندروید به‌زودی منتشر می‌شود').first()).toBeVisible();
+  } else {
+    await expect(apkLinks.first()).toBeVisible();
+    const href = await apkLinks.first().getAttribute('href');
+    expect(href).toMatch(
+      /^(\/releases\/|https:\/\/fastenglishpodcast\.com\/releases\/)fast-english-podcast-v\d+\.\d+\.\d+\.apk$/,
+    );
+  }
 });
 
 test('campaign parameters are preserved on the primary CTA, unknown params are dropped', async ({
@@ -150,7 +178,7 @@ test('install page explains per-browser PWA flows and records install intent', a
   // The dedicated iOS section replaced the old in-list bullet.
   await expect(page.locator('#ios')).toBeVisible();
   await expect(page.locator('#ios')).toContainText('Add to Home Screen');
-  await expect(page.getByText('هیچ مرورگری تضمین نمی‌کند که این گزینه را نشان دهد')).toBeVisible();
+  await expect(page.getByText('تضمین نمی‌شود')).toBeVisible();
   // beforeinstallprompt → install_intent (shared contract event).
   await page.evaluate(() => {
     window.dispatchEvent(new Event('beforeinstallprompt', { cancelable: true }));

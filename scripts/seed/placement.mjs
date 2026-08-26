@@ -149,7 +149,7 @@ async function main() {
   //      Not atomic by design: each step fails loudly and the final
   //      20-active/positions verification exits non-zero, so a partial
   //      failure is detected and a re-run repairs it. ----
-  const newKeys = new Set(
+  const _newKeys = new Set(
     buildQuestionRecords(dataset).map((r) => `${r.question_key}:${r.version}`),
   );
   if (args.replace && activeRecords.length > 0) {

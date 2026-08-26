@@ -14,7 +14,6 @@
 //
 // Usage: bash scripts/smoke-placement.sh node scripts/smoke-episode.mjs
 
-import { randomBytes } from 'node:crypto';
 import {
   createActiveStudent,
   fetchJson,
@@ -35,7 +34,7 @@ let total = 0,
   passed = 0,
   failed = 0;
 
-function scenario(name, fn) {
+function _scenario(name, fn) {
   total++;
   const start = Date.now();
   const label = `  ${String(total).padStart(2, '0')}. ${name}`;
@@ -46,7 +45,7 @@ function scenario(name, fn) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label} (${Date.now() - start}ms)`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message ? err.message : String(err)}`);
   }
 }
 
@@ -61,7 +60,7 @@ async function aScenario(name, fnPromise) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label} (${Date.now() - start}ms)`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message ? err.message : String(err)}`);
   }
 }
 
@@ -366,11 +365,11 @@ async function main() {
   // the middle entry gets a pronunciation file; one entry has none.
   const v1 = await makeVocab(su, ep2B1.id, { term: 'alpha', sort_order: 2 });
   const v2 = await makeVocab(su, ep2B1.id, { term: 'bravo', sort_order: 1 });
-  const v3 = await makeVocab(su, ep2B1.id, { term: 'charlie', sort_order: 3 });
+  const _v3 = await makeVocab(su, ep2B1.id, { term: 'charlie', sort_order: 3 });
   await uploadPronunciation(su, v2.id);
 
   // Vocabulary for Ep One A2 (cross-level availability).
-  const a2v = await makeVocab(su, ep1A2.id, { term: 'cross', sort_order: 1 });
+  const _a2v = await makeVocab(su, ep1A2.id, { term: 'cross', sort_order: 1 });
 
   // A published Episode whose Category is archived.
   const catArchived = await makeCategory(su, `arch-${randomId()}`);
@@ -445,8 +444,7 @@ async function main() {
     // bravo (sort_order 1) carries the uploaded pronunciation file; alpha
     // (sort_order 2) has none → null descriptor.
     assert(
-      items[0].pronunciation &&
-        items[0].pronunciation.url.includes('/api/fast-english/vocabulary/'),
+      items[0].pronunciation?.url.includes('/api/fast-english/vocabulary/'),
       'bravo missing pron URL',
     );
     assert(items[0].pronunciation.contentType === 'audio/mpeg', 'bravo content type');
@@ -658,14 +656,14 @@ async function main() {
   });
 
   await aScenario('browsing stays read-only: detail + vocabulary never mutate levels', async () => {
-    const before = await jf('/api/collections/fep_users/records/' + student.userId, {
+    const before = await jf(`/api/collections/fep_users/records/${student.userId}`, {
       headers: suAuth,
     });
     const beforeSel = before.body.selected_level;
     const beforeSug = before.body.suggested_level;
     await jf(`/api/fast-english/lessons/${ep1A2.id}`, { headers: auth });
     await jf(`/api/fast-english/lessons/${ep1A2.id}/vocabulary`, { headers: auth });
-    const after = await jf('/api/collections/fep_users/records/' + student.userId, {
+    const after = await jf(`/api/collections/fep_users/records/${student.userId}`, {
       headers: suAuth,
     });
     assert(after.body.selected_level === beforeSel, 'selected_level mutated');

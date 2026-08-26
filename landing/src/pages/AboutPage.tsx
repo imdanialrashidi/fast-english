@@ -1,16 +1,7 @@
 import { AppCta } from '../components/AppCta';
 import { PageIntro } from '../components/PageIntro';
-import { BUSINESS_IDENTITY_PLACEHOLDERS, SITE_NAME } from '../content/siteContent';
+import { SITE_NAME } from '../content/siteContent';
 import { SiteLayout } from '../layouts/SiteLayout';
-
-const identityItems = [
-  { label: 'بنیان‌گذاران', value: BUSINESS_IDENTITY_PLACEHOLDERS.founders },
-  { label: 'ثبت شرکت', value: BUSINESS_IDENTITY_PLACEHOLDERS.registration },
-  { label: 'اعتبارنامهٔ آموزشی تیم', value: BUSINESS_IDENTITY_PLACEHOLDERS.teachingCredentials },
-  { label: 'آدرس دفتر', value: BUSINESS_IDENTITY_PLACEHOLDERS.officeAddress },
-  { label: 'تعداد کاربران', value: BUSINESS_IDENTITY_PLACEHOLDERS.userCount },
-  { label: 'افتخارات و جوایز', value: BUSINESS_IDENTITY_PLACEHOLDERS.awards },
-];
 
 export function AboutPage() {
   return (
@@ -92,20 +83,17 @@ export function AboutPage() {
           className="rounded-2xl border border-outline-soft bg-surface p-5 sm:p-6"
         >
           <h2 id="about-identity" className="text-xl font-extrabold">
-            اطلاعات هویتی
+            اطلاعات مجموعه
           </h2>
           <p className="mt-3 text-sm text-muted leading-relaxed">
-            برخی اطلاعات مربوط به هویت حقوقی مجموعه هنوز از سوی مالک محصول اعلام نشده است و به‌محض
-            مشخص‌شدن در همین صفحه منتشر می‌شود:
+            نام رسمی، شناسهٔ حقوقی، آدرس و سوابق تیم هنوز از سوی مالک محصول به‌صورت عمومی اعلام نشده
+            است. به‌محض تأیید نهایی، همین بخش با اطلاعات دقیق و قابل استناد به‌روزرسانی می‌شود — تا آن
+            زمان از نمایش اطلاعات حدسی یا تأییدنشده خودداری کرده‌ایم.
           </p>
-          <dl className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {identityItems.map((item) => (
-              <div key={item.label} className="rounded-[10px] bg-surface-muted p-3">
-                <dt className="text-xs font-semibold text-muted">{item.label}</dt>
-                <dd className="mt-1 text-sm font-bold text-text">{item.value}</dd>
-              </div>
-            ))}
-          </dl>
+          <p className="mt-2 text-xs text-muted leading-relaxed">
+            این یک مانعِ انتشارِ محتواست، نه مشکل فنی؛ محتوای آموزشی و دسترسی به وب‌اپ/اندروید از آن
+            تأثیری نمی‌گیرد.
+          </p>
         </section>
 
         <section

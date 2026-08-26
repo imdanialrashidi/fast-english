@@ -1,117 +1,137 @@
-# Research Basis and Workflow Optimization Record
+# Research Basis and Optimization Record
 
-This document connects primary research to concrete Pi workflow decisions. It is an engineering evidence record, not a claim that one paper or benchmark guarantees results in every repository.
+Reviewed: **2026-08-23**. Test-quality amendment reviewed: **2026-08-24**. This record connects current primary evidence to concrete workflow controls. It does not claim that a prompt- or tool-level change improves every model or repository; deterministic tests protect invariants, and repeated matched-model evals remain the promotion standard.
 
-## Executive findings
+## Result in one page
 
-1. **The repository interface matters as much as the model.** Agent-facing maps, focused tools, executable feedback, and mechanical constraints repeatedly improve software-task performance.
-2. **Simple staged execution is a strong default.** Localize → repair → validate is easier to measure and often more cost-effective than adding agents or critique loops by default.
-3. **Generated tests need filters.** A test that builds and passes may still add no defect-detection signal. Keep tests only when they are behavior-oriented, reliable, and demonstrably sensitive to the missing/pre-fix behavior when practical.
-4. **Run the smallest faithful evidence first.** Exact tests and conservative affected-test selection reduce feedback latency; unmatched changes must fall back to a broader gate.
-5. **Harness changes require outcome evals.** Representative cases, deterministic checks, trace/cost metrics, repeated trials, and a predeclared promotion rule are stronger than reading prompt text and judging it by intuition.
-6. **Always-loaded context should be a map.** Repeated detailed instructions consume attention and can bury relevant evidence; retrieve details just in time.
-7. **Autonomy and isolation are separate controls.** Pi intentionally avoids permission popups; trusted work can execute directly, while untrusted code or sensitive credentials need an OS/container/VM boundary rather than dozens of in-process confirmation gates.
+The optimized workflow keeps a small model-neutral core and loads specialization only when the task needs it:
 
-## Primary-source evidence → workflow decision
+1. **No provider/model/thinking pin.** Pi uses the operator's active selection. Rules route by capability and provide fallbacks when image input, subagents, extended thinking, or a large context window is absent.
+2. **Less always-loaded policy.** `AGENTS.md` is the repository map; detailed procedure stays in on-demand docs, prompts, and skills.
+3. **Adaptive tool surface.** The launcher starts with eight schemas instead of 19: seven core repository tools plus `harness_tools`. Planning, delegation, browser, LSP, docs, and web groups remain installed and activate additively only when required.
+4. **Conditional orchestration.** One primary writer handles normal work. Scout/reviewer/security roles are used only for a named ambiguity or risk; a separate self-review is the universal fallback.
+5. **Schema prevention before repair.** On the exact reviewed Pi pin, capability-gated strict-prefer JSON-schema sampling is enabled for supported built-ins, while Pi's existing pre-validation argument preparation and the MCP proxy's object/JSON-string handling remain authoritative. The workflow does not guess-repair schema-invalid calls after validation.
+6. **Implementation autonomy, scoped PR delivery.** Owner-adopted policy on 2026-08-26 adds verified commit/push/PR handoff through a fixed `ai-changes` helper. Main integration and other external actions remain owner-controlled. This is a user authority choice, not a claim of improved model quality.
+7. **Cheap smoke, rigorous promotion.** Eval defaults to one trial for routine regression feedback; promotion still requires repeated, isolated baseline/candidate trials with identical settings and qualitative review.
+8. **Bounded context and recovery.** Implicit large-file reads are focused, a third identical call is stopped after two errors, and only compact mechanical continuity state—not raw tool input/output—is recovered after resume or compaction.
 
-| Primary source / lab | Finding used here | Workflow decision | Important limitation |
+## Primary evidence and resulting decisions
+
+| Primary source | Evidence used | Decision here | Limitation |
 |---|---|---|---|
-| Pi, [official product principles](https://pi.dev/) | Pi intentionally has no permission popups, supports in-place harness self-modification, and treats confirmation/sandbox policy as environment-specific extensions. | Default the trusted repository launcher to `--approve` and autonomous completion; do not require a special flag for workflow maintenance. | Trusting repository resources grants them the Pi process's permissions; this is appropriate only for a working copy the operator intends to trust. |
-| Pi, [official security model](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/security.md) | Project trust is an input-loading decision, not a sandbox; Pi has no built-in sandbox, and real isolation must come from an OS/container/VM boundary. | Keep direct execution as the normal trusted path, narrow the in-process guard to high-blast-radius accidents, and reserve strict/container mode for untrusted or sensitive environments. | A regex-based extension cannot contain indirect commands, subprocesses, prompt injection, or network egress; strict mode is still defense in depth, not isolation. |
-| OpenAI, [Harness engineering](https://openai.com/index/harness-engineering/) | Repository knowledge, agent-legible interfaces, mechanical invariants, and feedback loops are core harness work; the top-level agent guide should be a map rather than a manual. | Keep `AGENTS.md` short, enforce a combined context budget, and turn recurring failures into tests/tools rather than more prompt prose. | This is an experience report from a specific agent-first project, not a controlled comparison of every individual practice. |
-| Anthropic, [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) | Start with the simplest composable workflow and add agentic complexity only when it creates measurable value. | One primary writer; optional scout/reviewer/security roles only for demonstrated ambiguity or risk; bounded repair loops. | The guidance spans many agent tasks, not only repository coding. |
-| Anthropic, [Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps) | Planner/builder/evaluator contracts can help long work, but components and rounds add cost and should be ablated with eval evidence. | Durable plans only for work that must cross contexts; at most two evaluator/repair rounds; promotion data must justify extra orchestration. | Results depend on task horizon, model, and evaluator capability. |
-| OpenAI, [Testing agent skills systematically with evals](https://developers.openai.com/blog/eval-skills) | A useful eval maps prompt → trace/artifact → small checks → comparable score and includes efficiency/thrashing measures. | Eval schema v2 stores deterministic assertions, command checks, trace metrics, aggregate scores, and baseline comparisons. | Deterministic checks cannot judge all product, visual, or architectural quality. |
-| OpenAI, [Evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) | Use eval-driven development, task-specific distributions, automated scoring, logging, and continuous evaluation; avoid vibe-based evaluation. | Predeclare promotion thresholds, repeat stochastic trials, keep raw traces, and never auto-promote while qualitative rubrics remain unscored. | A representative task distribution must be maintained with real project failures over time. |
-| Princeton, [SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering](https://arxiv.org/abs/2405.15793) | Purpose-built interfaces for navigation, editing, and execution materially change repository-task performance. | Prefer exact searches, semantic lookup, concise output, deterministic edit/test interfaces, and structured trace metrics. | Published benchmark results reflect the paper's models, repositories, and snapshot; they are not a current universal model ranking. |
-| UIUC, [Agentless: Demystifying LLM-based Software Engineering Agents](https://arxiv.org/abs/2407.01489) | A relatively simple localization → repair → patch-validation pipeline can be competitive at low cost. | Make that three-stage path the default for ordinary code changes; orchestration must earn its cost. | SWE-bench Lite performance does not cover every greenfield, UI, or high-risk production task. |
-| Microsoft Research, [CodePlan](https://arxiv.org/abs/2309.12499) | Repository-wide change requires dependency/impact analysis and plans that adapt as dependent edits are discovered. | `/build` first maps behavior → symbols/contracts → dependents → tests; affected verification routes encode known dependency surfaces. | Static dependency analysis is incomplete for reflection, runtime wiring, generated code, and external systems. |
-| Meta, [TestGen-LLM](https://arxiv.org/abs/2402.09171) | In the reported deployment, many generated tests built and passed, but a much smaller fraction produced measurable coverage improvement; generation needs build/reliability/improvement filters. | `test-design` rejects tests that merely parse/pass and requires meaningful incremental signal. | Coverage improvement is still an imperfect proxy for defect detection, and the reported numbers are system/project specific. |
-| UMass Amherst, [CoverUp](https://arxiv.org/abs/2403.16218) | Coverage-guided iterative test generation improves when the model receives code, coverage gaps, and execution errors across iterations. | Feed exact test failures and focused coverage/boundary gaps back into a bounded edit loop; do not regenerate blindly. | Coverage-guided success does not imply semantic correctness, maintainability, or absence of flaky tests. |
-| Princeton/Chicago, [SWE-bench](https://arxiv.org/abs/2310.06770) | Real issue resolution requires repository-scale context, execution environments, and multi-file reasoning. | Add executable repository fixtures and progressively replace generic eval prompts with anonymized real failures. | Benchmark contamination, environment drift, and issue selection can affect results; use it as task-shape evidence, not a sole production score. |
-| Stanford/UC Berkeley, [Lost in the Middle](https://aclanthology.org/2024.tacl-1.9/) | Long-context systems can underuse relevant evidence placed in the middle of large inputs. | Reduce duplicate always-loaded policy and retrieve focused sources just in time. | The study is not a coding-agent harness ablation; this workflow applies the finding as a conservative context-design principle. |
-| Google, [Just Say No to More End-to-End Tests](https://testing.googleblog.com/2015/04/just-say-no-to-more-end-to-end-tests.html) | A test pyramid with many focused tests and few broad E2E tests generally gives faster, less flaky feedback; fixed ratios are only a starting heuristic. | Choose the cheapest faithful layer, keep browser E2E narrow, and reserve full E2E for behavior lower layers cannot represent. | The correct test mix depends on architecture and observed defect distribution. |
-| Meta, [Predictive test selection](https://research.facebook.com/publications/predictive-test-selection/) | Change-aware test selection can reduce infrastructure cost while retaining high fault-detection probability at large scale. | Provide explicit affected-file routes and measure latency/tool calls. | Meta's learned production system is not reproduced here; this template uses deterministic, reviewable routes. |
-| University of Illinois/UT Austin, [Ekstazi](https://users.ece.utexas.edu/~gligoric/papers/GligoricETAL15EkstaziTool.pdf) | File-dependency-based regression-test selection can safely avoid unaffected tests when dependency evidence is available. | Route known file/dependency groups to focused commands; unknown files always use the full fallback. | Manual route maps can become stale and do not have Ekstazi's runtime dependency collection. |
-| Pi, [official RPC mode documentation](https://pi.dev/docs/latest/rpc) | RPC exposes structured tool start/end, errors, retries, compactions, session tokens, and cost. | Derive tool/error/duplicate/verification/repair metrics from official events instead of scraping prose output. | Event schemas are version-sensitive; keep the reviewed Pi version pin and rerun compatibility tests on upgrades. |
+| Pi, [settings](https://pi.dev/docs/latest/settings) | Provider/model/thinking, compaction, retry, and timeout settings are optional; Pi supplies documented defaults. | Remove repository model/thinking pins and unmeasured timeout/compaction overrides. Keep only reproducibility/security controls plus the exact-pin schema-sampling and bounded runtime toggles, all operator-overridable. | A real project may later justify a measured override; it should be evaluated before becoming global policy. |
+| Pi, [usage and context files](https://pi.dev/docs/latest/usage) and [compaction](https://pi.dev/docs/latest/compaction) | Project context is loaded into every task; built-in compaction already summarizes goals, state, decisions, next steps, critical context, and files. | Keep `AGENTS.md` plus the system append concise. Recover only complementary mechanical state (recognized checks, hashed open failures, active capabilities), once, instead of replacing the built-in summary. | Exact attention effects vary by model and task; a compact capsule can still be redundant on some turns. |
+| Pi, [extensions and dynamic tool loading](https://pi.dev/docs/latest/extensions) | Extensions can inspect the configured tool catalog, change active tools, mutate already-valid calls, patch results, persist custom entries outside LLM context, and inject context. Pi documents a loader pattern that works across models. | Start with eight schemas and use `harness_tools` to activate six named capability groups. Use the read-call/result hooks for deterministic focusing and custom entries for bounded continuity. | Specialist tasks pay one loader call; dynamic selection must be compared against the 19-tool baseline on representative tasks. |
+| Pi, [skills](https://pi.dev/docs/latest/skills) | Pi initially exposes skill name/description, loads the full skill only when selected, and registers `/skill:name` commands by default. | Retain focused skills because they do not all consume every turn; add an explicit `/skill:quick-fix` route for tiny changes and keep test, verification, browser, design, and risk contracts distinct. | Poor descriptions can still cause incorrect selection, so trigger and escalation tests remain necessary. |
+| Agent Skills, [specification](https://agentskills.io/specification) and [best practices](https://agentskills.io/skill-creation/best-practices) | Progressive disclosure and concise metadata are part of the interoperable skill model. | Use model-neutral, task-specific descriptions and keep procedural depth in skill bodies/references. | Support and selection behavior differ between hosts. |
+| Pi, [custom models](https://pi.dev/docs/latest/models) | Pi supports multiple providers/models and project selection can be overridden at launch. | Treat models as replaceable capabilities; never embed a vendor-specific route in workflow policy. | Model-specific quirks can still require a local, measured adapter. |
+| Pi, [0.84.2 release notes](https://pi.dev/news) | The reviewed release adds capability-aware strict JSON-schema constrained sampling for built-in `read`, `bash`, `edit`, and `write` under `PI_EXPERIMENTAL=1`, with strict-prefer fallback behavior. | Enable it by default only because the Pi version is exact-pinned; retain `PI_EXPERIMENTAL=0` for matched diagnostics and re-review the flag before upgrading. | The feature is explicitly experimental and provider/model support varies; structural correctness is not evidence of outcome improvement. |
+| Google, [function calling](https://ai.google.dev/gemini-api/docs/function-calling) | Google recommends keeping the active tool set small—roughly 10–20 relevant functions—and using clear schemas. | Start below that bound at eight unique schemas; add only task-relevant groups rather than sending all 19 on every request. | The useful count depends on task/tool similarity; this is a design bound, not proof of quality, and loader overhead can outweigh savings. |
+| OpenAI, [function calling](https://developers.openai.com/api/docs/guides/function-calling) | Clear purpose, constrained parameters, and minimized model-side argument work improve tool use. | Use an enum-constrained capability loader with strict-prefer sampling, direct core tools, argv-array checks, explicit scope, and one lazy MCP proxy. | Guidance does not replace repository-specific tool-use evals. |
+| Google, [prompt design](https://ai.google.dev/gemini-api/docs/prompting-strategies) | Direct instructions, clear structure, and relevant context are more reliable than diffuse prose. | Put only critical invariants in the always-on core; make acceptance and evidence explicit; remove duplicate narrative. | Prompt behavior remains stochastic and model-dependent. |
+| OpenAI Codex, [customization](https://developers.openai.com/codex/customization/overview) | Repository guidance should stay scoped and concise, with deeper instructions near the relevant work. | Use `AGENTS.md` as a map and docs/skills as progressive disclosure. | This source describes Codex, so it is supporting cross-agent evidence rather than a Pi contract. |
+| Anthropic, [context windows](https://docs.anthropic.com/en/docs/build-with-claude/context-windows) and Stanford/UC Berkeley, [Lost in the Middle](https://aclanthology.org/2024.tacl-1.9/) | More context is not automatically better; long inputs can reduce retrieval of relevant evidence. | Enforce byte/line budgets and remove repeated policy. | Neither source is a controlled ablation of this exact Pi repository. |
+| Anthropic, [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) | Start with the simplest composable workflow and add agentic complexity only where it pays. | One writer by default; conditional specialists; at most two evidence-driven evaluator/repair rounds. | Long-horizon or unusually risky work may benefit from more orchestration. |
+| OpenAI, [subagents](https://developers.openai.com/codex/subagents) | Subagents add independent context and parallelism but also model/tool/token work. | Preserve the capability but do not invoke it automatically for localized work; use self-review when unavailable or unjustified. | This is cross-agent guidance; Pi package behavior must be tested separately. |
+| OpenAI, [Harness engineering](https://openai.com/index/harness-engineering/) | Agent-legible repository maps, mechanical invariants, and executable feedback matter alongside model capability. | Convert recurring rules into guard/tests/doctor checks instead of adding prompt prose. | Experience report, not an isolated causal study of each control. |
+| UIUC, [Agentless](https://arxiv.org/abs/2407.01489) | A simple localization → repair → validation pipeline can be competitive and cost-effective. | Make that the default coding path; plans and reviewers must earn their cost. | SWE-bench results do not cover every greenfield/UI/high-risk task. |
+| Princeton, [SWE-agent](https://arxiv.org/abs/2405.15793) | Purpose-built navigation/edit/execution interfaces materially affect repository performance. | Keep semantic lookup, exact search/edit, and executable verification, while removing only overlapping schemas. | Results reflect the paper's benchmark/model snapshot. |
+| Microsoft Research, [CodePlan](https://arxiv.org/abs/2309.12499) | Cross-file work benefits from dependency-aware planning that adapts as evidence changes. | Use affected-file routing and durable plans only for genuinely cross-module/multi-session work. | Static/manual dependency maps can miss runtime wiring. |
+| Meta, [TestGen-LLM](https://arxiv.org/abs/2402.09171) and UMass, [CoverUp](https://arxiv.org/abs/2403.16218) | Generated tests need execution, usefulness, and iterative error/coverage signals; passing alone is insufficient. | Keep separate `test-design` and verification-routing skills; require green plus pre-fix red/mutation/equivalent sensitivity when practical. | Coverage is not equivalent to defect detection or maintainability. |
+| Google, [test behavior](https://testing.googleblog.com/2013/08/testing-on-toilet-test-behavior-not.html), [prefer public APIs](https://testing.googleblog.com/2015/01/testing-on-toilet-prefer-testing-public.html), and [avoid overusing mocks](https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html) | Stable behavior boundaries resist refactors better than private calls; mock-heavy tests can validate their own setup instead of the product. | Require public/authoritative boundaries and reserve mocks for owned expensive, nondeterministic, or unsafe seams. | Some internal invariants are legitimate contracts; the rule is not a ban on unit tests or mocks. |
+| Microsoft, [Playwright best practices](https://playwright.dev/docs/best-practices) | Browser tests should verify user-visible behavior, use resilient user-facing locators, and remain isolated. | Use roles/labels and real interaction for browser-only risk; keep journeys narrow and independent. | Browser evidence is costlier and should not replace lower-layer business-rule tests. |
+| MuTAP, [mutation-guided test generation](https://arxiv.org/abs/2308.16557), and Meta, [industrial mutation-guided LLM testing](https://arxiv.org/html/2501.12862v1) | Plausible mutations provide concrete feedback about whether generated tests distinguish faulty behavior. | Use a safe focused mutation or isolated pre-fix revision when ordinary red-before-green evidence is unavailable. | Mutation score is a proxy; equivalent/unrealistic mutants and mutation cost require judgment. |
+| Siddiq et al., [design choices in LLM-based test generators](https://arxiv.org/abs/2412.14137) | Oracles inferred from current program behavior can produce passing tests that preserve a bug. | Require an independently derived oracle, a named evidence gap, and a distinct failure model before retaining a test. | Independent contracts may be unavailable for legacy behavior; report that limitation instead of inventing certainty. |
+| OpenAI, [evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices) | Use representative task distributions, automated scoring, logs, and predeclared thresholds rather than vibe checks. | Preserve raw traces/artifacts, deterministic graders, matched baseline comparison, and explicit qualitative review. | A useful task distribution must be maintained with real failures. |
+| Pi, [RPC mode](https://pi.dev/docs/latest/rpc) | RPC emits structured tool events and session statistics. | Measure tool/error/duplicate/verification/repair/retry/compaction behavior from events, and deterministically reject Git mutation attempts. | Event schemas are version-sensitive. |
+| Pi, [security](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/security.md) | Project trust is not sandboxing; real containment is an OS/container/VM concern. | Give trusted implementation broad workspace access, keep secret/destructive/external guards, and use strict container scope for untrusted work. | Regex guards are defense in depth, not a security boundary. |
 
-## Repository audit and fixes
+## Keep / simplify / remove audit
 
-| Severity | Observed problem | Why it mattered | Implemented control |
-|---|---|---|---|
-| P0 | The launcher could stop for project trust while the guard blocked routine Git delivery, workflow maintenance, public browser QA, and page evaluation. | The agent could implement code but still require a person to approve reversible steps or finish delivery, contradicting the workflow's autonomy goal and Pi's permissionless design. | `./p` now passes `--approve`; autonomous guard mode allows routine work and task-branch delivery; strict/container mode remains opt-in; behavioral tests exercise both modes. |
-| P0 | The eval runner stored traces and a prose `grade` list but produced no automatic outcome. | Harness changes could be accepted by intuition even when the documentation demanded measurable promotion evidence. | Eval schema v2: deterministic mutation/check assertions, `PASS/FAIL`, trace metrics, per-case medians, Markdown report, `--baseline`, and regression thresholds. |
-| P0 | Test guidance said “assert behavior” but did not require defect sensitivity or reliability evidence. | A generated test could mirror the implementation and pass without detecting the bug. | `test-design`, `/test`, `/build` red/pre-fix guidance, and an executable tier-boundary fixture whose post-check restores the pre-fix source and requires the new test to fail. |
-| P1 | Targeted/feature/full lanes existed only as prose. | Agents had no deterministic change-to-command interface and could either run everything repeatedly or skip too much. | `scripts/verify-affected.mjs` plus `.pi/verification.json`: argv-only reviewed commands, route union/deduplication, dry planning, and conservative full fallback for unmatched files. |
-| P1 | `AGENTS.md` plus `.pi/APPEND_SYSTEM.md` consumed 15,264 bytes/248 lines and repeated routing details. | Duplicate always-loaded policy spends context before task evidence appears. | Compressed the append policy and added a combined 12,000-byte/220-line doctor budget. Baseline and after sizes are measured in verification. |
-| P2 | The starter suite had 15 prompts but no real code+test repair with executable acceptance. | It could not detect whether the workflow writes meaningful tests or only talks about them. | Added `tiered-pricing-regression` with a safe disposable fixture, mutation-scope assertions, final green check, and pre-fix red proof. |
+| Surface | Decision | Reason |
+|---|---|---|
+| `AGENTS.md` + system append | **Simplify** | Always loaded; duplicated routing had ongoing token/attention cost. Critical invariants remain mechanical and concise. |
+| Model/provider/thinking defaults | **Remove** | They made the template vendor-specific and could silently override the operator's better/current choice. |
+| Compaction/timeout overrides | **Remove** | They duplicated official defaults without repository evidence of a failure mode. The continuity capsule complements compaction rather than changing it. |
+| Blind identical-call retry | **Add bounded guard** | Two identical errors are evidence to change the hypothesis. The runtime stores only a short signature/count and clears it after a different successful evidence/action step. |
+| `docs/PI_WORKFLOW.md` | **Remove** | Duplicated README/HARNESS and created drift; unique Git authority moved to `docs/GIT_POLICY.md`. |
+| 16 slash-command prompts | **Keep on demand** | They cover distinct deliverables and are not all loaded per turn; merging would make selection less precise. |
+| 6 specialist skills | **Keep on demand** | Each has a distinct trigger/evidence contract; Pi progressive disclosure avoids constant context cost. `quick-fix` replaces ceremony for genuinely Localized work rather than adding another review stage. |
+| Subagent package | **Keep, conditional** | Independent context helps ambiguity/risk, but default invocation adds cost and can dilute ownership. |
+| Todo package | **Keep, conditional** | One compact tool helps genuinely multi-step state; localized tasks explicitly avoid it. |
+| LSP/docs/web | **Keep deferred** | Semantic/local/current evidence improves correctness when needed, but twelve specialist schemas do not need to accompany every localized task. |
+| Playwright MCP | **Keep deferred + lazy** | The single `mcp` schema activates only for browser work. With valid cached metadata the server starts lazily; missing/stale metadata may require a startup catalog connection. |
+| Smart Read | **Add bounded focus** | Pi already truncates at 2,000 lines/50 KiB; the extension adds an earlier 400-line bound only for large implicit reads and preserves explicit ranges. |
+| Continuity capsule | **Add bounded state** | Exact recent check status and hashed open failures can be lost across resume/compaction. Custom entries persist that state outside normal LLM context and inject it once. |
+| Vision-routing security section | **Remove** | The delegated vision tooling had already been removed, so the section was stale and misleading. |
+| Git delivery automation | **Scoped, owner-adopted** | A reviewed helper delivers only to persistent `ai-changes` and a matching PR; raw Git/main/merge remain protected and evals force delivery off. |
+| Three default eval trials | **Reduce to one smoke trial** | Cuts routine model calls by 66.7%; repeated trials remain explicitly required for promotion-quality comparisons. |
 
-## Optimized coding loop
+## Dependency review
 
-Use this default until project evidence justifies something more complex:
+Exact versions and registry integrity values are recorded in `.pi/package-integrity.json`.
 
-1. **Contract:** state 3–7 observable criteria and proof.
-2. **Localize:** map behavior to entry symbols/contracts, dependents, nearest tests, and exact commands.
-3. **Expose the gap:** reproduce the bug, create a failing behavioral test, or record why that proof is impractical.
-4. **Repair narrowly:** implement one coherent vertical slice in existing architecture.
-5. **Exact proof:** run the new/nearest test first.
-6. **Affected proof:** run `node scripts/verify-affected.mjs --file <path>`; unmatched files invoke the full fallback.
-7. **Feature proof:** once after the slice, run static/unit/integration/build/browser smoke evidence appropriate to the feature.
-8. **Independent review:** only for the task classes that justify it; at most two evidence-driven repair rounds.
-9. **Full proof:** once at final delivery or for required risk classes.
-10. **Report:** criterion → exact evidence, including failed/skipped/blocked/not-executed distinctions.
+| Package | Reviewed pin | Decision |
+|---|---:|---|
+| `@earendil-works/pi-coding-agent` | `0.84.2` | Upgrade from `0.84.1`; current reviewed Pi release. |
+| `pi-sub-agent` | `0.1.5` | Keep; already current in the audit. |
+| `pi-mcp-adapter` | `2.26.1` | Upgrade from `2.20.1`; reviewed fixes include approval correctness, hang/catalog fixes, and lower startup catalog work. |
+| `@juicesharp/rpiv-todo` | `2.6.2` | Upgrade from `2.1.0`; keep conditional use. |
+| `pi-lsp-adapter` | `0.1.3` | Keep. |
+| `@dreki-gg/pi-doc-search` | `0.3.2` | Keep. |
+| `@bytetrue/pi-web-search` | `0.2.1` | Upgrade from `0.1.3`; retain one explicit search provider and safe public fetch behavior. |
+| `@playwright/mcp` | `0.0.79` | Keep exact lazy pin and restricted browser tool set. |
 
-## Test acceptance filter
+## Mechanical changes measured in this audit
 
-A generated test is retained only when all applicable gates pass:
+| Signal | Original | Previous optimized | V3 | Net change |
+|---|---:|---:|---:|---:|
+| Always-loaded `AGENTS.md` + append | 11,747 bytes / 179 lines | 8,170 bytes / 95 lines | 8,170 bytes / 95 lines | −3,577 bytes (−30.5%), −84 lines |
+| Initial launcher tool schemas | 22 | 19 | 8 | −14 (−63.6%) original; −11 (−57.9%) previous |
+| On-demand specialist groups | 0 | 0 | 6 groups / 12 schemas | Installed capabilities retained without initial exposure |
+| Default eval trials per case | 3 | 1 | 1 | −66.7% routine model calls; promotion trials remain opt-in |
+| Project model/thinking pins | 2 | 0 | 0 | Operator/model neutral |
+| Duplicate workflow documents | 2 | 1 canonical playbook | 1 canonical playbook | `PI_WORKFLOW.md` removed; `HARNESS.md` retained |
+| Runtime behavior tests | 0 | 0 | 7 | Loader, Smart Read, retry, continuity, session reset, redaction, and opt-out invariants |
 
-- normal parse/build;
-- final green result;
-- pre-fix red, focused mutation kill, or equivalent independent defect-sensitivity evidence when practical;
-- reliable repeat result when time/randomness/concurrency/browser state creates flake risk;
-- behavior/public-contract assertion rather than private call-order mirroring;
-- meaningful incremental signal not already supplied by an existing test;
-- isolated state and useful failure output.
+These are structural efficiency and resilience gains, not an empirical claim that output quality improved for every model. A paid/provider-backed 19-tool-versus-dynamic before/after evaluation was not executed during this audit; deterministic tests, dry-run validation, package integrity checks, runtime startup compatibility, and measured context/tool reductions are the available evidence. Run repeated matched baseline/candidate trials before claiming model-output superiority.
 
-Coverage is a gap detector. For critical logic, boundary/property/mutation evidence is stronger than a line-percentage increase alone.
+## Optimized universal loop
 
-## Eval promotion protocol
+1. Classify the task; avoid ceremony for a localized change.
+2. For non-trivial work, state 3–7 observable acceptance criteria and expected proof.
+3. Search/localize on the eight-tool core; activate every required specialist capability together only when core evidence is insufficient.
+4. Expose the gap with reproduction, test, or explicit `UNPROVEN` status.
+5. Implement one coherent slice with one primary writer.
+6. Run the cheapest faithful targeted proof first, then affected routes.
+7. Use a specialist/evaluator only for a named ambiguity or material risk; otherwise self-review independently.
+8. Run the final/full gate once when scope/risk requires it.
+9. Inspect the diff and report criterion → evidence/status.
+10. Complete the scoped fixed-branch PR handoff for implementation; keep main integration and other external actions owner-controlled. Never publish from read-only/local-only work or evals.
 
-Run baseline and candidate with the same case set, grader schema, model, thinking level, trial count, timeout, credentials, and comparable repository starting state. The runner stores a suite fingerprint and rejects mismatched benchmark contracts or run metadata. The v2 runner enforces:
+## Promotion protocol
 
-- 100% deterministic pass rate by default;
-- zero protected-workflow-file mutations;
-- no per-case deterministic pass-rate regression;
-- no median duration regression over 25%;
-- no median tool-call or token regression over 20%;
-- raw trace, command-check, diff, token, cost, and duration retention.
+For an actual workflow comparison:
 
-Passing those gates returns the schema-v2-compatible `QUALITATIVE_REVIEW_REQUIRED`, never automatic promotion. A blinded independent evaluator must still score product/visual/architecture rubric items against raw artifacts; human adjudication is optional for disputed or high-stakes promotion, not an ordinary execution dependency. New safety or data-integrity violations always reject the candidate.
+- use the same case set, suite fingerprint, model, thinking level, timeout, credentials, and starting files;
+- run repeated isolated trials (three is a practical minimum, more when variance is high);
+- require 100% deterministic pass rate and zero workflow-safety violations;
+- reject new Git/GitHub mutation attempts or protected workflow-file edits;
+- reject per-case median regression above the declared thresholds for duration, tool calls, tokens, duplicate calls, repair rounds, or repeated full gates;
+- compare localized cases and specialist-required cases separately so loader-call overhead and schema savings are both visible;
+- keep qualitative product/design/architecture rubrics `UNSCORED` until a blinded evidence review;
+- never weaken thresholds after seeing the candidate result.
 
-## Local before/after measurement
+Passing deterministic gates yields `QUALITATIVE_REVIEW_REQUIRED`, not automatic promotion.
 
-Measured on this template repository with Node 24.14.0 using five warm local trials per command (median reported):
+## Project-specific work that remains
 
-| Signal | Before | After | Interpretation |
-|---|---:|---:|---|
-| Always-loaded `AGENTS.md` + system append | 15,264 bytes / 248 lines | 11,747 bytes / 179 lines | 3,517 fewer bytes (23.0%) before task-specific context. |
-| Canonical full gate | 616 ms | 1,026 ms | Intentionally slower: the full gate now executes 25 behavior tests, including launcher/guard autonomy and isolated green/pre-fix-red proof, instead of 8 safety tests. Run it once at delivery. |
-| Narrow eval-runner affected route | unavailable | 599 ms | 41.6% below the new full gate while still running eval grader tests and 17-case suite dry validation. |
-| Narrow verification-router route | unavailable | 165 ms | 83.9% below the new full gate; runs only routing contract tests. |
-| Autonomy-core affected route | unavailable | 978 ms | Exercises launcher, guard, browser policy, and static contract checks without silently skipping any changed autonomy surface. |
+`/bootstrap` should replace template examples with evidence from the real repository:
 
-Samples are recorded from one small repository and are not universal performance claims. On this template, process startup and the isolated Git fixture dominate runtime; in a large product repository, measure route recall and wall time again before setting thresholds. Faster targeted feedback does not justify weakening the final gate.
+- canonical commands and actual dependency/workspace boundaries;
+- recent production bugs, rejected patches, and realistic fixtures;
+- current runtime, flake, cost, and task-variance distributions;
+- product-specific security, accessibility, performance, data, and recovery gates;
+- affected-file routes with conservative full fallback for unmatched paths.
 
-Autonomy behavior is also tested directly: seven representative reversible actions that the previous guard blocked (temporary/artifact writes, workflow maintenance, task-branch commit/push, public navigation, and page evaluation) are now allowed in autonomous mode; twelve destructive host/Git/integration examples remain blocked. The suite adds an unattended case whose required artifact and executable check fail if the agent pauses for clarification instead of completing the reversible task.
-
-## What remains project-specific
-
-`/bootstrap` must replace template routes and generic cases with evidence from the real repository:
-
-- actual dependency/workspace boundaries and canonical commands;
-- recent production bugs and rejected patches;
-- realistic API/database/browser fixtures;
-- current flake and runtime distributions;
-- product-specific security, accessibility, performance, and recovery gates.
-
-Route maps must be reviewed when architecture changes. If dependency evidence is uncertain, widen the route or use the full fallback; optimization must never rely on silent omission.
+Optimization must not rely on silent omission. If route/capability evidence is uncertain, widen the check or mark the criterion `UNPROVEN`.

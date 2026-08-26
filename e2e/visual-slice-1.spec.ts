@@ -499,9 +499,9 @@ test.describe('focus behavior', () => {
         };
       });
       expect(state).not.toBeNull();
-      expect(state!.outline, `focus outline at tab ${i}`).toBe('solid');
-      expect(Number.parseFloat(state!.outlineWidth)).toBeGreaterThan(0);
-      expect(state!.inViewport, `focused element in viewport at tab ${i}`).toBe(true);
+      expect(state?.outline, `focus outline at tab ${i}`).toBe('solid');
+      expect(Number.parseFloat(state?.outlineWidth)).toBeGreaterThan(0);
+      expect(state?.inViewport, `focused element in viewport at tab ${i}`).toBe(true);
       await page.keyboard.press('Tab');
     }
   });
@@ -557,7 +557,7 @@ test.describe('logo rendering', () => {
     for (const id of ['logo-mark', 'logo-compact', 'logo-full', 'logo-header']) {
       const box = await page.getByTestId(id).boundingBox();
       expect(box, `${id} visible`).not.toBeNull();
-      expect(box!.width, `${id} within viewport`).toBeLessThanOrEqual(360);
+      expect(box?.width, `${id} within viewport`).toBeLessThanOrEqual(360);
     }
   });
 });

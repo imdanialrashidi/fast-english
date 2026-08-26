@@ -85,7 +85,7 @@ test.describe('Content Studio', () => {
     await setAuth(page, '/content');
     await page.waitForTimeout(2000);
     const dbg = await page.locator('body').innerText();
-    writeFileSync('/tmp/opencode/cs-body.txt', 'URL:' + page.url() + '\nBODY:' + dbg.slice(0, 300));
+    writeFileSync('/tmp/opencode/cs-body.txt', `URL:${page.url()}\nBODY:${dbg.slice(0, 300)}`);
     await expect(page.getByRole('heading', { name: 'محتوا' })).toBeVisible();
 
     // New episode with slug confirmation.
@@ -110,7 +110,7 @@ test.describe('Content Studio', () => {
       .getByRole('alert')
       .allInnerTexts()
       .catch(() => []);
-    writeFileSync('/tmp/opencode/cs-body.txt', 'ALERTS: ' + JSON.stringify(alertText));
+    writeFileSync('/tmp/opencode/cs-body.txt', `ALERTS: ${JSON.stringify(alertText)}`);
     await expect(page.getByTestId('episode-tabs')).toBeVisible();
 
     // Create the B1 variant from the level matrix.
@@ -214,7 +214,7 @@ test.describe('Content Studio', () => {
       .getByRole('alert')
       .allInnerTexts()
       .catch(() => []);
-    writeFileSync('/tmp/opencode/cs-body.txt', 'ALERTS: ' + JSON.stringify(alertText));
+    writeFileSync('/tmp/opencode/cs-body.txt', `ALERTS: ${JSON.stringify(alertText)}`);
     await expect(page.getByTestId('episode-tabs')).toBeVisible();
   });
 

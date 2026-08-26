@@ -18,7 +18,7 @@ export async function buildExportZip(
 ): Promise<Uint8Array> {
   // Draft: canonical manifest + per-asset SHA256 + ZIP stream via CompressionStream
   // Reuse DecompressionStream inverse (CompressionStream when available)
-  const manifest: ExportManifest = {
+  const _manifest: ExportManifest = {
     contentKey,
     version,
     files: assets.map((a) => ({ path: a.path, checksum: sha256Hex(a.bytes) })),

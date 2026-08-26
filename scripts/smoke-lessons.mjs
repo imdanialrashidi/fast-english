@@ -10,7 +10,6 @@
 //
 // Usage: bash scripts/smoke-placement.sh node scripts/smoke-lessons.mjs
 
-import { randomBytes } from 'node:crypto';
 import {
   fetchJson,
   getStaffToken,
@@ -41,7 +40,7 @@ function scenario(name, fn) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label} (${Date.now() - start}ms)`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message ? err.message : String(err)}`);
   }
 }
 
@@ -56,7 +55,7 @@ async function aScenario(name, fnPromise) {
   } catch (err) {
     failed++;
     console.log(`FAIL ${label} (${Date.now() - start}ms)`);
-    console.log(`       ${err && err.message ? err.message : String(err)}`);
+    console.log(`       ${err?.message ? err.message : String(err)}`);
   }
 }
 
@@ -639,7 +638,7 @@ async function main() {
     status: 'published',
     sort_order: 3,
   });
-  const al = await makeLesson(su, at.id, { level: 'B1' });
+  const _al = await makeLesson(su, at.id, { level: 'B1' });
   await jf(`/api/collections/topics/records/${at.id}`, {
     method: 'PATCH',
     headers: { authorization: `Bearer ${su}` },
@@ -661,7 +660,7 @@ async function main() {
     status: 'published',
     sort_order: 5,
   });
-  const sl = await makeLesson(su, st.id, { level: 'B1', title: 'Sample', is_public_sample: true });
+  const _sl = await makeLesson(su, st.id, { level: 'B1', title: 'Sample', is_public_sample: true });
 
   // ==================================================================
   // Create the golden student (stays valid for all core tests)

@@ -64,11 +64,7 @@
 //     52. no Process or Temp data remains
 
 import { randomBytes } from 'node:crypto';
-import {
-  fetchJson,
-  nextPhone,
-  getSuperuserToken as sharedGetSuperuserToken,
-} from './smoke-common.mjs';
+import { nextPhone, getSuperuserToken as sharedGetSuperuserToken } from './smoke-common.mjs';
 
 const PORT = Number(process.env.PB_SMOKE_PAY_PORT ?? 18091);
 const URL = `http://127.0.0.1:${PORT}`;

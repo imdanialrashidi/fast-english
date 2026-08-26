@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE_NAME="${PI_SANDBOX_IMAGE:-pi-workflow-sandbox:0.84.1}"
+IMAGE_NAME="${PI_SANDBOX_IMAGE:-pi-workflow-sandbox:0.84.2}"
 
 if ! command -v docker >/dev/null 2>&1; then
   printf 'Docker is required. See https://pi.dev/docs/latest/containerization\n' >&2
@@ -44,6 +44,10 @@ docker run --rm "${tty_args[@]}" \
   --env HOME=/tmp/pi-home \
   --env PI_TELEMETRY=0 \
   --env "PI_GUARD_MODE=${PI_GUARD_MODE:-strict}" \
+  --env PI_GUARD_FILE_SCOPE=repository \
+  --env PI_GIT_MUTATION=deny \
+  --env AI_PR_DELIVERY=off \
+  --env PI_GUARD_EXTERNAL_MUTATION=deny \
   --volume "$ROOT_DIR:/workspace" \
   --workdir /workspace \
   "${env_args[@]}" \

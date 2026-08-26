@@ -11,7 +11,7 @@ Do not edit files during review.
 
 1. Read `AGENTS.md`, `docs/QUALITY.md`, and the relevant accepted goal or active execution plan. For visually significant work also read `docs/DESIGN.md` and load `frontend-design`. Reconstruct the smallest explicit acceptance contract if one is not already written.
 2. Inspect the actual diff and the narrow surrounding contracts/tests needed to understand it.
-3. Load `risk-review`. Delegate to `reviewer`; also use `security-auditor` when a trust boundary, money, access, migration, secret, upload, callback, deployment, or data-integrity behavior changed.
+3. Load `risk-review`. When subagents are available and independent context materially improves this scope, delegate a bounded read-only pass to `reviewer` and, for changed trust/data/money boundaries, `security-auditor`. Otherwise perform the same evidence-focused passes directly.
 4. Evaluate each required acceptance criterion as `PASS`, `FAIL`, `UNPROVEN`, or `BLOCKED`. A visually present but non-functional/stubbed accepted feature is `FAIL`.
 5. For user-facing behavior, load `browser-qa` and exercise the critical journey through the real browser when the local application can be run safely. For a material visual change, grade the hard gates and craft rubric from rendered desktop/mobile evidence. Browser evidence is preferred over visual inference alone.
 6. Report only evidence-backed acceptance failures or actionable regression/risk findings. Do not invent adjacent requirements or stylistic preferences outside `docs/QUALITY.md` and existing project conventions.

@@ -9,7 +9,7 @@ $ARGUMENTS
 
 Read `AGENTS.md`, `docs/HARNESS.md`, `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, `docs/QUALITY.md`, and only relevant code/contracts.
 
-Use `planner` or `scout` only when cross-module discovery is genuinely needed. Do not implement application code.
+If subagents are available, use `planner` or `scout` only when cross-module discovery is genuinely needed; otherwise plan directly from focused evidence. Do not implement application code.
 
 For a bounded Complex/High-risk task that may span contexts or requires durable decisions, create/update `docs/exec-plans/active/<short-slug>.md` using `docs/exec-plans/README.md`.
 

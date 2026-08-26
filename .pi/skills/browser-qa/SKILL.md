@@ -21,7 +21,7 @@ Use Playwright MCP through the `mcp` proxy for interactive exploration:
 
 Use repository-local Playwright Test or the project's browser-test scripts for durable regression coverage and CI evidence.
 
-Do not treat a successful MCP interaction as a replacement for a committed deterministic test.
+Do not treat a successful MCP interaction as a replacement for a repository-local deterministic test.
 
 Autonomous mode exposes `browser_evaluate`; keep it focused, read-oriented, and justified by an evidence gap. Local file upload, drag-and-drop file injection, and MCP scripting are intentionally unavailable. Strict mode additionally blocks page evaluation and public navigation; do not work around those boundaries.
 
@@ -30,13 +30,12 @@ Autonomous mode exposes `browser_evaluate`; keep it focused, read-oriented, and 
 1. Start or reuse the narrowest relevant local server, or identify the exact public HTTP(S) page needed for external evidence.
 2. Reproduce the affected journey with Playwright MCP or the narrowest existing browser test.
 3. Prefer `browser_find` or `browser_snapshot` for locating controls and understanding state.
-4. Inspect console errors, failed requests, accessibility semantics, and visible state.
-5. Capture screenshots only when layout or appearance is materially relevant.
-6. With a text-only primary model, use `describe_image` on a saved screenshot with a focused question when visual interpretation is needed; with a multimodal primary, reference the screenshot directly.
-7. Fix the smallest confirmed defect.
-8. Add or update a deterministic regression test.
-9. Rerun the affected spec or last failed tests.
-10. Run the feature lane once at completion.
+4. Inspect console errors, failed requests, accessibility semantics, visible state, and focused DOM/geometry evidence where needed.
+5. Capture screenshots only when layout or appearance is materially relevant. Treat screenshots as artifacts; do not infer pixel-level appearance from them unless the active primary model can actually inspect images.
+6. Fix the smallest confirmed defect.
+7. Add or update a deterministic regression test.
+8. Rerun the affected spec or last failed tests.
+9. Run the feature lane once at completion.
 
 ## MCP usage pattern
 
@@ -48,7 +47,7 @@ Use the single `mcp` proxy tool:
 4. keep large snapshots focused by using `browser_find`, target refs, depth, or saved files;
 5. close the browser when the exploration is complete.
 
-Use screenshots as visual evidence, not as the primary interaction mechanism. Accessibility snapshots are preferred for actions.
+Use screenshots as visual evidence artifacts, not as the primary interaction mechanism. Accessibility snapshots are preferred for actions. When the active model cannot inspect image inputs, use DOM, accessibility, geometry, computed-state, console, and network evidence for claims it can actually verify; mark purely appearance-dependent acceptance `UNPROVEN`.
 
 ## Local resource policy
 
@@ -61,7 +60,6 @@ Use screenshots as visual evidence, not as the primary interaction mechanism. Ac
 - Avoid fixed sleeps; use locator assertions, events, or response conditions.
 - Avoid `networkidle` as a general readiness signal.
 - Prepare server state through fixtures or APIs rather than repeated UI setup.
-- Default to no more than two vision-model calls per affected user flow.
 
 ## Visual quality
 
@@ -77,7 +75,7 @@ Check:
 For a material visual change, read `docs/DESIGN.md`, load `frontend-design`, and separate two passes:
 
 1. **Product pass:** real journey, semantics, input modes, required states, console/network evidence, responsive behavior, and measurable budgets.
-2. **Studio pass:** screenshots judged against the accepted thesis, signature element, anti-template check, and visual-quality rubric.
+2. **Studio pass:** compare the rendered state against the accepted thesis, signature element, anti-template check, and visual-quality rubric using only evidence the active model can verify. If appearance itself cannot be inspected, mark those craft criteria `UNPROVEN` rather than guessing.
 
 Capture the smallest reproducible evidence set:
 
@@ -86,7 +84,7 @@ Capture the smallest reproducible evidence set:
 - theme and locale/direction;
 - desktop, narrow mobile, and one demanding state when relevant.
 
-Use the same deterministic state when comparing iterations. Do not use a screenshot from an unspecified or transient state as release proof. If appearance cannot be rendered, mark visual acceptance `UNPROVEN`.
+Use the same deterministic state when comparing iterations. Do not use a screenshot from an unspecified or transient state as release proof. If appearance cannot be verified, mark visual acceptance `UNPROVEN`.
 
 Do not create decorative copy merely to explain obvious UI. Supporting text must prevent ambiguity or error and must add information.
 
