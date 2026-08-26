@@ -57,12 +57,6 @@ export const CTA_PLACES = {
 
 export type CtaPlace = (typeof CTA_PLACES)[keyof typeof CTA_PLACES];
 
-/** Redact a route path for event surfaces: pathname only, no query/hash. */
-export function redactPath(path: string): string {
-  try {
-    const url = new URL(path, 'https://fastenglishpodcast.com');
-    return url.pathname.length > 1 ? url.pathname : '/';
-  } catch {
-    return '/';
-  }
-}
+// Single source for path redaction is shared/lib/telemetry/redact.ts (id-aware, query-stripping).
+// Re-export here so callers can `import { redactPath } from './events'`.
+export { redactPath } from '../../../../shared/lib/telemetry/redact';

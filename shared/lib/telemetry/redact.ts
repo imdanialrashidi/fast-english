@@ -10,6 +10,15 @@
 /** Static path segments that are kept verbatim (anything else that looks
  *  like a record id is replaced with `:id`). */
 const STATIC_SEGMENTS = new Set([
+  // Landing static pages (must stay verbatim — hyphenated, looks like id).
+  'about',
+  'how-it-works',
+  'install',
+  'collaboration',
+  'contact',
+  'privacy',
+  'terms',
+  'sample',
   'api',
   'fast-english',
   'collections',
@@ -82,10 +91,17 @@ function looksLikeId(segment: string): boolean {
  * segments with `:id`.
  */
 export function redactPath(path: string): string {
-  const withoutQuery = String(path).split('?')[0] ?? '';
+  const raw = String(path ?? '');
+  // Strip query and hash (tokens live in query; hash is client-only).
+  const withoutQuery = raw.split('?')[0]?.split('#')[0] ?? '';
+  // Normalize empty / whitespace-only to '/' (landing contract).
+  if (withoutQuery.trim() === '') return '/';
   const segments = withoutQuery.split('/');
   const redacted = segments.map((seg) => (looksLikeId(seg) ? ':id' : seg));
-  return redacted.join('/');
+  const joined = redacted.join('/');
+  // Preserve leading '/' for absolute paths; normalize '' to '/'.
+  if (joined === '') return '/';
+  return joined;
 }
 
 /** Replace credential-shaped fragments (tokens, Authorization values) in

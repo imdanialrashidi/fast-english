@@ -4,8 +4,8 @@
 // Privacy: all fields pass through sanitize before buffering/beacon.
 
 import type { TelemetryEvent, TelemetryFields, TelemetryLevel } from './events';
-import { sanitizeMessage } from './redact';
-import { BeaconSink, RingBufferSink, type TelemetrySink } from './sinks';
+import { redactPath, sanitizeMessage } from './redact';
+import { BeaconSink, RING_LIMIT, RingBufferSink, type TelemetrySink } from './sinks';
 
 export interface CreateTelemetryOpts {
   version: string;
@@ -18,8 +18,15 @@ export interface CreateTelemetryOpts {
 export interface TelemetryHandle {
   track: (name: string, level?: TelemetryLevel, fields?: TelemetryFields) => void;
   initTelemetry: () => void;
+  /** Redact and remember the current route surface for subsequent events. */
+  setSurface: (pathname: string) => void;
+  /** Snapshot for diagnostics (window.__fepTelemetry). */
+  getSnapshot: () => { appVersion: string; buildTime: string; events: TelemetryEvent[] };
   sinks: TelemetrySink[];
   buffer: RingBufferSink;
+  /** Test helpers — not part of the public contract. */
+  _resetForTests: () => void;
+  _setSinksForTests: (next: TelemetrySink[]) => void;
 }
 
 export function createTelemetry(opts: CreateTelemetryOpts): TelemetryHandle {
@@ -28,7 +35,7 @@ export function createTelemetry(opts: CreateTelemetryOpts): TelemetryHandle {
   const endpoint = opts.endpoint ?? '';
   const shouldRedact = opts.redact ?? true;
 
-  const buffer = new RingBufferSink(200);
+  const buffer = new RingBufferSink(RING_LIMIT);
   const sinks: TelemetrySink[] = [buffer];
 
   // Dev console sink is caller-managed; shared factory keeps only the buffer + beacon.
@@ -42,6 +49,24 @@ export function createTelemetry(opts: CreateTelemetryOpts): TelemetryHandle {
   }
 
   let surface = '';
+
+  function setSurface(pathname: string): void {
+    try {
+      surface = redactPath(pathname);
+    } catch {}
+  }
+
+  function getSnapshot(): { appVersion: string; buildTime: string; events: TelemetryEvent[] } {
+    try {
+      const ring = sinks.find(
+        (s) => typeof (s as unknown as { snapshot?: unknown }).snapshot === 'function',
+      ) as unknown as { snapshot: () => TelemetryEvent[] } | undefined;
+      const events = ring ? ring.snapshot() : buffer.snapshot();
+      return { appVersion: version, buildTime, events };
+    } catch {
+      return { appVersion: version, buildTime, events: [] };
+    }
+  }
 
   function baseEvent(name: string, level: TelemetryLevel, fields: TelemetryFields): TelemetryEvent {
     const safeFields: TelemetryFields = {};
@@ -81,16 +106,44 @@ export function createTelemetry(opts: CreateTelemetryOpts): TelemetryHandle {
         buffer,
         track,
         sinks,
-        snapshot: () => buffer.snapshot(),
+        snapshot: () => getSnapshot().events,
+        getSnapshot,
       };
-      // Mirror previous behaviour: set surface from window location if available
       try {
         if (typeof window !== 'undefined' && window.location) {
-          surface = window.location.pathname || '';
+          setSurface(window.location.pathname || '');
         }
       } catch {}
+      if (typeof window !== 'undefined') {
+        try {
+          Object.defineProperty(window, '__fepTelemetry', {
+            configurable: true,
+            value: () => getSnapshot(),
+          });
+        } catch {}
+      }
     } catch {}
   }
 
-  return { track, initTelemetry, sinks, buffer };
+  function _resetForTests(): void {
+    buffer.clear();
+    sinks.length = 0;
+    sinks.push(buffer);
+  }
+
+  function _setSinksForTests(next: TelemetrySink[]): void {
+    sinks.length = 0;
+    for (const s of next) sinks.push(s);
+  }
+
+  return {
+    track,
+    initTelemetry,
+    setSurface,
+    getSnapshot,
+    sinks,
+    buffer,
+    _resetForTests,
+    _setSinksForTests,
+  };
 }

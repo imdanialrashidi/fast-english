@@ -43,13 +43,7 @@ import { PageHeader } from '../../../../../shared/ui/PageHeader';
 import { StatePanel } from '../../../../../shared/ui/StatePanel';
 import { useAuth } from '../../../lib/auth';
 import { FUNNEL_EVENTS, trackFunnel } from '../../../lib/telemetry';
-import {
-  activateFreePlan,
-  createPaymentRequest,
-  loadActiveDestination,
-  loadActivePlans,
-  loadCurrentRequest,
-} from '../api';
+import { activateFreePlan, createPaymentRequest } from '../api';
 import { PaymentErrorPanel } from '../components/PaymentErrorPanel';
 import { PaymentInstructions } from '../components/PaymentInstructions';
 import { PaymentJourney } from '../components/PaymentJourney';
@@ -57,6 +51,7 @@ import { isPlanPurchasable, PlanSelector } from '../components/PlanSelector';
 import { ReceiptPicker } from '../components/ReceiptPicker';
 import { toPaymentError } from '../errors';
 import { formatDurationDays, formatPlanPrice } from '../formatters';
+import { loadPaymentJourney } from '../paymentService';
 import { type PaymentFormValues, paymentFormSchema } from '../schemas';
 import type { PaymentDestination, PaymentError as PaymentErrorModel, Plan } from '../types';
 
@@ -172,47 +167,23 @@ export function PaymentRoute() {
     let cancelled = false;
     (async () => {
       try {
-        const [plans, destination, current] = await Promise.allSettled([
-          loadActivePlans(),
-          loadActiveDestination(),
-          loadCurrentRequest(),
-        ]);
+        // Deep Payment module owns the Promise.allSettled branching
+        // (fatal plans vs non-fatal destination unavailable).
+        const journey = await loadPaymentJourney();
         if (cancelled) return;
-        const planList = plans.status === 'fulfilled' ? plans.value : [];
-        const dest = destination.status === 'fulfilled' ? destination.value : null;
-        if (plans.status === 'rejected') {
-          setLoad({ kind: 'error', error: toPaymentError(plans.reason) });
-          return;
-        }
-        if (destination.status === 'rejected') {
-          // No active destination = card transfer disabled. Paid plans
-          // become unavailable; free plans keep working. This is a
-          // non-fatal "unavailable" UX state.
-          const e = toPaymentError(destination.reason);
-          if (e.code === 'payment_destination_unavailable') {
-            setLoad({ kind: 'ready', plans: planList, destination: null });
-          } else {
-            setLoad({ kind: 'error', error: e });
-            return;
-          }
+        setLoad({ kind: 'ready', plans: journey.plans, destination: journey.destination });
+        if (journey.current.kind === 'none') {
+          setCurrentRequestKind('none');
         } else {
-          setLoad({ kind: 'ready', plans: planList, destination: dest });
-        }
-        if (current.status === 'fulfilled') {
-          if (current.value.kind === 'none') {
-            setCurrentRequestKind('none');
-          } else {
-            const st = current.value.request.status;
-            if (st === 'pending') setCurrentRequestKind('pending');
-            else if (st === 'rejected') setCurrentRequestKind('rejected');
-            else setCurrentRequestKind('other');
-          }
-        } else {
-          setCurrentRequestKind('unknown');
+          const st = journey.current.request.status;
+          if (st === 'pending') setCurrentRequestKind('pending');
+          else if (st === 'rejected') setCurrentRequestKind('rejected');
+          else setCurrentRequestKind('other');
         }
       } catch (e) {
         if (cancelled) return;
         setLoad({ kind: 'error', error: toPaymentError(e) });
+        setCurrentRequestKind('unknown');
       }
     })();
     return () => {

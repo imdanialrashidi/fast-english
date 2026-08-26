@@ -45,20 +45,13 @@ import { useAuth } from '../../lib/auth';
 import { classifyMediaError, reportPlayerFailure } from '../../lib/telemetry';
 import { setAudioBusy } from '../../pwa/activity';
 import {
-  clampPosition,
   decideResumeTarget,
   isRestorablePosition,
   reconcileSnapshot,
   resolveBindTransition,
   resolveUserSeek,
 } from './lifecycle';
-import {
-  buildMediaMetadataPayload,
-  clearMediaSession,
-  createMediaSessionHandlers,
-  getMediaSessionHost,
-  registerMediaSessionActions,
-} from './mediaSession';
+import { useMediaSession } from './useMediaSession';
 
 export interface PlayerSession {
   lessonId: string;
@@ -141,14 +134,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   // Session generation: bumped on fresh bind/stop/logout; stale async
   // outcomes (play() promises) are dropped when the generation changed.
   const sessionGenRef = useRef(0);
-  // Media Session position-state throttle (position updates flow through
-  // state; the OS surface only needs ~0.5s granularity).
-  const lastPositionStateRef = useRef<{
-    position: number;
-    duration: number;
-    playbackRate: number;
-  } | null>(null);
-  const actionsRegisteredRef = useRef(false);
   const [state, setState] = useState<PlayerState>({
     src: null,
     session: null,
@@ -616,73 +601,22 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // --- Media Session (progressive enhancement) -----------------------------
-  // Metadata: follows the active session; cleared when the session or
-  // source is invalid so OS surfaces never advertise a stale Variant.
-  useEffect(() => {
-    const host = getMediaSessionHost();
-    if (!host) return;
-    if (!state.session || !state.src) {
-      clearMediaSession(host);
-      return;
-    }
-    if (typeof MediaMetadata !== 'undefined') {
-      host.metadata = new MediaMetadata(buildMediaMetadataPayload(state.session));
-    }
-  }, [state.session, state.src]);
-
-  // Playback state: mirrors the real element through player state. Only
-  // meaningful while a session is active (clearMediaSession already set
-  // 'none' when it was invalidated).
-  useEffect(() => {
-    const host = getMediaSessionHost();
-    if (!host || !state.session || !state.src) return;
-    host.playbackState = state.isPlaying ? 'playing' : 'paused';
-  }, [state.session, state.src, state.isPlaying]);
-
-  // Position state: throttled to ~0.5s granularity (position updates flow
-  // through state at timeupdate rate).
-  useEffect(() => {
-    const host = getMediaSessionHost();
-    if (!host || !state.session || !state.src) return;
-    if (state.duration <= 0) return;
-    const next: { position: number; duration: number; playbackRate: number } = {
-      position: clampPosition(state.currentTime, state.duration),
-      duration: state.duration,
-      playbackRate: state.playbackRate,
-    };
-    const last = lastPositionStateRef.current;
-    if (
-      last &&
-      Math.abs(last.position - next.position) < 0.5 &&
-      Math.abs(last.duration - next.duration) < 0.5 &&
-      Math.abs(last.playbackRate - next.playbackRate) < 0.01
-    ) {
-      return;
-    }
-    lastPositionStateRef.current = next;
-    host.setPositionState(next);
-  }, [state.session, state.src, state.currentTime, state.duration, state.playbackRate]);
-
-  // Action handlers: registered ONCE, routed to the same authoritative
-  // controller; per-action capability capture keeps unsupported actions
-  // from breaking the rest. Handlers are stable (they only touch refs),
-  // so re-registration is never needed.
-  useEffect(() => {
-    const host = getMediaSessionHost();
-    if (!host || actionsRegisteredRef.current) return;
-    actionsRegisteredRef.current = true;
-    registerMediaSessionActions(
-      host,
-      createMediaSessionHandlers({
-        resume,
-        pause,
-        skipBy,
-        seekTo,
-        stop,
-      }),
-    );
-  }, [resume, pause, skipBy, seekTo, stop]);
+  // --- Media Session seam — deep module hides metadata/playbackState/
+  // positionState/action wiring. Provider stays composition (audio element
+  // + bind/transition) and delegates OS integration.
+  const mediaController = useMemo(
+    () => ({ resume, pause, skipBy, seekTo, stop }),
+    [resume, pause, skipBy, seekTo, stop],
+  );
+  useMediaSession({
+    session: state.session,
+    src: state.src,
+    isPlaying: state.isPlaying,
+    currentTime: state.currentTime,
+    duration: state.duration,
+    playbackRate: state.playbackRate,
+    controller: mediaController,
+  });
 
   // The provider reads its own state inside `unbind` through the ref mirror
   // declared above the session-binding section.
