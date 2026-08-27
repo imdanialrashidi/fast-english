@@ -24,7 +24,7 @@
         "--isolated",
         "--block-service-workers",
         "--image-responses",
-        "omit",
+        "allow",
         "--output-dir",
         ".artifacts/playwright",
         "--console-level",

@@ -27,6 +27,8 @@ Keep the implementation agent and final evaluator contexts separate. Give the ev
 
 For visual pairwise comparisons, randomize baseline/candidate order and use identical routes, fixtures, viewports, theme, locale/direction, fonts, and capture timing. Accessibility and functionality are hard gates; a prettier broken result loses.
 
+For native Vision changes, audit **capture → image returned → actual inspection → criterion proof** separately. Tool `harnessVision` metadata records model capability and returned blocks, not successful provider delivery or perception. Check actual image-bearing turns plus image-specific observations and final re-captures. Include a vision-capable model and a text-only/blocked-image negative control; use matched settings within each comparison. Required visual dimensions left `UNPROVEN` cannot pass a visual promotion gate. Existing frontend rubrics cover receipt, detail/RTL, final-state freshness, and evaluator independence; they remain qualitative and `UNSCORED` until reviewed. Unit tests or fewer screenshots alone do not prove better UI quality.
+
 ## Metrics
 
 Record per trial:

@@ -8,9 +8,9 @@ This is not permission for unrelated work, secrets, releases, deployment, infras
 
 ## One persistent branch, one active task
 
-- Use only the existing remote branch ai-changes, targeting main in the same repository through origin.
-- The owner authorizes creation once during setup. Never create a new remote branch per task, fork, or delete/recreate ai-changes. A local tracking checkout of the same branch is allowed.
-- Keep the branch after merging. If it is missing or automatic head-branch deletion is enabled, stop and ask the owner; never silently change repository settings.
+- Use only the fixed remote branch ai-changes, targeting main in the same repository through origin.
+- During prepare, automatically create ai-changes from the freshly fetched origin/main commit if it is absent. This is included in routine implementation authority; no extra setup approval is needed. Never create per-task branches, fork, or delete an existing branch. A local tracking checkout of the same branch is allowed.
+- Keeping the branch after merging is optional; automatic head-branch deletion is supported without changing repository settings. Creation requires a clean worktree, no active PR, and no local ai-changes history outside main. If that local history diverges (including a prior squash merge), preserve it and ask the owner rather than reset or publish it.
 - Only one task and writer may own this lane at a time. Continue a related open PR by its exact number. If it contains unrelated work, wait for its resolution or ask the owner to combine the scopes; do not append unrelated changes or create another branch.
 - Never switch away from a dirty user worktree, discard staged changes, stash user work, or publish unknown local commits.
 
@@ -20,7 +20,7 @@ This is not permission for unrelated work, secrets, releases, deployment, infras
 2. Before editing, run the reviewed helper from the repository root:
    node scripts/ai-pr.mjs prepare
    For an explicitly related existing PR, append --pr NUMBER.
-3. The helper fetches only main and ai-changes, uses the existing tracking branch, and refuses unpublished/unmerged work. When the previous PR is merged, it synchronizes main into the idle ai-changes branch without rewriting history. It checks that their trees are identical before new work; a conflict stops in place. This main-to-ai-changes synchronization is allowed; merging a PR into main is not.
+3. The helper fetches only main and ai-changes and refuses unpublished/unmerged work. If the remote branch is absent, it uses GitHub's create-only reference API to create exactly ai-changes at the captured main commit, then verifies and tracks it. A concurrent creation fails without overwriting that branch. For an existing branch whose previous PR is merged, it synchronizes main into the idle ai-changes branch without rewriting history. It checks that their trees are identical before new work; a conflict stops in place. This main-to-ai-changes synchronization is allowed; merging a PR into main is not.
 4. Implement and verify the accepted change with the cheapest faithful tests. A quick fix remains a quick fix: PR delivery alone does not require a plan, subagent, or full suite.
 5. Review the complete diff. Select only this task's changed file paths; preserve unrelated staged/unstaged work. Do not publish a failing, unverified, secret-bearing, or unresolved BLOCKER/MAJOR change.
 6. Put a sanitized outcome, exact executed checks/results, and remaining risks in .artifacts/ai-pr.md. Do not commit this temporary evidence file.
@@ -41,7 +41,7 @@ If commit or push succeeded but PR delivery failed, inspect local status, exact 
 node scripts/ai-pr.mjs deliver --resume FULL_40_CHARACTER_SHA --title "Accepted outcome" --body-file .artifacts/ai-pr.md
 Append --pr NUMBER if that same PR now exists. Resume requires a clean worktree and the helper-created .artifacts/ai-pr-receipt.json matching the repository, commit, parent, tree, and exact file scope. It rechecks paths and secret patterns, permits at most one unpublished commit, and never creates another commit. Do not forge/edit a receipt or use resume to publish unknown history.
 
-A stale .artifacts/ai-pr.lock requires confirming that its writer has stopped before removing it. Conflicts, concurrent updates, unmerged old work, unexpected repositories, branch deletion, and permission failures are stop conditions—not reasons to force-push, reset, or recreate a branch.
+A stale .artifacts/ai-pr.lock requires confirming that its writer has stopped before removing it. Conflicts, concurrent updates, unmerged old work, unexpected repositories, branch deletion during delivery, and permission failures are stop conditions—not reasons to force-push or reset. Only a fresh clean prepare may create an absent branch; deliver/resume never recreates one. If a create response is lost, inspect the remote and rerun prepare only after resolving any blocker; it reuses an existing ref instead of blindly creating it again.
 
 AI_PR_DELIVERY=off disables the helper. Evaluation runners set it explicitly, have no publication authority, and must count Git/PR-helper mutation attempts as failures. Do not enable delivery inside a disposable eval.
 
@@ -53,8 +53,8 @@ The helper requires Node.js 22+, Git, an authenticated GitHub CLI (gh), and ordi
 
 Secret-pattern scans are defense in depth, not a complete secret detector. Owner-approved repository code/hooks and the normal runtime permission boundary remain trusted; the helper cannot prove task ownership or semantic test quality by itself. Never edit it or a permission rule as a side effect of product work.
 
-History-rewriting force-push, raw force-with-lease commands, destructive reset/clean/restore/checkout, hook bypass (--no-verify), new remote branches, and main writes remain outside automatic scope. Read-only Git/PR/CI inspection remains available.
+History-rewriting force-push, raw force-with-lease commands, destructive reset/clean/restore/checkout, hook bypass (--no-verify), remote branches other than the fixed ai-changes lane, and main writes remain outside automatic scope. Read-only Git/PR/CI inspection remains available.
 
 ## References
 
-GitHub requires distinct source and target branches: [Creating a pull request](https://docs.github.com/en/pull-requests/how-tos/create-pull-requests/creating-a-pull-request). The helper uses explicit endpoints and JSON input through the [GitHub CLI API](https://cli.github.com/manual/gh_api), explicit-file commits through [git commit](https://git-scm.com/docs/git-commit), and an exact expected-SHA lease from [git push](https://git-scm.com/docs/git-push) after an independent fast-forward check.
+GitHub requires distinct source and target branches: [Creating a pull request](https://docs.github.com/en/pull-requests/how-tos/create-pull-requests/creating-a-pull-request). The helper uses the [create-reference API](https://docs.github.com/en/rest/git/refs#create-a-reference) for a missing fixed branch, explicit endpoints and JSON input through the [GitHub CLI API](https://cli.github.com/manual/gh_api), explicit-file commits through [git commit](https://git-scm.com/docs/git-commit), and an exact expected-SHA lease from [git push](https://git-scm.com/docs/git-push) after an independent fast-forward check.

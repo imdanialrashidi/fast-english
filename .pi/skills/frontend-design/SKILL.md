@@ -71,12 +71,12 @@ Run an anti-default check before implementation: if the palette, font pair, hero
 
 ## 6. Critique through the rendered product
 
-Load `browser-qa`. Use accessibility snapshots for structure and interaction, then screenshots for appearance. At minimum, inspect the critical state at one representative desktop viewport and one narrow mobile viewport; add a dense/long-content or error state when relevant.
+Load `browser-qa` and follow its pixel-inspection loop. Inspect supplied reference images and the affected rendered baseline before making visual decisions. Use accessibility snapshots for structure and interaction, then actually inspect image blocks for appearance. At minimum, inspect the critical state at one representative desktop viewport and one narrow mobile viewport; add a dense/long-content or error state when relevant. Use focused crops for unreadable detail, not repeated full-page captures.
 
 Perform two distinct passes:
 
 1. **Product pass:** journey, semantics, states, responsive behavior, console/network evidence, and measurable budgets.
-2. **Studio pass:** compare screenshots with the accepted thesis and score the visual-quality rubric in a fresh evaluator context when available.
+2. **Studio pass:** compare received images with the accepted thesis/reference and score only what was actually inspected. A fresh evaluator must have image input and open the same artifacts itself; a text-only summary does not count as independent visual review.
 
 Fix confirmed problems, then re-capture only affected evidence. Default to at most two critique/repair rounds.
 

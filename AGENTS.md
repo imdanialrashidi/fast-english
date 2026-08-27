@@ -49,7 +49,7 @@ For Standard, Complex, and High-risk work define the goal, non-goals, 3–7 obse
 
 ## Automatic PR handoff
 
-For user-requested implementation, follow `docs/GIT_POLICY.md`: prepare the existing `ai-changes` lane before editing, then automatically commit the scoped verified change, push, and create/update its PR to `main` using `node scripts/ai-pr.mjs`. No per-task branches; pass the exact PR number only for related work. Read-only/local-only requests and evals do not publish. Main writes, PR merge/close, releases, deployment, other Git mutations, and changes to this policy still require exact owner authorization.
+For user-requested implementation, follow `docs/GIT_POLICY.md`: prepare the fixed `ai-changes` lane before editing (the helper creates it from `main` if absent), then automatically commit the scoped verified change, push, and create/update its PR to `main` using `node scripts/ai-pr.mjs`. No per-task branches; pass the exact PR number only for related work. Read-only/local-only requests and evals do not publish. Main writes, PR merge/close, releases, deployment, other Git mutations, and changes to this policy still require exact owner authorization.
 
 ## Capability and evidence discipline
 

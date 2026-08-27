@@ -25,7 +25,12 @@ function validateCommands(commands, label) {
 }
 
 export function validateVerificationConfig(config) {
-  if (config?.version !== 1 || !Array.isArray(config.routes) || config.routes.length === 0) {
+  if (
+    !config ||
+    config.version !== 1 ||
+    !Array.isArray(config.routes) ||
+    config.routes.length === 0
+  ) {
     throw new Error('Verification config must have version 1 and at least one route.');
   }
   const ids = new Set();

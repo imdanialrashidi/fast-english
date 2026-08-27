@@ -132,7 +132,7 @@ function validateChecks(checks, caseId) {
 }
 
 export function validateSuite(value) {
-  if (value?.version !== 2 || !Array.isArray(value.cases)) {
+  if (!value || value.version !== 2 || !Array.isArray(value.cases)) {
     throw new Error('Evaluation suite must have version 2 and a cases array.');
   }
   if (!Number.isInteger(value.defaultTrials) || value.defaultTrials < 1) {
@@ -174,7 +174,7 @@ export function validateSuite(value) {
     }
     assertStringArray(item.rubric, `${item.id}.rubric`, { allowEmpty: false });
     if (item.rubric.length < 2) throw new Error(`${item.id} needs at least two rubric criteria.`);
-    if (item.assertions?.completion !== 'completed') {
+    if (!item.assertions || item.assertions.completion !== 'completed') {
       throw new Error(`${item.id}.assertions.completion must be completed.`);
     }
     validateChanges(item.assertions.changes, item.id);
@@ -563,7 +563,7 @@ function regressionPercent(baseline, candidate) {
 }
 
 export function compareSummaries(candidate, baseline, configuredPromotion = {}) {
-  if (baseline?.schemaVersion !== 2 || !baseline.aggregate?.cases) {
+  if (!baseline || baseline.schemaVersion !== 2 || !baseline.aggregate?.cases) {
     throw new Error('Baseline summary must be a schemaVersion 2 workflow-eval summary.');
   }
   const promotion = { ...DEFAULT_PROMOTION, ...configuredPromotion };

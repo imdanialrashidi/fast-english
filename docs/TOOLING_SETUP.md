@@ -111,9 +111,13 @@ Use the browser version already installed by a real project when possible.
 
 ### Visual evidence across model capabilities
 
-The workflow does not assume that the active model can inspect images and does not install or call a separate image model.
+The workflow uses the active model's native image input; it does not install or call a separate image model or add a Vision tool schema. `harness_tools` reports configured image support when activating `browser`, and runtime guidance refreshes on visual user turns. Model names are never used to infer support. For custom models, confirm accurate `input` metadata in the operator's Pi configuration; do not silently change it.
 
-Use browser-observable evidence first: accessibility snapshots, DOM structure, element geometry, computed state, console output, network evidence, and deterministic browser tests. Screenshots may still be captured as reproducible artifacts for human review or when the active model supports image inputs.
+Playwright now uses `--image-responses allow`: a requested screenshot returns native image content through the MCP adapter as well as a saved artifact. The adapter's output guard bounds text, not images; Pi `0.84.2` normalizes tool-result images. Request only useful viewport/element screenshots and retain Pi's default image resizing. If a permitted response contains only a path, use `read` on that exact file; do not paste base64 or assume the model can see a filename.
+
+`harnessVision.imageInput` and `imageBlocks` in tool details mean configured support and blocks returned, not provider acceptance or completed inspection. Pi's `images.blockImages` setting can strip images after the extension hook, and a provider can reject them. Respect that setting and user privacy opt-outs: disabled/filtered/unsupported/unreadable pixels leave appearance-only criteria `UNPROVEN`. TUI image display is separate from model input. After updating `.mcp.json`, restart the Playwright MCP connection or start a fresh Pi session so cached server arguments do not retain `omit`.
+
+Use browser-observable evidence first for behavior: accessibility snapshots, DOM structure, element geometry, computed state, console output, network evidence, and deterministic browser tests. For appearance, follow the `browser-qa` pixel-inspection loop: references/baseline, small desktop/mobile evidence set, focused detail crops, bounded critique/repair, then final re-capture. Exact contrast and dimensions need measurement, not visual estimates. Images may contain private data and incur provider image-token cost; capture synthetic/masked fixtures only and keep artifacts out of commits.
 
 Do not claim pixel-level or aesthetic screenshot findings that the active model cannot actually inspect. Mark those acceptance criteria `UNPROVEN` and report the saved screenshot path instead.
 

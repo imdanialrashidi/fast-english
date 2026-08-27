@@ -242,7 +242,7 @@ function runRpc({ cwd, prompt, model, thinking, timeoutMs }) {
       });
     });
     child.stdin.write(
-      `${JSON.stringify({ id: 'eval-prompt', type: 'prompt', message: `This is an isolated local-only evaluation. Do not commit, push, open/update a PR, or invoke the PR delivery helper.\n\n${prompt}` })}\n`,
+      `${JSON.stringify({ id: 'eval-prompt', type: 'prompt', message: 'This is an isolated local-only evaluation. Do not commit, push, open/update a PR, or invoke the PR delivery helper.\n\n' + prompt })}\n`,
     );
   });
 }

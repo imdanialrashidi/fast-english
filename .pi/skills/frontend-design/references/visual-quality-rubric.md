@@ -15,6 +15,8 @@ Require, when the application can run:
 
 Record viewport size, route, state/fixture, theme, locale/direction, and commit/diff scope. A screenshot without state provenance is weak evidence.
 
+Record which images/regions were actually received and inspected, not just captured. Model capability metadata and tool image counts are delivery diagnostics, not visual acceptance. Reopen images in a fresh evaluator context; if image input is unavailable, blocked, or unreadable, mark dependent dimensions `UNPROVEN`, do not assign invented numeric scores or a passing average, and return `NOT READY` when those dimensions are required. Derive exact measurements and interaction claims from DOM/tests rather than visual estimates.
+
 ## Hard gates
 
 Any required hard-gate failure makes the visual verdict `NOT READY`, regardless of craft score.

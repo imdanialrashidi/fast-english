@@ -121,6 +121,107 @@ test('specialist capability groups load additively and reset without dropping un
   );
 });
 
+test("browser activation reports the active model's image input without guessing by model name", async () => {
+  const runtime = createRuntime();
+  for (const [model, expected] of [
+    [{ id: 'text-only', input: ['text', 'image'] }, 'supported'],
+    [{ id: 'vision-pro', input: ['text'] }, 'unsupported'],
+    [{ id: 'vision-pro' }, 'unknown'],
+  ]) {
+    runtime.ctx.model = model;
+    const result = await runtime
+      .tool()
+      .execute('browser', { capabilities: ['browser'] }, undefined, undefined, runtime.ctx);
+    assert.equal(result.details.harnessVision.imageInput, expected);
+    assert.match(result.content[0].text, /image input/);
+  }
+  assert.equal(runtime.activeTools().length, 9, 'vision must reuse the core read and MCP tools');
+});
+
+test('visual guidance is task-scoped, rechecks the model, and does not survive a fresh nonvisual session', async () => {
+  const runtime = createRuntime();
+  const start = runtime.handlers.get('before_agent_start');
+  assert.equal(typeof start, 'function', 'image-aware guidance is missing');
+  const event = { systemPrompt: 'Existing policy', images: [] };
+  runtime.ctx.model = { input: ['text', 'image'] };
+  assert.equal(await start(event, runtime.ctx), undefined);
+  const attached = await start(
+    { ...event, images: [{ type: 'image', data: 'fixture', mimeType: 'image/png' }] },
+    runtime.ctx,
+  );
+  assert.ok(attached.systemPrompt.startsWith('Existing policy\n'));
+  assert.match(attached.systemPrompt, /image input=supported/);
+  assert.match(attached.systemPrompt, /UNPROVEN/);
+  await runtime
+    .tool()
+    .execute('browser', { capabilities: ['browser'] }, undefined, undefined, runtime.ctx);
+  runtime.ctx.model = { input: ['text'] };
+  assert.match((await start(event, runtime.ctx)).systemPrompt, /image input=unsupported/);
+  await runtime.handlers.get('session_start')({}, runtime.ctx);
+  assert.equal(await start(event, runtime.ctx), undefined);
+});
+
+test('image evidence preserves native blocks and never equates tool output with visual verification', async () => {
+  const runtime = createRuntime();
+  runtime.ctx.model = { input: ['text', 'image'] };
+  const image = { type: 'image', data: 'fixture-image-bytes', mimeType: 'image/png' };
+  const event = {
+    toolName: 'mcp',
+    toolCallId: 'shot',
+    input: { tool: 'browser_take_screenshot', args: {} },
+    content: [{ type: 'text', text: 'Saved screenshot' }, image],
+    details: { original: true },
+    isError: false,
+  };
+  const result = await runtime.handlers.get('tool_result')(event, runtime.ctx);
+  assert.ok(result, 'screenshot evidence annotation is missing');
+  assert.equal(result.content[1], image, 'native image blocks must not be stringified or removed');
+  assert.equal(result.details.original, true);
+  assert.deepEqual(result.details.harnessVision, {
+    imageInput: 'supported',
+    imageBlocks: 1,
+    toolError: false,
+  });
+  assert.match(result.content.at(-1).text, /not proof/);
+  assert.match(result.content.at(-1).text, /disabled/);
+
+  const pathOnly = await runtime.handlers.get('tool_result')(
+    { ...event, content: [event.content[0]] },
+    runtime.ctx,
+  );
+  assert.equal(pathOnly.details.harnessVision.imageBlocks, 0);
+  assert.match(pathOnly.content.at(-1).text, /read/);
+  assert.match(pathOnly.content.at(-1).text, /UNPROVEN/);
+
+  runtime.ctx.model = { input: ['text'] };
+  const textOnly = await runtime.handlers.get('tool_result')(
+    { ...event, toolName: 'read', input: { path: 'shot.png' } },
+    runtime.ctx,
+  );
+  assert.equal(textOnly.content[1], image, "leave Pi's configured image filtering authoritative");
+  assert.equal(textOnly.details.harnessVision.imageInput, 'unsupported');
+  assert.match(textOnly.content.at(-1).text, /UNPROVEN/);
+  const failed = await runtime.handlers.get('tool_result')(
+    { ...event, isError: true },
+    runtime.ctx,
+  );
+  assert.equal(failed.details.harnessVision.toolError, true);
+  assert.match(failed.content.at(-1).text, /failed/);
+  assert.equal(
+    await runtime.handlers.get('tool_result')(
+      { ...event, input: { tool: 'browser_snapshot' }, content: [event.content[0]] },
+      runtime.ctx,
+    ),
+    undefined,
+  );
+  await runtime.handlers.get('agent_settled')();
+  assert.equal(
+    JSON.stringify(runtime.appended).includes(image.data),
+    false,
+    'do not copy image bytes into continuity state',
+  );
+});
+
 test('smart read bounds only large implicit non-sensitive reads and annotates the result', async (t) => {
   const artifacts = path.join(repositoryRoot, '.artifacts');
   await fs.mkdir(artifacts, { recursive: true });
@@ -139,6 +240,32 @@ test('smart read bounds only large implicit non-sensitive reads and annotates th
     assert.equal(large.call.input.limit, 400);
     assert.match(large.result.content.at(-1).text, /offset=401/);
     assert.deepEqual(large.result.details.harnessRuntime, { smartRead: true, limit: 400 });
+
+    // A binary result has no line range, even when its file size triggered focusing.
+    const imageCall = {
+      type: 'tool_call',
+      toolCallId: 'read-image',
+      toolName: 'read',
+      input: { path: largeFile },
+    };
+    await runtime.handlers.get('tool_call')(imageCall, runtime.ctx);
+    const imageResult = await runtime.handlers.get('tool_result')(
+      {
+        ...imageCall,
+        type: 'tool_result',
+        isError: false,
+        details: {},
+        content: [{ type: 'image', data: 'fixture', mimeType: 'image/png' }],
+      },
+      runtime.ctx,
+    );
+    assert.equal(imageResult.details.harnessRuntime, undefined);
+    assert.equal(
+      imageResult.content.some((block) => block.text?.includes('offset=')),
+      false,
+    );
+    await runtime.handlers.get('agent_settled')();
+    assert.equal(runtime.appended.at(-1).data.smartReads, 1);
 
     const explicit = await emitTool(
       runtime,

@@ -259,6 +259,9 @@ if (!Array.isArray(server.args) || !server.args.includes('@playwright/mcp@0.0.79
 if (!server.args.includes('--block-service-workers')) {
   throw new Error('Playwright MCP must block service workers in isolated QA sessions');
 }
+if (server.args[server.args.indexOf('--image-responses') + 1] !== 'allow') {
+  throw new Error('Playwright must return native screenshot images; saved paths are not visual inspection');
+}
 if (server.lifecycle !== 'lazy') throw new Error('Playwright MCP must be lazy');
 const included = new Set(server.includeTools || []);
 const excluded = new Set(server.excludeTools || []);

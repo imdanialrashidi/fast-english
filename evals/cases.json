@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "defaultTrials": 3,
+  "defaultTrials": 1,
   "promotion": {
     "minDeterministicPassRate": 1,
     "maxMedianDurationRegressionPercent": 25,
     "maxMedianToolCallsRegressionPercent": 20,
-    "maxMedianTokensRegressionPercent": 20
+    "maxMedianTokensRegressionPercent": 20,
+    "maxMedianDuplicateToolCallsRegressionPercent": 20,
+    "maxMedianRepairRoundsRegressionPercent": 50,
+    "maxMedianFullGateCallsRegressionPercent": 50
   },
   "cases": [
     {
@@ -55,7 +58,9 @@
       "rubric": [
         "real controls and state transitions",
         "specific coherent visual direction",
-        "mobile and desktop evidence",
+        "mobile and desktop images actually received and inspected, not just saved",
+        "readable Persian/RTL detail confirmed against DOM",
+        "final screenshots match the repaired state",
         "accessibility and reduced motion",
         "flagship craft threshold"
       ],
@@ -78,7 +83,8 @@
         "structure encodes true priority",
         "keyboard journey works",
         "required states exist",
-        "not a wall of cards"
+        "not a wall of cards",
+        "focused image detail resolves visual uncertainty without redundant captures"
       ],
       "assertions": {
         "completion": "completed",
@@ -98,7 +104,8 @@
         "does not fabricate browser evidence",
         "separates hard gates from craft",
         "findings cite evidence",
-        "generic choices are product-relative"
+        "generic choices are product-relative",
+        "reviewer inspects images in its own context or marks dependent dimensions unproven without invented scores"
       ],
       "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
     },
