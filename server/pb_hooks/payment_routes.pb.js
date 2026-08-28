@@ -731,22 +731,14 @@ routerAdd(
             hits.sort(function (a, b) {
               var aUp = String(a.get("updated") || a.get("created") || "");
               var bUp = String(b.get("updated") || b.get("created") || "");
-              var aMs = 0;
-              var bMs = 0;
-              try { aMs = new Date(aUp).getTime(); } catch (_) { aMs = 0; }
-              try { bMs = new Date(bUp).getTime(); } catch (_) { bMs = 0; }
-              if (bMs !== aMs) return bMs - aMs;
+              if (bUp !== aUp) return bUp < aUp ? -1 : 1;
               var aCr = String(a.get("created") || "");
               var bCr = String(b.get("created") || "");
-              var aCrMs = 0;
-              var bCrMs = 0;
-              try { aCrMs = new Date(aCr).getTime(); } catch (_) { aCrMs = 0; }
-              try { bCrMs = new Date(bCr).getTime(); } catch (_) { bCrMs = 0; }
-              if (bCrMs !== aCrMs) return bCrMs - aCrMs;
+              if (bCr !== aCr) return bCr < aCr ? -1 : 1;
               var aId = String(a.id || "");
               var bId = String(b.id || "");
-              if (aId < bId) return 1;
-              if (aId > bId) return -1;
+              if (aId < bId) return -1;
+              if (aId > bId) return 1;
               return 0;
             });
           }
