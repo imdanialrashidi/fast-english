@@ -39,6 +39,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.24.0
+
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -85,6 +90,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.24.0
+
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -97,6 +107,7 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}-1.62.0
           restore-keys: |
             ${{ runner.os }}-playwright-
+
 
       - name: Install dependencies
         run: bash scripts/ci-install.sh
@@ -153,6 +164,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.24.0
 
       - uses: actions/setup-node@v7
         with:

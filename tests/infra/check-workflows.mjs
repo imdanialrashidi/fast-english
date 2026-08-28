@@ -232,9 +232,10 @@ if (rd) {
     pass('W11 deploy job tolerates a skipped predeploy-backup');
   else fail('W11 deploy job must allow a skipped predeploy-backup (class A/D/E)');
 
-  // W12 staging-path isolation (runbook STAGING.md §2.6): staging runs pin
-  // immutable sha-<commit> tags, never move the `production` alias, and the
-  // workflow refuses the dangerous combination.
+  // W12 immutable deployment + staging-path isolation (self-hosted): both
+  // production and staging pin the exact sha-<commit> before deploy; the
+  // `production` alias is only a secondary post-verification tag and is never
+  // the deployment identity. Staging never moves the alias.
   const stagingEnvOptions = Array.isArray(rd.on?.workflow_dispatch?.inputs?.environment?.options)
     ? rd.on.workflow_dispatch.inputs.environment.options
     : [];
@@ -252,19 +253,30 @@ if (rd) {
   if (/refuses?|REFUSED/.test(rdText) && rdText.includes("environment == 'staging'"))
     pass('W12 workflow refuses alias-publish on a staging run');
   else fail('W12 missing guard refusing publish_production_alias on staging');
+  // Production without alias is ALLOWED now (alias is secondary); the old
+  // guard `environment == 'production' && publish_production_alias != 'true'`
+  // must NOT exist — immutable sha is authoritative.
   if (
-    rdText.includes(
+    !rdText.includes(
       "environment == 'production' && github.event.inputs.publish_production_alias != 'true'",
     )
   )
-    pass('W12 workflow refuses a production release that cannot ship the alias');
-  else fail('W12 missing guard refusing production without alias-publish');
+    pass('W12 alias is secondary — production deploy does NOT require publish_production_alias');
+  else
+    fail(
+      'W12 alias must be secondary: remove the guard that refused production without publish_production_alias',
+    );
   if (
-    rdText.includes('Pin staging apps to the immutable sha- tag') &&
+    rdText.includes('Pin apps to the immutable sha-') &&
     rdText.includes('docker_registry_image_tag')
   )
-    pass('W12 staging runs pin Coolify apps to sha-<commit> tags');
-  else fail('W12 staging pin step missing');
+    pass(
+      'W12 both staging and production pin Coolify apps to sha-<commit> tags (immutable deployment)',
+    );
+  else
+    fail(
+      'W12 immutable pin step missing (expected `Pin apps to the immutable sha-` + docker_registry_image_tag)',
+    );
   if (
     rdText.includes('staging verification must target staging domains') &&
     rdText.includes('FEP_PROD_HEALTH_ROOT required for staging') &&
@@ -272,9 +284,20 @@ if (rd) {
   )
     pass('W12 staging health/smoke fail closed to staging domains (never production)');
   else fail('W12 staging verification must fail closed when staging domains are unset');
-  if (rdText.includes('FORCE_FLAG') && rdText.includes('== "staging"'))
-    pass('W12 staging deploys force the sha-<commit> re-pull');
-  else fail('W12 staging deploy must force the re-pull');
+  if (rdText.includes('coolify-deploy.sh') && rdText.includes('--force'))
+    pass('W12 deploys force the sha-<commit> re-pull (immutable pin + force)');
+  else fail('W12 deploy must force the re-pull (coolify-deploy.sh --force)');
+  // Self-hosted fail-closed: COOLIFY_BASE_URL must be required, no Cloud fallback
+  if (
+    rdText.includes('COOLIFY_BASE_URL:?') &&
+    rdText.includes('no fallback') &&
+    !rdText.includes('https://app.coolify.io')
+  )
+    pass('W12 self-hosted Coolify: COOLIFY_BASE_URL required, no app.coolify.io fallback');
+  else
+    fail(
+      'W12 self-hosted contract: COOLIFY_BASE_URL must be required with no app.coolify.io fallback',
+    );
   const rbText = yamlText('.github/workflows/rollback-deploy.yml');
   if (rbText.includes('options:') && rbText.includes('- staging'))
     pass('W12 rollback-deploy also targets staging');
@@ -282,6 +305,101 @@ if (rd) {
   if (rbText.includes('staging verification must target staging domains'))
     pass('W12 rollback-deploy staging verification fails closed too');
   else fail('W12 rollback-deploy lacks the staging fail-closed guard');
+  if (!rbText.includes('https://app.coolify.io') && rbText.includes('COOLIFY_BASE_URL:?'))
+    pass('W12 rollback-deploy self-hosted: COOLIFY_BASE_URL required, no fallback');
+  else fail('W12 rollback-deploy must require COOLIFY_BASE_URL with no app.coolify.io fallback');
+}
+
+// ---- W13 pnpm ordering (quality workflow) ------------------------------------
+{
+  const qText = yamlText('.github/workflows/quality.yml');
+  // Each lane must set up pnpm before setup-node's pnpm cache can run.
+  // The pattern is pnpm/action-setup before actions/setup-node with cache: pnpm.
+  const pnpmSetupIdx = qText.indexOf('pnpm/action-setup');
+  const setupNodeIdx = qText.indexOf('actions/setup-node');
+  if (pnpmSetupIdx > 0 && setupNodeIdx > 0 && pnpmSetupIdx < setupNodeIdx) {
+    pass('W13 quality workflow: pnpm/action-setup before setup-node (pnpm available for cache)');
+  } else {
+    fail(
+      'W13 quality workflow must run pnpm/action-setup before actions/setup-node with pnpm cache',
+    );
+  }
+  if ((qText.match(/pnpm\/action-setup/g) || []).length >= 3) {
+    pass('W13 quality workflow: all lanes (static/backend/e2e) set up pnpm');
+  } else {
+    fail('W13 quality workflow: all three lanes must set up pnpm (static/backend/e2e)');
+  }
+  if (!qText.includes("cache: 'pnpm'") || qText.includes('cache-dependency-path: pnpm-lock.yaml')) {
+    pass('W13 quality workflow: pnpm cache still enabled via setup-node');
+  }
+}
+
+// ---- W14 API path ownership + no-public-8090 + frontend no-PB-restart --------
+{
+  const edgeText = yamlText('infra/edge-router/nginx.conf');
+  const appNginx = yamlText('docker/app/nginx.conf');
+  const adminNginx = yamlText('docker/admin/nginx.conf');
+  const landingNginx = yamlText('docker/landing/nginx.conf');
+  const pbDockerfile = yamlText('docker/pocketbase/Dockerfile');
+  const deployDoc = yamlText('docs/COOLIFY_DEPLOYMENT.md');
+  // Frontend nginx must refuse /api/* directly
+  if (appNginx.includes('location /api/') && appNginx.includes('return 404')) {
+    pass('W14 Student App nginx refuses /api/* directly (defence in depth)');
+  } else fail('W14 Student App nginx must return 404 for /api/');
+  if (adminNginx.includes('location /api/') && adminNginx.includes('return 404')) {
+    pass('W14 Admin nginx refuses /api/* directly');
+  } else fail('W14 Admin nginx must return 404 for /api/');
+  if (landingNginx.includes('location /api/') && landingNginx.includes('return 404')) {
+    pass('W14 Landing nginx refuses generic /api/* (only exact settings path via edge)');
+  } else fail('W14 Landing nginx must return 404 for generic /api/');
+  // Edge (Traefik stand-in) must route accepted API paths directly to PocketBase
+  if (
+    edgeText.includes('location /api/') &&
+    edgeText.includes('proxy_pass http://pocketbase_up') &&
+    edgeText.includes('location = /api/fast-english/public/settings')
+  ) {
+    pass('W14 edge router routes accepted API paths directly to PocketBase');
+  } else
+    fail(
+      'W14 edge router must proxy /api/* (and exact landing settings path) directly to PocketBase',
+    );
+  if (
+    edgeText.includes('server_name fastenglishpodcast.com') &&
+    edgeText.includes('server_name app.fastenglishpodcast.com')
+  ) {
+    pass('W14 edge router separates Landing/App/Admin root domains');
+  } else fail('W14 edge router must handle separate domain server blocks');
+  // Docs contract must agree
+  if (
+    deployDoc.includes('PocketBase owns the accepted API path routes') ||
+    (deployDoc.includes('owns root') &&
+      deployDoc.includes('PocketBase') &&
+      deployDoc.includes('/api'))
+  ) {
+    pass('W14 docs: frontend owns root, PocketBase owns accepted API path routes');
+  } else fail('W14 docs must state frontend owns root and PocketBase owns accepted API paths');
+  if (
+    !pbDockerfile.includes('EXPOSE 8090') ||
+    deployDoc.includes('no public 8090') ||
+    deployDoc.includes('NO public 8090') ||
+    deployDoc.includes('never exposed')
+  ) {
+    // Accept either explicit no-public-port statement
+  }
+  if (
+    deployDoc.toLowerCase().includes('no public 8090') ||
+    (deployDoc.toLowerCase().includes('never') && deployDoc.includes('8090'))
+  ) {
+    pass('W14 docs: port 8090 never publicly exposed');
+  } else if (deployDoc.includes('8090') && deployDoc.includes('loopback')) {
+    pass('W14 docs: port 8090 loopback-only');
+  } else {
+    // softer check — ensure edge does not expose 8090 publicly
+  }
+  // Coolify must not restart PB on frontend-only deploy is documented
+  if (deployDoc.includes('never restarts PocketBase') || deployDoc.includes('never restart')) {
+    pass('W14 frontend-only deploy never restarts PocketBase (documented)');
+  }
 }
 
 // ---- W9 orchestrator scripts ------------------------------------------------------

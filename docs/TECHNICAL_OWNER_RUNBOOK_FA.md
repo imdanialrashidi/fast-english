@@ -46,12 +46,11 @@
    │  PR → merge → CI سبز          │  انتخاب exact commit
    ▼                               ▼
 GitHub (گیت + کیفیت + بیلد ایمج)   │  workflow_dispatch دستی
-   │  ایمج‌های تغییرناپذیر          │  (release-deploy)
    ▼  sha-<commit>                 ▼
-GHCR (GitHub Container Registry) → Coolify Cloud (کنترل‌پلن)
-                                     │  SSH به سرور خودتان
+GHCR (GitHub Container Registry) → Coolify خودمیزبان (کنترل‌پلن روی VPS شما)
+                                     │  API داخلی به Traefik میزبان
                                      ▼
-                    سرور VPS شما (فقط 22/80/443 باز)
+                    سرور VPS شما (خودمیزبان Coolify؛ فقط 22/80/443 باز)
                     └─ Coolify-managed Traefik (یک لایهٔ پروکسی؛ TLS خودکار)
                          ├─ fastenglishpodcast.com       → Landing (nginx, ایمج)
                          ├─ www.fastenglishpodcast.com   → 308 به دامنهٔ اصلی
@@ -110,11 +109,9 @@ GHCR (GitHub Container Registry) → Coolify Cloud (کنترل‌پلن)
 > جزئیات کامل و گام‌به‌گام: `docs/COOLIFY_DEPLOYMENT.md` §۵–§۹ (این بخش فقط خلاصهٔ اجرایی است).
 > سرور واقعی هنوز تهیه نشده — این بخش برای فاز بعدی (Provisioning) است.
 
-۱. **DNS:** چهار رکورد A به آی‌پی سرور (زمانی که سرور وجود دارد): `fastenglishpodcast.com`، `www`، `app`، `admin` (+ رکوردهای `staging*` برای محیط تست).
-۲. **فایروال سرویس‌دهنده:** فقط ۲۲ (SSH محدود به آی‌پی‌های Coolify Cloud + آی‌پی شما)، ۸۰، ۴۴۳. پورت ۸۰۹۰ هرگز عمومی نیست.
-۳. **Coolify Cloud → Servers → Connect:** سرور را با SSH متصل و تأیید کنید (Docker توسط Coolify نصب می‌شود).
-۴. **آماده‌سازی میزبان (یک‌بار، به‌عنوان root):**
-
+۱. **DNS:** چهار رکورد A به آی‌پی سرور (زمانی که سرور وجود دارد): `fastenglishpodcast.com`، `www`، `app`، `admin` (+ رکوردهای `staging*` برای محیط تست و در صورت نیاز `coolify.*` برای داشبورد).
+۲. **فایروال سرویس‌دهنده:** فقط ۲۲ (SSH محدود به آی‌پی شما)، ۸۰، ۴۴۳. پورت ۸۰۹۰ هرگز عمومی نیست.
+۳. **نصب Coolify خودمیزبان:** Coolify را روی سرور با نصب‌کنندهٔ رسمی نصب کنید و داشبورد + توکن API را بسازید (`COOLIFY_BASE_URL` + `COOLIFY_API_TOKEN` را در GitHub Environment ذخیره کنید).
 ```bash
 mkdir -p /opt/fast-english/shared/{pb_data,backups,releases,secrets}
 chown -R 10001:10001 /opt/fast-english/shared/pb_data /opt/fast-english/shared/backups
@@ -390,9 +387,8 @@ bash scripts/verify-release-apk.sh      # apksigner/zipalign/aapt/sha256sum + م
 ## پیوست: وضعیت‌های باز (HUMAN INPUT REQUIRED)
 
 این موارد هنوز انجام نشده‌اند و در هیچ‌کجای این مستندات «انجام‌شده» فرض نمی‌شوند:
-
-- تهیهٔ سرور VPS (تولید + استقرار) + اتصال به Coolify Cloud + اجرای چک‌لیست پذیرش استیجینگ (`docs/STAGING.md`)؛
-- ثبت DNS هر چهار نام (و دامنه‌های استیجینگ)؛
+- تهیهٔ سرور VPS (تولید + استقرار) + نصب Coolify خودمیزبان + اجرای چک‌لیست پذیرش استیجینگ (`docs/STAGING.md`)؛
+- ثبت DNS هر چهار نام (و دامنه‌های استیجینگ و در صورت نیاز `coolify.*`)؛
 - مقصد کارت‌به‌کارت واقعی و متن راهنمای آن؛
 - بانک سؤال تعیین سطح بازبینی‌شده (دمو هرگز در تولید)؛
 - کتابخانهٔ نهایی محتوا (بسته‌های فعلی نمونه/دمو هستند)؛

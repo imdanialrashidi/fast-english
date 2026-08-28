@@ -4,7 +4,7 @@
 # architecture.
 #
 # Status: RETIRED for new production installs. Server provisioning now
-# follows docs/COOLIFY_DEPLOYMENT.md (Coolify Cloud -> owned VPS -> four
+# follows docs/COOLIFY_DEPLOYMENT.md (self-hosted Coolify on owned VPS -> four
 # Coolify Applications; host initialization is a short checklist, not this
 # script). Preserved for historical fallback only.
 # ===========================================================================
