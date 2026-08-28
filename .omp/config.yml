@@ -1,0 +1,26 @@
+{
+  "tools": {
+    "approvalMode": "write",
+    "approval": {
+      "bash": "allow",
+      "eval": "prompt",
+      "browser": "prompt",
+      "computer": "deny",
+      "security_scan": "prompt",
+      "security_publish": "deny"
+    },
+    "xdevDocs": "catalog"
+  },
+  "task": {
+    "maxConcurrency": 2,
+    "maxRecursionDepth": 1,
+    "maxRuntimeMs": 600000,
+    "agentIdleTtlMs": 60000,
+    "softRequestBudget": 40
+  },
+  "browser": {
+    "screenshotDir": ".artifacts/browser"
+  },
+  "github": { "enabled": true },
+  "secrets": { "enabled": true }
+}

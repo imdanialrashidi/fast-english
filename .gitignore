@@ -56,3 +56,27 @@ server/pocketbase.exe
 
 # Pi harness local package cache (replaced by .pi/package-integrity.json)
 .pi/npm/
+
+# >>> omp-production-workflow runtime >>>
+.omp/npm/
+.omp/git/
+.omp/sessions/
+.omp/cache/
+.omp/auth.json
+.omp/models.json
+.omp/trust.json
+.omp/mcp.json
+.omp/mcp-oauth/
+.omp/mcp-traces/
+.omp/agent.db*
+.omp/config.local.yml
+.omp/config.local.yaml
+.omp/models.yml
+.omp/models.yaml
+.omp/state/
+.omp/agents.local/
+.omp/managed-skills/
+# <<< omp-production-workflow runtime <<<
+
+# Local migration helper (not part of product commit)
+universal-pi-to-omp*.sh

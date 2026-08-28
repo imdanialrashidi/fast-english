@@ -1,0 +1,21 @@
+{
+  "tools": {
+    "approvalMode": "write",
+    "approval": {
+      "bash": "allow",
+      "eval": "deny",
+      "browser": "deny",
+      "computer": "deny",
+      "security_scan": "deny",
+      "security_publish": "deny"
+    },
+    "xdev": false
+  },
+  "task": {
+    "maxConcurrency": 1,
+    "maxRecursionDepth": 1
+  },
+  "mcp": {
+    "enableProjectConfig": false
+  }
+}

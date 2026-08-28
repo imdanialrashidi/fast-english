@@ -11,7 +11,7 @@ Durable constraints only. Not a diary.
 
 ## Repository/build topology
 - One repo, one root `package.json`, one `pnpm-lock.yaml`. No workspace/monorepo framework.
-- Three isolated Vite configs (clearest isolated outputs + separate dep sets):
+- Three isolated Vite configs provide distinct isolated outputs and separate dependency sets — `vite.landing.config.ts` → `dist-landing/` (Tailwind allowed here only), `vite.app.config.ts` → `dist-app/` (MUI only), and `vite.admin.config.ts` → `dist-admin/` (MUI, Staff console, no PWA).
   - `vite.landing.config.ts` → builds `landing/` → `dist-landing/` (Tailwind allowed here only).
   - `vite.app.config.ts` → builds `app/` → `dist-app/` (MUI only).
   - `vite.admin.config.ts` → builds `admin/` → `dist-admin/` (MUI, Staff console, no PWA).

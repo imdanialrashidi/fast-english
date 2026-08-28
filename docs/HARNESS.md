@@ -1,12 +1,12 @@
 # Agent Harness Operating Playbook
 
-This document contains the detailed operating model for non-trivial Pi coding sessions. `AGENTS.md` should remain a short map and point here instead of duplicating these rules.
+This document contains the detailed operating model for non-trivial OMP coding sessions. `AGENTS.md` should remain a short map and point here instead of duplicating these rules.
 
 ## Design principles
 
 1. **Intent steers; the agent finishes.** Convert the request into observable acceptance criteria, then execute reversible implementation and evidence gathering without intermediate approval loops.
 2. **Repository knowledge is the system of record.** Durable product, architecture, quality, decision, and execution state belongs in versioned repository artifacts rather than chat memory.
-3. **Progressive disclosure beats giant prompts.** Keep always-loaded instructions small and retrieve code, docs, skills, and external facts just in time.
+3. **Progressive disclosure beats giant prompts.** Keep always-loaded instructions small and retrieve code, docs, skills, and external facts just in time. Domain skills are conditional; do not load all four for every task.
 4. **The interface is part of intelligence.** High-quality tools, focused outputs, browser evidence, diagnostics, and deterministic verification materially affect coding-agent performance.
 5. **Prefer mechanical constraints over repeated prose.** If an invariant can be linted, tested, typed, validated, or blocked by tooling, encode it there.
 6. **Evaluation needs a contract.** Independent review is most useful when it judges explicit observable criteria, not vague taste.
@@ -19,7 +19,9 @@ This document contains the detailed operating model for non-trivial Pi coding se
 
 Use the task classes in `AGENTS.md`.
 
-- Localized: load `/skill:quick-fix` when minimal ceremony is requested; use one direct patch, one targeted proof, and scoped diff review.
+- Localized: use OMP's native direct workflow—one focused patch, one targeted proof and scoped diff review. Do not add a project quick-fix wrapper.
+- Context readiness: before product/UI work, run `node scripts/validate-project-context.mjs --static`; after `/wf-bootstrap`, require `--require-ready` so empty contract prompts cannot silently become invented requirements.
+- Domain routing: load `accessibility-audit`, `web-performance`, `technical-seo`, or `rtl-i18n` only when the accepted scope contains that domain. They provide evidence contracts over native OMP/browser/build tools; they do not install duplicate frameworks.
 - Standard: compact acceptance contract, focused implementation, and material self-review; add an independent evaluator only when its evidence justifies the cost.
 - Complex: planning plus persistent execution state when continuity is needed.
 - High risk: threat-boundary analysis, independent review, negative-path proof, full gate.
@@ -56,9 +58,9 @@ The agent derives the contract from available evidence. It asks a question only 
 
 Start from identifiers, not bulk context.
 
-The initial runtime surface is `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`, and `harness_tools`. Stay on that core for localized work. When the task needs planning, delegation, browser evidence, LSP, version-sensitive documentation, or current web evidence, call `harness_tools` once with every required capability instead of activating specialists one by one.
+Use OMP's native `read`, `grep`, `glob`, `edit`, `write`, and `bash` for focused work. OMP owns lazy tool discovery: read `xd://` and then `xd://<tool>` for a missing schema; write the documented JSON arguments to that device. Do not install a second tool loader or assume a mounted tool is unavailable. Keep native hashline edits and re-read stale anchors instead of inventing replacements.
 
-An implicit read of a regular text file at or above 96 KiB is bounded to 400 lines and returns the next offset. An explicit `offset` or `limit` is always preserved. Prefer exact search/symbol lookup and focused ranges over walking the rest of a large file linearly.
+Native structural reads and output artifacts bound context; explicit selectors retrieve exact evidence. A summary is not a full source read. Keep native defaults unless a measured task justifies a change; do not restore the old 96 KiB wrapper.
 
 Preferred order:
 
@@ -67,7 +69,7 @@ Preferred order:
 3. focused source ranges and affected tests;
 4. LSP definitions/references/diagnostics;
 5. installed types and local dependency source;
-6. `doc_search_*` for version-sensitive official docs;
+6. native `web_search`, `read` URL support, or native `github` file reads for version-matched primary documentation;
 7. web search for current upstream issues, advisories, regressions, or release notes.
 
 If subagents are available, use `scout` only when the relevant surface or cross-module flow is genuinely unclear. Otherwise investigate directly. Do not delegate the same discovery twice.
@@ -91,11 +93,11 @@ During implementation:
 
 After the slice is functionally complete and targeted checks pass, evaluate against the acceptance contract and `docs/QUALITY.md`.
 
-Use an independent `reviewer` for non-trivial user-facing, cross-module, production-bug, or material-regression work only when subagents are available and isolated context adds value. Use `security-auditor` for High-risk work under the same condition; otherwise perform a separate evidence-focused pass directly.
+Use OMP's bundled `reviewer` for non-trivial user-facing, cross-module, production-bug, or material-regression work only when independent context adds value. Use bundled `security-reviewer` for High-risk work under the same condition; otherwise perform a separate evidence-focused pass directly. Provide the accepted contract, scoped diff and real verification output—not your verdict. Bundled `scout` covers bounded discovery. Bundled `designer`, `sonic` or `task` may own one implementation slice, but the parent must stop editing until that writer finishes. Default concurrency is two children, recursion one, with no child auto-apply or branch merge. The project does not shadow bundled agents.
 
 For browser-visible behavior, use the real application through `browser-qa`'s pixel-inspection loop. Accessibility snapshots and interaction evidence come before screenshots. For material appearance changes, inspect supplied references and the rendered baseline, then actually receive and inspect current desktop/mobile images. The runtime reports configured image capability and returned image blocks; neither proves perception. Use focused crops for detail, deterministic measurements for exact claims, and re-capture after repairs. If pixels cannot be inspected, mark appearance-dependent criteria `UNPROVEN`.
 
-For visually significant work, load `frontend-design` and evaluate in two passes. The product pass proves journey, states, accessibility, responsiveness, and measurable budgets. The studio pass compares rendered evidence with `docs/DESIGN.md`, runs the anti-template review, and scores visual craft where the evidence is actually inspectable. Novelty never cancels a hard-gate failure.
+For visually significant work, read `docs/VISUAL_REVIEW.md`, use the bundled `designer` when a separate specialist pass adds value, and evaluate in two passes. The product pass proves journey, states, accessibility, responsiveness and measurable budgets. The studio pass compares rendered evidence with `docs/DESIGN.md`, runs the anti-template review and scores visual craft where the evidence is actually inspectable. Novelty never cancels a hard-gate failure.
 
 The evaluator should answer:
 
@@ -136,7 +138,7 @@ Repeated blind retries are a harness failure. When the same check or approach fa
 7. If the task is still unclear and subagents are available, delegate one focused read-only investigation rather than another broad implementation attempt; otherwise run that focused investigation directly.
 8. If the context has become noisy, the goal changed materially, or progress must survive a fresh session, use the handoff protocol.
 
-The runtime hashes the tool name plus canonical arguments and blocks a third identical call after two errored executions. It never persists the arguments themselves. A different successful evidence/action step clears the blind-retry counter; changing only wording without changing the actual tool input does not.
+OMP's native repeated-tool detector supplies corrective steering at three consecutive identical single-tool turns. It is not the old failure-only hard block, does not cover every batched call, and does not prove a retry became useful. The workflow rule above still stops an unchanged failed approach after two attempts. Do not claim those mechanisms are identical. Evaluate recovery behavior with real traces before changing the threshold.
 
 A failure that recurs across different tasks should become a harness improvement: a regression test, clearer tool, structural check, documented invariant, or safety rule. Do not merely add another paragraph to the system prompt.
 
@@ -168,7 +170,7 @@ Handoff note
 
 Keep it concise and update facts, decisions, evidence, and next steps—not a transcript of every tool call.
 
-The runtime continuity capsule is a recovery aid, not the execution plan. It persists a bounded list of active specialist groups, repository-relative modified paths, recent recognized verification outcomes, hashed open failures, and Smart Read count. It is injected once after session restore or compaction. Pi's built-in compaction summary and the execution plan remain authoritative for goals, decisions, constraints, and unresolved reasoning.
+Use OMP's native sessions, todos, compaction, and handoff rather than a parallel continuity capsule. The current working tree and durable ExecPlan remain authoritative. Re-run stale proof after edits and reopen visual evidence after context loss. A native session summary is a navigation aid, not proof of a passing test or current UI.
 
 ## Handoff and context reset
 
@@ -182,7 +184,7 @@ Before a clean restart:
 4. record unresolved hypotheses and the next discriminating action;
 5. record relevant changed files and user-owned work that must be preserved.
 
-Then start a fresh Pi session and use `/resume <plan-path>`.
+Then use native `/handoff [focus]` and start or select the next session with native `/resume`. Mention the relevant ExecPlan path in the resumed prompt when durable project state exists.
 
 Do not use a handoff to hide an unresolved failure or to mark unfinished criteria complete.
 

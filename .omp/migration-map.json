@@ -1,0 +1,553 @@
+{
+  "version": 1,
+  "sourceCommit": "40d1c630fdea3acbd29dbb1c7a68e3bd2efb0477",
+  "entries": [
+    {
+      "source": ".dockerignore",
+      "sourceBlob": "23ab9ae50de9642ca282da3fdad0bc9747758a70",
+      "status": "ported",
+      "targets": [".dockerignore"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".env.example",
+      "sourceBlob": "14e20c38e9c05e141a6ff263de5fe1724c20df07",
+      "status": "rewritten",
+      "targets": [".env.example"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": ".github/dependabot.yml",
+      "sourceBlob": "9a350e5ff213e642a1d60366806258c0be0a07a2",
+      "status": "ported",
+      "targets": [".github/dependabot.yml"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".github/pull_request_template.md",
+      "sourceBlob": "9a182961ec011bd0dd8daa5a36d1cdf7a13e13a0",
+      "status": "ported",
+      "targets": [".github/pull_request_template.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".github/workflows/quality.yml",
+      "sourceBlob": "a0a6caf83124cb1419c55f42849086245202c605",
+      "status": "rewritten",
+      "targets": [".github/workflows/quality.yml"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": ".gitignore",
+      "sourceBlob": "a75ddad50938795259f0915dae77758e40a3bb24",
+      "status": "ported",
+      "targets": [".gitignore"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".mcp.json",
+      "sourceBlob": "b4a579eb5f551d133df2531764aee249c3263884",
+      "status": "native-replacement",
+      "targets": [".omp/config.yml", ".omp/skills/browser-qa/SKILL.md"],
+      "reason": "Removed Playwright MCP; OMP browser/web/task/LSP are native. No server is required."
+    },
+    {
+      "source": ".pi/APPEND_SYSTEM.md",
+      "sourceBlob": "0fb1bd5280219b4ccea766d32d2b996c72d8b6b2",
+      "status": "ported",
+      "targets": [".omp/APPEND_SYSTEM.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/extensions/harness-runtime.js",
+      "sourceBlob": "32609d6259dd261d9cf384b6938e2a6f8c927a36",
+      "status": "native-replacement",
+      "targets": [".omp/config.yml", "docs/HARNESS.md", ".omp/APPEND_SYSTEM.md"],
+      "reason": "Replaced loader/smart-read/model roles/repetition/continuity wrappers with native xd://, structural read, modelRoles, loop steer and sessions. Non-equivalence documented."
+    },
+    {
+      "source": ".pi/extensions/safety-guard.js",
+      "sourceBlob": "08fbefcb49beb5db14744aa9f24f35d621679d76",
+      "status": "ported",
+      "targets": [".omp/extensions/safety-guard.js"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/models.env",
+      "sourceBlob": "2248e9e07e18094252541f96c10f4a0121aea76e",
+      "status": "native-replacement",
+      "targets": ["docs/TOOLING_SETUP.md"],
+      "reason": "Native /model, /setup, /settings and CLI config replace the shell-sourced model environment; no project overlay or provider lock-in."
+    },
+    {
+      "source": ".pi/package-integrity.json",
+      "sourceBlob": "bf2bc2053bf7ceec64880e1baa18bd0ddfd48551",
+      "status": "native-replacement",
+      "targets": [".omp/compatibility.json", ".github/workflows/quality.yml"],
+      "reason": "All six Pi adapter packages removed. Pin OMP and verify actual installed native schema/discovery instead; no claim of a transitive lock."
+    },
+    {
+      "source": ".pi/prompts/adr.md",
+      "sourceBlob": "0ce5ad35128df764444037b959af12a6a504dcf4",
+      "status": "ported",
+      "targets": [".omp/commands/wf-adr.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/bootstrap.md",
+      "sourceBlob": "ed95429c72c511dcdd775f91939985662fb25c58",
+      "status": "ported",
+      "targets": [".omp/commands/wf-bootstrap.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/build-ui.md",
+      "sourceBlob": "a1c5b0a30d9409dc8e2a1edfa38c5113fa1188c0",
+      "status": "native-replacement",
+      "targets": ["docs/QUALITY.md", "docs/VISUAL_REVIEW.md", "docs/HARNESS.md"],
+      "reason": "OMP's bundled designer and native browser replace the UI wrapper; project visual/quality evidence remains."
+    },
+    {
+      "source": ".pi/prompts/build.md",
+      "sourceBlob": "eed58a6fcbd57a12109aca29982bf53cfd6172f3",
+      "status": "native-replacement",
+      "targets": ["AGENTS.md", "docs/HARNESS.md"],
+      "reason": "OMP's default system workflow and bundled task/sonic agents replace the ordinary build wrapper."
+    },
+    {
+      "source": ".pi/prompts/design-review.md",
+      "sourceBlob": "031f46a8ba9c5bca736f555ee92a02c75e3705d2",
+      "status": "native-replacement",
+      "targets": ["docs/VISUAL_REVIEW.md", "docs/HARNESS.md"],
+      "reason": "OMP's bundled designer/reviewer replace the review wrapper; the project scoring rubric remains policy."
+    },
+    {
+      "source": ".pi/prompts/design.md",
+      "sourceBlob": "6fc0a917367bb4133e725e67216b13b6ccaf5cc8",
+      "status": "ported",
+      "targets": [".omp/commands/wf-design.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/discover.md",
+      "sourceBlob": "5fd6685a657a309c06abc7037f3f3f1b05c4d504",
+      "status": "native-replacement",
+      "targets": ["docs/HARNESS.md", "docs/TOOLING_SETUP.md"],
+      "reason": "OMP's bundled scout replaces the discovery wrapper."
+    },
+    {
+      "source": ".pi/prompts/handoff.md",
+      "sourceBlob": "ae30f593bb6369c793795524ad2c405d9eb3fdd7",
+      "status": "native-replacement",
+      "targets": ["docs/HARNESS.md", "docs/exec-plans/README.md"],
+      "reason": "Native /handoff replaces the project handoff wrapper; ExecPlans retain durable project state."
+    },
+    {
+      "source": ".pi/prompts/incident.md",
+      "sourceBlob": "db6839340d1cd7725ad958d91b5dfd51b14e4e1a",
+      "status": "ported",
+      "targets": [".omp/commands/wf-incident.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/plan.md",
+      "sourceBlob": "c1d5465fa9ec063bcf084ecc55b7cbdc8e0aeb06",
+      "status": "native-replacement",
+      "targets": ["docs/HARNESS.md", "docs/exec-plans/README.md"],
+      "reason": "Native /plan and todo replace the project plan wrapper; ExecPlans remain only for durable continuity."
+    },
+    {
+      "source": ".pi/prompts/release-plan.md",
+      "sourceBlob": "ae2b7af184828fa5617071ac8c284e8eec95dd0d",
+      "status": "ported",
+      "targets": [".omp/commands/wf-release-plan.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/resume.md",
+      "sourceBlob": "694d30ef04fde3bc01022a1eb3494ac6e195e6ff",
+      "status": "native-replacement",
+      "targets": ["docs/HARNESS.md", "docs/exec-plans/README.md"],
+      "reason": "Native /resume and sessions replace the project resume wrapper."
+    },
+    {
+      "source": ".pi/prompts/review.md",
+      "sourceBlob": "c7f7a1717459953f9365751cc1a999de09c5a85e",
+      "status": "native-replacement",
+      "targets": ["docs/QUALITY.md", "docs/HARNESS.md"],
+      "reason": "OMP's bundled reviewer replaces the project review command and agent copy."
+    },
+    {
+      "source": ".pi/prompts/ship.md",
+      "sourceBlob": "59c8657afe007b6e98f4184dffaead930abd1841",
+      "status": "ported",
+      "targets": [".omp/commands/wf-ship.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/spec.md",
+      "sourceBlob": "0ac4c11a58aeb1aabe13cbc096c451dc8f9debe3",
+      "status": "ported",
+      "targets": [".omp/commands/wf-spec.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/prompts/test.md",
+      "sourceBlob": "c01bdbdddfcf0963ecd6bcbab5055481ad898aeb",
+      "status": "ported",
+      "targets": [".omp/commands/wf-test.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/settings.json",
+      "sourceBlob": "86fffadc448fed4eaf2e43e11d8bef0924fe9450",
+      "status": "native-replacement",
+      "targets": [".omp/config.yml", ".omp/eval.config.yml"],
+      "reason": "Native YAML project configuration with normal and fail-closed eval profiles."
+    },
+    {
+      "source": ".pi/skills/browser-qa/SKILL.md",
+      "sourceBlob": "d2fd909eb54fafb0a064f236793cc564a9ab64b0",
+      "status": "ported",
+      "targets": [".omp/skills/browser-qa/SKILL.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/skills/frontend-design/SKILL.md",
+      "sourceBlob": "63d085ebf9ede5bcecb3fc9d7812fdb266cb964a",
+      "status": "native-replacement",
+      "targets": ["docs/VISUAL_REVIEW.md", "docs/QUALITY.md"],
+      "reason": "OMP's bundled designer replaces the project skill; unique acceptance criteria remain documentation."
+    },
+    {
+      "source": ".pi/skills/frontend-design/references/visual-quality-rubric.md",
+      "sourceBlob": "9c4e3b75121d94a1a202befcbe356ae26ac605e8",
+      "status": "native-replacement",
+      "targets": ["docs/VISUAL_REVIEW.md"],
+      "reason": "The unique visual rubric remains as policy, not an OMP skill."
+    },
+    {
+      "source": ".pi/skills/quick-fix/SKILL.md",
+      "sourceBlob": "7cf6765dd847e0f36144379c9d1f203c64198bf7",
+      "status": "native-replacement",
+      "targets": ["AGENTS.md", "docs/HARNESS.md"],
+      "reason": "OMP's direct default workflow and bundled sonic agent replace the quick-fix skill."
+    },
+    {
+      "source": ".pi/skills/risk-review/SKILL.md",
+      "sourceBlob": "d76f7344c85bf8c6598cf5750525082d4a2ba017",
+      "status": "native-replacement",
+      "targets": ["docs/QUALITY.md", "docs/HARNESS.md"],
+      "reason": "OMP's bundled reviewer/security-reviewer replace the risk skill; project trust-boundary rules remain."
+    },
+    {
+      "source": ".pi/skills/test-design/SKILL.md",
+      "sourceBlob": "e389e323758f9b2960b6c6aaaf181c8c66821519",
+      "status": "ported",
+      "targets": [".omp/skills/test-design/SKILL.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/skills/verification-routing/SKILL.md",
+      "sourceBlob": "9b84b260633adbeac3760bc536c632e51d468ed5",
+      "status": "ported",
+      "targets": [".omp/skills/verification-routing/SKILL.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": ".pi/verification.json",
+      "sourceBlob": "09dd0d91a202ad5cba7166d3714e2fd666cc3e57",
+      "status": "ported",
+      "targets": [".omp/verification.json"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "AGENTS.md",
+      "sourceBlob": "21c73cbe680fe4239a6cc2f262844c83096d8424",
+      "status": "ported",
+      "targets": ["AGENTS.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "CHANGELOG.md",
+      "sourceBlob": "fd10b3810c8a5937d801b5682a5587f23c1d5ccd",
+      "status": "rewritten",
+      "targets": ["CHANGELOG.md"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "CONTRIBUTING.md",
+      "sourceBlob": "bbbac20cb14a93a1206b43463337168d74a2bc03",
+      "status": "ported",
+      "targets": ["CONTRIBUTING.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "Dockerfile.pi",
+      "sourceBlob": "dd5c7972412ea42b7243888528000950ca936ba7",
+      "status": "rewritten",
+      "targets": ["Dockerfile.omp"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "README.md",
+      "sourceBlob": "d10e59700c9a8af3dbf586ae4fb05e98f28e9f47",
+      "status": "rewritten",
+      "targets": ["README.md"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "SECURITY.md",
+      "sourceBlob": "52f79505abacf2885cb5698626ce67f764a99916",
+      "status": "rewritten",
+      "targets": ["SECURITY.md"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "docs/ARCHITECTURE.md",
+      "sourceBlob": "be279e4dde1cff4363cd41d31913d2b7b4270542",
+      "status": "ported",
+      "targets": ["docs/ARCHITECTURE.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/DESIGN.md",
+      "sourceBlob": "35707065bbf42463c23589e855c27ccf792ce586",
+      "status": "ported",
+      "targets": ["docs/DESIGN.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/EVALUATION.md",
+      "sourceBlob": "794c0304ccb46220bf182665333a6ff1f884f6e5",
+      "status": "ported",
+      "targets": ["docs/EVALUATION.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/GIT_POLICY.md",
+      "sourceBlob": "9d91fe7dd4482ebbe8737633032a59ed7055b2ab",
+      "status": "ported",
+      "targets": ["docs/GIT_POLICY.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/HARNESS.md",
+      "sourceBlob": "e5baed84a238ce7b6cdcbc475225d8da44fc18d3",
+      "status": "ported",
+      "targets": ["docs/HARNESS.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/PLAN.md",
+      "sourceBlob": "abf99f706c4748da1b99489804ad4f8f9ecc2582",
+      "status": "ported",
+      "targets": ["docs/PLAN.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/PRODUCT.md",
+      "sourceBlob": "f9251330ef448c5c712cd4c8389b64995b9091cf",
+      "status": "ported",
+      "targets": ["docs/PRODUCT.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/QUALITY.md",
+      "sourceBlob": "a9c9625bb9dc5a0c7473f57e56d3a040e5dbf1f6",
+      "status": "ported",
+      "targets": ["docs/QUALITY.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "docs/RESEARCH.md",
+      "sourceBlob": "179df3d767de81ec092185ca9596d99596b176a8",
+      "status": "native-replacement",
+      "targets": ["docs/RESEARCH.md", "docs/RESEARCH_PI_BASELINE.md"],
+      "reason": "Preserve historical research verbatim behind an archive banner and add pinned primary OMP research."
+    },
+    {
+      "source": "docs/TOOLING_SETUP.md",
+      "sourceBlob": "818467e64f46aeac1b298f3513e9f8a0b11c51ac",
+      "status": "rewritten",
+      "targets": ["docs/TOOLING_SETUP.md"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "docs/exec-plans/README.md",
+      "sourceBlob": "614ecebe0948133d01e8db08209f303fbceeb6c9",
+      "status": "ported",
+      "targets": ["docs/exec-plans/README.md"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "evals/cases.json",
+      "sourceBlob": "ba506ddfed833830718c2258d1b9b5a8a668e4a1",
+      "status": "ported",
+      "targets": ["evals/cases.json"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "evals/fixtures/tiered-pricing/pricing.baseline.mjs",
+      "sourceBlob": "bbeaceb8bc01e1e5d674c0c7625836e72cd6cb70",
+      "status": "ported",
+      "targets": ["evals/fixtures/tiered-pricing/pricing.baseline.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "evals/fixtures/tiered-pricing/pricing.mjs",
+      "sourceBlob": "bbeaceb8bc01e1e5d674c0c7625836e72cd6cb70",
+      "status": "ported",
+      "targets": ["evals/fixtures/tiered-pricing/pricing.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "evals/fixtures/tiered-pricing/pricing.test.mjs",
+      "sourceBlob": "89cc375a6a03a9f41db38b0710efd85d5d73dbc0",
+      "status": "ported",
+      "targets": ["evals/fixtures/tiered-pricing/pricing.test.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "evals/fixtures/tiered-pricing/verify-regression.mjs",
+      "sourceBlob": "7f6aed3cbff54e95056385107e8a5b6b46f38fd8",
+      "status": "ported",
+      "targets": ["evals/fixtures/tiered-pricing/verify-regression.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "p",
+      "sourceBlob": "a1941438d950473e5ea31aeca628f68354e94dba",
+      "status": "native-replacement",
+      "targets": ["README.md", "docs/TOOLING_SETUP.md", "Dockerfile.omp"],
+      "reason": "Native omp loads cwd-scoped project resources directly; the launcher wrapper is removed."
+    },
+    {
+      "source": "scripts/ai-pr.mjs",
+      "sourceBlob": "5c0a19eeb26ba0b956c1edb3a92233b3c9382c20",
+      "status": "ported",
+      "targets": ["scripts/ai-pr.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "scripts/ci-install.sh",
+      "sourceBlob": "2090efab9cfae7275e1167a601d5562a1ee1a4fc",
+      "status": "ported",
+      "targets": ["scripts/ci-install.sh"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "scripts/lib/workflow-evals.mjs",
+      "sourceBlob": "fc27fdd9193d76901b55ecf473b1de4ed70d9229",
+      "status": "ported",
+      "targets": ["scripts/lib/workflow-evals.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "scripts/pi-doctor.sh",
+      "sourceBlob": "a4d3c67b5c719bb9853fe758ff84704c8db3c4ae",
+      "status": "rewritten",
+      "targets": ["scripts/omp-doctor.sh"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "scripts/pi-sandbox.sh",
+      "sourceBlob": "38d46dc654861e9e507a6fd7921128edce45f8eb",
+      "status": "rewritten",
+      "targets": ["scripts/omp-sandbox.sh"],
+      "reason": "Rewritten for OMP; preserve the source component's purpose."
+    },
+    {
+      "source": "scripts/run-workflow-evals.mjs",
+      "sourceBlob": "959ef0dde6fff63d88b0a27ce3126ed8218a7526",
+      "status": "ported",
+      "targets": ["scripts/run-workflow-evals.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "scripts/verify-affected.mjs",
+      "sourceBlob": "8c27fd96feb1770da2a176d0da83bf38244675a2",
+      "status": "ported",
+      "targets": ["scripts/verify-affected.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "scripts/verify-package-integrity.mjs",
+      "sourceBlob": "bd630b91b76c9883bd4ea9d6d212e58db1389099",
+      "status": "native-replacement",
+      "targets": [
+        "scripts/validate-workflow.mjs",
+        "scripts/omp-native-smoke.mjs",
+        "scripts/omp-discovery-smoke.ts"
+      ],
+      "reason": "Obsolete adapter hashes replaced by source parity, static contract checks and live pinned OMP checks."
+    },
+    {
+      "source": "scripts/verify.sh",
+      "sourceBlob": "cdb71292fd359b8981a1ad18606a94cdc876da5f",
+      "status": "ported",
+      "targets": ["scripts/verify.sh"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "tests/ai-pr.test.mjs",
+      "sourceBlob": "19ccc61f5a54a24f0f36e1d85367c624a82969b5",
+      "status": "ported",
+      "targets": ["tests/ai-pr.test.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "tests/harness-runtime.test.mjs",
+      "sourceBlob": "83890d67da600d106a86c2cc4246c963c0b9e7e8",
+      "status": "native-replacement",
+      "targets": [
+        "tests/native-contract.test.mjs",
+        "tests/omp-rpc.test.mjs",
+        "scripts/omp-discovery-smoke.ts"
+      ],
+      "reason": "Removed copied Pi runtime; test native integration boundaries, actual discovery and RPC protocol."
+    },
+    {
+      "source": "tests/launcher.test.mjs",
+      "sourceBlob": "e5961cda7a5ec8db61d18138a7d76f1cb92580bc",
+      "status": "native-replacement",
+      "targets": ["tests/native-contract.test.mjs", "scripts/omp-native-smoke.mjs"],
+      "reason": "Native CLI/config smoke replaces testing a project launcher that no longer exists."
+    },
+    {
+      "source": "tests/quick-fix-skill.test.mjs",
+      "sourceBlob": "09c2c4d16f5acdf34351a072fb8ad7af95e98ebe",
+      "status": "native-replacement",
+      "targets": ["tests/native-contract.test.mjs", "AGENTS.md"],
+      "reason": "Native-surface contract tests verify the duplicate quick-fix skill stays absent."
+    },
+    {
+      "source": "tests/safety-guard.test.mjs",
+      "sourceBlob": "ab58fc68ddd7fbc57c887b1bfdb4f52cfaa37e5b",
+      "status": "ported",
+      "targets": ["tests/safety-guard.test.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "tests/test-design-contract.test.mjs",
+      "sourceBlob": "a2613fd992831c19de2f8982500c0e546cfb0633",
+      "status": "ported",
+      "targets": ["tests/test-design-contract.test.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "tests/verify-affected.test.mjs",
+      "sourceBlob": "379c20daec53627bc389263be644189c74e985bd",
+      "status": "ported",
+      "targets": ["tests/verify-affected.test.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    },
+    {
+      "source": "tests/workflow-evals.test.mjs",
+      "sourceBlob": "7c7c7aead230cffe50d7fbb857bc779b7c721938",
+      "status": "ported",
+      "targets": ["tests/workflow-evals.test.mjs"],
+      "reason": "Preserved source contract; update native paths, commands and tool semantics where needed."
+    }
+  ]
+}

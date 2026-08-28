@@ -108,7 +108,7 @@ test('deterministic grading catches scope, required-file, and protected-file vio
     trace: { invalidEventLines: 0, extensionErrors: 0 },
     changes: [
       { file: 'src/price.mjs', status: 'modified' },
-      { file: '.pi/APPEND_SYSTEM.md', status: 'modified' },
+      { file: '.omp/APPEND_SYSTEM.md', status: 'modified' },
     ],
     checkResults: [{ id: 'tests', status: 'PASS' }],
   };
@@ -187,10 +187,10 @@ test('trace analysis and deterministic grading reject Git and GitHub mutation at
     {
       type: 'tool_execution_start',
       toolCallId: 'g2',
-      toolName: 'mcp',
-      args: { tool: 'github_create_pull_request', args: {} },
+      toolName: 'github',
+      args: { op: 'pr_create' },
     },
-    { type: 'tool_execution_end', toolCallId: 'g2', toolName: 'mcp', isError: true },
+    { type: 'tool_execution_end', toolCallId: 'g2', toolName: 'github', isError: true },
     {
       type: 'tool_execution_start',
       toolCallId: 'g3',
@@ -238,9 +238,11 @@ const matchingRunMetadata = {
   thinking: 'high',
   trials: 1,
   timeoutMs: 60_000,
-  piVersion: '0.84.2',
+  ompVersion: '18.0.6',
   nodeVersion: '22.19.0',
   suiteFingerprint: 'suite',
+  inputFingerprint: 'same-inputs',
+  inputContractFingerprint: 'same-treatment-contract',
 };
 
 test('baseline comparison rejects deterministic and efficiency regressions', () => {

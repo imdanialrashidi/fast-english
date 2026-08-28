@@ -198,12 +198,12 @@
 
 
 - Scope: test-only consolidation. No production code, schema, route, authz, payment, PWA-cache, Android or deployment behavior changed.
-- Verification tiers (canonical commands):
+- Verification tiers (canonical commands) provide three canonical gates:
   - `pnpm verify:fast` — typecheck + Biome + Vitest (everyday gate; ~20s).
   - `pnpm verify:feature [group] [surface]` — verify:fast + affected real Backend Smoke groups (`auth|payment|placement|lessons|progress|all`) + critical Playwright (`--grep @critical`, 17 canonical-journey tests) + affected build (`app|landing|all`).
   - `pnpm verify:full` — project-verify.sh (fast + all 10 smoke suites + deterministic builds + topology + PWA output + Android version/signing fail-safe + deploy redaction proofs) + full Playwright. `scripts/verify.sh` delegates here; CI runs it (timeout raised to 30 min, Chromium installed by ci-install.sh).
 - Layer ownership: Vitest = pure logic/schema/format/state-machine/design tokens + static guards for high-risk rules (forbidden hex/durations, cross-surface build isolation, receipt-privacy contract, approved-panel static guard). Real Backend Smoke = all routes/authz/payment/idempotency/placement/progress/protected files (parameterized matrices). Playwright = browser-required behaviors only; the 17-test `@critical` project covers the 8 canonical journeys (signup/login, payment pending, operator approval+activation, placement+level selection, lessons/audio/progress, unauthorized/expired denial, theme+responsive shell, PWA private-cache boundary).
-- Consolidations:
+- Consolidations applied across verification and fixtures:
   - Viewport matrices reduced from 6–7 widths to the routine set (390×844, 768×1024, 1440×900) in p1-s1, p1-s2-qa, p2-qa, p3-s2, payment-redesign, visual-slice-1/2; dedicated 360px layout tests kept (entry/signup/player/app-bar/dialog-at-360, p1-s1 mobile test). Playwright 341 → ~237 tests.
   - Smoke fixtures centralized into `scripts/smoke-common.mjs` (fetchJson/nextPhone/randomId/superuser/operator/login/createActiveStudent) — removed ~700 lines of verbatim duplication across smoke-placement, smoke-placement-levels, smoke-lessons, smoke-progress, smoke-operator.
   - smoke-placement-levels: removed speculative 429-retry backoff sleeps and the artificial 2s pacing between gate scenarios (probes showed no transport-level 429s; PB settings rate limiting is disabled mid-suite) — 48s → ~18s.

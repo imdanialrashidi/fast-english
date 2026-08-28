@@ -14,7 +14,7 @@
     {
       "id": "discover-ambiguous-b2b",
       "tags": ["product", "discovery"],
-      "prompt": "/discover A lightweight approval product for small creative agencies. Turn the idea into the smallest evidence-backed MVP and roadmap without inventing market facts.",
+      "prompt": "A lightweight approval product for small creative agencies. Turn the idea into the smallest evidence-backed MVP and roadmap without inventing market facts.",
       "rubric": [
         "separates facts from assumptions",
         "chooses a riskiest assumption",
@@ -34,7 +34,7 @@
     {
       "id": "design-rtl-finance",
       "tags": ["frontend", "design", "rtl", "flagship"],
-      "prompt": "/design A flagship Persian-language personal-finance onboarding journey for first-time investors. It must feel calm and credible, not like a crypto dashboard. Create the accepted direction only.",
+      "prompt": "/wf-design A flagship Persian-language personal-finance onboarding journey for first-time investors. It must feel calm and credible, not like a crypto dashboard. Create the accepted direction only.",
       "rubric": [
         "updates a product-specific design contract",
         "avoids generic fintech defaults",
@@ -54,7 +54,7 @@
     {
       "id": "build-ui-rtl-finance",
       "tags": ["frontend", "build", "rtl", "flagship"],
-      "prompt": "/build-ui Create a self-contained, functional Persian RTL onboarding slice under eval-output/rtl-finance using platform HTML/CSS/JS. Include realistic validation, success and error states, one justified signature interaction, reduced motion, and browser evidence.",
+      "prompt": "Create a self-contained, functional Persian RTL onboarding slice under eval-output/rtl-finance using platform HTML/CSS/JS. Include realistic validation, success and error states, one justified signature interaction, reduced motion, and browser evidence.",
       "rubric": [
         "real controls and state transitions",
         "specific coherent visual direction",
@@ -77,7 +77,7 @@
     {
       "id": "build-ui-dense-operations",
       "tags": ["frontend", "build", "dashboard"],
-      "prompt": "/build-ui Create a self-contained operations exception queue under eval-output/ops-queue. It must help dispatchers resolve delayed shipments quickly with dense realistic data, keyboard operation, loading/empty/error states, and a visual language grounded in logistics rather than generic cards.",
+      "prompt": "Create a self-contained operations exception queue under eval-output/ops-queue. It must help dispatchers resolve delayed shipments quickly with dense realistic data, keyboard operation, loading/empty/error states, and a visual language grounded in logistics rather than generic cards.",
       "rubric": [
         "information density remains legible",
         "structure encodes true priority",
@@ -99,7 +99,7 @@
     {
       "id": "design-review-generic-ai",
       "tags": ["frontend", "review", "anti-template"],
-      "prompt": "/design-review Review any rendered UI under eval-output. If none exists, inspect the design contract and clearly mark rendered criteria unproven. Be strict about interchangeable AI-design defaults and do not edit files.",
+      "prompt": "Review any rendered UI under eval-output. If none exists, inspect the design contract and clearly mark rendered criteria unproven. Be strict about interchangeable AI-design defaults and do not edit files.",
       "rubric": [
         "does not fabricate browser evidence",
         "separates hard gates from craft",
@@ -112,7 +112,7 @@
     {
       "id": "a11y-dialog-regression",
       "tags": ["frontend", "bug", "accessibility"],
-      "prompt": "/spec A modal looks polished but traps mouse users correctly while keyboard focus escapes behind it and errors are announced only by color. Specify the smallest production fix and proof without redesigning the product.",
+      "prompt": "/wf-spec A modal looks polished but traps mouse users correctly while keyboard focus escapes behind it and errors are announced only by color. Specify the smallest production fix and proof without redesigning the product.",
       "rubric": [
         "focus entry/order/return addressed",
         "semantic error announcement",
@@ -124,7 +124,7 @@
     {
       "id": "responsive-long-content",
       "tags": ["frontend", "bug", "responsive"],
-      "prompt": "/spec A billing table works at 1440px but clips localized plan names and action menus at 320px and 200% text zoom. Define behavior and evidence while preserving data meaning.",
+      "prompt": "/wf-spec A billing table works at 1440px but clips localized plan names and action menus at 320px and 200% text zoom. Define behavior and evidence while preserving data meaning.",
       "rubric": [
         "recomposition rather than blind shrink",
         "long-content fixtures",
@@ -136,7 +136,7 @@
     {
       "id": "performance-hero-media",
       "tags": ["frontend", "performance"],
-      "prompt": "/spec A new visual hero introduces a 4MB image, late font swap, and scroll animation. Define a measurable optimization contract that preserves the design thesis.",
+      "prompt": "/wf-spec A new visual hero introduces a 4MB image, late font swap, and scroll animation. Define a measurable optimization contract that preserves the design thesis.",
       "rubric": [
         "captures baseline",
         "covers LCP CLS and input cost",
@@ -148,7 +148,7 @@
     {
       "id": "autonomous-reversible-default",
       "tags": ["autonomy", "delivery", "workflow"],
-      "prompt": "/build Create eval-output/autonomous-default/decision.md with a concise heading and at least three actionable checklist items for implementing a reversible --compact-output CLI flag. Choose reasonable implementation/test details yourself, do not ask for clarification or wait for approval, and do not change any other file.",
+      "prompt": "Create eval-output/autonomous-default/decision.md with a concise heading and at least three actionable checklist items for implementing a reversible --compact-output CLI flag. Choose reasonable implementation/test details yourself, do not ask for clarification or wait for approval, and do not change any other file.",
       "rubric": [
         "finishes without user intervention",
         "makes reversible assumptions explicit",
@@ -179,7 +179,7 @@
     {
       "id": "ordinary-data-bug",
       "tags": ["bug", "correctness"],
-      "prompt": "/build Diagnose and fix a hypothetical repeated-submit bug only if repository evidence contains a reproduction. If no relevant product code exists, do not invent a fix; return a precise blocker and minimum reproduction contract.",
+      "prompt": "Diagnose and fix a hypothetical repeated-submit bug only if repository evidence contains a reproduction. If no relevant product code exists, do not invent a fix; return a precise blocker and minimum reproduction contract.",
       "rubric": [
         "inspects before editing",
         "does not fabricate code path",
@@ -191,7 +191,7 @@
     {
       "id": "tiered-pricing-regression",
       "tags": ["code", "bug", "test", "correctness"],
-      "prompt": "/build In evals/fixtures/tiered-pricing, the accepted contract is that orders of 10 or more units receive a 10% discount. Fix the boundary defect and add the smallest meaningful regression test. Prove the test passes after the fix and would fail against the pre-fix implementation. Do not change files outside that fixture.",
+      "prompt": "In evals/fixtures/tiered-pricing, the accepted contract is that orders of 10 or more units receive a 10% discount. Fix the boundary defect and add the smallest meaningful regression test. Prove the test passes after the fix and would fail against the pre-fix implementation. Do not change files outside that fixture.",
       "rubric": [
         "localizes before editing",
         "adds a behavioral boundary regression",
@@ -225,7 +225,7 @@
     {
       "id": "auth-ownership-boundary",
       "tags": ["risk", "authorization"],
-      "prompt": "/spec Users can rename a workspace by sending its ID. Specify a secure contract assuming the client can tamper with role and workspace IDs.",
+      "prompt": "/wf-spec Users can rename a workspace by sending its ID. Specify a secure contract assuming the client can tamper with role and workspace IDs.",
       "rubric": [
         "server-side ownership and authorization",
         "negative/tampering proof",
@@ -237,7 +237,7 @@
     {
       "id": "payment-callback-boundary",
       "tags": ["risk", "payment"],
-      "prompt": "/spec A payment callback can arrive late, duplicated, reordered, or replayed. Specify the smallest safe state transition and evidence contract.",
+      "prompt": "/wf-spec A payment callback can arrive late, duplicated, reordered, or replayed. Specify the smallest safe state transition and evidence contract.",
       "rubric": [
         "signature/authenticity verification",
         "idempotency and replay",
@@ -249,7 +249,7 @@
     {
       "id": "architecture-decision",
       "tags": ["architecture", "decision"],
-      "prompt": "/adr Decide whether a generic template should add a second frontend framework for one planned screen. Use repository evidence and record a decision only if justified.",
+      "prompt": "/wf-adr Decide whether a generic template should add a second frontend framework for one planned screen. Use repository evidence and record a decision only if justified.",
       "rubric": [
         "considers existing stack",
         "rejects speculative complexity",
@@ -273,7 +273,7 @@
     {
       "id": "tooling-prerequisite-failure",
       "tags": ["tooling", "recovery"],
-      "prompt": "/design-review Assume the local app or browser cannot start only if actual evidence shows that. Distinguish failed, blocked, skipped, and unproven checks and give the cheapest discriminating next action.",
+      "prompt": "Assume the local app or browser cannot start only if actual evidence shows that. Distinguish failed, blocked, skipped, and unproven checks and give the cheapest discriminating next action.",
       "rubric": [
         "does not claim unobserved failure",
         "status vocabulary is exact",
@@ -285,7 +285,7 @@
     {
       "id": "release-and-incident",
       "tags": ["release", "operations", "risk"],
-      "prompt": "/release-plan Define a staged release for a new user-facing product with unknown traffic and no proven rollback. Do not deploy. Include a realistic path for incident learning.",
+      "prompt": "/wf-release-plan Define a staged release for a new user-facing product with unknown traffic and no proven rollback. Do not deploy. Include a realistic path for incident learning.",
       "rubric": [
         "evidence-gated stages",
         "telemetry and stop conditions",

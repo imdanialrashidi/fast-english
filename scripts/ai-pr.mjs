@@ -23,7 +23,7 @@ const BEGIN = '<!-- ai-pr:begin -->';
 const END = '<!-- ai-pr:end -->';
 const SHA = /^[0-9a-f]{40}$/;
 const blockedPath =
-  /(?:^|\/)(?:\.git|\.artifacts|node_modules|\.ssh|\.aws|\.kube|\.gnupg|\.npmrc|\.netrc|\.pypirc|credentials\.json)(?:\/|$)|(?:^|\/)\.env(?:\.|$)|\.(?:pem|key|p12|pfx|jks|keystore)$|(?:^|\/)storageState.*\.json$/i;
+  /(?:^|\/)(?:\.git|\.artifacts|node_modules|\.ssh|\.aws|\.kube|\.gnupg|\.npmrc|\.netrc|\.pypirc|credentials\.json)(?:\/|$)|(?:^|\/)\.env(?:\.|$)|\.(?:pem|key|p12|pfx|jks|keystore)$|(?:^|\/)storageState.*\.json$|(?:^|\/)\.omp\/(?:agent\.db(?:-wal|-shm)?|config\.local\.ya?ml|models\.ya?ml|sessions|state|mcp-oauth)(?:\/|$)|(?:^|\/)docs\/private(?:\/|$)/i;
 const exampleEnv = /(?:^|\/)\.env\.(?:example|sample|template)$/i;
 const secret =
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9_]{20,}|\bgithub_pat_[A-Za-z0-9_]{20,}|\bAKIA[0-9A-Z]{16}|\bsk-[A-Za-z0-9_-]{24,}/;
@@ -68,7 +68,7 @@ export function parseOptions(argv) {
     );
     if (key === '--file') result.files.push(value);
     else {
-      requireThat(result[names[key]] === undefined, 'Duplicate delivery option: ' + key);
+      requireThat(result[names[key]] === undefined, `Duplicate delivery option: ${key}`);
       result[names[key]] = value;
     }
   }
@@ -142,12 +142,12 @@ function readSafe(file, cwd, maxBytes) {
   if (!existsSync(absolute)) return ''; // Explicit tracked deletion.
   requireThat(
     lstatSync(absolute).size <= maxBytes,
-    'File exceeds the automatic-delivery size limit: ' + file,
+    `File exceeds the automatic-delivery size limit: ${file}`,
   );
   const text = readFileSync(absolute, 'utf8');
   requireThat(
     !secret.test(text),
-    'Credential-like material detected; nothing should be published: ' + file,
+    `Credential-like material detected; nothing should be published: ${file}`,
   );
   return text;
 }
@@ -158,7 +158,7 @@ export function runDelivery(
 ) {
   const options = parseOptions(argv);
   requireThat(
-    (env.AI_PR_DELIVERY ?? 'on') === 'on' && env.PI_GUARD_MODE !== 'strict',
+    (env.AI_PR_DELIVERY ?? 'on') === 'on' && env.OMP_GUARD_MODE !== 'strict',
     'Automatic PR delivery is disabled in this local-only, strict, or evaluation session.',
   );
   for (const key of [
@@ -168,7 +168,7 @@ export function runDelivery(
     'GIT_COMMON_DIR',
     'GIT_CONFIG_COUNT',
   ]) {
-    requireThat(!env[key], 'Custom Git context is not allowed in automatic delivery: ' + key);
+    requireThat(!env[key], `Custom Git context is not allowed in automatic delivery: ${key}`);
   }
   cwd = realpathSync(cwd);
   const childEnv = { ...env, GIT_TERMINAL_PROMPT: '0', GH_PROMPT_DISABLED: '1' };
@@ -233,7 +233,7 @@ export function runDelivery(
       githubRepository(pushUrls[0]).toLowerCase() === repo.toLowerCase(),
       'Fetch and push repositories differ.',
     );
-    const info = api('repos/' + repo);
+    const info = api(`repos/${repo}`);
     requireThat(
       info.full_name?.toLowerCase() === repo.toLowerCase() && info.default_branch === BASE,
       'Repository identity or default branch differs from the reviewed main target.',
@@ -251,11 +251,11 @@ export function runDelivery(
         'A clean worktree is required for prepare/resume; preserve user changes.',
       );
     const remoteHead = (allowMissing = false) => {
-      const output = git(['ls-remote', '--heads', REMOTE, 'refs/heads/' + HEAD]).trim();
+      const output = git(['ls-remote', '--heads', REMOTE, `refs/heads/${HEAD}`]).trim();
       if (!output && allowMissing) return null;
       const value = output.split(/\s+/);
       requireThat(
-        value.length === 2 && SHA.test(value[0]) && value[1] === 'refs/heads/' + HEAD,
+        value.length === 2 && SHA.test(value[0]) && value[1] === `refs/heads/${HEAD}`,
         'The fixed remote ai-changes branch is missing. Preserve current work; only a clean prepare may create it.',
       );
       return value[0];
@@ -285,10 +285,10 @@ export function runDelivery(
       'fetch',
       '--no-tags',
       REMOTE,
-      'refs/heads/' + BASE + ':refs/remotes/origin/' + BASE,
-      ...(expectedRemote ? ['refs/heads/' + HEAD + ':refs/remotes/origin/' + HEAD] : []),
+      `refs/heads/${BASE}:refs/remotes/origin/${BASE}`,
+      ...(expectedRemote ? [`refs/heads/${HEAD}:refs/remotes/origin/${HEAD}`] : []),
     ]);
-    const baseCommit = sha('origin/' + BASE);
+    const baseCommit = sha(`origin/${BASE}`);
     const pulls = (state) =>
       api(
         'repos/' +
@@ -326,27 +326,27 @@ export function runDelivery(
         'An open PR has a missing source branch; inspect its work before preparing another task.',
       );
       const localExists =
-        git(['show-ref', '--verify', '--quiet', 'refs/heads/' + HEAD], true) !== null;
+        git(['show-ref', '--verify', '--quiet', `refs/heads/${HEAD}`], true) !== null;
       requireThat(
         !localExists || git(['merge-base', '--is-ancestor', HEAD, baseCommit], true) !== null,
         'Unpublished or unmerged local ai-changes commits require inspection before recreating the remote branch.',
       );
       // Create-only API: a competing creator must fail, never overwrite an existing ref.
-      const created = api('repos/' + repo + '/git/refs', 'POST', {
-        ref: 'refs/heads/' + HEAD,
+      const created = api(`repos/${repo}/git/refs`, 'POST', {
+        ref: `refs/heads/${HEAD}`,
         sha: baseCommit,
       });
       requireThat(
-        created.ref === 'refs/heads/' + HEAD &&
+        created.ref === `refs/heads/${HEAD}` &&
           created.object?.sha === baseCommit &&
           remoteHead() === baseCommit,
         'Branch creation did not match the captured main commit; inspect remote state.',
       );
       expectedRemote = baseCommit;
-      git(['fetch', '--no-tags', REMOTE, 'refs/heads/' + HEAD + ':refs/remotes/origin/' + HEAD]);
+      git(['fetch', '--no-tags', REMOTE, `refs/heads/${HEAD}:refs/remotes/origin/${HEAD}`]);
     }
     requireThat(
-      sha('origin/' + HEAD) === expectedRemote,
+      sha(`origin/${HEAD}`) === expectedRemote,
       'The source branch changed during preflight; inspect the concurrent update.',
     );
     const push = (commit) => {
@@ -365,11 +365,11 @@ export function runDelivery(
       // ancestor check above forbids history rewrites even though Git names it force-with-lease.
       git([
         'push',
-        '--force-with-lease=refs/heads/' + HEAD + ':' + expectedRemote,
+        `--force-with-lease=refs/heads/${HEAD}:${expectedRemote}`,
         '--no-follow-tags',
         '--recurse-submodules=no',
         REMOTE,
-        commit + ':refs/heads/' + HEAD,
+        `${commit}:refs/heads/${HEAD}`,
       ]);
       requireThat(
         remoteHead() === commit && currentBranch() === HEAD && sha() === commit,
@@ -379,15 +379,15 @@ export function runDelivery(
 
     if (options.action === 'prepare') {
       const localExists =
-        git(['show-ref', '--verify', '--quiet', 'refs/heads/' + HEAD], true) !== null;
+        git(['show-ref', '--verify', '--quiet', `refs/heads/${HEAD}`], true) !== null;
       if (localExists) {
         requireThat(
-          git(['merge-base', '--is-ancestor', HEAD, 'origin/' + HEAD], true) !== null,
+          git(['merge-base', '--is-ancestor', HEAD, `origin/${HEAD}`], true) !== null,
           'Unpublished local commits require inspection; do not overwrite or publish them implicitly.',
         );
         git(['switch', '--no-overwrite-ignore', HEAD]);
-        git(['merge', '--no-overwrite-ignore', '--ff-only', 'origin/' + HEAD]);
-      } else git(['switch', '--no-overwrite-ignore', '--track', '-c', HEAD, 'origin/' + HEAD]);
+        git(['merge', '--no-overwrite-ignore', '--ff-only', `origin/${HEAD}`]);
+      } else git(['switch', '--no-overwrite-ignore', '--track', '-c', HEAD, `origin/${HEAD}`]);
       requireThat(
         sha() === expectedRemote,
         'Local branch changed during prepare; inspect the concurrent writer.',
@@ -411,7 +411,7 @@ export function runDelivery(
         if (prepared !== expectedRemote && prepared !== baseCommit) {
           requireThat(
             git(['show', '-s', '--format=%P', prepared]).trim() ===
-              expectedRemote + ' ' + baseCommit,
+              `${expectedRemote} ${baseCommit}`,
             'Unexpected synchronization parents; do not publish unknown local history.',
           );
         }
@@ -440,7 +440,7 @@ export function runDelivery(
       evidence.trim().length >= 20 && !evidence.includes(BEGIN) && !evidence.includes(END),
       'Supply a substantive, sanitized PR summary with exact verification evidence, without managed markers.',
     );
-    const body = BEGIN + '\n' + evidence.trim() + '\n' + END;
+    const body = `${BEGIN}\n${evidence.trim()}\n${END}`;
     let commit = options.resume;
     if (options.resume) {
       requireThat(
@@ -456,8 +456,8 @@ export function runDelivery(
         receipt.repository === repo &&
           receipt.branch === HEAD &&
           receipt.commit === commit &&
-          receipt.parent === sha(commit + '^') &&
-          receipt.tree === sha(commit + '^{tree}'),
+          receipt.parent === sha(`${commit}^`) &&
+          receipt.tree === sha(`${commit}^{tree}`),
         'Delivery receipt does not match the exact repository, commit, and tree.',
       );
       requireThat(
@@ -487,7 +487,7 @@ export function runDelivery(
         'Resume cannot overwrite a concurrent remote update.',
       );
       requireThat(
-        Number(git(['rev-list', '--count', expectedRemote + '..' + commit]).trim()) <= 1,
+        Number(git(['rev-list', '--count', `${expectedRemote}..${commit}`]).trim()) <= 1,
         'Resume may publish at most the single previously verified commit.',
       );
     } else {
@@ -508,7 +508,7 @@ export function runDelivery(
           .map((entry) => entry.slice(3)),
       );
       for (const file of files) {
-        requireThat(dirty.has(file), 'Each --file must be an actual changed file: ' + file);
+        requireThat(dirty.has(file), `Each --file must be an actual changed file: ${file}`);
         readSafe(file, cwd, 8 * 1024 * 1024);
       }
       git(['--literal-pathspecs', 'diff', '--check', '--', ...files]);
@@ -531,7 +531,7 @@ export function runDelivery(
       git(['--literal-pathspecs', 'commit', '--only', '-m', options.message, '--', ...files]);
       commit = sha();
       requireThat(
-        sha(commit + '^') === parent && sha(commit + '^{tree}') === tree,
+        sha(`${commit}^`) === parent && sha(`${commit}^{tree}`) === tree,
         'A hook or concurrent writer changed the reviewed commit; rerun evidence before publishing.',
       );
       requireThat(
@@ -540,14 +540,14 @@ export function runDelivery(
       );
       writeFileSync(
         receiptPath,
-        JSON.stringify({ repository: repo, branch: HEAD, commit, parent, tree, files }) + '\n',
+        `${JSON.stringify({ repository: repo, branch: HEAD, commit, parent, tree, files })}\n`,
       );
     }
     requireThat(
       currentBranch() === HEAD && sha() === commit,
       "Local branch changed after verification; do not publish another writer's commit.",
     );
-    const patch = git(['diff', baseCommit + '...' + commit]);
+    const patch = git(['diff', `${baseCommit}...${commit}`]);
     requireThat(
       patch.trim() && !secret.test(patch),
       'No PR diff or credential-like material in the committed diff; publication stopped.',
@@ -557,7 +557,7 @@ export function runDelivery(
     let pr;
     let evidenceUrl;
     if (existing) {
-      pr = validatePull(api('repos/' + repo + '/pulls/' + existing.number));
+      pr = validatePull(api(`repos/${repo}/pulls/${existing.number}`));
       requireThat(
         pr.state === 'open' && !pr.merged && pr.head.sha === commit,
         'PR changed before evidence publication.',
@@ -569,11 +569,11 @@ export function runDelivery(
         ':' +
         createHash('sha256').update(body).digest('hex').slice(0, 16) +
         ' -->';
-      const commentBody = marker + '\n' + body;
-      const commentsEndpoint = 'repos/' + repo + '/issues/' + pr.number + '/comments';
+      const commentBody = `${marker}\n${body}`;
+      const commentsEndpoint = `repos/${repo}/issues/${pr.number}/comments`;
       const findEvidence = () => {
         for (let page = 1; page <= 10; page++) {
-          const comments = api(commentsEndpoint + '?per_page=100&page=' + page);
+          const comments = api(`${commentsEndpoint}?per_page=100&page=${page}`);
           requireThat(Array.isArray(comments), 'Invalid PR evidence response.');
           const found = comments.find((item) => item.body === commentBody);
           if (found) return found;
@@ -590,17 +590,17 @@ export function runDelivery(
           if (!comment) throw error;
         }
       }
-      const saved = api('repos/' + repo + '/issues/comments/' + comment.id);
+      const saved = api(`repos/${repo}/issues/comments/${comment.id}`);
       requireThat(
         saved.body === commentBody &&
           saved.html_url ===
-            'https://github.com/' + repo + '/pull/' + pr.number + '#issuecomment-' + comment.id,
+            `https://github.com/${repo}/pull/${pr.number}#issuecomment-${comment.id}`,
         'PR evidence comment verification failed.',
       );
       evidenceUrl = saved.html_url;
     } else {
       try {
-        pr = api('repos/' + repo + '/pulls', 'POST', {
+        pr = api(`repos/${repo}/pulls`, 'POST', {
           ...payload,
           head: HEAD,
           base: BASE,
@@ -618,7 +618,7 @@ export function runDelivery(
         pr = discovered[0];
       }
     }
-    const verified = validatePull(api('repos/' + repo + '/pulls/' + pr.number));
+    const verified = validatePull(api(`repos/${repo}/pulls/${pr.number}`));
     requireThat(
       verified.state === 'open' && !verified.merged && verified.head.sha === commit,
       'PR verification did not match the intended commit.',
@@ -629,7 +629,7 @@ export function runDelivery(
         'New PR metadata changed during publication; inspect it before claiming completion.',
       );
     requireThat(
-      verified.html_url === 'https://github.com/' + repo + '/pull/' + verified.number,
+      verified.html_url === `https://github.com/${repo}/pull/${verified.number}`,
       'Unexpected PR URL.',
     );
     return {
@@ -649,7 +649,7 @@ export function runDelivery(
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   try {
-    process.stdout.write(JSON.stringify(runDelivery(process.argv.slice(2))) + '\n');
+    process.stdout.write(`${JSON.stringify(runDelivery(process.argv.slice(2)))}\n`);
   } catch (error) {
     process.stderr.write(
       'ai-pr: ' +

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/secret-scan-filter.mjs
 //
-// Applies the documented exemptions to the pi-doctor secret scan. The scan
+// Applies the documented exemptions to the OMP project secret scan. The scan
 // itself (full working tree, fixed pattern) is unchanged; this filter only
 // decides whether a scan hit is a *real* secret-pattern hit or one of the
 // documented non-secret classes:
@@ -16,7 +16,7 @@
 //      byte-exact and path-scoped, so the same string at an unexpected path
 //      still fails.
 //
-// Input: lines of the form `path:line:content` (pi-doctor scan output).
+// Input: lines of the form `path:line:content` (OMP project secret-scan output).
 // Output: only the lines that remain suspicious. Exit 0 when the filter
 // itself is healthy; a non-zero exit means the filter could not run.
 //
@@ -31,7 +31,7 @@ import readline from 'node:readline';
 
 const ALLOWLIST_URL = new URL('./secret-scan-allowlist.json', import.meta.url);
 
-// Keep in sync with the grep -E pattern in scripts/pi-doctor.sh.
+// Keep in sync with the grep -E pattern in scripts/omp-secret-scan.sh.
 const SECRET_PATTERN =
   /sk-[A-Za-z0-9_-]{16,}|(?:API_KEY|ACCESS_TOKEN|SECRET|PASSWORD)\s*=\s*[^"<${]\S+/;
 

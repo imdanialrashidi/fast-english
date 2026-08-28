@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "description": "Routing contract for the four domain skills. These cases are deterministic trigger fixtures; they do not claim model-quality or runtime activation without an OMP model run.",
+  "cases": [
+    {
+      "id": "a11y-explicit",
+      "skill": "accessibility-audit",
+      "shouldTrigger": true,
+      "prompt": "Use $accessibility-audit to audit the checkout dialog's keyboard order, focus return, labels, contrast, and error state at mobile width.",
+      "acceptance": [
+        "explicit skill invocation is honored",
+        "report includes direct keyboard and DOM evidence",
+        "visual claims are not inferred from source"
+      ]
+    },
+    {
+      "id": "a11y-implicit",
+      "skill": "accessibility-audit",
+      "shouldTrigger": true,
+      "prompt": "The new account form works with a mouse but focus disappears after the validation error. Check the user-visible accessibility regression.",
+      "acceptance": [
+        "focus/error journey is scoped",
+        "negative state is exercised",
+        "result uses PASS/FAIL/UNPROVEN/BLOCKED"
+      ]
+    },
+    {
+      "id": "a11y-contextual",
+      "skill": "accessibility-audit",
+      "shouldTrigger": true,
+      "prompt": "Before shipping this modal redesign, verify semantic names, keyboard dismissal, reduced motion, target sizes, and 200% zoom against the accepted contract.",
+      "acceptance": [
+        "contract is read before the audit",
+        "modal and zoom checks are present",
+        "no second accessibility framework is installed"
+      ]
+    },
+    {
+      "id": "a11y-backend-negative",
+      "skill": "accessibility-audit",
+      "shouldTrigger": false,
+      "prompt": "Fix the database index for the invoice query and add a unit test for the query planner; no user-facing route changes are involved.",
+      "acceptance": [
+        "skill is not routed to a backend-only change",
+        "native implementation/testing flow remains available"
+      ]
+    },
+    {
+      "id": "a11y-native-tool-negative",
+      "skill": "accessibility-audit",
+      "shouldTrigger": false,
+      "prompt": "Explain how OMP's native browser ARIA snapshot command works; do not audit an application route or change a project.",
+      "acceptance": [
+        "skill does not replace native tool documentation",
+        "no product evidence is fabricated"
+      ]
+    },
+    {
+      "id": "perf-explicit",
+      "skill": "web-performance",
+      "shouldTrigger": true,
+      "prompt": "Use $web-performance to measure the dashboard before and after the hero-image change, including LCP, INP, CLS, and the mobile slow-network profile.",
+      "acceptance": [
+        "same route/profile is compared",
+        "lab and field evidence are separated",
+        "before-and-after measurements are recorded"
+      ]
+    },
+    {
+      "id": "perf-implicit",
+      "skill": "web-performance",
+      "shouldTrigger": true,
+      "prompt": "The landing page now ships three font families and a larger bundle. Find the measurable loading and interaction regression without adding speculative tooling.",
+      "acceptance": [
+        "baseline is captured or limitation is stated",
+        "font/JavaScript work is measured",
+        "no fixed sleeps or network-idle gate is used"
+      ]
+    },
+    {
+      "id": "perf-contextual",
+      "skill": "web-performance",
+      "shouldTrigger": true,
+      "prompt": "Our release criterion is p75 Core Web Vitals for the product route. Check the largest content state on desktop and mobile and propose one evidence-backed fix.",
+      "acceptance": [
+        "accepted budget is preferred",
+        "demanding state is exercised",
+        "one fix is re-measured on the same profile"
+      ]
+    },
+    {
+      "id": "perf-copy-negative",
+      "skill": "web-performance",
+      "shouldTrigger": false,
+      "prompt": "Rewrite the empty-state copy for clarity. The markup, assets, requests, and interaction behavior are unchanged.",
+      "acceptance": [
+        "skill is not routed to behavior-neutral copy editing",
+        "native writing/editing flow remains available"
+      ]
+    },
+    {
+      "id": "perf-tooling-negative",
+      "skill": "web-performance",
+      "shouldTrigger": false,
+      "prompt": "Tell me which OMP model role is fastest for a tiny local refactor; no route, asset, or runtime measurement is requested.",
+      "acceptance": [
+        "skill does not replace native model routing",
+        "no unmeasured speed claim is made"
+      ]
+    },
+    {
+      "id": "seo-explicit",
+      "skill": "technical-seo",
+      "shouldTrigger": true,
+      "prompt": "Use $technical-seo to verify the public article's canonical URL, robots, sitemap entry, rendered title, JSON-LD, and redirect behavior.",
+      "acceptance": [
+        "public route is classified before crawling",
+        "delivered HTML and response are checked",
+        "structured data is not treated as a rich-result guarantee"
+      ]
+    },
+    {
+      "id": "seo-implicit",
+      "skill": "technical-seo",
+      "shouldTrigger": true,
+      "prompt": "We changed locale URLs and metadata for an indexable marketing page. Check hreflang, canonical consistency, status codes, and the sitemap.",
+      "acceptance": [
+        "locale variants are included",
+        "canonical and sitemap are checked together",
+        "missing production evidence is labeled"
+      ]
+    },
+    {
+      "id": "seo-contextual",
+      "skill": "technical-seo",
+      "shouldTrigger": true,
+      "prompt": "Audit the built output for a new public product page; make sure search crawlers receive meaningful HTML rather than only a client-hydrated shell.",
+      "acceptance": [
+        "source HTML is distinguished from hydrated DOM",
+        "visible content and metadata are checked",
+        "no invented product/schema facts"
+      ]
+    },
+    {
+      "id": "seo-private-negative",
+      "skill": "technical-seo",
+      "shouldTrigger": false,
+      "prompt": "Add server-side authorization to the private billing console and test that unauthenticated users receive 403; the route must remain non-indexable.",
+      "acceptance": [
+        "skill is not routed to an authorization-only change",
+        "private route is not made indexable",
+        "security review remains native"
+      ]
+    },
+    {
+      "id": "seo-writing-negative",
+      "skill": "technical-seo",
+      "shouldTrigger": false,
+      "prompt": "Translate five internal support messages. They are not public pages and no URLs, metadata, or crawl behavior changes.",
+      "acceptance": [
+        "skill is not routed to translation-only work",
+        "no search-discoverability claim is made"
+      ]
+    },
+    {
+      "id": "rtl-explicit",
+      "skill": "rtl-i18n",
+      "shouldTrigger": true,
+      "prompt": "Use $rtl-i18n to audit the Persian checkout at narrow width, including direction switching, logical spacing, mixed URLs, currency formatting, and validation errors.",
+      "acceptance": [
+        "RTL and locale are exercised directly",
+        "mixed-direction content is isolated",
+        "long/error states are checked"
+      ]
+    },
+    {
+      "id": "rtl-implicit",
+      "skill": "rtl-i18n",
+      "shouldTrigger": true,
+      "prompt": "Arabic navigation is visually mirrored, but the back icon and keyboard order feel wrong. Diagnose the direction and interaction behavior.",
+      "acceptance": [
+        "intentional versus blind mirroring is considered",
+        "keyboard and visual direction are both checked",
+        "the scope stays on the localized UI"
+      ]
+    },
+    {
+      "id": "rtl-contextual",
+      "skill": "rtl-i18n",
+      "shouldTrigger": true,
+      "prompt": "Before release, test Hebrew long strings, dates, numbers, phone numbers, code snippets, and a runtime LTR/RTL switch at 320 CSS pixels.",
+      "acceptance": [
+        "long content and narrow reflow are tested",
+        "LTR islands remain readable",
+        "locale-sensitive formatting is observed"
+      ]
+    },
+    {
+      "id": "rtl-api-negative",
+      "skill": "rtl-i18n",
+      "shouldTrigger": false,
+      "prompt": "Add a retry with exponential backoff to an English-only server API. There is no UI, locale, or translated content in this change.",
+      "acceptance": [
+        "skill is not routed to an API-only change",
+        "native reliability/testing flow remains available"
+      ]
+    },
+    {
+      "id": "rtl-translation-negative",
+      "skill": "rtl-i18n",
+      "shouldTrigger": false,
+      "prompt": "Translate a standalone paragraph from English to Persian; no layout, direction, formatting, or application behavior is involved.",
+      "acceptance": [
+        "skill is not routed to translation-only work",
+        "no layout evidence is invented"
+      ]
+    }
+  ]
+}

@@ -1,17 +1,17 @@
 // tests/cefr-consistency.test.mjs
-// Static guard (plan 017): the CEFR ladder A1 A2 B1 B2 C1 C2 is declared
-// in NINE places across two runtimes (goja hooks cannot import TS), and
-// its ORDER is behavioral — variant resolution, the Edition Rail, level
-// normalization, import validation, the library level sort, and the
-// selected-level validation all depend on it.
+// Static guard (plan 017, deepened in plan architecture-deepening):
+// the CEFR ladder A1 A2 B1 B2 C1 C2 is declared in EIGHT places as an
+// ordered array literal plus ONE delegation (library_routes via
+// podcast_domain). Its ORDER is behavioral — variant resolution, the
+// Edition Rail, level normalization, import validation, the library level
+// sort, and the selected-level validation all depend on it.
 //
-// The goja files cannot share the TS constant, so the cheapest mechanical
-// enforcement is this gate: parse all declarations and assert they are
-// identical as ordered arrays to the canonical list. Adding or reordering
-// a level forces all nine files to change together.
-//
-// Structural checks only (regex over source text), like the other
-// static-guard suites in this repo. This test does not parse JavaScript.
+// Goja files that can import TS constants delegate to podcast_domain.pb.js
+// instead of re-declaring the array. The cheapest mechanical enforcement is
+// this gate: parse the eight literal declarations and assert they are
+// identical to the canonical list, plus verify the delegated route does not
+// re-declare a literal. Adding or reordering a level forces all
+// declarations to change together.
 
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -37,10 +37,6 @@ const declarations = [
     name: 'CEFR_ORDER',
   },
   {
-    file: 'server/pb_hooks/library_routes.pb.js',
-    name: 'CEFR_ORDER',
-  },
-  {
     file: 'server/pb_hooks/placement_level_routes.pb.js',
     name: 'ALLOWED_LEVELS',
   },
@@ -61,6 +57,13 @@ const declarations = [
     name: 'cefrLevelSchema',
     // zod enum: `cefrLevelSchema = z.enum([...])`
     pattern: String.raw`cefrLevelSchema\s*=\s*z\.enum\(\s*(\[[^\]]*\])\s*\)`,
+  },
+];
+
+const delegatedRoutes = [
+  {
+    file: 'server/pb_hooks/library_routes.pb.js',
+    expected: 'pd.CEFR_ORDER',
   },
 ];
 
@@ -114,3 +117,17 @@ test('every declared list contains exactly the six CEFR levels', () => {
     assert.equal(new Set(list).size, 6, `${file}: duplicate levels`);
   }
 });
+
+for (const route of delegatedRoutes) {
+  test(`${route.file} delegates CEFR order to ${route.expected}`, () => {
+    const src = fs.readFileSync(path.join(root, route.file), 'utf8');
+    assert.ok(
+      src.includes(route.expected),
+      `expected ${route.file} to delegate to ${route.expected}`,
+    );
+    assert.ok(
+      /CEFR_ORDER\s*=\s*pd\.CEFR_ORDER/.test(src),
+      `${route.file} should assign CEFR_ORDER from pd.CEFR_ORDER`,
+    );
+  });
+}

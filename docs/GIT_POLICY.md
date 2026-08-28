@@ -47,7 +47,7 @@ AI_PR_DELIVERY=off disables the helper. Evaluation runners set it explicitly, ha
 
 ## Enforcement and limits
 
-The normal launcher keeps PI_GIT_MUTATION=deny for arbitrary Git/GitHub writes and PI_GUARD_EXTERNAL_MUTATION=deny for external actions. The only routine exception is a direct invocation of the reviewed scripts/ai-pr.mjs helper. Strict/sandbox runs block it as well. PI_GIT_MUTATION=allow remains a separate owner-authorized, bounded override for a specifically requested non-destructive action; do not toggle it to implement routine PR delivery.
+The project guard defaults keep OMP_GIT_MUTATION=deny for arbitrary Git/GitHub writes and OMP_GUARD_EXTERNAL_MUTATION=deny for external actions even when `omp` is launched directly. The only routine exception is a direct invocation of the reviewed scripts/ai-pr.mjs helper. Strict/sandbox runs block it as well. OMP_GIT_MUTATION=allow remains a separate owner-authorized, bounded override for a specifically requested non-destructive action; do not toggle it to implement routine PR delivery.
 
 The helper requires Node.js 22+, Git, an authenticated GitHub CLI (gh), and ordinary configured Git push credentials. It recognizes credential-free github.com HTTPS/SSH origin URLs, verifies repository identity/default branch, and rejects divergent push URLs. Do not extract credentials or silently install/configure authentication.
 

@@ -1,6 +1,6 @@
 # Repository Agent Map
 
-Keep this file concise. Pi loads it before every task; detailed procedures belong in `docs/` and `.pi/skills/`. Do not edit workflow policy as a side effect of product work.
+Keep this file concise. OMP loads it before every task; detailed procedures belong in `docs/` and `.omp/skills/`. Do not edit workflow policy as a side effect of product work.
 
 ## Mission
 
@@ -22,11 +22,11 @@ Read only what the current decision needs:
 - `docs/GIT_POLICY.md` before any authorized Git or GitHub write.
 - `docs/exec-plans/active/` only when continuity needs a durable plan.
 
-Load only a matching skill: `/skill:quick-fix` for explicitly tiny low-risk edits, `verification-routing` for non-obvious check selection, `test-design` for behavior-sensitive coverage, and browser/frontend/risk only when triggered.
+Load only a matching project skill: `verification-routing` for non-obvious check selection, `test-design` for behavior-sensitive coverage, `browser-qa` for rendered browser evidence, `accessibility-audit` for WCAG evidence, `web-performance` for measured web budgets, `technical-seo` for public-route discoverability, and `rtl-i18n` for direction/localization behavior. Before product/UI work, run the informational context check; after `/wf-bootstrap`, use `node scripts/validate-project-context.mjs --require-ready` as the readiness gate. Use OMP's bundled agents instead of project copies: `scout` for codebase discovery, `librarian` for source-verified library/API research, `reviewer` for code review, `security-reviewer` for trust boundaries, and `designer` for UI implementation or refinement.
 
 ## Task classes
 
-- **Localized:** one obvious low-risk behavior/file; use `/skill:quick-fix` when minimal ceremony is requested: inspect → change → targeted check → diff review. No plan, formal contract, broad gate, todo, or subagent unless policy requires it or new evidence expands the task.
+- **Localized:** one obvious low-risk behavior/file; use OMP's direct native flow: inspect → change → targeted check → diff review. No custom quick-fix skill, plan, formal contract, broad gate, todo, or subagent unless policy requires it or new evidence expands the task.
 - **Standard:** normal multi-step feature/bug; compact contract → coherent slice → narrow proof → material review.
 - **Complex:** cross-module, ambiguous, long, or multi-session; plan milestones and persist an ExecPlan only when continuity needs it.
 - **High risk:** auth/access, money, secrets/privacy, uploads/callbacks, schema/migration/deletion, public API, concurrency, infrastructure, deployment, or release; require risk analysis, negative paths, independent review, recovery/rollback, and the full gate.
@@ -37,8 +37,8 @@ For Standard, Complex, and High-risk work define the goal, non-goals, 3–7 obse
 
 ## Non-negotiable invariants
 
-- Keep one primary write-capable agent responsible for the working tree.
-- Delegate only independent, bounded work that materially improves speed or quality. If subagents are unavailable or unjustified, perform a separate evidence-focused pass yourself.
+- Keep exactly one active writer responsible for the working tree. The primary may hand one bounded implementation slice to OMP's bundled `designer`, `sonic`, or `task` agent, but must not edit concurrently with that delegated writer.
+- Delegate independent, bounded read-only work through native `task` using bundled `scout`, `librarian`, `reviewer`, or `security-reviewer`. If unavailable or unjustified, perform a separate evidence-focused pass yourself.
 - Preserve user changes; inspect status and relevant diffs before editing shared files.
 - Prefer existing architecture, standard APIs, direct typed code, and reversible decisions; avoid speculative infrastructure, duplicate frameworks, and unrelated refactors.
 - Validate untrusted data at boundaries, enforce authorization server-side, and never trust client-provided role, price, payment, subscription, ownership, or permission state.

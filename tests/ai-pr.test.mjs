@@ -14,7 +14,7 @@ const testEnv = {
   AI_PR_DELIVERY: 'on',
 };
 delete testEnv.NODE_TEST_CONTEXT;
-delete testEnv.PI_GUARD_MODE;
+delete testEnv.OMP_GUARD_MODE;
 
 function fixture(t, { branch = true } = {}) {
   const artifacts = path.join(root, '.artifacts');
@@ -65,7 +65,7 @@ function fixture(t, { branch = true } = {}) {
     race: false,
     requests: [],
   };
-  const remoteSha = () => git('--git-dir=' + remote, 'rev-parse', 'refs/heads/ai-changes');
+  const remoteSha = () => git(`--git-dir=${remote}`, 'rev-parse', 'refs/heads/ai-changes');
   const materialize = (pr) => ({
     ...pr,
     head: { ...pr.head, sha: pr.state === 'open' ? remoteSha() : pr.head.sha },
@@ -75,13 +75,13 @@ function fixture(t, { branch = true } = {}) {
       if (args[0] === 'remote' && args[1] === 'get-url') {
         const value =
           state.wrongPushUrl && args.includes('--push') ? 'other-owner/unrelated' : repository;
-        return { status: 0, stdout: 'https://github.com/' + value + '.git\n' };
+        return { status: 0, stdout: `https://github.com/${value}.git\n` };
       }
       if (args[0] === 'ls-remote') {
         state.remoteReads++;
         if (state.missingBranch) return { status: 0, stdout: '' };
         if (state.race && state.remoteReads >= 2)
-          return { status: 0, stdout: 'a'.repeat(40) + '\trefs/heads/ai-changes\n' };
+          return { status: 0, stdout: `${'a'.repeat(40)}\trefs/heads/ai-changes\n` };
       }
       if (args[0] === 'push' && state.beforePush) state.beforePush();
       if (args[0] === 'push' && state.failPush)
@@ -95,13 +95,13 @@ function fixture(t, { branch = true } = {}) {
     state.requests.push({ method, endpoint });
     if (state.authFailure) return { status: 1, stderr: 'simulated auth failure' };
     let data;
-    if (endpoint === 'repos/' + repository)
+    if (endpoint === `repos/${repository}`)
       data = {
         full_name: repository,
         default_branch: 'main',
         delete_branch_on_merge: Boolean(state.autoDelete),
       };
-    else if (endpoint === 'repos/' + repository + '/git/refs' && method === 'POST') {
+    else if (endpoint === `repos/${repository}/git/refs` && method === 'POST') {
       const body = JSON.parse(options.input);
       assert.equal(body.ref, 'refs/heads/ai-changes');
       if (state.beforeRefCreate) state.beforeRefCreate();
@@ -109,7 +109,7 @@ function fixture(t, { branch = true } = {}) {
       // Model the create-only API with a real Git compare-and-swap, not a ref overwrite.
       const created = spawnSync(
         'git',
-        ['--git-dir=' + remote, 'update-ref', body.ref, body.sha, '0'.repeat(40)],
+        [`--git-dir=${remote}`, 'update-ref', body.ref, body.sha, '0'.repeat(40)],
         options,
       );
       if (created.status !== 0) return created;
@@ -120,7 +120,7 @@ function fixture(t, { branch = true } = {}) {
     } else if (endpoint.includes('/pulls?')) {
       const selected = endpoint.includes('state=closed') ? 'closed' : 'open';
       data = state.prs.filter((pr) => pr.state === selected).map(materialize);
-    } else if (endpoint === 'repos/' + repository + '/pulls' && method === 'POST') {
+    } else if (endpoint === `repos/${repository}/pulls` && method === 'POST') {
       const body = JSON.parse(options.input);
       assert.equal(body.head, 'ai-changes');
       assert.equal(body.base, 'main');
@@ -133,7 +133,7 @@ function fixture(t, { branch = true } = {}) {
         merged_at: null,
         head: { ref: 'ai-changes', sha: remoteSha(), repo: { full_name: repository } },
         base: { ref: 'main', repo: { full_name: repository } },
-        html_url: 'https://github.com/' + repository + '/pull/' + (state.prs.length + 1),
+        html_url: `https://github.com/${repository}/pull/${state.prs.length + 1}`,
       };
       state.prs.push(pr);
       state.creates++;
@@ -148,15 +148,14 @@ function fixture(t, { branch = true } = {}) {
         if (state.concurrentOwnerNote)
           state.prs.find((pr) => pr.number === number).body += '\nConcurrent owner note.\n';
         data = { ...JSON.parse(options.input), id: state.comments.length + 1, number };
-        data.html_url =
-          'https://github.com/' + repository + '/pull/' + number + '#issuecomment-' + data.id;
+        data.html_url = `https://github.com/${repository}/pull/${number}#issuecomment-${data.id}`;
         state.comments.push(data);
         if (state.loseCommentResponse) return { status: 1, stderr: 'response lost' };
       } else data = state.comments.filter((item) => item.number === number);
     } else {
       const number = Number(endpoint.split('/').at(-1));
       const pr = state.prs.find((item) => item.number === number);
-      assert(pr, 'Unexpected API endpoint: ' + endpoint);
+      assert(pr, `Unexpected API endpoint: ${endpoint}`);
       if (method === 'PATCH') {
         if (state.concurrentOwnerNote) pr.body += '\nConcurrent owner note.\n';
         Object.assign(pr, JSON.parse(options.input));
@@ -198,9 +197,9 @@ test('delivery commits only explicit task files, preserves user work, and leaves
   const result = f.invoke(f.deliverArgs());
   assert.equal(result.status, 'published');
   assert.equal(result.commit, f.remoteSha());
-  assert.equal(f.git('--git-dir=' + f.remote, 'rev-parse', 'main'), main);
-  assert.equal(f.git('--git-dir=' + f.remote, 'show', 'ai-changes:owned.txt'), 'after');
-  assert.equal(f.git('--git-dir=' + f.remote, 'show', 'ai-changes:user.txt'), 'user before');
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'rev-parse', 'main'), main);
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'show', 'ai-changes:owned.txt'), 'after');
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'show', 'ai-changes:user.txt'), 'user before');
   assert.equal(readFileSync(path.join(f.cwd, 'user.txt'), 'utf8'), 'unrelated user work\n');
   assert.equal(f.state.creates, 1);
   assert.equal(result.url, 'https://github.com/test-owner/workflow/pull/1');
@@ -220,7 +219,7 @@ test('related changes update one PR and retain owner notes outside the managed s
   assert.equal(f.state.patches, 0);
   assert.equal(f.state.comments.length, 1);
   assert.match(f.state.prs[0].body, /Owner note: retain this/);
-  assert.equal(f.git('--git-dir=' + f.remote, 'show', 'ai-changes:owned.txt'), 'second');
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'show', 'ai-changes:owned.txt'), 'second');
 });
 
 test('main and pre-staged user changes are never committed by the helper', (t) => {
@@ -250,7 +249,7 @@ test('delivery rejects unsafe paths and credential-like content before staging',
     args[args.length - 1] = file;
     assert.throws(() => f.invoke(args), /relative|traversal|directories|Sensitive|Symlink/);
   }
-  f.write('owned.txt', 'ghp_' + 'x'.repeat(30) + '\n');
+  f.write('owned.txt', `ghp_${'x'.repeat(30)}\n`);
   assert.throws(() => f.invoke(f.deliverArgs()), /Credential-like/);
   assert.equal(f.git('diff', '--cached', '--name-only'), '');
   assert.equal(f.remoteSha(), before);
@@ -271,7 +270,7 @@ test('missing branch, divergent push URL, opt-out, and missing authorization fai
   }
   assert.throws(() => f.invoke(f.deliverArgs(), { ...testEnv, AI_PR_DELIVERY: 'off' }), /disabled/);
   assert.throws(
-    () => f.invoke(f.deliverArgs(), { ...testEnv, PI_GUARD_MODE: 'strict' }),
+    () => f.invoke(f.deliverArgs(), { ...testEnv, OMP_GUARD_MODE: 'strict' }),
     /disabled/,
   );
   assert.equal(f.git('rev-parse', 'HEAD'), before);
@@ -281,7 +280,7 @@ test('missing branch, divergent push URL, opt-out, and missing authorization fai
 
 test('prepare creates a missing ai-changes from remote main exactly once, never from unpublished local work', (t) => {
   const f = fixture(t, { branch: false });
-  const main = f.git('--git-dir=' + f.remote, 'rev-parse', 'main');
+  const main = f.git(`--git-dir=${f.remote}`, 'rev-parse', 'main');
   f.write('user.txt', 'unpublished local main work\n');
   f.git('add', 'user.txt');
   f.git('commit', '-m', 'owner local commit');
@@ -292,13 +291,13 @@ test('prepare creates a missing ai-changes from remote main exactly once, never 
   assert.equal(f.git('branch', '--show-current'), 'ai-changes');
   assert.equal(f.remoteSha(), main);
   assert.equal(f.git('rev-parse', 'main'), localMain);
-  assert.equal(f.git('--git-dir=' + f.remote, 'show', 'ai-changes:user.txt'), 'user before');
-  assert.equal(f.git('--git-dir=' + f.remote, 'rev-parse', 'main'), main);
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'show', 'ai-changes:user.txt'), 'user before');
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'rev-parse', 'main'), main);
   assert.equal(f.invoke(['prepare']).commit, main);
   assert.equal(f.state.branchCreates, 1);
   assert.equal(f.state.creates, 0);
   assert.deepEqual(
-    f.git('--git-dir=' + f.remote, 'for-each-ref', '--format=%(refname)', 'refs/heads').split('\n'),
+    f.git(`--git-dir=${f.remote}`, 'for-each-ref', '--format=%(refname)', 'refs/heads').split('\n'),
     ['refs/heads/ai-changes', 'refs/heads/main'],
   );
 });
@@ -306,7 +305,7 @@ test('prepare creates a missing ai-changes from remote main exactly once, never 
 test('prepare restores an idle deleted branch even when automatic head deletion is enabled', (t) => {
   const f = fixture(t);
   const main = f.remoteSha();
-  f.git('--git-dir=' + f.remote, 'update-ref', '-d', 'refs/heads/ai-changes', main);
+  f.git(`--git-dir=${f.remote}`, 'update-ref', '-d', 'refs/heads/ai-changes', main);
   f.state.autoDelete = true;
   assert.equal(f.invoke(['prepare']).commit, main);
   assert.equal(f.remoteSha(), main);
@@ -317,7 +316,7 @@ test('prepare restores an idle deleted branch even when automatic head deletion 
 test('missing-branch preparation preserves dirty work and unpublished branch commits without remote creation', (t) => {
   const f = fixture(t);
   const main = f.remoteSha();
-  f.git('--git-dir=' + f.remote, 'update-ref', '-d', 'refs/heads/ai-changes', main);
+  f.git(`--git-dir=${f.remote}`, 'update-ref', '-d', 'refs/heads/ai-changes', main);
   f.write('user.txt', 'unpublished owner work\n');
   assert.throws(() => f.invoke(['prepare']), /clean worktree/);
   assert.equal(readFileSync(path.join(f.cwd, 'user.txt'), 'utf8'), 'unpublished owner work\n');
@@ -329,7 +328,7 @@ test('missing-branch preparation preserves dirty work and unpublished branch com
   assert.equal(f.git('rev-parse', 'HEAD'), unpublished);
   assert.throws(() => f.remoteSha());
   assert.equal(f.state.branchCreates, 0);
-  assert.equal(f.git('--git-dir=' + f.remote, 'rev-parse', 'main'), main);
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'rev-parse', 'main'), main);
 });
 
 test('a concurrent branch creator is never overwritten or retried as a ref update', (t) => {
@@ -343,7 +342,7 @@ test('a concurrent branch creator is never overwritten or retried as a ref updat
     '-m',
     'concurrent owner work',
   );
-  f.state.beforeRefCreate = () => f.git('push', 'origin', concurrent + ':refs/heads/ai-changes');
+  f.state.beforeRefCreate = () => f.git('push', 'origin', `${concurrent}:refs/heads/ai-changes`);
   assert.throws(() => f.invoke(['prepare']), /gh api failed/);
   assert.equal(f.remoteSha(), concurrent);
   assert.equal(f.git('branch', '--show-current'), 'main');
@@ -374,7 +373,7 @@ test('a failed branch-create response preserves state and the next prepare reuse
 test('missing branch does not bypass local-only, strict, auth, or related-PR boundaries', (t) => {
   const f = fixture(t, { branch: false });
   assert.throws(() => f.invoke(['prepare'], { ...testEnv, AI_PR_DELIVERY: 'off' }), /disabled/);
-  assert.throws(() => f.invoke(['prepare'], { ...testEnv, PI_GUARD_MODE: 'strict' }), /disabled/);
+  assert.throws(() => f.invoke(['prepare'], { ...testEnv, OMP_GUARD_MODE: 'strict' }), /disabled/);
   f.state.authFailure = true;
   assert.throws(() => f.invoke(['prepare']), /gh api failed/);
   f.state.authFailure = false;
@@ -414,7 +413,7 @@ test('a failed push preserves one local commit and exact-SHA resume does not dup
   ]);
   assert.equal(result.commit, commit);
   assert.equal(f.remoteSha(), commit);
-  assert.equal(f.git('rev-list', '--count', before + '..HEAD'), '1');
+  assert.equal(f.git('rev-list', '--count', `${before}..HEAD`), '1');
   assert.equal(f.state.creates, 1);
 });
 
@@ -462,11 +461,11 @@ test('prepare reuses the same branch after an owner squash-merge, without rewrit
   f.state.prs[0].head.sha = mergedHead;
   f.invoke(['prepare']);
   assert.equal(f.git('diff', 'main', 'ai-changes'), '');
-  assert.equal(f.git('--git-dir=' + f.remote, 'rev-parse', 'main'), main);
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'rev-parse', 'main'), main);
   f.write('owned.txt', 'second task\n');
   assert.equal(f.invoke(f.deliverArgs()).pr, 2);
   assert.deepEqual(
-    f.git('--git-dir=' + f.remote, 'for-each-ref', '--format=%(refname)', 'refs/heads').split('\n'),
+    f.git(`--git-dir=${f.remote}`, 'for-each-ref', '--format=%(refname)', 'refs/heads').split('\n'),
     ['refs/heads/ai-changes', 'refs/heads/main'],
   );
 });
@@ -535,7 +534,7 @@ test('delivery never follows annotated tags from user Git configuration', (t) =>
   f.git('tag', '-a', 'owner-tag', '-m', 'do not publish this tag');
   f.write('owned.txt', 'after\n');
   f.invoke(f.deliverArgs());
-  assert.equal(f.git('--git-dir=' + f.remote, 'tag', '--list'), '');
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'tag', '--list'), '');
 });
 
 test('updating a PR never overwrites concurrently added owner notes', (t) => {
@@ -560,7 +559,7 @@ test('a local HEAD race cannot publish a commit outside the verified receipt', (
   };
   assert.throws(() => f.invoke(f.deliverArgs()));
   assert.equal(f.remoteSha(), verified);
-  assert.equal(f.git('--git-dir=' + f.remote, 'show', 'ai-changes:user.txt'), 'user before');
+  assert.equal(f.git(`--git-dir=${f.remote}`, 'show', 'ai-changes:user.txt'), 'user before');
   assert.notEqual(f.git('rev-parse', 'HEAD'), verified);
   assert.equal(f.state.creates, 0);
 });
@@ -573,7 +572,7 @@ test('the remote update rejects deletion or advancement after the final prefligh
     f.write('owned.txt', 'verified change\n');
     f.state.beforePush = () => {
       if (change === 'delete')
-        f.git('--git-dir=' + f.remote, 'update-ref', '-d', 'refs/heads/ai-changes', before);
+        f.git(`--git-dir=${f.remote}`, 'update-ref', '-d', 'refs/heads/ai-changes', before);
       else {
         concurrent = f.git(
           'commit-tree',
@@ -583,7 +582,7 @@ test('the remote update rejects deletion or advancement after the final prefligh
           '-m',
           'concurrent remote writer',
         );
-        f.git('push', 'origin', concurrent + ':refs/heads/ai-changes');
+        f.git('push', 'origin', `${concurrent}:refs/heads/ai-changes`);
       }
     };
     assert.throws(() => f.invoke(f.deliverArgs()), /push failed/);

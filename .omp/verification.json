@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "id": "pr-delivery",
+      "include": ["scripts/ai-pr.mjs", "tests/ai-pr.test.mjs", "docs/GIT_POLICY.md"],
+      "commands": [["node", "--test", "tests/ai-pr.test.mjs"]]
+    },
+    {
+      "id": "workflow-evals",
+      "include": [
+        "scripts/run-workflow-evals.mjs",
+        "scripts/lib/workflow-evals.mjs",
+        "evals/**",
+        "tests/workflow-evals.test.mjs",
+        "scripts/lib/omp-rpc.mjs",
+        "tests/omp-rpc.test.mjs",
+        "scripts/lib/eval-isolation.mjs",
+        "tests/eval-isolation.test.mjs",
+        ".omp/eval-inputs.json"
+      ],
+      "commands": [
+        [
+          "node",
+          "--test",
+          "tests/workflow-evals.test.mjs",
+          "tests/omp-rpc.test.mjs",
+          "tests/eval-isolation.test.mjs"
+        ],
+        ["node", "scripts/run-workflow-evals.mjs", "--dry-run"]
+      ]
+    },
+    {
+      "id": "verification-router",
+      "include": [
+        "scripts/verify-affected.mjs",
+        "tests/verify-affected.test.mjs",
+        ".omp/verification.json"
+      ],
+      "commands": [["node", "--test", "tests/verify-affected.test.mjs"]]
+    },
+    {
+      "id": "safety-guard",
+      "include": [
+        ".omp/extensions/safety-guard.js",
+        "scripts/omp-sandbox.sh",
+        "tests/safety-guard.test.mjs"
+      ],
+      "commands": [["node", "--test", "tests/safety-guard.test.mjs"]]
+    },
+    {
+      "id": "workflow-contract",
+      "include": [
+        "AGENTS.md",
+        ".omp/**",
+        ".github/**",
+        "*.md",
+        "docs/**",
+        "scripts/*.sh",
+        "Dockerfile.omp",
+        ".dockerignore",
+        "scripts/validate-workflow.mjs",
+        "scripts/omp-native-smoke.mjs",
+        "scripts/omp-discovery-smoke.ts",
+        "tests/native-contract.test.mjs"
+      ],
+      "commands": [
+        ["bash", "scripts/omp-doctor.sh", "--ci", "--static"],
+        ["node", "--test", "tests/native-contract.test.mjs"]
+      ]
+    },
+    {
+      "id": "domain-quality-contract",
+      "include": [
+        ".omp/skills/**",
+        "evals/skill-cases.json",
+        "scripts/validate-project-context.mjs",
+        "scripts/validate-skill-evals.mjs",
+        "tests/context-readiness.test.mjs",
+        "tests/skill-contract.test.mjs",
+        "docs/PROJECT_CONTEXT.md"
+      ],
+      "commands": [
+        ["node", "--test", "tests/context-readiness.test.mjs", "tests/skill-contract.test.mjs"],
+        ["node", "scripts/validate-skill-evals.mjs"],
+        ["node", "scripts/validate-project-context.mjs", "--static"]
+      ]
+    },
+    {
+      "id": "targeted-fast",
+      "include": [
+        "app/**/*.test.ts",
+        "app/**/*.test.tsx",
+        "shared/**/*.test.ts",
+        "shared/**/*.test.tsx",
+        "landing/**/*.test.ts",
+        "landing/**/*.test.tsx",
+        "admin/**/*.test.ts",
+        "admin/**/*.test.tsx",
+        "vitest.config.ts",
+        "tsconfig.json",
+        "tsconfig.server.json",
+        "biome.jsonc"
+      ],
+      "commands": [["bash", "scripts/verify-fast.sh"]]
+    },
+    {
+      "id": "feature-app",
+      "include": [
+        "app/src/**/*.ts",
+        "app/src/**/*.tsx",
+        "shared/**/*.ts",
+        "shared/**/*.tsx",
+        "vite.app.config.ts",
+        "vite.base.ts"
+      ],
+      "exclude": ["**/*.test.ts", "**/*.test.tsx"],
+      "commands": [["bash", "scripts/verify-feature.sh", "all", "app"]]
+    },
+    {
+      "id": "feature-landing",
+      "include": [
+        "landing/src/**/*.ts",
+        "landing/src/**/*.tsx",
+        "landing/**/*.html",
+        "vite.landing.config.ts"
+      ],
+      "exclude": ["**/*.test.ts", "**/*.test.tsx"],
+      "commands": [["bash", "scripts/verify-feature.sh", "all", "landing"]]
+    },
+    {
+      "id": "e2e-fast-lane",
+      "include": [
+        "e2e/**/*.spec.ts",
+        "e2e/**/*.ts",
+        "playwright.config.ts",
+        "scripts/playwright-fast.sh"
+      ],
+      "commands": [["bash", "scripts/playwright-fast.sh", "--grep", "@critical"]]
+    }
+  ],
+  "fallback": [["bash", "scripts/verify.sh"]]
+}

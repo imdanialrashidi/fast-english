@@ -1,0 +1,8 @@
+{
+  "name": "omp-workflow-native-compatibility",
+  "private": true,
+  "description": "CI-only native contract checks; not an application dependency or OMP extension package",
+  "dependencies": {
+    "@oh-my-pi/pi-coding-agent": "18.0.9"
+  }
+}

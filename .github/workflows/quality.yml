@@ -15,7 +15,7 @@ concurrency:
 # Canonical release gate, split into independent lanes so unrelated work
 # runs concurrently:
 #
-#   static   — Pi harness validation + typecheck + Biome + Vitest (cheap,
+#   static   — OMP harness validation + typecheck + Biome + Vitest (cheap,
 #              high-signal checks fail first).
 #   backend  — the real full backend/operations gate: all 16 real-PocketBase
 #              smoke suites (each on its own disposable PocketBase, run
@@ -52,11 +52,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      # Pi harness validation: repository workflow contract, package pins,
+      # OMP harness validation: repository workflow contract, package pins,
       # MCP policy, launcher policy, secret scan, harness behavior tests.
       # `--ci` tolerates the missing Pi CLI and requires no dependencies.
-      - name: Pi harness validation
-        run: bash scripts/pi-doctor.sh --ci
+      - name: OMP harness validation
+        run: bash scripts/omp-doctor.sh --static
 
       - name: Install dependencies
         env:

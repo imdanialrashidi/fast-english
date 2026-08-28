@@ -1,220 +1,120 @@
-# Production Tooling Setup
+# OMP setup and capability routing
 
-This repository pins a small production-oriented Pi tool stack. Pi installs the project packages after the repository is trusted.
+## Requirements
 
-The reviewed Pi pin requires Node.js 22.19.0 or newer. The included CI pins Node 22.23.2; the container pins Node 24.19.0 on Debian Bookworm slim.
+- Reviewed OMP **18.0.6**, upstream commit `b4e8e856ad40294167679a3f88417c07429fe59b`.
+- Bun >=1.3.14 for package installation; the standalone OMP build does not need a separate Bun runtime.
+- Node >=22.19, Bash and Git for the project-owned verification and PR utilities.
+- Authenticated `gh` and ordinary Git push credentials only for fixed-lane PR delivery.
+- Browser downloads, language servers, product dependencies and provider credentials are conditional prerequisites, not bundled guarantees.
 
-## Included packages
-
-- `pi-sub-agent@0.1.5`
-- `pi-mcp-adapter@2.26.1`
-- `@juicesharp/rpiv-todo@2.6.2`
-- `pi-lsp-adapter@0.1.3`
-- `@dreki-gg/pi-doc-search@0.3.2`
-- `@bytetrue/pi-web-search@0.2.1`
-
-The project MCP configuration pins `@playwright/mcp@0.0.79` and exposes a restricted browser tool set through the single `mcp` proxy.
-
-The packages remain installed and their commands remain available, but their model-call schemas are deferred. `./p` starts with seven repository tools plus `harness_tools`:
-
-| `harness_tools` capability | Activated schemas |
-|---|---|
-| `planning` | `todo` |
-| `delegation` | `subagent` |
-| `browser` | `mcp` |
-| `code_intelligence` | `lsp_diagnostics`, `lsp_definition`, `lsp_references`, `lsp_workspace_symbols`, `lsp_more` |
-| `docs` | `doc_search_resolve_library_id`, `doc_search_get_library_docs` |
-| `web` | `web_search`, `web_fetch` |
-
-Ask the agent to activate all required groups together. Passing an empty capability list unloads the managed specialist schemas without removing unrelated custom tools. A restored session reactivates the groups in its latest continuity snapshot.
-
-## First startup
+Install from the official release or run:
 
 ```bash
-./p
+bun install -g @oh-my-pi/pi-coding-agent@18.0.6
 ```
 
-The repository launcher passes Pi's official `--approve` trust override, so it loads project resources and installs missing pinned packages without a trust prompt. It grants normal implementation access across the writable workspace, while arbitrary Git/GitHub mutations remain disabled independently. Routine delivery uses the reviewed `scripts/ai-pr.mjs` helper on the persistent `ai-changes` branch; install/authenticate `gh` as the owner and see `docs/GIT_POLICY.md`. Set `AI_PR_DELIVERY=off` for local-only runs. Use `PI_PROJECT_TRUST=ask ./p` only when you intentionally want the interactive trust decision.
+Authenticate through OMP's native provider setup. Do not extract, migrate or
+commit credential stores.
 
-For the reviewed Pi `0.84.2` pin, the launcher defaults to:
+## Launch directly
 
-| Variable | Default | Effect / opt-out |
-|---|---:|---|
-| `PI_EXPERIMENTAL` | `1` | Enables capability-gated strict-prefer JSON-schema sampling for supported built-ins plus Pi's official first-run setup; set `0` to compare legacy sampling. |
-| `PI_SMART_READ` | `1` | Bounds implicit reads of regular files at least 96 KiB; set `0` to disable. |
-| `PI_SMART_READ_BYTES` | `98304` | Size threshold in bytes. |
-| `PI_SMART_READ_LINES` | `400` | Injected limit for a qualifying read; explicit ranges are unchanged. |
-| `PI_BLIND_RETRY_LIMIT` | `2` | Blocks the next identical tool call after this many errored executions; set `0` to disable. |
-| `PI_CONTINUITY` | `1` | Persists/injects the bounded mechanical continuity capsule; set `0` to disable. |
-
-These controls are model/provider neutral. Review them with every Pi upgrade because `PI_EXPERIMENTAL` is intentionally tied to the exact tested pin.
-
-Reload after package changes:
-
-```text
-/reload
-```
-
-Validate the repository configuration:
+Start in the project root:
 
 ```bash
-bash scripts/pi-doctor.sh
+omp
 ```
 
-## Localized fast path
+OMP discovers the project `.omp/config.yml`, commands, skills, append prompt and
+extensions from the current working directory. There is no project launcher,
+custom tool allowlist, package loader or shell-sourced model file.
 
-For a tiny, obvious, low-risk change, invoke the project skill directly:
+Use native `/model`, `/setup` and `/settings` for model/provider configuration.
+The template does not ship a project model overlay or force a vendor. Global or
+CLI configuration remains owned by OMP.
 
-```text
-/skill:quick-fix <small low-risk change>
-```
+## Project configuration
 
-Pi exposes project skills as `/skill:name` commands and also selects them from their descriptions. This path deliberately skips plans, todos, subagents, broad suites, and full gates unless scope, risk, or repository policy requires escalation.
+The JSON-compatible YAML file contains only deliberate project differences:
 
-## Todo panel
+- safer write-mode approvals and explicit browser/eval/computer/security policy;
+- a resource cap of two children, one recursion level and bounded child runtime/request budget;
+- catalog-only lazy-device docs to reduce prompt schema overhead;
+- a deterministic browser screenshot directory;
+- native GitHub and native secret redaction enabled.
 
-Confirm the extension:
+Keys whose values already equal OMP defaults are intentionally omitted. OMP
+resolves them from its pinned schema. The eval overlay changes only the policies
+needed for a deterministic isolated run: direct tools, one child, denied broad
+runtimes and disabled project MCP config.
 
-```text
-/todos
-```
+## Native capability routing
 
-Use todos only for genuinely multi-step work.
+| Need | Native OMP route | Remaining project contract |
+|---|---|---|
+| Tiny fix | Direct default workflow or one bundled `sonic` task | One targeted proof; no ceremony |
+| Planning | `/plan` and native `todo` | Observable acceptance; ExecPlan only when continuity needs it |
+| Discovery | Bundled `scout` | Stop after sufficient evidence |
+| Review | Bundled `reviewer` | Judge the accepted contract and cite real evidence |
+| Security review | Bundled `security-reviewer` | Apply project authority/data rules |
+| UI work | Bundled `designer` and native `browser` | `docs/DESIGN.md` and `docs/VISUAL_REVIEW.md` |
+| Delegated implementation | One bundled `task`/`sonic`/`designer` writer | Parent does not edit concurrently |
+| Exact edits | Native hashline `edit` | Re-read stale anchors |
+| Semantic code | Native `lsp`, `ast_grep` and `ast_edit` | Inspect affected callers and tests |
+| Research | Bundled `librarian`, native `web_search`, URL `read` and `github` reads | Prefer versioned primary sources |
+| Rare schema | `read xd://` then the device docs | No custom loader |
+| Continuity | `/handoff`, `/resume`, sessions and compaction | Working tree and current proof outrank summaries |
 
-## MCP and Playwright browser tools
+The bundled `librarian` and `reviewer` include Bash in OMP 18.0.6. The project
+guard blocks Git/external/sensitive mutations, and the repository policy still
+requires exactly one active writer. Native agent instructions remain authoritative
+for their own read-only roles; no project agent copy shadows them.
 
-Check the adapter:
+The project skills are intentionally split into three always-available workflow
+contracts and four conditional domain contracts:
 
-```text
-/mcp status
-```
+- `browser-qa` — rendered journey, DOM and pixel evidence;
+- `test-design` — economical tests with an independent oracle;
+- `verification-routing` — affected checks with a conservative full fallback.
+- `accessibility-audit` — scoped WCAG and assistive-technology evidence when a
+  user-facing accessibility criterion is in scope;
+- `web-performance` — repeatable route measurements and lab/field separation
+  when loading, latency, layout or asset budgets are in scope;
+- `technical-seo` — public indexability, rendering, metadata, crawl and
+  structured-data evidence when search discoverability is in scope;
+- `rtl-i18n` — direction, bidi, formatting and long-string evidence when
+  localized or RTL behavior is in scope.
 
-The Playwright server uses lazy lifecycle and stops after an idle period. When the MCP metadata cache is valid, sessions can defer the server until the first browser-tool call. A clean, missing, invalid, or stale cache triggers a startup catalog connection so the adapter can rebuild metadata.
+These four are not a second browser, test, SEO, profiling, or translation
+framework. OMP's native tools and the repository's existing commands remain the
+execution layer. Routing fixtures live in `evals/skill-cases.json`; validate
+them with `node scripts/validate-skill-evals.mjs`.
 
-A useful smoke request is:
+Run `node scripts/validate-project-context.mjs --static` before work. The
+unbootstrapped template is intentionally `NOT READY`; after `/wf-bootstrap`,
+`--require-ready` is a real gate against empty contract prompts.
 
-```text
-Activate the browser capability, then use the mcp proxy to find the Playwright page snapshot tool. Do not navigate anywhere.
-```
+The eight `wf-*` commands cover only product/spec/design/test/ship/release/incident
+contracts for which OMP has no equivalent project policy. Ordinary build, review,
+discovery, plan, handoff and resume wrappers are intentionally absent.
 
-For actual browser QA, start the project's local application and navigate to its URL. Begin with accessibility snapshots; use screenshots when appearance materially matters. Screenshots are stored under `.artifacts/playwright/`.
+## Optional isolation
 
-Autonomous mode exposes focused `browser_evaluate` when snapshots and normal interactions cannot reveal the required state. File upload, drag-and-drop file injection, and MCP scripting remain unavailable. `PI_GUARD_MODE=strict` disables page evaluation and restricts navigation to localhost.
+`bash scripts/omp-sandbox.sh` provides an optional container boundary stronger
+than native task filesystem isolation. It is not required for trusted ordinary
+work and does not replace network policy.
 
-If Playwright reports that no browser executable is available, install Chromium once outside the normal agent session:
+Native MCP remains available for a genuinely missing integration. No MCP server
+is required for browser, task, todo, LSP, GitHub or web search.
 
-```bash
-npx -y playwright install chromium
-```
+## Verification levels
 
-Use the browser version already installed by a real project when possible.
+1. `bash scripts/omp-doctor.sh --static` — structure, pins, metadata and eval-copy validation.
+2. `bash scripts/verify.sh` — deterministic workflow tests and the product gate: fast verification plus all 18 real-PocketBase smoke suites, deterministic three-surface builds, topology and PWA checks.
+3. `bash scripts/omp-doctor.sh --native` — installed CLI and effective config.
+4. `bun scripts/omp-discovery-smoke.ts` — pinned SDK discovery, bundled agents and extension loading.
+5. `node scripts/run-workflow-evals.mjs --model <provider/model> --trials 3` — opt-in paid model trials.
 
-### Visual evidence across model capabilities
+The 18 suites are the canonical `pnpm smoke:*` family (auth, payment, payment-preview, placement, placement-levels, placement-race, placement-capacity, lessons, episode, progress, podcast-domain, content-import, content-admin, library, business-settings, staff, operator, plus one alias) — see `docs/QUALITY.md` for the mapped lane.
 
-The workflow uses the active model's native image input; it does not install or call a separate image model or add a Vision tool schema. `harness_tools` reports configured image support when activating `browser`, and runtime guidance refreshes on visual user turns. Model names are never used to infer support. For custom models, confirm accurate `input` metadata in the operator's Pi configuration; do not silently change it.
-
-Playwright now uses `--image-responses allow`: a requested screenshot returns native image content through the MCP adapter as well as a saved artifact. The adapter's output guard bounds text, not images; Pi `0.84.2` normalizes tool-result images. Request only useful viewport/element screenshots and retain Pi's default image resizing. If a permitted response contains only a path, use `read` on that exact file; do not paste base64 or assume the model can see a filename.
-
-`harnessVision.imageInput` and `imageBlocks` in tool details mean configured support and blocks returned, not provider acceptance or completed inspection. Pi's `images.blockImages` setting can strip images after the extension hook, and a provider can reject them. Respect that setting and user privacy opt-outs: disabled/filtered/unsupported/unreadable pixels leave appearance-only criteria `UNPROVEN`. TUI image display is separate from model input. After updating `.mcp.json`, restart the Playwright MCP connection or start a fresh Pi session so cached server arguments do not retain `omit`.
-
-Use browser-observable evidence first for behavior: accessibility snapshots, DOM structure, element geometry, computed state, console output, network evidence, and deterministic browser tests. For appearance, follow the `browser-qa` pixel-inspection loop: references/baseline, small desktop/mobile evidence set, focused detail crops, bounded critique/repair, then final re-capture. Exact contrast and dimensions need measurement, not visual estimates. Images may contain private data and incur provider image-token cost; capture synthetic/masked fixtures only and keep artifacts out of commits.
-
-Do not claim pixel-level or aesthetic screenshot findings that the active model cannot actually inspect. Mark those acceptance criteria `UNPROVEN` and report the saved screenshot path instead.
-
-## Language server setup
-
-Check available servers:
-
-```text
-/lsp status
-```
-
-Install only the server required by the current project, for example:
-
-```text
-/lsp install vtsls
-/lsp doctor vtsls
-```
-
-or:
-
-```text
-/lsp install pyright
-/lsp doctor pyright
-```
-
-Missing language servers are not silently installed.
-
-The `/lsp` management command is always available. The model activates `code_intelligence` only when definitions, references, workspace symbols, or diagnostics add evidence beyond exact text search.
-
-## Documentation search
-
-`pi-doc-search` queries Context7 directly and keeps a persistent local cache. It works without a key at lower rate limits. For higher limits, set the key in your shell or user environment, never in the repository:
-
-```bash
-export CONTEXT7_API_KEY="ctx7sk-..."
-```
-
-Use `doc_search_resolve_library_id` and `doc_search_get_library_docs` only when local source, installed types, and repository patterns do not answer a version-sensitive framework question. The raw-cache helper remains installed but is intentionally omitted from the default tool surface because the normal documentation result already covers routine use.
-
-The model activates the `docs` capability before these calls; no documentation schema is paid for on an ordinary localized edit.
-
-## Web search
-
-The included search extension does not require a model-native search provider.
-
-Inspect or change the provider with:
-
-```text
-/web
-```
-
-Show current configuration:
-
-```text
-/web --show
-```
-
-The agent has two web tools:
-
-- `web_search` for current external information;
-- `web_fetch` for a specific public URL.
-
-The model activates the `web` capability before using them.
-
-Do not commit search API keys or proxy credentials.
-
-## Recommended smoke checks
-
-After setup:
-
-```text
-/todos
-/lsp status
-/mcp status
-/web --show
-```
-
-Then test capabilities with bounded requests:
-
-```text
-Activate the docs capability, then use doc_search_resolve_library_id to resolve the React documentation library ID. Do not fetch broad documentation yet.
-```
-
-```text
-Activate the browser capability, then use the MCP proxy to locate the Playwright snapshot tool. Do not navigate.
-```
-
-## Updating packages
-
-Package versions are pinned for reproducibility. Review release notes before changing a pin. After intentionally updating pins:
-
-```text
-/reload
-```
-
-then run:
-
-```bash
-bash scripts/pi-doctor.sh
-```
+An unavailable prerequisite is `NOT EXECUTED` or `BLOCKED`, not `PASS`.

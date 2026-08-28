@@ -1,6 +1,6 @@
 # Quality Contract
 
-This file defines the evaluator-facing quality bar for meaningful changes. Keep it project-specific after `/bootstrap`; do not turn it into a generic checklist dump.
+This file defines the evaluator-facing quality bar for meaningful changes in Fast English Podcast. It records project-specific thresholds, lanes, and invariant enforcement so reviewers judge observable behavior rather than generic checklists.
 
 ## Release rule
 
@@ -28,7 +28,7 @@ For accepted scope:
 
 ## Security and data integrity
 
-For trust-boundary changes, require the `risk-review` workflow.
+For trust-boundary changes, require an independent risk/security review using OMP's bundled `security-reviewer` when relevant.
 
 At minimum:
 
@@ -51,7 +51,7 @@ For rendered interfaces:
 
 ## Visual excellence (frontend design contract)
 
-For visually significant work, the rendered interface is judged against the accepted product/design contract in `docs/DESIGN.md` and the full rubric in `.pi/skills/frontend-design/references/visual-quality-rubric.md` — never against generic taste or template defaults.
+For visually significant work, the rendered interface is judged against the accepted product/design contract in `docs/DESIGN.md` and the full rubric in `docs/VISUAL_REVIEW.md` — never against generic taste or template defaults.
 
 Hard gates (any failure ⇒ `NOT READY` regardless of craft):
 
@@ -156,7 +156,7 @@ Confirmed from `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, the verification scrip
 ### Release rule (Fast English)
 
 - Local final delivery: `pnpm verify:full` green (or the explicitly justified subset).
-- CI must run the harness doctor (`bash scripts/pi-doctor.sh --ci`) and the real full application gate, not just the fast lane.
+- CI must run the harness doctor (`bash scripts/omp-doctor.sh --static`) and the real full application gate, not just the fast lane.
 - Release APK work additionally requires `pnpm android:verify:release` evidence (apksigner/zipalign/SHA-256) and never weakens the signing fail-safe.
 
 ### Agent development interfaces (exact commands & file pointers)
