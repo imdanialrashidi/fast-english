@@ -116,8 +116,8 @@ test.describe('Admin Business Settings', () => {
 
     await expect(page.getByTestId('business-settings-panel')).toBeVisible();
     await expect(page.getByTestId('settings-plan-monthly')).toContainText('ماهانه');
-    await expect(page.getByTestId('settings-plan-monthly')).toContainText('۲۹۹,۰۰۰');
-    await expect(page.getByTestId('settings-plan-quarterly')).toContainText('۸۰۷,۳۰۰');
+    await expect(page.getByTestId('settings-plan-monthly')).toContainText('۲۹۹٬۰۰۰ تومان');
+    await expect(page.getByTestId('settings-plan-quarterly')).toContainText('۸۰۷٬۳۰۰ تومان');
 
     // Edit the monthly price.
     await page.getByTestId('settings-edit-plan-monthly').click();

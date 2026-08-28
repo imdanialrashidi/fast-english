@@ -188,6 +188,14 @@ export function LibraryRoute() {
             ),
           );
           if (seqRef.current !== seq) return;
+          // A failed discovery request must expose the safe user-facing error
+          // state; never leak internal/server details and never silently
+          // stay in the previous list. Any missing page that did not load
+          // (route.abort in the E2E proof, network failure in production)
+          // is a real library-load failure.
+          if (results.some((r) => !r.ok)) {
+            throw new Error('library fetch failed');
+          }
           const sorted = results.sort((a, b) => a.page - b.page);
           for (const res of sorted) {
             if (!res.ok) continue;
