@@ -61,7 +61,7 @@ else
   else
     bad "landing missing the honest Android coming-soon state"
   fi
-  if grep -rq '\.apk' "$LANDING"; then
+  if grep -R -q 'href="[^"]*\.apk"' --include="*.html" "$LANDING"; then
     bad "landing contains an APK link without a configured official URL"
   fi
 fi

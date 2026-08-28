@@ -729,8 +729,14 @@ routerAdd(
           );
           if (hits && hits.length > 1) {
             hits.sort(function (a, b) {
-              var aUp = String(a.get("updated") || a.get("created") || "");
-              var bUp = String(b.get("updated") || b.get("created") || "");
+              var aUp, bUp;
+              if (status === "rejected") {
+                aUp = String(a.get("reviewed_at") || a.get("updated") || a.get("created") || "");
+                bUp = String(b.get("reviewed_at") || b.get("updated") || b.get("created") || "");
+              } else {
+                aUp = String(a.get("updated") || a.get("created") || "");
+                bUp = String(b.get("updated") || b.get("created") || "");
+              }
               if (bUp !== aUp) return bUp < aUp ? -1 : 1;
               var aCr = String(a.get("created") || "");
               var bCr = String(b.get("created") || "");
