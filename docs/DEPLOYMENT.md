@@ -2,8 +2,9 @@
 
 > **LEGACY / RETIRED (2026-08-17).** This document describes the Caddy +
 > systemd + release-symlink architecture. The canonical production
-> deployment guide is now **`docs/COOLIFY_DEPLOYMENT.md`** (Coolify Cloud →
-> owned VPS → Coolify-managed Traefik → four immutable container images).
+> deployment guide is now **`docs/COOLIFY_DEPLOYMENT.md`** (self-hosted
+> Coolify on owned VPS → Coolify-managed Traefik → four immutable
+> `sha-<commit>` container images).
 > This page is kept ONLY as historical fallback reference; do not use it for
 > a new production install.
 

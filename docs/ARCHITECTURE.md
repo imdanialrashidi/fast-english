@@ -3,13 +3,11 @@
 Durable constraints only. Not a diary.
 
 ## Current system
-- Runtime/platform: Linux dev; Node LTS; pnpm; Vite; React + TypeScript strict; PocketBase (Go, embedded SQLite); Capacitor (no Ionic); Caddy; systemd.
-- Main modules: `landing/` (static, Tailwind), `app/` (MUI product app), `server/` (PocketBase migrations + hooks), `android/` (Capacitor), `scripts/`.
-- Data stores: PocketBase SQLite (`server/pb_data/`, git-ignored, never committed).
+- Runtime/platform: Linux dev; Node LTS; pnpm; Vite; React + TypeScript strict; PocketBase (Go, embedded SQLite); Capacitor (no Ionic); Coolify (self-hosted) + Traefik + Docker (production); nginx in frontend images.
+- Main modules: `landing/` (static, Tailwind), `app/` (MUI product app), `admin/` (Staff console), `server/` (PocketBase migrations + hooks), `android/` (Capacitor), `scripts/`, `docker/`, `infra/`.
+- Data stores: PocketBase SQLite (`server/pb_data/` dev, `/opt/fast-english/shared/pb_data` production bind mount, git-ignored, never committed).
 - External services: none required (no payment provider, no SMS, no CDN font).
-- Deployment topology: `fastenglishpodcast.com` (static), `app.fastenglishpodcast.com` (app + `/api/*` reverse proxy), `admin.fastenglishpodcast.com` (Unified Staff Admin Console), PocketBase bound `127.0.0.1:8090`, Caddy HTTPS, systemd, daily backup + off-VPS copy.
-
-## Repository/build topology
+- Deployment topology (self-hosted): `fastenglishpodcast.com` → Landing (nginx 8080, owns root; API only exact public-settings path → PB directly); `app.fastenglishpodcast.com` → Student App (nginx owns root; `/api/*` → PB directly); `admin.fastenglishpodcast.com` → Admin (nginx owns root; `/api/*` → PB directly); PocketBase internal `127.0.0.1:8090` only (no public hostname, no public 8090), Traefik path routing, immutable `sha-<commit>` GHCR images, daily backup + off-VPS copy.
 - One repo, one root `package.json`, one `pnpm-lock.yaml`. No workspace/monorepo framework.
 - Three isolated Vite configs provide distinct isolated outputs and separate dependency sets — `vite.landing.config.ts` → `dist-landing/` (Tailwind allowed here only), `vite.app.config.ts` → `dist-app/` (MUI only), and `vite.admin.config.ts` → `dist-admin/` (MUI, Staff console, no PWA).
   - `vite.landing.config.ts` → builds `landing/` → `dist-landing/` (Tailwind allowed here only).
@@ -22,23 +20,19 @@ Each uses an isolated `cacheDir` (`node_modules/.vite-*`) so dev servers do not 
 - Commands (confirmed current set): `pnpm dev:landing|dev:app|dev:admin`, `pnpm build:landing` (incl. prerender) | `build:app` | `build:admin` | `build` (all three), `pnpm typecheck`, `pnpm check` (Biome), `pnpm test` (Vitest), `pnpm verify:fast` / `verify:feature` / `verify:full` (canonical gates, see `docs/QUALITY.md`), `pnpm test:e2e:fast` (PW_FAST low-resource lane) / `test:e2e:full` (CI=1), the `pnpm smoke:*` family (18 real-PocketBase suites), `pnpm setup:pocketbase`, `pnpm staff:bootstrap`, `pnpm content:new|validate|plan|import`. `scripts/verify.sh` is the CI/release compatibility entry that delegates to the full gate.
 
 ## API and environment topology
-- Browser/PWA production: same-origin `https://app.fastenglishpodcast.com/api/*`; Caddy reverse-proxies `/api/*` → PocketBase `127.0.0.1:8090`.
+- Browser/PWA production: same-origin API via Traefik path routing DIRECTLY to PocketBase — `https://app.fastenglishpodcast.com/api/*` and `https://admin.fastenglishpodcast.com/api/*` map directly to PB; `https://fastenglishpodcast.com/api/fast-english/public/settings` (exact path only) maps to PB. Frontend nginx intentionally returns 404 for `/api/*` (defence in depth; see `docker/*/nginx.conf` and `infra/edge-router/nginx.conf`).
 - Android release: bundled local assets; API base = explicit `https://app.fastenglishpodcast.com` (NOT `window.location.origin` — bundled APK has no shared browser origin).
 - Browser dev: Vite `/api` proxy → local PocketBase.
 - Android dev: `adb reverse tcp:8090 tcp:8090` + `VITE_ANDROID_API_ORIGIN=http://localhost:8090`.
-
-## Phone as user-facing identity
-- PB 0.39 forces `email` into `passwordAuth.identityFields` for any auth collection. Setting `identityFields=["phone"]` via migration is reverted on save. The pragmatic resolution: the user-facing identity is the phone (normalized to `+989XXXXXXXXX` server-side), the hook auto-derives a stable internal email `<canonical_phone>@fep.local`, and the app SDK calls `pb.collection('fep_users').authWithPassword(derivedEmail, password)`. The phone field has a unique index and is the field used in all UI/API input.
 - One env-aware API-base resolver; no secrets in env vars or client bundle.
 - PocketBase CORS allowlist: only `https://app.fastenglishpodcast.com`, `https://fastenglishpodcast.com`, Capacitor origin. No wildcard CORS in production.
 - No Capacitor native HTTP patching unless real-device evidence proves normal HTTPS/upload fails.
 
 ## Trust boundaries and critical data flows
-1. Client (browser/APK) → Caddy → PocketBase `/api/*`. All authz server-side.
+1. Client (browser/APK) → Traefik (self-hosted Coolify) → frontend nginx for `/` (owns root) OR direct to PocketBase for accepted `*/api/*` paths (owns API). All authz server-side; frontend nginx refuses `/api/*`.
 2. Signup: client sends phone/name/password(+optional email) → PB normalizes phone, enforces uniqueness, sets `role=student`, `account_status=pending_payment`.
 3. Payment: client sends `plan_id` + transfer fields + receipt image → PB validates, snapshots plan, stores receipt in protected file field, creates `pending` request.
 4. Staff approve: PB verifies the `staff_admins` identity (requireStaffAdmin), compares externally, in one transaction sets request `approved` + creates/extends subscription (idempotent via unique subscription→request link).
-5. Premium content: PB hook/endpoint checks authenticated + not suspended + active subscription + published before returning lesson body/audio; never returns correct placement answers.
 
 ## Non-negotiable invariants
 - Client never sets role/account_status/subscription/payment/review/server-calculated fields.

@@ -1,27 +1,29 @@
-name: release-deploy
-
-# MANUAL release workflow (task §15). There is NO automatic
+# MANUAL release workflow — self-hosted Coolify. There is NO automatic
 # deploy on push: the operator intentionally runs this against an exact
 # commit, the canonical quality gate must be green for that commit, the
-# four immutable images are built/published to GHCR, Coolify deploys them,
-# and success is declared ONLY after:
+# four immutable sha-<commit> images are built/published to GHCR, Coolify
+# deploys the EXACT immutable SHA (pinned via PATCH before the deploy), and
+# success is declared ONLY after:
 #   1. Coolify deployment status polling reaches `finished`;
 #   2. independent public HTTPS health checks pass;
 #   3. smoke-prod.sh passes.
 #
-# Environments: `production` (default) releases through the moving
-# `production` GHCR alias (published ONLY after smoke passes); `staging`
-# pins the four Coolify apps to the immutable sha-<commit> tags and never
-# moves the `production` alias (the workflow REFUSES the combination).
-# Secrets come from the selected GitHub Environment, so staging secrets
-# are never mixed with production ones (docs/STAGING.md §2.6).
+# Environments: `production` (default) and `staging` use the SAME immutable-
+# image principle — both pin the requested surfaces to `sha-<commit>` before
+# triggering the Coolify deploy, then deploy with force. The moving
+# `production` GHCR alias remains only as an optional post-verification
+# convenience tag (publish_production_alias, default true, production only)
+# and is NEVER the authoritative deployment identity. Secrets come from the
+# selected GitHub Environment, so staging secrets are never mixed with
+# production ones (docs/STAGING.md §2.6).
 #
 # Change classification (A–E) is derived from the Git diff and drives the
 # pre-deploy backup step (mandatory before any PocketBase/hooks/migration
 # deploy) and the failure-handling guidance.
 #
-# Secrets: stored in GitHub Environment "production" secrets — names only
-# in this file. Coolify token is deploy-scoped. Never in code.
+# Secrets: stored in GitHub Environment secrets — names only in this file.
+# Coolify token is deploy-scoped and the self-hosted base URL is an explicit
+# required input (no fallback). Never in code.
 #
 # Environment protection: the repository should protect the `production`
 # environment with one or more required reviewers (Approvals) so this
@@ -48,12 +50,12 @@ on:
           - quick
           - full
       publish_production_alias:
-        description: 'Publish the moving `production` image alias on GHCR'
+        description: 'Publish the moving `production` image alias on GHCR (optional convenience tag, never authoritative)'
         required: false
         default: true
         type: boolean
       environment:
-        description: 'Target environment: production (moving alias release) or staging (immutable sha- deploy)'
+        description: 'Target environment: production or staging (both pin the immutable sha-<commit> image)'
         required: false
         default: production
         type: choice
@@ -101,17 +103,9 @@ jobs:
         if: github.event.inputs.environment == 'staging' && github.event.inputs.publish_production_alias == 'true'
         run: |
           echo "REFUSED: publish_production_alias=true with environment=staging would move the" >&2
-          echo "production GHCR alias from a staging run. Staging deploys pin immutable" >&2
-          echo "sha-<commit> tags; the \`production\` alias moves only on the production path." >&2
-          exit 1
-
-      - name: Guard — refuse a production release that cannot ship
-        if: github.event.inputs.environment == 'production' && github.event.inputs.publish_production_alias != 'true'
-        run: |
-          echo "REFUSED: environment=production with publish_production_alias=false would" >&2
-          echo "verify and report a complete release whose images never reach the" >&2
-          echo "production apps (they track the :production alias). Set" >&2
-          echo "publish_production_alias=true (or use rollback-deploy for a previous image)." >&2
+          echo "production GHCR alias from a staging run. The \`production\` alias" >&2
+          echo "may only be published on the production path and is never the" >&2
+          echo "authoritative deployment identity (immutable sha-<commit> is)." >&2
           exit 1
 
   gate-quality:
@@ -295,13 +289,12 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
           persist-credentials: false
 
-      - name: Pin staging apps to the immutable sha- tag (staging only)
-        # Staging Coolify apps never track a moving alias: each release
-        # re-pins the requested surfaces to sha-<commit> (the same PATCH
-        # contract rollback-deploy.yml uses, O5) and then deploys them.
-        # Production apps keep tracking the `production` alias, which the
-        # alias-publish step below moves only after health + smoke pass.
-        if: github.event.inputs.environment == 'staging'
+      - name: Pin apps to the immutable sha-<commit> tag (authoritative deployment identity)
+        # Both staging and production pin the exact requested sha-<commit> image
+        # BEFORE the deploy is triggered. The image verified by health + smoke
+        # is exactly the image that was deployed. The moving `production` alias
+        # (published after verification below) is only a secondary convenience
+        # tag and is NEVER the deployment identity.
         env:
           COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
           COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
@@ -311,9 +304,11 @@ jobs:
           FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
         run: |
           set -euo pipefail
+          : "${COOLIFY_BASE_URL:?COOLIFY_BASE_URL is required (self-hosted Coolify base URL, no fallback)}"
+          : "${COOLIFY_API_TOKEN:?COOLIFY_API_TOKEN is required}"
           SURFACES="${{ github.event.inputs.surfaces }}"
           SHORT="${{ needs.resolve.outputs.short }}"
-          BASE="${COOLIFY_BASE_URL:-https://app.coolify.io}"
+          BASE="${COOLIFY_BASE_URL%/}"
           HDR="$(mktemp)"; printf 'Authorization: Bearer %s\n' "$COOLIFY_API_TOKEN" > "$HDR"; chmod 600 "$HDR"
           trap 'rm -f "$HDR"' EXIT
           for s in ${SURFACES//,/ }; do
@@ -323,7 +318,7 @@ jobs:
             curl -fsS -m 90 -X PATCH "${BASE}/api/v1/applications/${UUID}" \
               -H @"$HDR" -H 'Content-Type: application/json' \
               --data "{\"docker_registry_image_tag\":\"sha-${SHORT}\"}" > /dev/null
-            echo "staging: $s pinned to ghcr.io/${{ github.repository_owner }}/fast-english/$s:sha-$SHORT"
+            echo "${{ github.event.inputs.environment }}: $s pinned to ghcr.io/${{ github.repository_owner }}/fast-english/$s:sha-$SHORT"
           done
 
       - name: Trigger + poll Coolify deployments (per surface)
@@ -338,15 +333,13 @@ jobs:
           FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
         run: |
           set -euo pipefail
+          : "${COOLIFY_BASE_URL:?COOLIFY_BASE_URL is required (self-hosted Coolify base URL, no fallback)}"
+          : "${COOLIFY_API_TOKEN:?COOLIFY_API_TOKEN is required}"
           SURFACES="${{ github.event.inputs.surfaces }}"
-          # Staging pins a fresh sha-<commit> tag before this step, so the
-          # deploy must force the re-pull (same contract as rollback-deploy).
-          FORCE_FLAG=""
-          [[ "${{ github.event.inputs.environment }}" == "staging" ]] && FORCE_FLAG="--force"
           rc=0
           for s in ${SURFACES//,/ }; do
             case "$s" in landing|app|admin|pocketbase) ;; *) echo "IGNORED unknown surface: $s"; continue ;; esac
-            if ! bash scripts/coolify-deploy.sh "$s" $FORCE_FLAG; then
+            if ! bash scripts/coolify-deploy.sh "$s" --force; then
               rc=1
             fi
           done
@@ -413,13 +406,10 @@ jobs:
             exit 1
           fi
 
-      - name: Publish the production image alias (post-verification)
-        # Runs only after smoke succeeded and ONLY on the production path:
-        # a staging run must never move the `production` alias (the resolve
-        # guard also refuses that combination). steps.smoke.outcome is
-        # populated now that the smoke step has completed (it must NOT
-        # reference a later step). Coolify apps pull ...:production, so
-        # this is what makes the release actually ship.
+      - name: Publish the production image alias (post-verification, optional secondary tag)
+        # Runs only after smoke succeeded and ONLY on the production path.
+        # This is an optional convenience tag — the release is already live via
+        # the immutable sha-<commit> pin above. Never used as the deployment identity.
         if: github.event.inputs.publish_production_alias == 'true' && github.event.inputs.environment == 'production' && success()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -434,7 +424,7 @@ jobs:
               -t "ghcr.io/${{ github.repository_owner }}/fast-english/${s}:production" \
               "ghcr.io/${{ github.repository_owner }}/fast-english/${s}:sha-${SHORT}"
           done
-          echo "Production image alias published for the verified surfaces (sha-$SHORT)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Production image alias (secondary tag) published for the verified surfaces (sha-$SHORT)." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Final verdict
         if: always()

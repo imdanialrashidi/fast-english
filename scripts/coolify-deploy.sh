@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # scripts/coolify-deploy.sh
-# Repository-side Coolify deployment orchestrator (single surface).
+# Repository-side Coolify deployment orchestrator (single surface) — self-hosted.
 #
 # Used by .github/workflows/release-deploy.yml (and rollback-deploy.yml) and
-# runnable locally/staging to integrate with a real Coolify instance. Uses
-# the CURRENT official Coolify API contract (verified against the Coolify
-# docs + controller source, coolify-docs @ v4 / Coolify Cloud):
+# runnable locally/staging to integrate with a real self-hosted Coolify instance.
+# Uses the CURRENT official Coolify API contract (verified against the Coolify
+# docs + controller source, coolify v4 / self-hosted):
 #
 #   POST /api/v1/deploy            {"uuid":"<app-uuid>","force":bool}
 #        -> 200 {"message":..., "deployment_uuid": "..."}
@@ -22,8 +22,10 @@
 #
 # Secrets never appear in process arguments or stdout: the token is read
 # from COOLIFY_API_TOKEN and handed to curl through a 0600 header file.
-#
-# Usage:  COOLIFY_API_TOKEN=<...> \
+# COOLIFY_BASE_URL is an explicit required input — self-hosted Coolify only;
+# fail closed when absent (never fall back to any hosted default).
+# Usage:  COOLIFY_BASE_URL=https://coolify.example.com \
+#         COOLIFY_API_TOKEN=<...> \
 #         FEP_COOLIFY_APP_UUID_<SURFACE>=<...> \
 #         bash scripts/coolify-deploy.sh <surface> [--force]
 # Surfaces: landing app admin pocketbase
@@ -36,7 +38,11 @@ SURFACE="${1:-}"
 case "$SURFACE" in landing|app|admin|pocketbase) ;; *) echo "unknown surface: $SURFACE" >&2; exit 1 ;; esac
 FORCE="false"; [[ "${2:-}" == "--force" ]] && FORCE="true"
 
-BASE_URL="${COOLIFY_BASE_URL:-https://app.coolify.io}"
+if [[ -z "${COOLIFY_BASE_URL:-}" ]]; then
+  echo "FATAL: COOLIFY_BASE_URL is required (self-hosted Coolify base URL, e.g. https://coolify.example.com — no fallback)" >&2
+  exit 1
+fi
+BASE_URL="${COOLIFY_BASE_URL}"
 API="${BASE_URL%/}/api/v1"
 TOKEN="${COOLIFY_API_TOKEN:-}"
 [[ -n "$TOKEN" ]] || { echo "FATAL: COOLIFY_API_TOKEN is required (env only, never argv)" >&2; exit 1; }

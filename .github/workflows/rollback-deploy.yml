@@ -84,13 +84,15 @@ jobs:
           FEP_COOLIFY_APP_UUID_POCKETBASE: ${{ secrets.COOLIFY_APP_UUID_POCKETBASE }}
         run: |
           set -euo pipefail
+          : "${COOLIFY_BASE_URL:?COOLIFY_BASE_URL is required (self-hosted Coolify base URL, no fallback)}"
+          : "${COOLIFY_API_TOKEN:?COOLIFY_API_TOKEN is required}"
           SURFACE="${{ github.event.inputs.surface }}"
           VAR="FEP_COOLIFY_APP_UUID_$(printf '%s' "$SURFACE" | tr '[:lower:]' '[:upper:]')"
           UUID="${!VAR:?missing Coolify app UUID for $SURFACE}"
           IMAGE="ghcr.io/${{ github.repository_owner }}/fast-english/${SURFACE}:sha-${{ github.event.inputs.image_sha }}"
           HDR="$(mktemp)"; printf 'Authorization: Bearer %s\n' "$COOLIFY_API_TOKEN" > "$HDR"; chmod 600 "$HDR"
           trap 'rm -f "$HDR"' EXIT
-          BASE="${COOLIFY_BASE_URL:-https://app.coolify.io}"
+          BASE="${COOLIFY_BASE_URL%/}"
           curl -fsS -m 90 -X PATCH "${BASE}/api/v1/applications/${UUID}" \
             -H @"$HDR" -H 'Content-Type: application/json' \
             --data "{\"docker_registry_image_tag\":\"sha-${{ github.event.inputs.image_sha }}\"}" > /dev/null
