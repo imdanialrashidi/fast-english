@@ -47,6 +47,7 @@ CI runs the same gates in parallel lanes (`.github/workflows/quality.yml`).
 
 ## Docs
 
+- `AGENTS.md` — agent task map (use `/skill:quick-fix` for tiny low-risk edits)
 - `docs/TOOLING_SETUP.md` — full toolchain, env vars, verification lanes
 - `docs/QUALITY.md` — quality contract and gates
 - `docs/PRODUCT.md` — product contract

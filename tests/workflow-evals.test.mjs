@@ -108,7 +108,7 @@ test('deterministic grading catches scope, required-file, and protected-file vio
     trace: { invalidEventLines: 0, extensionErrors: 0 },
     changes: [
       { file: 'src/price.mjs', status: 'modified' },
-      { file: '.omp/APPEND_SYSTEM.md', status: 'modified' },
+      { file: '.pi/APPEND_SYSTEM.md', status: 'modified' },
     ],
     checkResults: [{ id: 'tests', status: 'PASS' }],
   };
@@ -187,10 +187,10 @@ test('trace analysis and deterministic grading reject Git and GitHub mutation at
     {
       type: 'tool_execution_start',
       toolCallId: 'g2',
-      toolName: 'github',
-      args: { op: 'pr_create' },
+      toolName: 'mcp',
+      args: { tool: 'github_create_pull_request', args: {} },
     },
-    { type: 'tool_execution_end', toolCallId: 'g2', toolName: 'github', isError: true },
+    { type: 'tool_execution_end', toolCallId: 'g2', toolName: 'mcp', isError: true },
     {
       type: 'tool_execution_start',
       toolCallId: 'g3',
@@ -238,11 +238,11 @@ const matchingRunMetadata = {
   thinking: 'high',
   trials: 1,
   timeoutMs: 60_000,
-  ompVersion: '18.0.6',
+  piVersion: '0.84.2',
   nodeVersion: '22.19.0',
   suiteFingerprint: 'suite',
-  inputFingerprint: 'same-inputs',
-  inputContractFingerprint: 'same-treatment-contract',
+  inputFingerprint: 'inputs',
+  inputContractFingerprint: 'contract',
 };
 
 test('baseline comparison rejects deterministic and efficiency regressions', () => {
@@ -325,4 +325,24 @@ test('baseline comparison rejects a changed benchmark contract', () => {
   const comparison = compareSummaries(candidate, baseline);
   assert.equal(comparison.decision, 'REJECT');
   assert.ok(comparison.reasons.some((reason) => reason.includes('suiteFingerprint')));
+});
+
+test('comparison rejects changed product inputs and missing measured tokens', () => {
+  const baseline = {
+    schemaVersion: 2,
+    ...matchingRunMetadata,
+    inputFingerprint: 'original',
+    inputContractFingerprint: 'contract',
+    aggregate: aggregateRecords([record('case-a')]),
+  };
+  const changed = compareSummaries({ ...baseline, inputFingerprint: 'different' }, baseline);
+  assert.equal(changed.decision, 'REJECT');
+  const missing = record('case-a');
+  missing.stats = {};
+  const comparison = compareSummaries(
+    { ...baseline, aggregate: aggregateRecords([missing]) },
+    baseline,
+  );
+  assert.equal(comparison.decision, 'REJECT');
+  assert(comparison.reasons.some((reason) => reason.includes('tokens')));
 });

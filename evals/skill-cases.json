@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Routing contract for the four domain skills. These cases are deterministic trigger fixtures; they do not claim model-quality or runtime activation without an OMP model run.",
+  "description": "Routing contract for the four domain skills. These cases are deterministic trigger fixtures; they do not claim model-quality or runtime activation without a Pi model run.",
   "cases": [
     {
       "id": "a11y-explicit",
@@ -49,7 +49,7 @@
       "id": "a11y-native-tool-negative",
       "skill": "accessibility-audit",
       "shouldTrigger": false,
-      "prompt": "Explain how OMP's native browser ARIA snapshot command works; do not audit an application route or change a project.",
+      "prompt": "Explain how the Playwright MCP browser ARIA snapshot command works; do not audit an application route or change a project.",
       "acceptance": [
         "skill does not replace native tool documentation",
         "no product evidence is fabricated"
@@ -102,7 +102,7 @@
       "id": "perf-tooling-negative",
       "skill": "web-performance",
       "shouldTrigger": false,
-      "prompt": "Tell me which OMP model role is fastest for a tiny local refactor; no route, asset, or runtime measurement is requested.",
+      "prompt": "Tell me which model role is fastest for a tiny local refactor; no route, asset, or runtime measurement is requested.",
       "acceptance": [
         "skill does not replace native model routing",
         "no unmeasured speed claim is made"

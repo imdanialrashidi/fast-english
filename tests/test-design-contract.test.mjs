@@ -7,7 +7,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const read = (relativePath) => readFile(path.join(root, relativePath), 'utf8');
 
 test('test-design applies a value gate before creating maintenance cost', async () => {
-  const source = await read('.omp/skills/test-design/SKILL.md');
+  const source = await read('.pi/skills/test-design/SKILL.md');
 
   assert.match(source, /# Test Value Gate/);
   for (const criterion of [
@@ -30,7 +30,7 @@ test('test-design applies a value gate before creating maintenance cost', async 
 });
 
 test('test-design requires economical cases and an independent defect oracle', async () => {
-  const source = await read('.omp/skills/test-design/SKILL.md');
+  const source = await read('.pi/skills/test-design/SKILL.md');
 
   assert.match(source, /one representative per equivalence class/);
   assert.match(source, /do not enumerate a Cartesian product/);
@@ -40,9 +40,10 @@ test('test-design requires economical cases and an independent defect oracle', a
   assert.match(source, /Mock only an owned boundary/);
 });
 
-test('the OMP test command can intentionally retain existing evidence', async () => {
-  const [prompt, agents, harness, _quality] = await Promise.all([
-    read('.omp/commands/wf-test.md'),
+test('the Pi test command can intentionally retain existing evidence', async () => {
+  const [prompt, build, agents, harness, quality] = await Promise.all([
+    read('.pi/prompts/test.md'),
+    read('.pi/prompts/build.md'),
     read('AGENTS.md'),
     read('docs/HARNESS.md'),
     read('docs/QUALITY.md'),
@@ -50,12 +51,10 @@ test('the OMP test command can intentionally retain existing evidence', async ()
 
   assert.match(prompt, /Apply the Test Value Gate/);
   assert.match(prompt, /`No new test` is valid/);
+  assert.match(build, /load `test-design` and pass its Test Value Gate/);
   assert.match(agents, /When tests are added or materially changed, use `test-design`/);
   assert.match(harness, /pass its Test Value Gate/);
-  assert.match(
-    await read('.omp/skills/test-design/SKILL.md'),
-    /Do not create tests to hit a count, percentage, uncovered line/,
-  );
+  assert.match(quality, /Coverage, assertion count, and test count are diagnostic signals/);
 });
 
 test('the research record ties policy to behavior, browser, and mutation evidence', async () => {

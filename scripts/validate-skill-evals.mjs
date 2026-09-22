@@ -4,11 +4,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { compatibility } from './validate-workflow.mjs';
+export const domainSkills = ['accessibility-audit', 'web-performance', 'technical-seo', 'rtl-i18n'];
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 
-export function validateSkillEvalManifest(manifest, expectedSkills = compatibility.domainSkills) {
+export function validateSkillEvalManifest(manifest, expectedSkills = domainSkills) {
   assert(
     manifest && typeof manifest === 'object' && !Array.isArray(manifest),
     'Skill eval manifest must be an object',

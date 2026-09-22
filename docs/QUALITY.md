@@ -25,10 +25,11 @@ For accepted scope:
 - Handle retries, duplicate requests, time, rounding, ordering, partial failure, and concurrency where they are material to the changed behavior.
 - A production bug should gain regression evidence when practical.
 - Tests should assert behavior and contracts rather than implementation trivia.
+- Coverage, assertion count, and test count are diagnostic signals—not acceptance goals. If no distinct failure model or evidence gap exists, extend an existing case or add no test.
 
 ## Security and data integrity
 
-For trust-boundary changes, require an independent risk/security review using OMP's bundled `security-reviewer` when relevant.
+For trust-boundary changes, require an independent risk/security review using `security-auditor` via subagents when relevant, or a separate evidence-focused pass directly.
 
 At minimum:
 
@@ -156,7 +157,7 @@ Confirmed from `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, the verification scrip
 ### Release rule (Fast English)
 
 - Local final delivery: `pnpm verify:full` green (or the explicitly justified subset).
-- CI must run the harness doctor (`bash scripts/omp-doctor.sh --static`) and the real full application gate, not just the fast lane.
+- CI must run the harness doctor (`bash scripts/pi-doctor.sh --ci --static`) and the real full application gate, not just the fast lane.
 - Release APK work additionally requires `pnpm android:verify:release` evidence (apksigner/zipalign/SHA-256) and never weakens the signing fail-safe.
 
 ### Agent development interfaces (exact commands & file pointers)

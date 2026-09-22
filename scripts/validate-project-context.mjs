@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 
-// These are the four durable contracts that /wf-bootstrap is expected to
+// These are the four durable contracts that /bootstrap is expected to
 // specialize. The validator is deliberately conservative: explicit unknowns
 // are valid project context, while empty template fields are not.
 export const contextDocuments = [
@@ -23,7 +23,7 @@ const emptyChecklist = /^\s*-\s*\[\s*\]\s*$/gm;
 const emptyTableRow = /^\|\s*(?:\|\s*)+$/gm;
 const templateSentinels = [
   /replace template prompts with accepted decisions/i,
-  /keep it project-specific after `?\/wf-bootstrap/i,
+  /keep it project-specific after `?\/bootstrap/i,
   /do not turn this into a generic checklist dump/i,
   /keep this document (?:short|specific)/i,
 ];
@@ -140,7 +140,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
     console.log(formatReport(report));
     if (options.requireReady && !report.ready) process.exitCode = 1;
     // --static is intentionally informational for an unbootstrapped template;
-    // use --require-ready after /wf-bootstrap to turn it into a gate.
+    // use --require-ready after /bootstrap to turn it into a gate.
   } catch (error) {
     console.error(`FAIL project-context validation: ${error.message}`);
     process.exitCode = 1;

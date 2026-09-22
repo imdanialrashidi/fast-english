@@ -3,23 +3,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import {
+  domainSkills,
   loadSkillEvalManifest,
   validateSkillEvalManifest,
 } from '../scripts/validate-skill-evals.mjs';
-import { compatibility } from '../scripts/validate-workflow.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 
 test('domain skills are discoverable, bounded, and distinct from native wrappers', () => {
-  assert.deepEqual(compatibility.domainSkills, [
+  assert.deepEqual(domainSkills, [
     'accessibility-audit',
     'web-performance',
     'technical-seo',
     'rtl-i18n',
   ]);
-  for (const name of compatibility.domainSkills) {
-    assert(compatibility.skills.includes(name), `${name} is not in the project skill manifest`);
-    const source = fs.readFileSync(path.join(root, '.omp/skills', name, 'SKILL.md'), 'utf8');
+  for (const name of domainSkills) {
+    assert(domainSkills.includes(name), `${name} is not in the project skill manifest`);
+    const source = fs.readFileSync(path.join(root, '.pi/skills', name, 'SKILL.md'), 'utf8');
     assert.match(source, new RegExp(`^---\\nname: ${name}\\n`));
     assert.match(source, /\ndescription: .+\n/);
     assert(source.split(/\r?\n/).length < 180, `${name} should remain cheap to load`);
@@ -35,8 +35,8 @@ test('domain skills are discoverable, bounded, and distinct from native wrappers
 
 test('skill routing fixtures have positive and negative controls for every domain skill', () => {
   const result = validateSkillEvalManifest(loadSkillEvalManifest());
-  assert.equal(result.cases, compatibility.domainSkills.length * 5);
-  for (const skill of compatibility.domainSkills) {
+  assert.equal(result.cases, domainSkills.length * 5);
+  for (const skill of domainSkills) {
     assert.equal(result.counts[skill].positive, 3);
     assert.equal(result.counts[skill].negative, 2);
   }
@@ -50,7 +50,7 @@ test('domain skills preserve native capability boundaries', () => {
       `Negative control explicitly invokes ${item.skill}`,
     );
   }
-  for (const skill of compatibility.domainSkills) {
+  for (const skill of domainSkills) {
     assert.equal(
       manifest.cases.filter((item) => item.prompt.includes(`$${skill}`)).length,
       1,

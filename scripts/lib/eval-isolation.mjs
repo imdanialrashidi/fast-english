@@ -21,18 +21,22 @@ export function benchmarkInputSnapshot(manifest, treatmentPaths) {
     !Array.isArray(treatmentPaths) ||
     treatmentPaths.some(
       (value) =>
-        typeof value !== 'string' || value.startsWith('/') || value.split('/').includes('..'),
+        typeof value !== 'string' ||
+        !value.trim() ||
+        value.includes('\\') ||
+        value.startsWith('/') ||
+        value.split('/').includes('..'),
     )
   )
     throw new Error('Invalid declared harness-treatment paths');
   const paths = [...new Set(treatmentPaths)].sort();
   // Only this deliberate native-config subtree uses a wildcard. Every other
   // treatment path is exact, keeping future product files immutable by default.
-  if (paths.some((value) => value.includes('*') && value !== '.omp/**'))
+  if (paths.some((value) => value.includes('*') && value !== '.pi/**'))
     throw new Error('Overbroad harness-treatment wildcard');
   const ordered = [...manifest.entries()].sort(([a], [b]) => a.localeCompare(b));
   const inputs = ordered.filter(
-    ([file]) => !paths.includes(file) && !(paths.includes('.omp/**') && file.startsWith('.omp/')),
+    ([file]) => !paths.includes(file) && !(paths.includes('.pi/**') && file.startsWith('.pi/')),
   );
   return {
     inputContractFingerprint: digest(paths),

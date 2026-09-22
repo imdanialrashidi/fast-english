@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "id": "pr-delivery",
+      "include": ["scripts/ai-pr.mjs", "tests/ai-pr.test.mjs", "docs/GIT_POLICY.md"],
+      "commands": [["node", "--test", "tests/ai-pr.test.mjs"]]
+    },
+    {
+      "id": "workflow-evals",
+      "include": ["scripts/run-workflow-evals.mjs", "scripts/lib/workflow-evals.mjs", "scripts/lib/eval-isolation.mjs", "tests/eval-isolation.test.mjs", "evals/**", "tests/workflow-evals.test.mjs"],
+      "commands": [
+        ["node", "--test", "tests/workflow-evals.test.mjs", "tests/eval-isolation.test.mjs"],
+        ["node", "scripts/run-workflow-evals.mjs", "--dry-run"]
+      ]
+    },
+    {
+      "id": "verification-router",
+      "include": ["scripts/verify-affected.mjs", "tests/verify-affected.test.mjs", ".pi/verification.json"],
+      "commands": [
+        ["node", "--test", "tests/verify-affected.test.mjs"]
+      ]
+    },
+    {
+      "id": "safety-guard",
+      "include": [".pi/extensions/safety-guard.js", ".mcp.json", "scripts/pi-sandbox.sh", "tests/safety-guard.test.mjs"],
+      "commands": [
+        ["node", "--test", "tests/safety-guard.test.mjs"]
+      ]
+    },
+    {
+      "id": "harness-runtime",
+      "include": [".pi/extensions/harness-runtime.js", ".pi/models.env", "tests/harness-runtime.test.mjs"],
+      "commands": [
+        ["node", "--test", "tests/harness-runtime.test.mjs"]
+      ]
+    },
+    {
+      "id": "launcher",
+      "include": ["p", ".pi/models.env", "scripts/pi-sandbox.sh", "tests/launcher.test.mjs"],
+      "commands": [
+        ["node", "--test", "tests/launcher.test.mjs"]
+      ]
+    },
+    {
+      "id": "workflow-contract",
+      "include": ["AGENTS.md", ".mcp.json", ".pi/**", ".github/**", "p", "*.md", "docs/**", "scripts/*.sh", "scripts/verify-package-integrity.mjs", "Dockerfile.pi", ".dockerignore"],
+      "commands": [
+        ["bash", "scripts/pi-doctor.sh", "--ci", "--static"]
+      ]
+    }
+  ],
+  "fallback": [
+    ["bash", "scripts/verify.sh"]
+  ]
+}

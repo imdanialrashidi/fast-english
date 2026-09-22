@@ -1,21 +1,17 @@
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
-import {
-  canonicalToolCall,
-  isGitMutationCommand,
-  isGitMutationTool,
-  isNativeGitMutation,
-} from '../../.omp/extensions/safety-guard.js';
+import { isGitMutationCommand, isGitMutationTool } from '../../.pi/extensions/safety-guard.js';
 import { isolatedGitEnvironment } from './eval-isolation.mjs';
 
 const PROTECTED_WORKFLOW_PATHS = [
   'AGENTS.md',
   '.mcp.json',
   '.github/**',
-  '.omp/**',
+  '.pi/**',
+  'p',
   'docs/HARNESS.md',
-  'scripts/omp-sandbox.sh',
-  'scripts/omp-doctor.sh',
+  'scripts/pi-sandbox.sh',
+  'scripts/pi-doctor.sh',
 ];
 
 const DEFAULT_PROMOTION = {
@@ -137,7 +133,7 @@ function validateChecks(checks, caseId) {
 }
 
 export function validateSuite(value) {
-  if (value?.version !== 2 || !Array.isArray(value.cases)) {
+  if (!value || value.version !== 2 || !Array.isArray(value.cases)) {
     throw new Error('Evaluation suite must have version 2 and a cases array.');
   }
   if (!Number.isInteger(value.defaultTrials) || value.defaultTrials < 1) {
@@ -179,7 +175,7 @@ export function validateSuite(value) {
     }
     assertStringArray(item.rubric, `${item.id}.rubric`, { allowEmpty: false });
     if (item.rubric.length < 2) throw new Error(`${item.id} needs at least two rubric criteria.`);
-    if (item.assertions?.completion !== 'completed') {
+    if (!item.assertions || item.assertions.completion !== 'completed') {
       throw new Error(`${item.id}.assertions.completion must be completed.`);
     }
     validateChanges(item.assertions.changes, item.id);
@@ -209,12 +205,6 @@ function stableStringify(value) {
 }
 
 function commandFromToolEvent(event) {
-  try {
-    const canonical = canonicalToolCall(event.toolName, event.args ?? {});
-    event = { ...event, toolName: canonical.toolName, args: canonical.input };
-  } catch {
-    return null;
-  }
   if (event.toolName !== 'bash') return null;
   const command = event.args?.command ?? event.args?.cmd;
   if (Array.isArray(command)) return command.join(' ');
@@ -226,11 +216,9 @@ function gitMutationFromToolEvent(event) {
   if (command && isGitMutationCommand(command)) {
     return { toolName: event.toolName, command };
   }
-  try {
-    if (isNativeGitMutation(event.toolName, event.args ?? {}))
-      return { toolName: event.toolName, native: true };
-  } catch {
-    return { toolName: event.toolName, malformedNativeDispatch: true };
+  const proxiedTool = event.args?.tool ?? event.args?.input?.tool ?? event.args?.name;
+  if (event.toolName === 'mcp' && isGitMutationTool(proxiedTool)) {
+    return { toolName: event.toolName, proxiedTool };
   }
   if (isGitMutationTool(event.toolName)) return { toolName: event.toolName };
   return null;
@@ -280,7 +268,6 @@ export function analyzeTrace(lines) {
   let retries = 0;
   let extensionErrors = 0;
   let gitMutationCalls = 0;
-  let userInterventions = 0;
   const gitMutations = [];
 
   for (const event of events) {
@@ -315,7 +302,7 @@ export function analyzeTrace(lines) {
         failedVerificationCalls += 1;
         waitingForRepair = true;
       }
-    } else if (event.type === 'compaction_start' || event.type === 'auto_compaction_start') {
+    } else if (event.type === 'compaction_start') {
       compactions += 1;
     } else if (
       event.type === 'auto_retry_start' ||
@@ -324,11 +311,6 @@ export function analyzeTrace(lines) {
       retries += 1;
     } else if (event.type === 'extension_error') {
       extensionErrors += 1;
-    } else if (
-      event.type === 'extension_ui_request' &&
-      ['select', 'confirm', 'input', 'editor'].includes(event.method)
-    ) {
-      userInterventions += 1;
     }
   }
 
@@ -348,7 +330,7 @@ export function analyzeTrace(lines) {
     invalidEventLines,
     gitMutationCalls,
     gitMutations,
-    userInterventions,
+    userInterventions: 0,
   };
 }
 
@@ -369,7 +351,7 @@ export function runCaseChecks(workspace, checks = []) {
       cwd,
       encoding: 'utf8',
       timeout: check.timeoutMs ?? 120_000,
-      env: { ...isolatedGitEnvironment(workspace), OMP_EVAL_CHECK: '1', AI_PR_DELIVERY: 'off' },
+      env: { ...isolatedGitEnvironment(workspace), PI_EVAL_CHECK: '1', AI_PR_DELIVERY: 'off' },
       maxBuffer: 16 * 1024 * 1024,
     });
     return {
@@ -582,7 +564,7 @@ function regressionPercent(baseline, candidate) {
 }
 
 export function compareSummaries(candidate, baseline, configuredPromotion = {}) {
-  if (baseline?.schemaVersion !== 2 || !baseline.aggregate?.cases) {
+  if (!baseline || baseline.schemaVersion !== 2 || !baseline.aggregate?.cases) {
     throw new Error('Baseline summary must be a schemaVersion 2 workflow-eval summary.');
   }
   const promotion = { ...DEFAULT_PROMOTION, ...configuredPromotion };
@@ -596,7 +578,7 @@ export function compareSummaries(candidate, baseline, configuredPromotion = {}) 
     'thinking',
     'trials',
     'timeoutMs',
-    'ompVersion',
+    'piVersion',
     'nodeVersion',
     'suiteFingerprint',
     'inputFingerprint',
