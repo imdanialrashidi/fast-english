@@ -9,7 +9,7 @@ $ARGUMENTS
 
 1. Read `AGENTS.md`, `docs/PRODUCT.md`, `docs/DESIGN.md`, `docs/QUALITY.md`, and relevant architecture/code/tests.
 2. Load `frontend-design`, `browser-qa`, and `verification-routing`.
-3. Establish 3–7 observable acceptance criteria covering the critical journey, required states, design thesis/signature, responsive behavior, accessibility, and performance evidence.
+3. Record any new explicit user style/color choices in `docs/DESIGN.md` before coding; preserve the rest of the accepted direction and use its canonical token source. Label proposed details separately from owner choices. Establish 3–7 observable acceptance criteria covering the critical journey, required states, design thesis/signature, responsive behavior, accessibility, and performance evidence.
 4. Inspect supplied reference images and the current rendered baseline when one exists, following `browser-qa`'s capability/delivery checks. Reuse sound components/tokens; update the design contract first if implementation requires a material visual decision not already accepted.
 5. Implement one real end-to-end slice. No placeholder actions, fake persistence, dead controls, screenshot-only mockups, or decorative data.
 6. Verify narrowly while building. Exercise realistic content and required loading, empty, error, success, disabled, focus, and permission states.

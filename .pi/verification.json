@@ -2,15 +2,20 @@
   "version": 1,
   "routes": [
     {
+      "id": "run-metrics",
+      "include": [".pi/extensions/run-metrics.js", "tests/run-metrics.test.mjs"],
+      "commands": [["node", "--test", "tests/run-metrics.test.mjs"]]
+    },
+    {
       "id": "pr-delivery",
       "include": ["scripts/ai-pr.mjs", "tests/ai-pr.test.mjs", "docs/GIT_POLICY.md"],
       "commands": [["node", "--test", "tests/ai-pr.test.mjs"]]
     },
     {
       "id": "workflow-evals",
-      "include": ["scripts/run-workflow-evals.mjs", "scripts/lib/workflow-evals.mjs", "scripts/lib/eval-isolation.mjs", "tests/eval-isolation.test.mjs", "evals/**", "tests/workflow-evals.test.mjs"],
+      "include": ["scripts/run-workflow-evals.mjs", "scripts/lib/workflow-evals.mjs", "scripts/lib/eval-isolation.mjs", "tests/eval-isolation.test.mjs", "tests/test-design-contract.test.mjs", "evals/**", "tests/workflow-evals.test.mjs"],
       "commands": [
-        ["node", "--test", "tests/workflow-evals.test.mjs", "tests/eval-isolation.test.mjs"],
+        ["node", "--test", "tests/workflow-evals.test.mjs", "tests/eval-isolation.test.mjs", "tests/test-design-contract.test.mjs"],
         ["node", "scripts/run-workflow-evals.mjs", "--dry-run"]
       ]
     },
@@ -41,6 +46,11 @@
       "commands": [
         ["node", "--test", "tests/launcher.test.mjs"]
       ]
+    },
+    {
+      "id": "custom-provider",
+      "include": ["p", "scripts/pi-provider.mjs", "tests/pi-provider.test.mjs"],
+      "commands": [["node", "--test", "tests/pi-provider.test.mjs"]]
     },
     {
       "id": "workflow-contract",

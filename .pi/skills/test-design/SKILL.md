@@ -9,7 +9,7 @@ Use this procedure when adding or materially changing automated tests for applic
 
 ## 1. Decide whether a test earns its maintenance cost
 
-Search the nearest existing tests, types, schemas, and deterministic checks first. Before writing a candidate, state:
+Search the nearest existing tests, types, schemas, and deterministic checks first. Before writing a candidate, answer these briefly in the task context, not a new report file:
 
 - **Contract:** the externally observable behavior or invariant;
 - **Failure model:** one plausible regression or counterexample it should catch;
@@ -18,19 +18,19 @@ Search the nearest existing tests, types, schemas, and deterministic checks firs
 - **Oracle:** an expected result derived independently from the implementation under test;
 - **Sensitivity:** how the candidate will be shown to fail for the missing or incorrect behavior.
 
-Keep the candidate only when every line has a meaningful answer. If it adds no distinct failure mode, extend a nearby test or do not add it. **No new test is a valid outcome** for behavior-neutral documentation/copy/configuration, refactors already proved by existing tests, compiler/type/schema guarantees, or a request whose exact behavior is already covered. Run the relevant existing checks and explain the decision.
+Keep the candidate only when every line has a meaningful answer. Extend a nearby test only for a missing assertion or material boundary; if it adds no distinct failure mode, do not add or extend it. **No new test is a valid outcome** for behavior-neutral documentation/copy/configuration, refactors already proved by existing tests, compiler/type/schema guarantees, or a request whose exact behavior is already covered. Run the relevant existing checks and explain the decision.
 
 Do not create tests to hit a count, percentage, uncovered line, trivial getter/constant, framework behavior, third-party contract, or unreachable defensive branch.
 
 ## 2. Choose the cheapest faithful layer
 
-Prefer, in order:
+Choose by the failure mechanism, not a unit-test quota or a fixed pyramid:
 
-1. unit/property test for a deterministic business rule;
-2. component or service integration test for an owned boundary;
-3. focused API/database test for persistence, authorization, or state transitions;
-4. one narrow browser journey for browser-only behavior;
-5. full E2E only when lower layers cannot represent the failure.
+- deterministic business rule → unit/property test;
+- wiring, persistence, authorization, or state transition → focused component/service/API/database integration test;
+- browser semantics or a cross-system journey → the narrow browser/E2E exercise needed to expose the failure.
+
+Use the cheapest layer that can actually reproduce the risk. Do not replace a real boundary with mocks merely to call the test a unit test.
 
 For UI, follow user-visible behavior with accessible roles/labels and real interaction. Do not assert CSS classes, handler wiring, or private component state unless they are the accepted public contract.
 
@@ -75,6 +75,10 @@ For authorization, payment, callback, upload, migration, or concurrency logic, d
 ## 6. Apply the evidence filter
 
 A generated or edited test is worth keeping only when it builds/parses normally, detects the missing or incorrect behavior when practical, passes after the change, adds a distinct behavioral signal, is deterministic under relevant repeats, isolates its state, and produces a failure that points to the violated contract.
+
+Do not lock prose, private source text, or helper structure with regex/snapshots just to detect edits. A machine-consumed format or explicit architecture constraint may justify a structural check; prompt effectiveness needs task-outcome evaluation.
+
+Remove or consolidate an existing test only after identifying its lost signal and equivalent surviving evidence, or showing that its contract is obsolete. Never delete a valid failing regression to reduce test count.
 
 Coverage identifies surfaces to inspect; it does not prove assertion quality. Prefer boundaries, properties, and focused mutation evidence over testing getters or incidental lines.
 

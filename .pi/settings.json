@@ -10,5 +10,6 @@
     "npm:pi-lsp-adapter@0.1.3",
     "npm:@dreki-gg/pi-doc-search@0.3.2",
     "npm:@bytetrue/pi-web-search@0.2.1"
-  ]
+  ],
+  "theme": "slate"
 }

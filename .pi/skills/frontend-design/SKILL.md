@@ -19,7 +19,9 @@ Identify or state:
 - the real content and states required for the critical journey;
 - one measurable success signal.
 
-Infer the direction from product/brand evidence, state reversible assumptions, and proceed. Ask only when requirements conflict and no safe reversible direction exists. Never invent a redesign that conflicts with an accepted product or brand contract.
+Record explicit user preferences in the Owner direction section of `docs/DESIGN.md` before implementing: style, exact color values and roles, theme, type, constraints, and reference likes/dislikes. Keep agent-proposed details labeled separately; do not call an inferred hex value user-approved. A natural-language brief is enough, without an extra questionnaire or approval round. Preserve decisions on resume/bootstrap and change only what the current request supersedes. For a save-preferences-only request, update the relevant fields and report; do not expand it into research, design alternatives, code changes, or browser QA.
+
+Infer missing details from product/brand evidence, state reversible assumptions, and proceed. Ask only when requirements conflict and no safe reversible direction exists. Never invent a redesign that conflicts with an accepted product or brand contract.
 
 ## 2. Research without cloning
 
@@ -38,19 +40,20 @@ Before coding, define a compact direction in `docs/DESIGN.md`:
 
 - **Thesis:** one sentence connecting the visual idea to the product's job;
 - **Signature:** one memorable interaction, composition, or visual device rooted in the subject;
-- **Aesthetic risk:** one deliberate departure from the safest template answer, with rationale;
-- **Palette:** 4–8 semantic color roles with tested foreground/background pairs;
+- **Aesthetic risk:** a justified departure, or intentional restraint when the accepted direction calls for it;
+- **Palette:** exact values for the needed semantic roles and supported themes, mapped to real code tokens with foreground/background contrast evidence;
 - **Type:** display, body, and optional data/utility roles with a clear scale and fallback plan;
 - **Composition:** grid, density, rhythm, content measure, and responsive transformation;
 - **Art direction:** photography, illustration, icon, texture, or data-visualization language plus asset provenance/licensing;
 - **Motion:** one orchestrated moment plus restrained state feedback, or an explicit no-motion direction;
 - **States:** loading, empty, error, success, disabled, selected, focus, permission, and offline where relevant.
 
-Run an anti-default check before implementation: if the palette, font pair, hero, cards, copy, or motion could be pasted into an unrelated product unchanged, revise it. Spend boldness in one or two places and keep the surrounding system disciplined.
+An explicit owner palette or established design system is a constraint, not an anti-template failure. Run an anti-default check on the remaining choices before implementation: if the palette, font pair, hero, cards, copy, or motion could be pasted into an unrelated product unchanged, revise it. Spend boldness in one or two places and keep the surrounding system disciplined.
 
 ## 4. Build the visual system
 
 - Reuse sound existing components and tokens; evolve them intentionally when they cannot express the accepted direction.
+- Use the existing token source (CSS variables, theme config, or native design tokens); record its path and semantic names in `docs/DESIGN.md`. Before code exists the document holds proposed values; once implemented, code tokens own resolved values and the document records intent/mapping. Update both for an accepted change, without creating a second competing palette.
 - Name tokens by role rather than raw appearance. Keep repeated colors, type, spacing, radii, shadows, and motion values out of component-local literals.
 - Make typography carry hierarchy and personality. Do not default to the same fashionable font stack for every product.
 - Direct imagery and icons as a system: subject, framing, crop, lighting/texture, color treatment, responsive variants, alt text, and licensed provenance. Do not use random stock imagery or mixed icon families as filler.
@@ -63,6 +66,7 @@ Run an anti-default check before implementation: if the palette, font pair, hero
 
 ## 5. Protect quality while adding beauty
 
+- Validate the actual text/background and control/state pairs, including hover/focus and each supported theme. Preserve a requested brand color in an appropriate role; choose a legible foreground or accessible functional variant. Do not silently substitute a different brand color or claim compliance without measurement. Explain a material conflict when no compliant use fits the requested role.
 - Meet the accepted WCAG target; default to WCAG 2.2 AA when the product has not chosen one.
 - Preserve keyboard operation, visible focus, semantic names, non-color cues, reflow, zoom, touch targets, and reduced-motion behavior.
 - Make responsive layouts recomposed rather than merely shrunken. Verify the critical mobile and desktop viewports and RTL when relevant.

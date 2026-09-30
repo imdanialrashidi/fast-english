@@ -4,6 +4,14 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
+if [[ "${1:-}" == "--add-provider" ]]; then
+  if ! command -v node >/dev/null 2>&1; then
+    printf 'Node.js is required to configure a custom Pi provider.\n' >&2
+    exit 127
+  fi
+  exec node "$ROOT_DIR/scripts/pi-provider.mjs"
+fi
+
 if ! command -v pi >/dev/null 2>&1; then
   cat >&2 <<'MSG'
 Pi is not installed.
