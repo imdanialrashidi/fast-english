@@ -91,7 +91,7 @@ function assertSafeEvaluationPath(relative) {
   const sensitiveName =
     /(^|\/)(?:\.env(?:\.|$)|\.npmrc$|\.pypirc$|\.netrc$|storageState.*\.json$)|\.(?:pem|key|p12|pfx|jks|keystore)$/i;
   const sensitiveSegment =
-    /(^|\/)(?:docs\/private|playwright\/\.auth|server\/pb_data|\.ssh|\.gnupg|\.aws|\.kube|\.pi\/(?:auth\.json|models\.json|sessions|mcp-oauth))(?:\/|$)/i;
+    /(^|\/)(?:docs\/private|playwright\/\.auth|server\/pb_data|\.ssh|\.gnupg|\.aws|\.kube|\.pi\/(?:auth\.json|models\.json|mcp-auth\.json|sessions|mcp-oauth))(?:\/|$)/i;
   const allowedExample = path.posix.basename(normalized) === '.env.example';
   if (!allowedExample && (sensitiveName.test(normalized) || sensitiveSegment.test(normalized))) {
     throw new Error(`Refusing to copy sensitive evaluation input: ${normalized}`);

@@ -30,7 +30,7 @@ docs/private/**
 .pi/auth.json
 .pi/models.json
 .pi/trust.json
-.pi/mcp.json
+.pi/mcp-auth.json
 .pi/mcp-oauth/
 .pi/mcp-traces/
 

@@ -58,7 +58,7 @@ The agent derives the contract from available evidence. It asks a question only 
 
 Start from identifiers, not bulk context.
 
-The initial runtime surface is `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`, and `harness_tools`. Stay on that core for localized work. When the task needs planning, delegation, browser evidence, LSP, version-sensitive documentation, or current web evidence, call `harness_tools` once with every required capability instead of activating specialists one by one.
+The initial runtime surface is `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`, `harness_tools`, and native `tool_search`. Stay on that core for localized work. When the task needs planning, delegation, LSP, version-sensitive documentation, or current web evidence, call `harness_tools` once with every required capability instead of activating specialists one by one. For MCP/browser work, use `tool_search` directly and call only the returned schemas; no browser loader group is required.
 
 An implicit read of a regular text file at or above 96 KiB is bounded to 400 lines and returns the next offset. An explicit `offset` or `limit` is always preserved. Prefer exact search/symbol lookup and focused ranges over walking the rest of a large file linearly.
 

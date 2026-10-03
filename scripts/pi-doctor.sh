@@ -46,7 +46,7 @@ required=(
   .github/dependabot.yml
   .github/pull_request_template.md
   p
-  .mcp.json
+  .pi/mcp.json
   .pi/settings.json
   .pi/package-integrity.json
   .pi/verification.json
@@ -119,12 +119,12 @@ done
 
 node_version="$(node -p 'process.versions.node' 2>/dev/null || true)"
 if [[ -n "$node_version" ]] && version_at_least "$node_version" "22.19.0"; then
-  pass "Node $node_version satisfies Pi 0.84.2 requirement (>=22.19.0)"
+  pass "Node $node_version satisfies Pi 1.0.0 requirement (>=22.19.0)"
 else
   fail "Node >=22.19.0 is required for the reviewed Pi pin"
 fi
 
-if node -e 'for (const f of [".pi/settings.json", ".pi/verification.json", ".mcp.json", "evals/cases.json", ".pi/themes/slate.json"]) JSON.parse(require("fs").readFileSync(f,"utf8"))' >/dev/null 2>&1; then
+if node -e 'for (const f of [".pi/settings.json", ".pi/verification.json", ".pi/mcp.json", "evals/cases.json", ".pi/themes/slate.json"]) JSON.parse(require("fs").readFileSync(f,"utf8"))' >/dev/null 2>&1; then
   pass "Pi, verification, MCP, and evaluation configs are valid JSON"
 else
   fail "a Pi, verification, MCP, or evaluation config is invalid JSON"
@@ -225,11 +225,10 @@ const installed = new Set((settings.packages || []).map((entry) =>
 ));
 const required = [
   'npm:pi-sub-agent@0.1.5',
-  'npm:pi-mcp-adapter@2.26.1',
-  'npm:@juicesharp/rpiv-todo@2.6.2',
+  'npm:@juicesharp/rpiv-todo@2.12.0',
   'npm:pi-lsp-adapter@0.1.3',
   'npm:@dreki-gg/pi-doc-search@0.3.2',
-  'npm:@bytetrue/pi-web-search@0.2.1',
+  'npm:@bytetrue/pi-web-search@0.5.1',
 ];
 const missing = required.filter((item) => !installed.has(item));
 if (missing.length) {
@@ -247,12 +246,8 @@ for (const removed of [
     process.exit(1);
   }
 }
-const mcpPackage = (settings.packages || []).find((entry) =>
-  entry && typeof entry === 'object' && entry.source === 'npm:pi-mcp-adapter@2.26.1'
-);
-if (!mcpPackage || !Array.isArray(mcpPackage.skills) || mcpPackage.skills.length !== 0) {
-  console.error('MCP adapter package skills must be disabled to avoid loading mcpScript guidance.');
-  process.exit(1);
+if ([...installed].some((source) => /^npm:pi-mcp-adapter@/.test(source))) {
+  throw new Error('Remove pi-mcp-adapter: it replaces the native Pi MCP implementation.');
 }
 NODE
 then
@@ -263,11 +258,11 @@ fi
 
 if node <<'NODE'
 const fs = require('fs');
-const config = JSON.parse(fs.readFileSync('.mcp.json', 'utf8'));
+const config = JSON.parse(fs.readFileSync('.pi/mcp.json', 'utf8'));
 const server = config.mcpServers?.playwright;
 if (!server) throw new Error('Playwright MCP server is missing');
-if (config.settings?.scriptMode !== false) throw new Error('MCP scripting must be disabled');
-if (!Array.isArray(server.args) || !server.args.includes('@playwright/mcp@0.0.79')) {
+if (config.autoEnableCodemode !== false) throw new Error('Native codemode must remain opt-in');
+if (!Array.isArray(server.args) || !server.args.includes('@playwright/mcp@0.0.83')) {
   throw new Error('Playwright MCP version pin is missing');
 }
 if (!server.args.includes('--block-service-workers')) {
@@ -276,22 +271,23 @@ if (!server.args.includes('--block-service-workers')) {
 if (server.args[server.args.indexOf('--image-responses') + 1] !== 'allow') {
   throw new Error('Playwright must return native screenshot images; saved paths are not visual inspection');
 }
-if (server.lifecycle !== 'lazy') throw new Error('Playwright MCP must be lazy');
-const included = new Set(server.includeTools || []);
-const excluded = new Set(server.excludeTools || []);
-for (const unsafe of ['browser_file_upload', 'browser_drop']) {
-  if (included.has(unsafe)) throw new Error(`Unsafe browser tool exposed: ${unsafe}`);
-  if (!excluded.has(unsafe)) throw new Error(`Unsafe browser tool must be explicitly excluded: ${unsafe}`);
+if (server.exposure !== 'hidden') throw new Error('Unlisted browser tools must remain hidden');
+const exposure = server.toolExposure || {};
+for (const unsafe of ['browser_file_upload', 'browser_drop', 'browser_run_code', 'browser_run_code_unsafe', 'browser_install']) {
+  if (exposure[unsafe] && exposure[unsafe] !== 'hidden') throw new Error(`Unsafe browser tool exposed: ${unsafe}`);
+}
+if (Object.entries(exposure).some(([name, mode]) => !name.startsWith('browser_') || name.includes('*') || mode !== 'deferred')) {
+  throw new Error('Browser allowlist must contain exact deferred tool names');
 }
 for (const required of ['browser_snapshot', 'browser_find', 'browser_navigate', 'browser_take_screenshot', 'browser_evaluate']) {
-  if (!included.has(required)) throw new Error(`Required browser tool missing: ${required}`);
+  if (exposure[required] !== 'deferred') throw new Error(`Required browser tool missing: ${required}`);
 }
 if (server.args.includes('--allowed-origins')) {
   throw new Error('Autonomous browser mode must not be limited to localhost by MCP config');
 }
 NODE
 then
-  pass "Playwright MCP is pinned, lazy, autonomous, and blocks file injection"
+  pass "Native Playwright MCP is pinned, selectively deferred, and blocks file injection"
 else
   fail "Playwright MCP policy validation failed"
 fi
@@ -305,10 +301,11 @@ core_launcher_tools=(
   find
   ls
   harness_tools
+  tool_search
 )
 
 for tool in "${core_launcher_tools[@]}"; do
-  if grep -Fq "$tool" p; then
+  if grep -Fq "\"$tool\"" .pi/settings.json; then
     pass "launcher initially allows $tool"
   else
     fail "launcher does not initially allow $tool"
@@ -318,7 +315,6 @@ done
 specialist_tools=(
   subagent
   todo
-  mcp
   lsp_diagnostics
   lsp_definition
   lsp_references
@@ -331,7 +327,7 @@ specialist_tools=(
 )
 
 for tool in "${specialist_tools[@]}"; do
-  if grep -Fq "\"$tool\"" .pi/extensions/harness-runtime.js && ! grep -Fq "$tool" p; then
+  if grep -Fq "\"$tool\"" .pi/extensions/harness-runtime.js && ! grep -Fq "\"$tool\"" .pi/settings.json; then
     pass "$tool is deferred behind harness_tools"
   else
     fail "$tool must be mapped by harness_tools and absent from the initial launcher surface"
@@ -341,22 +337,18 @@ done
 if node <<'NODE'
 const fs = require('fs');
 const launcher = fs.readFileSync('p', 'utf8');
-const match = launcher.match(/--tools\s*\n\s*"([^"]+)"/);
-if (!match) throw new Error('launcher tool allowlist is missing');
-const tools = match[1].split(',').map((value) => value.trim()).filter(Boolean);
-const expected = ['read', 'bash', 'edit', 'write', 'grep', 'find', 'ls', 'harness_tools'];
-if (new Set(tools).size !== tools.length) throw new Error('launcher tool allowlist contains duplicates');
-if (JSON.stringify(tools) !== JSON.stringify(expected)) {
-  throw new Error(`launcher tools differ from the reviewed core: ${tools.join(',')}`);
-}
+if (/--tools\s*\n/.test(launcher)) throw new Error('launcher must not hide native deferred MCP tools with --tools');
+const tools = JSON.parse(fs.readFileSync('.pi/settings.json', 'utf8')).defaultTools;
+const expected = ['read', 'bash', 'edit', 'write', 'grep', 'find', 'ls', 'harness_tools', 'tool_search'];
+if (JSON.stringify(tools) !== JSON.stringify(expected)) throw new Error('defaultTools differs from the reviewed core');
 NODE
 then
-  pass "launcher exposes the exact eight-schema core and capability loader"
+  pass "launcher exposes the nine-schema core with native MCP discovery"
 else
-  fail "launcher default tool surface differs from the reviewed adaptive core"
+  fail "project default tool surface differs from the reviewed adaptive core"
 fi
 
-if grep -Fq 'PI_EXPERIMENTAL:-1' p .pi/models.env && \
+if grep -Fq 'PI_SMART_READ:-1' p .pi/models.env && \
    grep -Fq 'PI_SMART_READ:-1' p .pi/models.env && \
    grep -Fq 'PI_SMART_READ_BYTES:-98304' p .pi/models.env && \
    grep -Fq 'PI_SMART_READ_LINES:-400' p .pi/models.env && \
@@ -487,13 +479,13 @@ fi
 if command -v pi >/dev/null 2>&1; then
   version="$(pi --version 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
   if [[ -n "$version" ]]; then
-    if version_at_least "$version" "0.84.2"; then
-      pass "Pi $version satisfies minimum 0.84.2"
-      if [[ "$version" != "0.84.2" ]]; then
-        warn "Pi $version differs from the reviewed template pin 0.84.2; revalidate package/tool compatibility"
+    if version_at_least "$version" "1.0.0"; then
+      pass "Pi $version satisfies minimum 1.0.0"
+      if [[ "$version" != "1.0.0" ]]; then
+        warn "Pi $version differs from the reviewed template pin 1.0.0; revalidate package/tool compatibility"
       fi
     else
-      fail "Pi $version is older than required 0.84.2"
+      fail "Pi $version is older than required 1.0.0"
     fi
   else
     warn "Pi is installed but its version could not be parsed"

@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE_NAME="${PI_SANDBOX_IMAGE:-pi-workflow-sandbox:0.84.2}"
+IMAGE_NAME="${PI_SANDBOX_IMAGE:-pi-workflow-sandbox:1.0.0}"
 
 if ! command -v docker >/dev/null 2>&1; then
   printf 'Docker is required. See https://pi.dev/docs/latest/containerization\n' >&2

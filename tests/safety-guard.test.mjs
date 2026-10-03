@@ -264,6 +264,40 @@ test('browser mode supports public QA while strict mode narrows it', async () =>
   );
 });
 
+test('native MCP names preserve browser and Git boundaries, including nested calls', async () => {
+  for (const tool of ['browser_file_upload', 'browser_run_code_unsafe']) {
+    assert.match((await guard(`mcp__playwright__${tool}`, {})).reason, /Unsafe MCP/);
+  }
+  assert.match(
+    (await guard('mcp__playwright__browser_navigate', { url: 'file:///etc/passwd' })).reason,
+    /HTTP\(S\)/,
+  );
+  assert.match(
+    (
+      await guard(
+        'mcp__playwright__browser_navigate',
+        { url: 'https://example.com' },
+        { PI_GUARD_MODE: 'strict' },
+      )
+    ).reason,
+    /local-only/,
+  );
+  assert.equal(
+    await guard(
+      'mcp__playwright__browser_navigate',
+      { url: 'http://[::1]:3000' },
+      { PI_GUARD_MODE: 'strict' },
+    ),
+    undefined,
+  );
+  assert.match(
+    (await guard('mcp__playwright__browser_evaluate', {}, { PI_GUARD_MODE: 'strict' })).reason,
+    /Unsafe MCP/,
+  );
+  assert.match((await guard('mcp__github__create_pull_request', {})).reason, /owner-controlled/);
+  assert.match((await guard('read', { path: '.pi/agent/mcp-auth.json' })).reason, /Sensitive/);
+});
+
 test('invalid guard settings fail closed', async () => {
   assert.match(
     (await guard('read', { path: 'README.md' }, { PI_GIT_MUTATION: 'sometimes' })).reason,

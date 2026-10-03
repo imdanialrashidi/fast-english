@@ -11,6 +11,13 @@ const sensitiveSegments = [
   ".git",
   "playwright/.auth",
   "server/pb_data",
+  ".pi/auth.json",
+  ".pi/models.json",
+  ".pi/mcp-auth.json",
+  ".pi/agent/auth.json",
+  ".pi/agent/models.json",
+  ".pi/agent/mcp-auth.json",
+  // Project-specific: this repository keeps gitignored client material here.
   "docs/private",
   ".ssh",
   ".gnupg",
@@ -23,7 +30,6 @@ const workflowPaths = [
   "AGENTS.md",
   "p",
   ".pi",
-  ".mcp.json",
   ".github/workflows",
   "docs/HARNESS.md",
   "docs/GIT_POLICY.md",
@@ -182,6 +188,7 @@ function commandContainsSensitivePath(command) {
     /playwright\/\.auth/i,
     /storageState.*\.json/i,
     /server\/pb_data/i,
+    /\.pi\/(?:agent\/)?(?:auth|models|mcp-auth)\.json/i,
     /\.(?:pem|key|p12|pfx|jks|keystore)(?:[\s"'|;&]|$)/i,
   ].some((pattern) => pattern.test(scrubbed));
 }
@@ -429,7 +436,7 @@ function mcpCallReason(input, config) {
       if (!["http:", "https:"].includes(url.protocol)) {
         return `Playwright MCP navigation requires HTTP(S), not ${url.protocol}`;
       }
-      const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+      const localHosts = new Set(["localhost", "127.0.0.1", "[::1]"]);
       if (config.strict && !localHosts.has(url.hostname)) {
         return `Playwright MCP navigation is local-only in strict guard mode: ${url.origin}`;
       }
@@ -524,8 +531,11 @@ export default function safetyGuard(pi) {
       return;
     }
 
-    if (event.toolName === "mcp") {
-      const reason = mcpCallReason(event.input, config);
+    if (event.toolName === "mcp" || event.toolName.startsWith("mcp__")) {
+      // Native direct and codemode-nested calls have the same tool_call hook.
+      const input = event.toolName === "mcp" ? event.input
+        : { tool: event.toolName, args: event.input };
+      const reason = mcpCallReason(input, config);
       if (reason) return { block: true, reason };
       return;
     }

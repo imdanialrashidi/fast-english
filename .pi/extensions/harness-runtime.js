@@ -13,12 +13,12 @@ export const CORE_TOOLS = Object.freeze([
   "find",
   "ls",
   "harness_tools",
+  "tool_search",
 ]);
 
 export const CAPABILITY_TOOL_GROUPS = Object.freeze({
   planning: Object.freeze(["todo"]),
   delegation: Object.freeze(["subagent"]),
-  browser: Object.freeze(["mcp"]),
   code_intelligence: Object.freeze([
     "lsp_diagnostics",
     "lsp_definition",
@@ -37,7 +37,13 @@ export const SNAPSHOT_TYPE = "harness-runtime-snapshot";
 export const CONTINUITY_MESSAGE_TYPE = "harness-continuity";
 
 const CAPABILITIES = Object.freeze(Object.keys(CAPABILITY_TOOL_GROUPS));
-const MANAGED_SPECIALIST_TOOLS = new Set(Object.values(CAPABILITY_TOOL_GROUPS).flat());
+const MANAGED_SPECIALIST_TOOLS = new Set([
+  ...Object.values(CAPABILITY_TOOL_GROUPS).flat(),
+  // These package helpers otherwise become active despite project defaultTools.
+  "lsp_hover",
+  "lsp_document_symbols",
+  "doc_search_get_cached_doc_raw",
+]);
 const DEFAULT_SMART_READ_BYTES = 96 * 1024;
 const DEFAULT_SMART_READ_LINES = 400;
 const DEFAULT_BLIND_RETRY_LIMIT = 2;
@@ -387,8 +393,8 @@ export default function harnessRuntime(pi) {
   pi.registerTool({
     name: "harness_tools",
     label: "Harness Tools",
-    description: "Activate specialist tool groups only when core repository tools are insufficient. Request all needed groups together; pass an empty list to unload managed specialists.",
-    promptSnippet: "Activate specialist planning, delegation, browser, code-intelligence, docs, or web tools on demand",
+    description: "Activate specialist tool groups only when core repository tools are insufficient. Use native tool_search for MCP/browser tools. Request all needed groups together; pass an empty list to unload managed specialists.",
+    promptSnippet: "Activate specialist planning, delegation, code-intelligence, docs, or web tools on demand",
     promptGuidelines: [
       "Use harness_tools once with every needed specialist group when core tools are insufficient; keep localized work on the core surface.",
     ],
@@ -409,9 +415,8 @@ export default function harnessRuntime(pi) {
       const missing = result.unavailable.length
         ? ` Unavailable: ${result.unavailable.join(", ")}.`
         : "";
-      const vision = requested.includes("browser") ? visionGuidance(ctx?.model) : "";
       return {
-        content: [{ type: "text", text: `${action}${missing}${vision ? ` ${vision}` : ""}` }],
+        content: [{ type: "text", text: `${action}${missing}` }],
         details: {
           requested,
           activeCapabilities: [...activeCapabilities],
@@ -419,14 +424,13 @@ export default function harnessRuntime(pi) {
           removed: result.removed,
           unavailable: result.unavailable,
           activeTools: result.next,
-          ...(vision ? { harnessVision: { imageInput: imageInput(ctx?.model) } } : {}),
         },
       };
     },
   });
 
   pi.on("before_agent_start", (event, ctx) => {
-    if (!activeCapabilities.has("browser") && !event.images?.length) return;
+    if (!pi.getActiveTools().some((name) => name.startsWith("mcp__playwright__")) && !event.images?.length) return;
     return { systemPrompt: `${event.systemPrompt}\n${visionGuidance(ctx.model)}` };
   });
 

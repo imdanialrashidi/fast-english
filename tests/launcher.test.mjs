@@ -102,42 +102,25 @@ test('explicit model and thinking overrides pass through unchanged', () => {
   );
 });
 
-test('launcher exposes only the model-agnostic core and capability loader', () => {
+test('project defaults keep native MCP discovery while launcher preserves explicit CLI tool selection', () => {
   const result = parsed(runLauncher());
-  const toolsIndex = result.args.indexOf('--tools');
-  assert.notEqual(toolsIndex, -1);
-  const selected = result.args[toolsIndex + 1].split(',');
-  assert.equal(new Set(selected).size, selected.length);
-  assert.deepEqual(selected, [
-    'read',
-    'bash',
-    'edit',
-    'write',
-    'grep',
-    'find',
-    'ls',
-    'harness_tools',
-  ]);
-  for (const deferred of [
-    'subagent',
-    'todo',
-    'mcp',
-    'lsp_diagnostics',
-    'lsp_definition',
-    'lsp_references',
-    'lsp_workspace_symbols',
-    'lsp_more',
-    'doc_search_resolve_library_id',
-    'doc_search_get_library_docs',
-    'web_search',
-    'web_fetch',
-  ])
-    assert.equal(selected.includes(deferred), false, deferred);
+  assert.equal(
+    result.args.includes('--tools'),
+    false,
+    'CLI restrictions hide deferred native MCP tools',
+  );
+  assert.deepEqual(
+    JSON.parse(fs.readFileSync(path.join(repositoryRoot, '.pi/settings.json'), 'utf8'))
+      .defaultTools,
+    ['read', 'bash', 'edit', 'write', 'grep', 'find', 'ls', 'harness_tools', 'tool_search'],
+  );
+  const restricted = parsed(runLauncher({}, ['--tools', 'read']));
+  assert.deepEqual(restricted.args.slice(-2), ['--tools', 'read']);
 });
 
 test('launcher enables bounded runtime optimization defaults with explicit opt-outs', () => {
   const defaults = parsed(runLauncher());
-  assert.equal(defaults.experimental, '1');
+  assert.equal(defaults.experimental, '', 'do not force Pi experimental UI or setup');
   assert.equal(defaults.smartRead, '1');
   assert.equal(defaults.smartReadBytes, '98304');
   assert.equal(defaults.smartReadLines, '400');
@@ -182,4 +165,18 @@ test('launcher rejects an invalid project-trust mode', () => {
   const result = runLauncher({ PI_PROJECT_TRUST: 'sometimes' });
   assert.equal(result.status, 2);
   assert.match(result.stderr, /always, ask, never/);
+});
+
+test('native MCP subcommands are commands rather than accidental model prompts', () => {
+  const result = parsed(
+    runLauncher({ PI_MAIN_MODEL: 'provider/model-id' }, ['mcp', 'list', '--json']),
+  );
+  assert.deepEqual(result.args, ['mcp', 'list', '--json']);
+});
+
+test('custom-provider setup routes through Node before requiring Pi', () => {
+  const result = runLauncher({}, ['--add-provider']);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /interactive terminal/);
+  assert.equal(result.stdout, '');
 });

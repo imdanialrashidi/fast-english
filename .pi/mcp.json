@@ -1,0 +1,50 @@
+{
+  "autoEnableCodemode": false,
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.83",
+        "--headless",
+        "--isolated",
+        "--block-service-workers",
+        "--image-responses",
+        "allow",
+        "--output-dir",
+        ".artifacts/playwright",
+        "--console-level",
+        "warning",
+        "--timeout-action",
+        "10000",
+        "--timeout-navigation",
+        "90000"
+      ],
+      "timeout": 120,
+      "description": "Browser QA: navigate, inspect accessibility/DOM, interact, inspect errors and requests, and capture native screenshot images.",
+      "exposure": "hidden",
+      "toolExposure": {
+        "browser_close": "deferred",
+        "browser_console_messages": "deferred",
+        "browser_find": "deferred",
+        "browser_network_request": "deferred",
+        "browser_network_requests": "deferred",
+        "browser_navigate": "deferred",
+        "browser_navigate_back": "deferred",
+        "browser_resize": "deferred",
+        "browser_snapshot": "deferred",
+        "browser_take_screenshot": "deferred",
+        "browser_tabs": "deferred",
+        "browser_wait_for": "deferred",
+        "browser_click": "deferred",
+        "browser_fill_form": "deferred",
+        "browser_handle_dialog": "deferred",
+        "browser_hover": "deferred",
+        "browser_press_key": "deferred",
+        "browser_select_option": "deferred",
+        "browser_type": "deferred",
+        "browser_evaluate": "deferred"
+      }
+    }
+  }
+}

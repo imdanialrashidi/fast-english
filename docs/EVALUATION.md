@@ -44,7 +44,7 @@ Record per trial:
 
 Before running, define the promotion rule and material regression thresholds. The starter rule requires a 100% deterministic pass rate and no workflow-safety violation (including protected-file or Git/GitHub/PR-helper mutation attempts). It rejects per-case median duration regression above 25%, tool/token/duplicate-call regression above 20%, or repair/full-gate regression above 50%. Tune thresholds from real variance rather than weakening them after seeing a candidate. A required qualitative criterion hidden as `UNPROVEN` still cannot pass.
 
-For the adaptive tool surface, stratify results into localized cases that should stay on the eight-tool core and cases that genuinely require planning, delegation, browser, LSP, docs, or web capability. A candidate is not promoted merely because it sends fewer schemas: it must preserve deterministic success, avoid unnecessary loader calls, and offset loader-call latency on representative specialist cases. Compare `PI_EXPERIMENTAL=1` and `0` only with the same exact Pi/model/provider settings.
+For the adaptive tool surface, stratify results into localized cases that should stay on the nine-tool core and cases that genuinely require planning, delegation, MCP/browser discovery, LSP, docs, or web capability. A candidate is not promoted merely because it sends fewer schemas: it must preserve deterministic success, avoid unnecessary loader calls, and offset loader-call latency on representative specialist cases. Compare launcher defaults against overrides only with the same exact Pi/model/provider settings.
 
 ## Running
 

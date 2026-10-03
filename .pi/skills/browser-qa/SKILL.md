@@ -9,7 +9,7 @@ Use real browser evidence only where browser behavior matters.
 
 ## Browser tool roles
 
-Use Playwright MCP through the `mcp` proxy for interactive exploration:
+Use Playwright MCP through Pi's native `mcp__playwright__*` tools for interactive exploration:
 
 - navigation;
 - accessibility snapshots and focused snapshot search;
@@ -23,7 +23,7 @@ Use repository-local Playwright Test or the project's browser-test scripts for d
 
 Do not treat a successful MCP interaction as a replacement for a repository-local deterministic test.
 
-Autonomous mode exposes `browser_evaluate`; keep it focused, read-oriented, and justified by an evidence gap. Local file upload, drag-and-drop file injection, and MCP scripting are intentionally unavailable. Strict mode additionally blocks page evaluation and public navigation; do not work around those boundaries.
+Autonomous mode exposes `browser_evaluate`; keep it focused, read-oriented, and justified by an evidence gap. Local file upload, drag-and-drop file injection, and arbitrary browser scripting are intentionally unavailable. Strict mode additionally blocks page evaluation and public navigation; do not work around those boundaries.
 
 ## Order of operations
 
@@ -39,19 +39,21 @@ Autonomous mode exposes `browser_evaluate`; keep it focused, read-oriented, and 
 
 ## MCP usage pattern
 
-Use the single `mcp` proxy tool:
+Use native discovery:
 
-1. search for the required Playwright capability;
-2. describe the selected tool before first use when its arguments are unclear;
-3. call only the narrowest tool needed;
-4. keep large snapshots focused by using `browser_find`, target refs, depth, or saved files;
-5. close the browser when the exploration is complete.
+1. Call `tool_search` with a focused Playwright capability query and a small relevant limit; no `harness_tools` browser activation is needed.
+2. Call the returned `mcp__playwright__*` tool using its declared schema. Do not guess adapter proxy arguments.
+3. Reuse loaded tools rather than search every turn. They persist on the active Pi branch across resume/reload.
+4. Keep snapshots focused with `browser_find`, target refs, or saved text.
+5. Close the browser when exploration is complete.
+
+If the operator explicitly enables native codemode, forward screenshot image blocks with `image(block)`; a text-only summary is not pixel delivery. Nested calls retain the same guard boundaries.
 
 Use screenshots as visual evidence artifacts, not as the primary interaction mechanism. Accessibility snapshots are preferred for actions. When the active model cannot inspect image inputs, use DOM, accessibility, geometry, computed-state, console, and network evidence for claims it can actually verify; mark purely appearance-dependent acceptance `UNPROVEN`.
 
 ## Pixel-inspection loop
 
-1. **Check capability and delivery separately.** Activating `browser` through `harness_tools` reports the active model's configured `imageInput`: `supported`, `unsupported`, or `unknown`. This is metadata, not a successful perception test. Never infer Vision from a model name. Respect `images.blockImages`, user opt-outs, provider rejection, and privacy restrictions; do not switch models/providers automatically.
+1. **Check capability and delivery separately.** The runtime annotates image results with the active model's configured `imageInput`: `supported`, `unsupported`, or `unknown`. This is metadata, not a successful perception test. Never infer Vision from a model name. Respect `images.blockImages`, user opt-outs, provider rejection, and privacy restrictions; do not switch models/providers automatically.
 2. **Inspect references and the baseline first.** When a user supplies an image, actually inspect it before proposing a visual fix. For an existing runnable UI, inspect its affected baseline before editing. Distinguish reference, before, and current images explicitly; derive observations from pixels, not filenames or a previous agent's description.
 3. **Receive actual pixels.** Playwright is configured with `--image-responses allow`; its screenshot tool returns native image blocks through MCP. The runtime reports `imageBlocks` returned by the tool, not proof that the provider accepted them or that you inspected them. If a permitted result contains only a saved path, open that exact image with `read`. Never paste base64 into text, invent an image tool, or bypass disabled image reading. An absent, filtered, rejected, or unreadable image leaves appearance-only criteria `UNPROVEN`.
 4. **Capture a small, readable set.** For material redesigns, begin with one representative desktop and one narrow-mobile viewport of the critical state. Add a demanding state only when relevant. For a tiny visual fix, inspect only the affected viewport/state. Prefer a viewport PNG for composition and an element screenshot/crop for small text or fine detail; avoid shrinking a very tall full-page image until everything is illegible. Keep scale/aspect ratio and record route, state/fixture, viewport, theme, locale/direction, and current revision/diff. Wait for fonts, relevant images, and an observable ready state—not a fixed sleep.

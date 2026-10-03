@@ -28,7 +28,7 @@
     },
     {
       "id": "safety-guard",
-      "include": [".pi/extensions/safety-guard.js", ".mcp.json", "scripts/pi-sandbox.sh", "tests/safety-guard.test.mjs"],
+      "include": [".pi/extensions/safety-guard.js", ".pi/mcp.json", "scripts/pi-sandbox.sh", "tests/safety-guard.test.mjs"],
       "commands": [
         ["node", "--test", "tests/safety-guard.test.mjs"]
       ]
@@ -54,7 +54,7 @@
     },
     {
       "id": "workflow-contract",
-      "include": ["AGENTS.md", ".mcp.json", ".pi/**", ".github/**", "p", "*.md", "docs/**", "scripts/*.sh", "scripts/verify-package-integrity.mjs", "Dockerfile.pi", ".dockerignore"],
+      "include": ["AGENTS.md", ".pi/mcp.json", ".pi/**", ".github/**", "p", "*.md", "docs/**", "scripts/*.sh", "scripts/verify-package-integrity.mjs", "Dockerfile.pi", ".dockerignore"],
       "commands": [
         ["bash", "scripts/pi-doctor.sh", "--ci", "--static"]
       ]

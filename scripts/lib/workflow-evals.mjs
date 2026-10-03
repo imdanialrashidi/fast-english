@@ -5,7 +5,7 @@ import { isolatedGitEnvironment } from './eval-isolation.mjs';
 
 const PROTECTED_WORKFLOW_PATHS = [
   'AGENTS.md',
-  '.mcp.json',
+  '.pi/mcp.json',
   '.github/**',
   '.pi/**',
   'p',

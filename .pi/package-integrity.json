@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "reviewedAt": "2026-08-20",
+  "reviewedAt": "2026-10-01",
   "packages": [
     {
-      "source": "npm:@earendil-works/pi-coding-agent@0.84.2",
-      "integrity": "sha512-l4E+B7hgXKWddRo8bC/eSue2aWZjEgJ9xIpf5p0Og+lq8a2TArCwJ0HCoCPCgaBP/tN4zbYH/wOwvx9pJpeLCA==",
+      "source": "npm:@earendil-works/pi-coding-agent@1.0.0",
+      "integrity": "sha512-/FtbxoSQU/mEv1QnichJjRjqteqaIaMWxmhB4G367+MwZfX7/DI5B9YAg5lqbN7nztFskBEtUSZ+FlmMBECtMw==",
       "license": "MIT",
       "repository": "https://github.com/earendil-works/pi"
     },
@@ -15,14 +15,8 @@
       "repository": "https://github.com/HamdiMaz/pi-sub-agent"
     },
     {
-      "source": "npm:pi-mcp-adapter@2.26.1",
-      "integrity": "sha512-6/KDXIEPXTVM77274jAloxAo9AQSEy5EJ/7afIlUK2T8HOfeVapTJvwImvyChiIH+0gGShbFgnBK2BXFrjbj2w==",
-      "license": "MIT",
-      "repository": "https://github.com/nicobailon/pi-mcp-adapter"
-    },
-    {
-      "source": "npm:@juicesharp/rpiv-todo@2.6.2",
-      "integrity": "sha512-Lt2HzNaKWgOl7/nEJrxtRsKoIQJTZd32BeckDxJ0JGvoUmwYvqOicSpXbgKVZwyGqGBw90WBKYWkEggo9U/Q4Q==",
+      "source": "npm:@juicesharp/rpiv-todo@2.12.0",
+      "integrity": "sha512-bTILerGqMGrWMUkahHzXTuYa4iPkRX/LTl12HPppcCdPg7pGwrC1K7/ZtPfp7Xi4cXzqEoyZpeUM6IA8y5gtEQ==",
       "license": "MIT",
       "repository": "https://github.com/juicesharp/rpiv-mono"
     },
@@ -39,14 +33,14 @@
       "repository": "https://github.com/jalbarrang/pi-doc-search"
     },
     {
-      "source": "npm:@bytetrue/pi-web-search@0.2.1",
-      "integrity": "sha512-n3itCdDh8Tj85LG7dd+AGE+S8QY/eP/ng8LQCGfptjLgBRzSUsewSuhP9YFfBtiv5HMi82ESwDbwiyFy4STC4A==",
+      "source": "npm:@bytetrue/pi-web-search@0.5.1",
+      "integrity": "sha512-UYgw5Yw0goW29k5kYtWc44E27SNyxW6eLmuBB8iadoLy9D4L2+Tpr+CW9I6w0LKEo4unQvQtXx6JLvvlZ483/g==",
       "license": "MIT",
       "repository": "https://github.com/ByteTrue/pi-package-mono"
     },
     {
-      "source": "npm:@playwright/mcp@0.0.79",
-      "integrity": "sha512-VpqD4a3vFyGQMY9sh3UJiO6wjcurggkljKfAyCHL0QWGY5m6Ehr3MNsAAHPDHO//n13g0PCjpHatAOiulrqdZQ==",
+      "source": "npm:@playwright/mcp@0.0.83",
+      "integrity": "sha512-oNcl+Ae2/IAjhfPeP46BfIkSakfmprY+aOtkv5MjrQ4lPav4/yNtPhL0iq8SlIM90oApWgBDUxaNKvktazUKOg==",
       "license": "Apache-2.0",
       "repository": "https://github.com/microsoft/playwright-mcp"
     }

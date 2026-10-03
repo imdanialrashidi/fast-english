@@ -1,6 +1,24 @@
 # Research Basis and Optimization Record
 
-Reviewed: **2026-08-23**. Test-quality amendment reviewed: **2026-08-24**. This record connects current primary evidence to concrete workflow controls. It does not claim that a prompt- or tool-level change improves every model or repository; deterministic tests protect invariants, and repeated matched-model evals remain the promotion standard.
+Reviewed: **2026-08-23**. Test-quality amendment reviewed: **2026-08-24**. Pi 1.0 compatibility amendment reviewed: **2026-10-03**. This record connects current primary evidence to concrete workflow controls. It does not claim that a prompt- or tool-level change improves every model or repository; deterministic tests protect invariants, and repeated matched-model evals remain the promotion standard.
+
+## 2026-10-03 — Pi 1.0 compatibility review
+
+This amendment supersedes the earlier runtime/MCP package and tool-loading decisions below, which remain an audit history. The workflow was brought forward from the reviewed `0.84.2` pin to the upstream template's Pi `1.0.0` set. Registry metadata and tarball integrities were copied from the upstream reviewed manifest and re-validated offline.
+
+| Primary source | Change and reason |
+|---|---|
+| Pi [v1.0.0 MCP docs](https://github.com/earendil-works/pi/blob/v1.0.0/packages/coding-agent/docs/mcp.md) | Replace `pi-mcp-adapter` with native project MCP in `.pi/mcp.json`. Declare the 19 named browser tools `deferred` with server `exposure: "hidden"`, keep `autoEnableCodemode: false`, and use native `tool_search`. Verified against the v1.0.0 document, not the previous adapter schema: a hidden server may still expose selected tools. |
+| Pi [settings/tools](https://github.com/earendil-works/pi/blob/v1.0.0/packages/coding-agent/docs/settings.md#tools), [extensions](https://github.com/earendil-works/pi/blob/v1.0.0/packages/coding-agent/docs/extensions.md) | Move the core allowlist from launcher `--tools` to project `defaultTools` and add `tool_search`. A CLI allowlist omits tools from the registry even after `tool_search` discovery. Remove the `browser` loader group: browser work now goes through native discovery. Keep five non-MCP capability groups conditional. |
+| Pi [CLI](https://github.com/earendil-works/pi/blob/v1.0.0/packages/coding-agent/docs/cli.md) | Pass native leading subcommands (`mcp`, `auth`, `install`, …) straight through, because session flags otherwise turn them into prompt text. Stop forcing `PI_EXPERIMENTAL`; Pi owns that surface. |
+| Playwright MCP `0.0.83` published package | Upgrade from `0.0.79` and retain `--image-responses allow`. Guidance corrected: the generic Chromium install command does not provide the default Chrome channel the server expects. |
+| Published `rpiv-todo` `2.12.0` and `pi-web-search` `0.5.1` | Adopt the upstream pins. Web search moves personal configuration under the agent directory and preserves legacy config; no new package or skill is introduced. |
+
+Project-specific controls deliberately **retained** against the upstream diff: `docs/private` in the guard's sensitive segments, the `risk-review` skill, `scripts/secret-scan-filter.mjs` and its doctor integration, the Fast English CI lanes, `scripts/verify.sh` delegation to `scripts/project-verify.sh`, and `scripts/ci-install.sh` Playwright provisioning.
+
+Validation actually performed: `bash scripts/pi-doctor.sh --ci --static` passed every check; `node scripts/verify-package-integrity.mjs` validated 7 offline records; `node --test tests/*.test.mjs` passed 167/167; `node scripts/run-workflow-evals.mjs --dry-run` accepted the 20-case suite; the launcher and guard suites gained explicit native-MCP, `[::1]`, subcommand-passthrough and `defaultTools` assertions.
+
+Limits: no live Playwright page render, screenshot capture, real provider run, or paid evaluation trial was executed here. Those remain operator checks, and no model-backed quality, latency or cost improvement is claimed by this amendment. Registry integrity was **not** re-checked against the live npm registry (`--online` not run).
 
 ## Result in one page
 

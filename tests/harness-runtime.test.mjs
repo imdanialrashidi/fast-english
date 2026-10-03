@@ -65,6 +65,9 @@ function createRuntime({ entries = [], branch = entries, extraTools = [] } = {})
   };
   return {
     activeTools: () => [...activeTools],
+    loadTools: (names) => {
+      activeTools = [...names];
+    },
     appended,
     ctx,
     handlers,
@@ -99,43 +102,39 @@ test('specialist capability groups load additively and reset without dropping un
     tool.parameters.properties.capabilities.items.enum,
     Object.keys(CAPABILITY_TOOL_GROUPS),
   );
-  assert.deepEqual(tool.prepareArguments({ capabilities: '["browser","web"]' }), {
-    capabilities: ['browser', 'web'],
+  assert.deepEqual(tool.prepareArguments({ capabilities: '["docs","web"]' }), {
+    capabilities: ['docs', 'web'],
   });
 
-  const first = await tool.execute('loader-1', { capabilities: ['browser', 'web'] });
-  assert.deepEqual(first.details.added, ['mcp', 'web_search', 'web_fetch']);
-  assert.ok(runtime.activeTools().includes('mcp'));
+  const first = await tool.execute('loader-1', { capabilities: ['docs', 'web'] });
+  assert.deepEqual(first.details.added, [
+    'doc_search_resolve_library_id',
+    'doc_search_get_library_docs',
+    'web_search',
+    'web_fetch',
+  ]);
+  assert.ok(runtime.activeTools().includes('doc_search_get_library_docs'));
   assert.ok(runtime.activeTools().includes('local_custom'));
 
-  const second = await tool.execute('loader-2', { capabilities: ['browser', 'web'] });
+  const second = await tool.execute('loader-2', { capabilities: ['docs', 'web'] });
   assert.deepEqual(second.details.added, []);
   assert.equal(new Set(runtime.activeTools()).size, runtime.activeTools().length);
 
   const reset = await tool.execute('loader-3', { capabilities: [] });
-  assert.deepEqual(new Set(reset.details.removed), new Set(['mcp', 'web_search', 'web_fetch']));
+  assert.deepEqual(
+    new Set(reset.details.removed),
+    new Set([
+      'doc_search_resolve_library_id',
+      'doc_search_get_library_docs',
+      'web_search',
+      'web_fetch',
+    ]),
+  );
   assert.ok(runtime.activeTools().includes('local_custom'));
   assert.equal(
     runtime.activeTools().some((name) => specialistTools.includes(name)),
     false,
   );
-});
-
-test("browser activation reports the active model's image input without guessing by model name", async () => {
-  const runtime = createRuntime();
-  for (const [model, expected] of [
-    [{ id: 'text-only', input: ['text', 'image'] }, 'supported'],
-    [{ id: 'vision-pro', input: ['text'] }, 'unsupported'],
-    [{ id: 'vision-pro' }, 'unknown'],
-  ]) {
-    runtime.ctx.model = model;
-    const result = await runtime
-      .tool()
-      .execute('browser', { capabilities: ['browser'] }, undefined, undefined, runtime.ctx);
-    assert.equal(result.details.harnessVision.imageInput, expected);
-    assert.match(result.content[0].text, /image input/);
-  }
-  assert.equal(runtime.activeTools().length, 9, 'vision must reuse the core read and MCP tools');
 });
 
 test('visual guidance is task-scoped, rechecks the model, and does not survive a fresh nonvisual session', async () => {
@@ -152,11 +151,10 @@ test('visual guidance is task-scoped, rechecks the model, and does not survive a
   assert.ok(attached.systemPrompt.startsWith('Existing policy\n'));
   assert.match(attached.systemPrompt, /image input=supported/);
   assert.match(attached.systemPrompt, /UNPROVEN/);
-  await runtime
-    .tool()
-    .execute('browser', { capabilities: ['browser'] }, undefined, undefined, runtime.ctx);
+  runtime.loadTools([...runtime.activeTools(), 'mcp__playwright__browser_snapshot']);
   runtime.ctx.model = { input: ['text'] };
   assert.match((await start(event, runtime.ctx)).systemPrompt, /image input=unsupported/);
+  runtime.loadTools([...CORE_TOOLS]);
   await runtime.handlers.get('session_start')({}, runtime.ctx);
   assert.equal(await start(event, runtime.ctx), undefined);
 });
@@ -166,9 +164,9 @@ test('image evidence preserves native blocks and never equates tool output with 
   runtime.ctx.model = { input: ['text', 'image'] };
   const image = { type: 'image', data: 'fixture-image-bytes', mimeType: 'image/png' };
   const event = {
-    toolName: 'mcp',
+    toolName: 'mcp__playwright__browser_take_screenshot',
     toolCallId: 'shot',
-    input: { tool: 'browser_take_screenshot', args: {} },
+    input: {},
     content: [{ type: 'text', text: 'Saved screenshot' }, image],
     details: { original: true },
     isError: false,
@@ -209,7 +207,12 @@ test('image evidence preserves native blocks and never equates tool output with 
   assert.match(failed.content.at(-1).text, /failed/);
   assert.equal(
     await runtime.handlers.get('tool_result')(
-      { ...event, input: { tool: 'browser_snapshot' }, content: [event.content[0]] },
+      {
+        ...event,
+        toolName: 'mcp__playwright__browser_snapshot',
+        input: {},
+        content: [event.content[0]],
+      },
       runtime.ctx,
     ),
     undefined,
@@ -320,7 +323,7 @@ test('a third identical failed call is blocked until a different successful evid
 
 test('continuity snapshots persist bounded state and inject once after resume or compaction', async () => {
   const first = createRuntime();
-  await first.tool().execute('loader', { capabilities: ['browser'] });
+  await first.tool().execute('loader', { capabilities: ['docs'] });
   await emitTool(first, 'edit', { path: 'src/app.js', oldText: 'a', newText: 'b' }, false, 'edit');
   await emitTool(first, 'bash', { command: 'node --test tests/app.test.mjs' }, false, 'check');
   await emitTool(first, 'read', { path: 'missing.txt' }, true, 'failure');
@@ -329,7 +332,7 @@ test('continuity snapshots persist bounded state and inject once after resume or
   assert.equal(first.appended.length, 1);
   const entry = first.appended[0];
   assert.equal(entry.customType, SNAPSHOT_TYPE);
-  assert.deepEqual(entry.data.capabilities, ['browser']);
+  assert.deepEqual(entry.data.capabilities, ['docs']);
   assert.deepEqual(entry.data.modifiedFiles, ['src/app.js']);
   assert.deepEqual(entry.data.checks, [
     {
@@ -344,7 +347,7 @@ test('continuity snapshots persist bounded state and inject once after resume or
     { type: 'session_start', reason: 'resume' },
     resumed.ctx,
   );
-  assert.ok(resumed.activeTools().includes('mcp'));
+  assert.ok(resumed.activeTools().includes('doc_search_get_library_docs'));
   const originalMessages = [{ role: 'user', content: 'continue', timestamp: Date.now() }];
   const injected = await resumed.handlers.get('context')({
     type: 'context',
@@ -386,14 +389,30 @@ test('signatures and capsules never expose raw secret inputs', () => {
 });
 
 test('a fresh session drops managed specialists left active by the previous session', async () => {
-  const runtime = createRuntime({ extraTools: ['mcp', 'local_custom'] });
-  assert.ok(runtime.activeTools().includes('mcp'));
+  const runtime = createRuntime({
+    extraTools: [
+      'doc_search_get_library_docs',
+      'lsp_hover',
+      'lsp_document_symbols',
+      'doc_search_get_cached_doc_raw',
+      'mcp__playwright__browser_snapshot',
+      'local_custom',
+    ],
+  });
+  assert.ok(runtime.activeTools().includes('doc_search_get_library_docs'));
   await runtime.handlers.get('session_start')(
     { type: 'session_start', reason: 'new' },
     runtime.ctx,
   );
-  assert.equal(runtime.activeTools().includes('mcp'), false);
+  assert.equal(runtime.activeTools().includes('doc_search_get_library_docs'), false);
   assert.ok(runtime.activeTools().includes('local_custom'));
+  assert.ok(
+    runtime.activeTools().includes('mcp__playwright__browser_snapshot'),
+    'native MCP branch state belongs to Pi',
+  );
+  for (const name of ['lsp_hover', 'lsp_document_symbols', 'doc_search_get_cached_doc_raw']) {
+    assert.equal(runtime.activeTools().includes(name), false);
+  }
   assert.deepEqual(runtime.appended, []);
 });
 

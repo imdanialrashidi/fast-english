@@ -22,7 +22,6 @@
       "!dist-landing-apk",
       "!dist-admin",
       "!.pi",
-      "!.mcp.json",
       "!.artifacts"
     ]
   },

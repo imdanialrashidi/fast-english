@@ -43,6 +43,37 @@
       }
     },
     {
+      "id": "design-save-owner-direction",
+      "tags": ["frontend", "design", "preferences"],
+      "prompt": "/design فقط این ترجیحات را برای پروژه ثبت کن: رابط فارسی راست‌به‌چپ، روشن و مینیمال؛ پس‌زمینه #F8FAFC، متن #0F172A و دکمه اصلی #166534 با متن سفید. فونت Vazirmatn، گوشه‌های کم‌گرد و بدون گرادینت. هنوز کد رابط را پیاده نکن.",
+      "rubric": [
+        "persists explicit owner colors, roles, font and RTL in DESIGN",
+        "distinguishes owner choices from proposed details and unmeasured contrast",
+        "does not invent inspected references or token source paths",
+        "records preferences without a questionnaire, redesign exploration or application edits"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["docs/DESIGN.md"],
+          "require": ["docs/DESIGN.md"],
+          "maxFiles": 1
+        }
+      },
+      "checks": [
+        {
+          "id": "owner-values-saved",
+          "command": [
+            "node",
+            "-e",
+            "const s=require('node:fs').readFileSync('docs/DESIGN.md','utf8').toLowerCase();if(!['#f8fafc','#0f172a','#166534','vazirmatn'].every(v=>s.includes(v)))process.exit(1);"
+          ],
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
       "id": "design-rtl-finance",
       "tags": ["frontend", "design", "rtl", "flagship"],
       "prompt": "/design A flagship Persian-language personal-finance onboarding journey for first-time investors. It must feel calm and credible, not like a crypto dashboard. Create the accepted direction only.",
@@ -118,7 +149,13 @@
         "generic choices are product-relative",
         "reviewer inspects images in its own context or marks dependent dimensions unproven without invented scores"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "a11y-dialog-regression",
@@ -130,7 +167,13 @@
         "color-independent cue",
         "browser regression proof"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "responsive-long-content",
@@ -142,7 +185,13 @@
         "zoom/reflow proof",
         "two-dimensional exception considered"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "performance-hero-media",
@@ -154,7 +203,13 @@
         "distinguishes lab and field",
         "preserves reduced motion and visual intent"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "autonomous-reversible-default",
@@ -197,7 +252,72 @@
         "reports blocker precisely",
         "avoids unrelated workflow edits"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
+    },
+    {
+      "id": "copy-edit-without-test-churn",
+      "tags": ["test", "economy", "localized"],
+      "prompt": "/build Correct the spelling of 'reciept' in evals/fixtures/test-economy/README.md. Preserve its meaning and formatting and verify the correction.",
+      "rubric": [
+        "corrects only the requested typo",
+        "uses a proportionate check without permanent test scaffolding",
+        "does not turn content verification into a broad test run"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "required",
+          "allow": ["evals/fixtures/test-economy/README.md"],
+          "require": ["evals/fixtures/test-economy/README.md"],
+          "maxFiles": 1
+        }
+      },
+      "checks": [
+        {
+          "id": "copy-corrected",
+          "command": [
+            "node",
+            "-e",
+            "const fs=require('node:fs');const s=fs.readFileSync('evals/fixtures/test-economy/README.md','utf8');if(s!=='# Receipts\\n\\nDownload your receipt from the order page.\\n')process.exit(1);"
+          ],
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "id": "already-covered-behavior",
+      "tags": ["test", "economy", "correctness"],
+      "prompt": "/test Verify that an order of two units at 12.50 each totals 25 without a discount in evals/fixtures/tiered-pricing. Keep this request scoped to that below-tier behavior.",
+      "rubric": [
+        "finds and runs the existing below-tier test",
+        "adds no duplicate test or implementation change",
+        "reports the executed check as evidence without claiming untested boundaries pass"
+      ],
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      },
+      "checks": [
+        {
+          "id": "existing-below-tier",
+          "command": [
+            "node",
+            "--test",
+            "--test-name-pattern=below the tier",
+            "evals/fixtures/tiered-pricing/pricing.test.mjs"
+          ],
+          "timeoutMs": 10000
+        }
+      ]
     },
     {
       "id": "tiered-pricing-regression",
@@ -243,7 +363,13 @@
         "no client authority",
         "audit/privacy implications"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "payment-callback-boundary",
@@ -255,7 +381,13 @@
         "ordering/state invariants",
         "audit and recovery"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "architecture-decision",
@@ -267,7 +399,13 @@
         "states tradeoffs and revisit trigger",
         "does not implement"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "long-task-handoff",
@@ -279,7 +417,13 @@
         "exact evidence status",
         "smallest next action"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "tooling-prerequisite-failure",
@@ -291,7 +435,13 @@
         "no blind retry loop",
         "visual verdict remains unproven"
       ],
-      "assertions": { "completion": "completed", "changes": { "mode": "none", "maxFiles": 0 } }
+      "assertions": {
+        "completion": "completed",
+        "changes": {
+          "mode": "none",
+          "maxFiles": 0
+        }
+      }
     },
     {
       "id": "release-and-incident",

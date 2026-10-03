@@ -4,6 +4,38 @@ All notable workflow changes are documented here. This project follows the spiri
 
 ## Unreleased
 
+### Changed
+
+- Updated the Pi workflow to the upstream Pi 1.0.0 release: reviewed runtime pin
+  `0.84.2` → `1.0.0`, `@juicesharp/rpiv-todo` `2.6.2` → `2.12.0`,
+  `@bytetrue/pi-web-search` `0.2.1` → `0.5.1`, and Playwright MCP
+  `0.0.79` → `0.0.83`, with refreshed registry integrities.
+- Replaced the third-party `pi-mcp-adapter` and the root `.mcp.json` with Pi's
+  native project MCP config at `.pi/mcp.json`. The 19 reviewed browser tools
+  are declared `deferred`, unlisted tools stay `hidden`, and native codemode
+  remains opt-in. Removed the forced `PI_EXPERIMENTAL=1` default.
+- Moved the core tool surface from launcher `--tools` to project `defaultTools`
+  and added native `tool_search`. A CLI allowlist hides native MCP tools from
+  the registry even after discovery. Dropped the `browser` capability group;
+  browser work now goes through `tool_search`.
+- Passed Pi's native leading subcommands (`mcp`, `auth`, `install`, …) through
+  the launcher, so they are commands rather than accidental prompt text.
+- Extended the safety guard to cover native `mcp__*` tool names for both direct
+  and nested calls, Pi 1.0 credential paths (`.pi/auth.json`, `.pi/models.json`,
+  `.pi/mcp-auth.json` and their agent-directory equivalents), and IPv6 loopback
+  navigation.
+- Added the three upstream workflow eval cases (`design-save-owner-direction`,
+  `copy-edit-without-test-churn`, `already-covered-behavior`) and the
+  `test-economy` fixture they grade, bringing the suite to 20 cases.
+
+### Retained deliberately
+
+- Project-specific harness controls that the upstream diff would have dropped:
+  the `docs/private` guard segment, the `risk-review` skill, the four domain
+  skills, `scripts/secret-scan-filter.mjs` and its doctor integration, the
+  Fast English CI lanes, and `scripts/verify.sh` delegation to
+  `scripts/project-verify.sh`.
+
 ## 1.0.0 — 2026-08-16 (release candidate)
 
 ### Added

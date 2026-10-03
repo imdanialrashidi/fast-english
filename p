@@ -17,7 +17,7 @@ if ! command -v pi >/dev/null 2>&1; then
 Pi is not installed.
 
 Install the official package:
-  npm install -g --ignore-scripts @earendil-works/pi-coding-agent@0.84.2
+  npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.0.0
 MSG
   exit 127
 fi
@@ -30,7 +30,6 @@ fi
 export PI_TELEMETRY="${PI_TELEMETRY:-0}"
 export PI_SKIP_VERSION_CHECK="${PI_SKIP_VERSION_CHECK:-1}"
 export PI_CACHE_RETENTION="${PI_CACHE_RETENTION:-long}"
-export PI_EXPERIMENTAL="${PI_EXPERIMENTAL:-1}"
 export PI_SMART_READ="${PI_SMART_READ:-1}"
 export PI_SMART_READ_BYTES="${PI_SMART_READ_BYTES:-98304}"
 export PI_SMART_READ_LINES="${PI_SMART_READ_LINES:-400}"
@@ -42,10 +41,17 @@ export PI_GUARD_EXTERNAL_MUTATION="${PI_GUARD_EXTERNAL_MUTATION:-deny}"
 export PI_GIT_MUTATION="${PI_GIT_MUTATION:-deny}"
 export PI_PROJECT_ROOT="$ROOT_DIR"
 
-args=(
-  --tools
-  "read,bash,edit,write,grep,find,ls,harness_tools"
-)
+case "${1:-}" in
+  mcp|auth|install|remove|uninstall|update|list|config)
+    # Native subcommands must remain the first argument; session flags turn
+    # them into prompt text. These commands enforce their own trust/auth rules.
+    exec pi "$@"
+    ;;
+esac
+
+# Project defaultTools keeps native deferred MCP tools discoverable. A CLI
+# --tools restriction would hide tools not named in it, even after discovery.
+args=()
 
 case "${PI_PROJECT_TRUST:-always}" in
   always) args+=(--approve) ;;

@@ -26,7 +26,7 @@ Autonomous Playwright may navigate public HTTP(S) pages and use focused page eva
 
 ## Third-party packages
 
-Pi packages and extensions execute with the Pi process's permissions. Versions in `.pi/settings.json` and `.mcp.json` are exact pins, but a pin is not a source review. Before updating:
+Pi packages and extensions execute with the Pi process's permissions. Versions in `.pi/settings.json` and `.pi/mcp.json` are exact pins, but a pin is not a source review. Before updating:
 
 - review the upstream repository, ownership, release diff, install scripts, dependencies, and published integrity;
 - test the new pin in a disposable copy/container;

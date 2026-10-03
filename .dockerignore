@@ -75,7 +75,6 @@ android
 .pi
 .ruff_cache
 __pycache__
-.mcp.json
 capacitor.config.json
 Dockerfile.pi
 

@@ -15,7 +15,7 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const settings = JSON.parse(
   fs.readFileSync(path.join(repositoryRoot, '.pi/settings.json'), 'utf8'),
 );
-const mcp = JSON.parse(fs.readFileSync(path.join(repositoryRoot, '.mcp.json'), 'utf8'));
+const mcp = JSON.parse(fs.readFileSync(path.join(repositoryRoot, '.pi/mcp.json'), 'utf8'));
 
 if (manifest.version !== 1 || !Array.isArray(manifest.packages)) {
   throw new Error('package integrity manifest must be version 1 with a packages array');
@@ -50,7 +50,10 @@ const playwrightSpec = (mcp.mcpServers?.playwright?.args ?? []).find(
 );
 if (!playwrightSpec) throw new Error('Playwright MCP pin is missing');
 configured.push(`npm:${playwrightSpec}`);
-configured.push('npm:@earendil-works/pi-coding-agent@0.84.2');
+const docker = fs.readFileSync(path.join(repositoryRoot, 'Dockerfile.pi'), 'utf8');
+const piVersion = docker.match(/^ARG PI_VERSION=(\d+\.\d+\.\d+)$/m)?.[1];
+if (!piVersion) throw new Error('Dockerfile Pi pin is missing');
+configured.push(`npm:@earendil-works/pi-coding-agent@${piVersion}`);
 
 for (const source of configured) {
   if (!entries.has(source))
