@@ -26,10 +26,6 @@ export const CAPABILITY_TOOL_GROUPS = Object.freeze({
     "lsp_workspace_symbols",
     "lsp_more",
   ]),
-  docs: Object.freeze([
-    "doc_search_resolve_library_id",
-    "doc_search_get_library_docs",
-  ]),
   web: Object.freeze(["web_search", "web_fetch"]),
 });
 
@@ -40,9 +36,10 @@ const CAPABILITIES = Object.freeze(Object.keys(CAPABILITY_TOOL_GROUPS));
 const MANAGED_SPECIALIST_TOOLS = new Set([
   ...Object.values(CAPABILITY_TOOL_GROUPS).flat(),
   // These package helpers otherwise become active despite project defaultTools.
-  "lsp_hover",
-  "lsp_document_symbols",
-  "doc_search_get_cached_doc_raw",
+  // Legacy doc-search helpers are also cleared so a pre-migration session
+  // cannot leave stale docs schemas active after resume.
+  "lsp_hover", "lsp_document_symbols",
+  "doc_search_resolve_library_id", "doc_search_get_library_docs", "doc_search_get_cached_doc_raw",
 ]);
 const DEFAULT_SMART_READ_BYTES = 96 * 1024;
 const DEFAULT_SMART_READ_LINES = 400;
@@ -372,6 +369,11 @@ export default function harnessRuntime(pi) {
       activeCapabilities.clear();
     } else {
       for (const capability of requested) {
+        // Unknown groups (e.g. legacy `docs`, now served by native
+        // Context7 MCP via tool_search) are ignored so a stale caller
+        // cannot crash the loader or pollute continuity state. Pi's
+        // schema enum rejects them before execute in live sessions.
+        if (!CAPABILITY_TOOL_GROUPS[capability]) continue;
         activeCapabilities.add(capability);
         for (const tool of CAPABILITY_TOOL_GROUPS[capability]) {
           if (!available.has(tool)) {
@@ -393,8 +395,8 @@ export default function harnessRuntime(pi) {
   pi.registerTool({
     name: "harness_tools",
     label: "Harness Tools",
-    description: "Activate specialist tool groups only when core repository tools are insufficient. Use native tool_search for MCP/browser tools. Request all needed groups together; pass an empty list to unload managed specialists.",
-    promptSnippet: "Activate specialist planning, delegation, code-intelligence, docs, or web tools on demand",
+    description: "Activate specialist tool groups only when core repository tools are insufficient. Use native tool_search for MCP/browser/docs tools. Request all needed groups together; pass an empty list to unload managed specialists.",
+    promptSnippet: "Activate specialist planning, delegation, code-intelligence, or web tools on demand",
     promptGuidelines: [
       "Use harness_tools once with every needed specialist group when core tools are insufficient; keep localized work on the core surface.",
     ],

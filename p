@@ -17,7 +17,7 @@ if ! command -v pi >/dev/null 2>&1; then
 Pi is not installed.
 
 Install the official package:
-  npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.0.0
+  npm install -g --ignore-scripts @earendil-works/pi-coding-agent@1.0.4
 MSG
   exit 127
 fi
@@ -42,7 +42,12 @@ export PI_GIT_MUTATION="${PI_GIT_MUTATION:-deny}"
 export PI_PROJECT_ROOT="$ROOT_DIR"
 
 case "${1:-}" in
-  mcp|auth|install|remove|uninstall|update|list|config)
+  install|update)
+    pi "$@"
+    node "$ROOT_DIR/scripts/pi-extension-compat.mjs"
+    exit 0
+    ;;
+  mcp|auth|remove|uninstall|list|config)
     # Native subcommands must remain the first argument; session flags turn
     # them into prompt text. These commands enforce their own trust/auth rules.
     exec pi "$@"
@@ -74,5 +79,18 @@ fi
 if [[ -n "${PI_ENABLED_MODELS:-}" ]]; then
   args+=(--models "$PI_ENABLED_MODELS")
 fi
+
+# Repair the reviewed package before Pi collects extension diagnostics. Fresh
+# trusted sessions install this configured package once using Pi's own installer.
+compat_args=()
+if [[ "${PI_PROJECT_TRUST:-always}" == "always" ]]; then
+  compat_args+=(--install-missing)
+fi
+for arg in "$@"; do
+  case "$arg" in
+    --help|-h|--version|-v|--no-approve|-na|--no-extensions|-ne) compat_args=() ;;
+  esac
+done
+node "$ROOT_DIR/scripts/pi-extension-compat.mjs" "${compat_args[@]}"
 
 exec pi "${args[@]}" "$@"

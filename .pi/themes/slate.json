@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/earendil-works/pi/v1.0.0/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
+  "$schema": "https://raw.githubusercontent.com/earendil-works/pi/v1.0.4/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
   "name": "slate",
   "vars": {
     "ink": "#E2E8F0",

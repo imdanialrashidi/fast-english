@@ -102,39 +102,40 @@ test('specialist capability groups load additively and reset without dropping un
     tool.parameters.properties.capabilities.items.enum,
     Object.keys(CAPABILITY_TOOL_GROUPS),
   );
-  assert.deepEqual(tool.prepareArguments({ capabilities: '["docs","web"]' }), {
-    capabilities: ['docs', 'web'],
+  assert.deepEqual(tool.prepareArguments({ capabilities: '["planning","web"]' }), {
+    capabilities: ['planning', 'web'],
   });
 
-  const first = await tool.execute('loader-1', { capabilities: ['docs', 'web'] });
-  assert.deepEqual(first.details.added, [
-    'doc_search_resolve_library_id',
-    'doc_search_get_library_docs',
-    'web_search',
-    'web_fetch',
-  ]);
-  assert.ok(runtime.activeTools().includes('doc_search_get_library_docs'));
+  const first = await tool.execute('loader-1', { capabilities: ['planning', 'web'] });
+  assert.deepEqual(first.details.added, ['todo', 'web_search', 'web_fetch']);
+  assert.ok(runtime.activeTools().includes('web_search'));
   assert.ok(runtime.activeTools().includes('local_custom'));
 
-  const second = await tool.execute('loader-2', { capabilities: ['docs', 'web'] });
+  const second = await tool.execute('loader-2', { capabilities: ['planning', 'web'] });
   assert.deepEqual(second.details.added, []);
   assert.equal(new Set(runtime.activeTools()).size, runtime.activeTools().length);
 
   const reset = await tool.execute('loader-3', { capabilities: [] });
-  assert.deepEqual(
-    new Set(reset.details.removed),
-    new Set([
-      'doc_search_resolve_library_id',
-      'doc_search_get_library_docs',
-      'web_search',
-      'web_fetch',
-    ]),
-  );
+  assert.deepEqual(new Set(reset.details.removed), new Set(['todo', 'web_search', 'web_fetch']));
   assert.ok(runtime.activeTools().includes('local_custom'));
   assert.equal(
     runtime.activeTools().some((name) => specialistTools.includes(name)),
     false,
   );
+});
+
+test('legacy docs capability is ignored without crashing or polluting state', async () => {
+  const runtime = createRuntime();
+  const tool = runtime.tool();
+  const result = await tool.execute('loader-docs', { capabilities: ['docs'] });
+  assert.deepEqual(result.details.added, []);
+  assert.deepEqual(result.details.unavailable, []);
+  assert.deepEqual(
+    runtime.activeTools().filter((name) => specialistTools.includes(name)),
+    [],
+  );
+  await runtime.handlers.get('agent_settled')();
+  assert.deepEqual(runtime.appended.at(-1)?.data.capabilities ?? [], []);
 });
 
 test('visual guidance is task-scoped, rechecks the model, and does not survive a fresh nonvisual session', async () => {
@@ -323,7 +324,7 @@ test('a third identical failed call is blocked until a different successful evid
 
 test('continuity snapshots persist bounded state and inject once after resume or compaction', async () => {
   const first = createRuntime();
-  await first.tool().execute('loader', { capabilities: ['docs'] });
+  await first.tool().execute('loader', { capabilities: ['web'] });
   await emitTool(first, 'edit', { path: 'src/app.js', oldText: 'a', newText: 'b' }, false, 'edit');
   await emitTool(first, 'bash', { command: 'node --test tests/app.test.mjs' }, false, 'check');
   await emitTool(first, 'read', { path: 'missing.txt' }, true, 'failure');
@@ -332,7 +333,7 @@ test('continuity snapshots persist bounded state and inject once after resume or
   assert.equal(first.appended.length, 1);
   const entry = first.appended[0];
   assert.equal(entry.customType, SNAPSHOT_TYPE);
-  assert.deepEqual(entry.data.capabilities, ['docs']);
+  assert.deepEqual(entry.data.capabilities, ['web']);
   assert.deepEqual(entry.data.modifiedFiles, ['src/app.js']);
   assert.deepEqual(entry.data.checks, [
     {
@@ -347,7 +348,7 @@ test('continuity snapshots persist bounded state and inject once after resume or
     { type: 'session_start', reason: 'resume' },
     resumed.ctx,
   );
-  assert.ok(resumed.activeTools().includes('doc_search_get_library_docs'));
+  assert.ok(resumed.activeTools().includes('web_search'));
   const originalMessages = [{ role: 'user', content: 'continue', timestamp: Date.now() }];
   const injected = await resumed.handlers.get('context')({
     type: 'context',
@@ -396,6 +397,7 @@ test('a fresh session drops managed specialists left active by the previous sess
       'lsp_document_symbols',
       'doc_search_get_cached_doc_raw',
       'mcp__playwright__browser_snapshot',
+      'mcp__context7__resolve_library_id',
       'local_custom',
     ],
   });
@@ -410,9 +412,18 @@ test('a fresh session drops managed specialists left active by the previous sess
     runtime.activeTools().includes('mcp__playwright__browser_snapshot'),
     'native MCP branch state belongs to Pi',
   );
-  for (const name of ['lsp_hover', 'lsp_document_symbols', 'doc_search_get_cached_doc_raw']) {
+  assert.ok(
+    runtime.activeTools().includes('mcp__context7__resolve_library_id'),
+    'native Context7 MCP branch state belongs to Pi',
+  );
+  for (const name of [
+    'lsp_hover',
+    'lsp_document_symbols',
+    'doc_search_get_cached_doc_raw',
+    'doc_search_resolve_library_id',
+    'doc_search_get_library_docs',
+  ])
     assert.equal(runtime.activeTools().includes(name), false);
-  }
   assert.deepEqual(runtime.appended, []);
 });
 
@@ -422,7 +433,7 @@ test('continuity and retry opt-outs do not restore or accumulate hidden state', 
     customType: SNAPSHOT_TYPE,
     data: {
       version: 1,
-      capabilities: ['browser'],
+      capabilities: ['web'],
       modifiedFiles: ['src/app.js'],
       checks: [],
       failures: [{ tool: 'read', signature: 'abcdef123456', attempts: 2 }],
@@ -439,7 +450,7 @@ test('continuity and retry opt-outs do not restore or accumulate hidden state', 
       { type: 'session_start', reason: 'resume' },
       runtime.ctx,
     );
-    assert.equal(runtime.activeTools().includes('mcp'), false);
+    assert.equal(runtime.activeTools().includes('web_search'), false);
     assert.equal(
       await runtime.handlers.get('context')({ type: 'context', messages: [] }),
       undefined,
@@ -486,10 +497,10 @@ test('resume and tree navigation restore only current-branch evidence and clear 
     data: { version: 1, modifiedFiles: [file], capabilities },
   });
   const current = entry('src/current.js', ['web']);
-  const sibling = entry('src/sibling.js', ['browser']);
+  const sibling = entry('src/sibling.js', ['planning']);
   const runtime = createRuntime({ entries: [current, sibling], branch: [current] });
   await runtime.handlers.get('session_start')({}, runtime.ctx);
-  assert.equal(runtime.activeTools().includes('mcp'), false);
+  assert.equal(runtime.activeTools().includes('todo'), false);
   assert.equal(runtime.activeTools().includes('web_search'), true);
   const restored = await runtime.handlers.get('context')({ messages: [] });
   assert.match(restored.messages.at(-1).content, /current.js/);

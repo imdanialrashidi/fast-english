@@ -6,6 +6,25 @@ All notable workflow changes are documented here. This project follows the spiri
 
 ### Changed
 
+- Updated the Pi workflow to the upstream Pi 1.0.4 release: reviewed runtime pin
+  `1.0.0` → `1.0.4` across the launcher, Docker, integrity manifest, theme
+  schema, and doctor, with refreshed registry integrities.
+- Replaced the third-party `@dreki-gg/pi-doc-search@0.3.2` package with the
+  official `@upstash/context7-mcp@4.1.2` native MCP server: docs now resolve
+  via `tool_search` (`mcp__context7__resolve_library_id` →
+  `mcp__context7__query_docs`) with the key mapped from `${CONTEXT7_API_KEY}`
+  so it stays out of Git. The `docs` `harness_tools` capability group is gone;
+  legacy `doc_search_*` schemas are cleared and unknown capabilities are
+  ignored without crashing.
+- Added `scripts/pi-extension-compat.mjs`: repairs the reviewed
+  `pi-lsp-adapter@0.1.3` host-dependency manifest before launcher startup, with
+  a read-only doctor check and launcher wiring for install/update flows.
+- Extended the safety guard to block secrets and sensitive file references in
+  Context7 docs queries, and to protect the legacy `.mcp.json` path.
+- Fixed `verify-package-integrity.mjs --online` to unwrap the array `npm view
+  --json` returns, and to cover the Context7 MCP pin.
+- Added the upstream `docs-mcp-workflow` eval case, bringing the suite to
+  21 cases.
 - Updated the Pi workflow to the upstream Pi 1.0.0 release: reviewed runtime pin
   `0.84.2` → `1.0.0`, `@juicesharp/rpiv-todo` `2.6.2` → `2.12.0`,
   `@bytetrue/pi-web-search` `0.2.1` → `0.5.1`, and Playwright MCP

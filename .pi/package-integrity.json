@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "reviewedAt": "2026-10-01",
+  "reviewedAt": "2026-10-07",
   "packages": [
     {
-      "source": "npm:@earendil-works/pi-coding-agent@1.0.0",
-      "integrity": "sha512-/FtbxoSQU/mEv1QnichJjRjqteqaIaMWxmhB4G367+MwZfX7/DI5B9YAg5lqbN7nztFskBEtUSZ+FlmMBECtMw==",
+      "source": "npm:@earendil-works/pi-coding-agent@1.0.4",
+      "integrity": "sha512-+956nfMFHr5lDUVY/2Q4k+YzojzBuCaBXFgj0eSlXVGr7QVliVddKdc1Pz6yVg1dOlJQmb67doOVrlMsIcIdaw==",
       "license": "MIT",
       "repository": "https://github.com/earendil-works/pi"
     },
@@ -27,10 +27,10 @@
       "repository": "https://github.com/nikmmd/pi-lsp-adapter"
     },
     {
-      "source": "npm:@dreki-gg/pi-doc-search@0.3.2",
-      "integrity": "sha512-nw+8coiuleT4bI/wnLYbxS+FnXEmxu6ksHyy+JhVI2jZPkunFFOzcObaYV9J9PCGYBjiBLSRHV6fC+GIBfwAfA==",
+      "source": "npm:@upstash/context7-mcp@4.1.2",
+      "integrity": "sha512-kktIHYilHjxtAnjO26aa3UmpBIf5ISe78gZnKD5AbxgPMR7I7rRND+iltFsbZ/uzByuFxGxPtcAboKkiNCNNxw==",
       "license": "MIT",
-      "repository": "https://github.com/jalbarrang/pi-doc-search"
+      "repository": "https://github.com/upstash/context7"
     },
     {
       "source": "npm:@bytetrue/pi-web-search@0.5.1",

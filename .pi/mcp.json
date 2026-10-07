@@ -1,6 +1,23 @@
 {
   "autoEnableCodemode": false,
   "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@4.1.2"
+      ],
+      "env": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      },
+      "timeout": 60,
+      "description": "Up-to-date version-specific library documentation: resolve library ID then query docs.",
+      "exposure": "hidden",
+      "toolExposure": {
+        "resolve-library-id": "deferred",
+        "query-docs": "deferred"
+      }
+    },
     "playwright": {
       "command": "npx",
       "args": [
