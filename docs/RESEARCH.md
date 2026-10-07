@@ -2,6 +2,16 @@
 
 Reviewed: **2026-08-23**. Test-quality amendment reviewed: **2026-08-24**. Pi 1.0 compatibility amendment reviewed: **2026-10-03**. This record connects current primary evidence to concrete workflow controls. It does not claim that a prompt- or tool-level change improves every model or repository; deterministic tests protect invariants, and repeated matched-model evals remain the promotion standard.
 
+## 2026-10-07 — DeepWiki MCP replaces Context7
+
+Per request, `@upstash/context7-mcp@4.1.2` (stdio, key-optional) is replaced by the official [DeepWiki MCP](https://docs.devin.ai/work-with-devin/deepwiki-mcp): remote streamable HTTP at `https://mcp.deepwiki.com/mcp`, free with no authentication for public repositories. Live `initialize` + `tools/list` on 2026-10-07 returned server `DeepWiki 2.14.3` with public tools `read_wiki_structure` (`repoName`), `read_wiki_contents` (`repoName`), `ask_wiki_question` (`repoName`, `question`) — note the docs page calls it `ask_question`, the wire name is `ask_wiki_question`, and the config pins the wire names. It stays `hidden` with exactly those three `deferred`, loaded via `tool_search` as `mcp__deepwiki__*`; no `harness_tools` docs group, no npm pin or integrity record (remote servers have none), no API key. Tradeoffs vs Context7: DeepWiki answers from a generated wiki index over `owner/repo` (can lag HEAD — local source stays authoritative for bleeding-edge APIs) instead of version-pinned library IDs, and private repos need a Devin account, so they stay out of scope. The docs secret/path guard and the eval contract move to `repoName`/`question` inputs; legacy Context7 names remain guarded and rejected by doctor if re-added.
+
+| Primary source / inspection | Decision | Evidence limit |
+|---|---|---|
+| [DeepWiki MCP docs](https://docs.devin.ai/work-with-devin/deepwiki-mcp) + live endpoint probe (initialize OK, 3 public tools listed) | Pin the official `https://mcp.deepwiki.com/mcp` URL in `.pi/mcp.json`; reject stale `context7` servers, non-official URLs, stdio commands, and key material in doctor | Private-mode tools advertised in server instructions are not exposed or tested; latency/quota under load remain operator smoke checks |
+
+Validation: 102 deterministic tests pass (incl. retargeted DeepWiki secret/path guard with legacy Context7 coverage, `mcp__deepwiki__*` branch persistence); `pi-doctor --ci --static` passes with the DeepWiki-endpoint checks; `verify-package-integrity` passes offline and `--online` 6/6 (no npm record for remote servers); eval `--dry-run` passes including `docs-deepwiki-workflow`. No paid model trials or cross-model quality gains are claimed.
+
 ## 2026-10-03 — Pi 1.0 compatibility review
 
 This amendment supersedes the earlier runtime/MCP package and tool-loading decisions below, which remain an audit history. The workflow was brought forward from the reviewed `0.84.2` pin to the upstream template's Pi `1.0.0` set. Registry metadata and tarball integrities were copied from the upstream reviewed manifest and re-validated offline.

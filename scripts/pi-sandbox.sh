@@ -19,7 +19,6 @@ for name in \
   OPENAI_API_KEY \
   GEMINI_API_KEY \
   OPENROUTER_API_KEY \
-  CONTEXT7_API_KEY \
   EXA_API_KEY
 do
   if [[ -n "${!name:-}" ]]; then

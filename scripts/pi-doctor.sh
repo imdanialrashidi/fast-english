@@ -243,6 +243,7 @@ if (missing.length) {
 }
 for (const removed of [
   'npm:@dreki-gg/pi-doc-search@0.3.2',
+  'npm:@upstash/context7-mcp@4.1.2',
   'npm:@upstash/context7-pi@0.1.2',
   'npm:pi-vision-tool@1.3.7',
   'npm:@getpipher/vision@0.5.2',
@@ -293,28 +294,35 @@ for (const required of ['browser_snapshot', 'browser_find', 'browser_navigate', 
 if (server.args.includes('--allowed-origins')) {
   throw new Error('Autonomous browser mode must not be limited to localhost by MCP config');
 }
-const docs = config.mcpServers?.context7;
-if (!docs) throw new Error('Context7 MCP server is missing');
-if (!Array.isArray(docs.args) || !docs.args.includes('@upstash/context7-mcp@4.1.2')) {
-  throw new Error('Context7 MCP version pin is missing');
+const docs = config.mcpServers?.deepwiki;
+if (!docs) throw new Error('DeepWiki MCP server is missing');
+if (config.mcpServers?.context7) throw new Error('Stale Context7 MCP server must be removed');
+if (docs.url !== 'https://mcp.deepwiki.com/mcp') {
+  throw new Error('DeepWiki MCP must use the official streamable HTTP endpoint');
 }
-if (docs.args.some((value) => typeof value === 'string' && value.includes('ctx7sk-'))) {
-  throw new Error('Context7 API key must not be hardcoded in MCP args; use ${CONTEXT7_API_KEY} env mapping');
+if (docs.type !== undefined && !['http', 'streamable-http'].includes(docs.type)) {
+  throw new Error('DeepWiki MCP type must be http or streamable-http when set');
 }
-if (docs.env?.CONTEXT7_API_KEY !== '${CONTEXT7_API_KEY}') {
-  throw new Error('Context7 MCP must map CONTEXT7_API_KEY from the operator environment');
+if (docs.command !== undefined) {
+  throw new Error('DeepWiki MCP is a remote HTTP server and must not declare a stdio command');
 }
-if (docs.exposure !== 'hidden') throw new Error('Unlisted Context7 tools must remain hidden');
-if (docs.toolExposure?.['resolve-library-id'] !== 'deferred' || docs.toolExposure?.['query-docs'] !== 'deferred') {
-  throw new Error('Context7 tools must be exactly deferred resolve-library-id and query-docs');
+if (docs.env?.CONTEXT7_API_KEY !== undefined) {
+  throw new Error('DeepWiki needs no API key; remove the stale Context7 env mapping');
 }
-if (Object.keys(docs.toolExposure || {}).length !== 2) {
-  throw new Error('Context7 toolExposure must contain only the two reviewed tools');
+if (JSON.stringify(docs).includes('ctx7sk-')) {
+  throw new Error('A Context7 API key must not be hardcoded in MCP config');
+}
+if (docs.exposure !== 'hidden') throw new Error('Unlisted DeepWiki tools must remain hidden');
+if (docs.toolExposure?.['read_wiki_structure'] !== 'deferred' || docs.toolExposure?.['read_wiki_contents'] !== 'deferred' || docs.toolExposure?.['ask_wiki_question'] !== 'deferred') {
+  throw new Error('DeepWiki tools must be exactly deferred read_wiki_structure, read_wiki_contents and ask_wiki_question');
+}
+if (Object.keys(docs.toolExposure || {}).length !== 3) {
+  throw new Error('DeepWiki toolExposure must contain only the three reviewed tools');
 }
 NODE
 then
   pass "Native Playwright MCP is pinned, selectively deferred, and blocks file injection"
-  pass "Official Context7 MCP is pinned, deferred, and keeps the API key out of Git"
+  pass "DeepWiki MCP uses the official endpoint, stays deferred, and needs no API key"
 else
   fail "Playwright MCP policy validation failed"
 fi

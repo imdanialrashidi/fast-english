@@ -6,6 +6,16 @@ All notable workflow changes are documented here. This project follows the spiri
 
 ### Changed
 
+- Replaced the `@upstash/context7-mcp@4.1.2` stdio docs server with the
+  official DeepWiki remote MCP (`https://mcp.deepwiki.com/mcp`, hidden,
+  deferred `read_wiki_structure`/`read_wiki_contents`/`ask_wiki_question`
+  via `tool_search`). No package install or API key for public repos;
+  private repos stay out of scope. Dropped the `CONTEXT7_API_KEY` sandbox
+  passthrough, made doctor reject stale `context7` servers/non-official
+  URLs/stdio commands/hardcoded keys, retargeted the docs secret/path guard
+  and the `docs-deepwiki-workflow` eval case to `repoName`/`question`, and
+  removed the Context7 integrity record. Legacy Context7 tool names stay
+  guarded.
 - Updated the Pi workflow to the upstream Pi 1.0.4 release: reviewed runtime pin
   `1.0.0` → `1.0.4` across the launcher, Docker, integrity manifest, theme
   schema, and doctor, with refreshed registry integrities.

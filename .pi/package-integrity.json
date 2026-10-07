@@ -27,12 +27,6 @@
       "repository": "https://github.com/nikmmd/pi-lsp-adapter"
     },
     {
-      "source": "npm:@upstash/context7-mcp@4.1.2",
-      "integrity": "sha512-kktIHYilHjxtAnjO26aa3UmpBIf5ISe78gZnKD5AbxgPMR7I7rRND+iltFsbZ/uzByuFxGxPtcAboKkiNCNNxw==",
-      "license": "MIT",
-      "repository": "https://github.com/upstash/context7"
-    },
-    {
       "source": "npm:@bytetrue/pi-web-search@0.5.1",
       "integrity": "sha512-UYgw5Yw0goW29k5kYtWc44E27SNyxW6eLmuBB8iadoLy9D4L2+Tpr+CW9I6w0LKEo4unQvQtXx6JLvvlZ483/g==",
       "license": "MIT",

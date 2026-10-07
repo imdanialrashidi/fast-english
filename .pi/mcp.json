@@ -1,21 +1,15 @@
 {
   "autoEnableCodemode": false,
   "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@4.1.2"
-      ],
-      "env": {
-        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
-      },
+    "deepwiki": {
+      "url": "https://mcp.deepwiki.com/mcp",
       "timeout": 60,
-      "description": "Up-to-date version-specific library documentation: resolve library ID then query docs.",
+      "description": "Public GitHub repository documentation: list wiki topics, read contents, or ask a grounded question.",
       "exposure": "hidden",
       "toolExposure": {
-        "resolve-library-id": "deferred",
-        "query-docs": "deferred"
+        "read_wiki_structure": "deferred",
+        "read_wiki_contents": "deferred",
+        "ask_wiki_question": "deferred"
       }
     },
     "playwright": {

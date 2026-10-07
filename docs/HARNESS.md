@@ -69,7 +69,7 @@ Preferred order:
 3. focused source ranges and affected tests;
 4. LSP definitions/references/diagnostics;
 5. installed types and local dependency source;
-6. `mcp__context7__*` via `tool_search` for version-sensitive official docs;
+6. `mcp__deepwiki__*` via `tool_search` for public-repo documentation;
 7. web search for current upstream issues, advisories, regressions, or release notes.
 
 If subagents are available, use `scout` only when the relevant surface or cross-module flow is genuinely unclear. Otherwise investigate directly. Do not delegate the same discovery twice.

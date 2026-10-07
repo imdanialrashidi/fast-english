@@ -408,12 +408,13 @@ function ownerGitReason() {
   return "Unscoped Git/GitHub mutation is owner-controlled. Routine verified implementation uses node scripts/ai-pr.mjs on the existing ai-changes branch under docs/GIT_POLICY.md. Other writes require the current user's exact authorization and a bounded PI_GIT_MUTATION=allow session; never use that override for routine PR delivery.";
 }
 
-function context7SecretReason(tool, args) {
+function docsSecretReason(tool, args) {
   const name = String(tool ?? "");
-  const isContext7 =
-    /(?:^|[_.:/-])(?:resolve-library-id|resolve_library_id|query-docs|query_docs)(?:$|[_.:/-])/i.test(name) ||
+  const isDocs =
+    /(?:^|[_.:/-])(?:read_wiki_structure|read_wiki_contents|ask_wiki_question|ask_question|resolve-library-id|resolve_library_id|query-docs|query_docs)(?:$|[_.:/-])/i.test(name) ||
+    (/deepwiki/i.test(name) && /(?:read_wiki|ask_)/i.test(name)) ||
     (/context7/i.test(name) && /(?:resolve|query-docs|query_docs)/i.test(name));
-  if (!isContext7) return null;
+  if (!isDocs) return null;
   const texts = [];
   if (args && typeof args === "object") {
     for (const value of Object.values(args)) {
@@ -428,7 +429,7 @@ function context7SecretReason(tool, args) {
     /\bsk-[A-Za-z0-9_-]{12,}\b/.test(joined) ||
     /-----BEGIN (?:RSA )?PRIVATE KEY-----/.test(joined)
   ) {
-    return "Context7 docs query contains a possible secret; remove API keys, tokens, passwords, or private-key material before requesting documentation.";
+    return "Docs MCP question contains a possible secret; remove API keys, tokens, passwords, or private-key material before requesting documentation.";
   }
   if (
     /(^|[\s"'=])\.env(?:[\s"'./]|$)/i.test(joined.replaceAll(".env.example", "")) ||
@@ -436,7 +437,7 @@ function context7SecretReason(tool, args) {
     /storageState.*\.json/i.test(joined) ||
     /\.(?:pem|key|p12|pfx|jks|keystore)(?:[\s"'|;&]|$)/i.test(joined)
   ) {
-    return "Context7 docs query references a sensitive file; describe the library question without pasting credential or keystore paths.";
+    return "Docs MCP question references a sensitive file; describe the library question without pasting credential or keystore paths.";
   }
   return null;
 }
@@ -479,9 +480,9 @@ function mcpCallReason(input, config) {
     }
   }
 
-  const context7Args = parseMcpArgs(input);
-  const context7Reason = context7SecretReason(tool, context7Args);
-  if (context7Reason) return context7Reason;
+  const docsArgs = parseMcpArgs(input);
+  const docsReason = docsSecretReason(tool, docsArgs);
+  if (docsReason) return docsReason;
   return null;
 }
 

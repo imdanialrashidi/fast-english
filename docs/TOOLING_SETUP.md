@@ -11,7 +11,7 @@ The reviewed Pi pin requires Node.js 22.19.0 or newer. The included CI pins Node
 - `pi-lsp-adapter@0.1.3`
 - `@bytetrue/pi-web-search@0.5.1`
 
-Pi `1.0.4` loads `.pi/mcp.json` natively. It pins `@playwright/mcp@0.0.83` and official `@upstash/context7-mcp@4.1.2`, exposes only the listed browser/docs tools on demand, and keeps unlisted tools hidden. No MCP adapter is installed.
+Pi `1.0.4` loads `.pi/mcp.json` natively. It pins `@playwright/mcp@0.0.83` and the official DeepWiki remote MCP endpoint, exposes only the listed browser/docs tools on demand, and keeps unlisted tools hidden. No MCP adapter is installed.
 
 The packages remain installed and their commands remain available, but their model-call schemas are deferred. `./p` starts with seven repository tools plus `harness_tools` and native `tool_search`:
 
@@ -22,7 +22,7 @@ The packages remain installed and their commands remain available, but their mod
 | `code_intelligence` | `lsp_diagnostics`, `lsp_definition`, `lsp_references`, `lsp_workspace_symbols`, `lsp_more` |
 | `web` | `web_search`, `web_fetch` |
 
-Browser and docs work uses native `tool_search` directly: load only the needed `mcp__playwright__*` or `mcp__context7__*` tools, then call their returned schemas. No docs capability-loader call is needed.
+Browser and docs work uses native `tool_search` directly: load only the needed `mcp__playwright__*` or `mcp__deepwiki__*` tools, then call their returned schemas. No docs capability-loader call is needed.
 
 Ask the agent to activate all required groups together. Passing an empty capability list unloads the managed specialist schemas without removing unrelated custom tools. A restored session reactivates the groups in its latest continuity snapshot.
 
@@ -140,23 +140,19 @@ The `/lsp` management command is always available. The model activates `code_int
 
 ## Documentation search
 
-Official `@upstash/context7-mcp@4.1.2` runs as a native MCP server (see `.pi/mcp.json`). It queries Context7 directly. It works without a key at lower rate limits. For higher limits, set the key in your shell or user environment, never in the repository:
+DeepWiki runs as a native remote MCP server (see `.pi/mcp.json`): Pi connects over streamable HTTP to `https://mcp.deepwiki.com/mcp`. It covers public GitHub repositories with no API key and no local process. Private repositories need a Devin account and are out of scope for the default workflow — treat private-repo docs as `UNPROVEN` via local source instead.
 
-```bash
-export CONTEXT7_API_KEY="ctx7sk-..."
-```
-
-`.pi/mcp.json` maps it as `"CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"` so the operator environment is forwarded without committing a secret. The server stays `hidden` with only `resolve-library-id` and `query-docs` exposed as `deferred`; load them with native `tool_search`, then call the returned `mcp__context7__*` schemas:
+The server stays `hidden` with only `read_wiki_structure`, `read_wiki_contents`, and `ask_wiki_question` exposed as `deferred`; load them with native `tool_search`, then call the returned `mcp__deepwiki__*` schemas:
 
 ```text
-Use tool_search to load the Context7 resolve-library-id tool. Resolve the React documentation library ID. Do not fetch broad documentation yet.
+Use tool_search to load the DeepWiki read_wiki_structure tool. List the documentation topics for vercel/next.js. Do not fetch full contents yet.
 ```
 
-Use `mcp__context7__resolve_library_id` then `mcp__context7__query_docs` only when local source, installed types, and repository patterns do not answer a version-sensitive framework question. No documentation schema is paid for on an ordinary localized edit. Loaded tools persist on the active branch across resume/reload; Pi branch state owns them, not `harness_tools`.
+Use `mcp__deepwiki__read_wiki_structure` first to discover topics for a `owner/repo` name, then `mcp__deepwiki__read_wiki_contents` or `mcp__deepwiki__ask_wiki_question` for the focused question — only when local source, installed types, and repository patterns do not answer it. No documentation schema is paid for on an ordinary localized edit. Loaded tools persist on the active branch across resume/reload; Pi branch state owns them, not `harness_tools`.
 
-Rate limits and reliability: unlike the previous wrapper there is no persistent local docs cache — every query hits the Context7 API, so prefer one resolve plus one focused single-concept query over broad repeated fetches. Unauthenticated runs work at lower IP-based limits; set the key for higher quotas. Pi retries transient MCP HTTP failures (408, 429, 5xx) twice; on a 429 slow down, narrow the query, and resume. If you already know the exact library, pass its Context7 ID directly (`/org/project` or `/org/project/version`, e.g. `/vercel/next.js`) to skip the resolve step, and mention the version in the prompt when version-specific docs matter.
+Reliability: DeepWiki answers come from its generated wiki index, which can lag the repository HEAD — prefer local source for bleeding-edge APIs and confirm version-sensitive claims against installed types. Pi retries transient MCP HTTP failures (408, 429, 5xx) twice; on a rate limit slow down, narrow to one structure call plus one focused question, and resume.
 
-Never paste secrets, credentials, private keys, or proprietary code into the `query` — the safety guard blocks obvious secret/sensitive-path queries, and the server instructs the same. Keep the key in your shell profile or `~/.pi/agent/mcp.json` user config, never in this repository.
+Never paste secrets, credentials, private keys, or proprietary code into `repoName`/`question` — the safety guard blocks obvious secret/sensitive-path inputs. There is no key to manage: do not add credentials to `.pi/mcp.json`; keep any personal Devin/private-repo servers in your user-level `~/.pi/agent/mcp.json`, outside Git.
 
 ## Web search
 
@@ -197,7 +193,7 @@ After setup:
 Then test capabilities with bounded requests:
 
 ```text
-Use tool_search to load the Context7 resolve-library-id tool. Resolve the React documentation library ID. Do not fetch broad documentation yet.
+Use tool_search to load the DeepWiki read_wiki_structure tool. List the documentation topics for the target repository. Do not fetch full contents yet.
 ```
 
 ```text

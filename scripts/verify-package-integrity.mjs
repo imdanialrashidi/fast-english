@@ -50,11 +50,13 @@ const playwrightSpec = (mcp.mcpServers?.playwright?.args ?? []).find(
 );
 if (!playwrightSpec) throw new Error('Playwright MCP pin is missing');
 configured.push(`npm:${playwrightSpec}`);
-const context7Spec = (mcp.mcpServers?.context7?.args ?? []).find(
-  (value) => typeof value === 'string' && value.startsWith('@upstash/context7-mcp@'),
-);
-if (!context7Spec) throw new Error('Context7 MCP pin is missing');
-configured.push(`npm:${context7Spec}`);
+const deepwikiUrl = mcp.mcpServers?.deepwiki?.url;
+if (deepwikiUrl !== 'https://mcp.deepwiki.com/mcp') {
+  throw new Error(
+    'DeepWiki MCP URL is missing or unexpected; use the official streamable HTTP endpoint',
+  );
+}
+if (mcp.mcpServers?.context7) throw new Error('Stale Context7 MCP server must be removed');
 const docker = fs.readFileSync(path.join(repositoryRoot, 'Dockerfile.pi'), 'utf8');
 const piVersion = docker.match(/^ARG PI_VERSION=(\d+\.\d+\.\d+)$/m)?.[1];
 if (!piVersion) throw new Error('Dockerfile Pi pin is missing');

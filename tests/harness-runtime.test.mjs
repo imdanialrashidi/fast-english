@@ -397,7 +397,7 @@ test('a fresh session drops managed specialists left active by the previous sess
       'lsp_document_symbols',
       'doc_search_get_cached_doc_raw',
       'mcp__playwright__browser_snapshot',
-      'mcp__context7__resolve_library_id',
+      'mcp__deepwiki__ask_wiki_question',
       'local_custom',
     ],
   });
@@ -413,8 +413,8 @@ test('a fresh session drops managed specialists left active by the previous sess
     'native MCP branch state belongs to Pi',
   );
   assert.ok(
-    runtime.activeTools().includes('mcp__context7__resolve_library_id'),
-    'native Context7 MCP branch state belongs to Pi',
+    runtime.activeTools().includes('mcp__deepwiki__ask_wiki_question'),
+    'native DeepWiki MCP branch state belongs to Pi',
   );
   for (const name of [
     'lsp_hover',
