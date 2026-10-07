@@ -9,10 +9,9 @@ The reviewed Pi pin requires Node.js 22.19.0 or newer. The included CI pins Node
 - `pi-sub-agent@0.1.5`
 - `@juicesharp/rpiv-todo@2.12.0`
 - `pi-lsp-adapter@0.1.3`
-- `@dreki-gg/pi-doc-search@0.3.2`
 - `@bytetrue/pi-web-search@0.5.1`
 
-Pi `1.0.0` loads `.pi/mcp.json` natively. It pins `@playwright/mcp@0.0.83`, exposes only the listed browser tools on demand, and keeps unlisted tools hidden. No MCP adapter is installed.
+Pi `1.0.4` loads `.pi/mcp.json` natively. It pins `@playwright/mcp@0.0.83` and official `@upstash/context7-mcp@4.1.2`, exposes only the listed browser/docs tools on demand, and keeps unlisted tools hidden. No MCP adapter is installed.
 
 The packages remain installed and their commands remain available, but their model-call schemas are deferred. `./p` starts with seven repository tools plus `harness_tools` and native `tool_search`:
 
@@ -21,8 +20,9 @@ The packages remain installed and their commands remain available, but their mod
 | `planning` | `todo` |
 | `delegation` | `subagent` |
 | `code_intelligence` | `lsp_diagnostics`, `lsp_definition`, `lsp_references`, `lsp_workspace_symbols`, `lsp_more` |
-| `docs` | `doc_search_resolve_library_id`, `doc_search_get_library_docs` |
 | `web` | `web_search`, `web_fetch` |
+
+Browser and docs work uses native `tool_search` directly: load only the needed `mcp__playwright__*` or `mcp__context7__*` tools, then call their returned schemas. No docs capability-loader call is needed.
 
 Ask the agent to activate all required groups together. Passing an empty capability list unloads the managed specialist schemas without removing unrelated custom tools. A restored session reactivates the groups in its latest continuity snapshot.
 
@@ -34,7 +34,7 @@ Ask the agent to activate all required groups together. Passing an empty capabil
 
 The repository launcher passes Pi's official `--approve` trust override, so it loads project resources and installs missing pinned packages without a trust prompt. It grants normal implementation access across the writable workspace, while arbitrary Git/GitHub mutations remain disabled independently. Routine delivery uses the reviewed `scripts/ai-pr.mjs` helper on the persistent `ai-changes` branch; install/authenticate `gh` as the owner and see `docs/GIT_POLICY.md`. Set `AI_PR_DELIVERY=off` for local-only runs. Use `PI_PROJECT_TRUST=ask ./p` only when you intentionally want the interactive trust decision.
 
-For the reviewed Pi `1.0.0` pin, the launcher defaults to:
+For the reviewed Pi `1.0.4` pin, the launcher defaults to:
 
 | Variable | Default | Effect / opt-out |
 |---|---:|---|
@@ -140,15 +140,23 @@ The `/lsp` management command is always available. The model activates `code_int
 
 ## Documentation search
 
-`pi-doc-search` queries Context7 directly and keeps a persistent local cache. It works without a key at lower rate limits. For higher limits, set the key in your shell or user environment, never in the repository:
+Official `@upstash/context7-mcp@4.1.2` runs as a native MCP server (see `.pi/mcp.json`). It queries Context7 directly. It works without a key at lower rate limits. For higher limits, set the key in your shell or user environment, never in the repository:
 
 ```bash
 export CONTEXT7_API_KEY="ctx7sk-..."
 ```
 
-Use `doc_search_resolve_library_id` and `doc_search_get_library_docs` only when local source, installed types, and repository patterns do not answer a version-sensitive framework question. The raw-cache helper remains installed but is intentionally omitted from the default tool surface because the normal documentation result already covers routine use.
+`.pi/mcp.json` maps it as `"CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"` so the operator environment is forwarded without committing a secret. The server stays `hidden` with only `resolve-library-id` and `query-docs` exposed as `deferred`; load them with native `tool_search`, then call the returned `mcp__context7__*` schemas:
 
-The model activates the `docs` capability before these calls; no documentation schema is paid for on an ordinary localized edit.
+```text
+Use tool_search to load the Context7 resolve-library-id tool. Resolve the React documentation library ID. Do not fetch broad documentation yet.
+```
+
+Use `mcp__context7__resolve_library_id` then `mcp__context7__query_docs` only when local source, installed types, and repository patterns do not answer a version-sensitive framework question. No documentation schema is paid for on an ordinary localized edit. Loaded tools persist on the active branch across resume/reload; Pi branch state owns them, not `harness_tools`.
+
+Rate limits and reliability: unlike the previous wrapper there is no persistent local docs cache — every query hits the Context7 API, so prefer one resolve plus one focused single-concept query over broad repeated fetches. Unauthenticated runs work at lower IP-based limits; set the key for higher quotas. Pi retries transient MCP HTTP failures (408, 429, 5xx) twice; on a 429 slow down, narrow the query, and resume. If you already know the exact library, pass its Context7 ID directly (`/org/project` or `/org/project/version`, e.g. `/vercel/next.js`) to skip the resolve step, and mention the version in the prompt when version-specific docs matter.
+
+Never paste secrets, credentials, private keys, or proprietary code into the `query` — the safety guard blocks obvious secret/sensitive-path queries, and the server instructs the same. Keep the key in your shell profile or `~/.pi/agent/mcp.json` user config, never in this repository.
 
 ## Web search
 
@@ -189,7 +197,7 @@ After setup:
 Then test capabilities with bounded requests:
 
 ```text
-Activate the docs capability, then use doc_search_resolve_library_id to resolve the React documentation library ID. Do not fetch broad documentation yet.
+Use tool_search to load the Context7 resolve-library-id tool. Resolve the React documentation library ID. Do not fetch broad documentation yet.
 ```
 
 ```text

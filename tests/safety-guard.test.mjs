@@ -264,6 +264,17 @@ test('browser mode supports public QA while strict mode narrows it', async () =>
   );
 });
 
+test('invalid guard settings fail closed', async () => {
+  assert.match(
+    (await guard('read', { path: 'README.md' }, { PI_GIT_MUTATION: 'sometimes' })).reason,
+    /deny or allow/,
+  );
+  assert.match(
+    (await guard('write', { path: 'README.md' }, { PI_GUARD_FILE_SCOPE: 'sometimes' })).reason,
+    /full or repository/,
+  );
+});
+
 test('native MCP names preserve browser and Git boundaries, including nested calls', async () => {
   for (const tool of ['browser_file_upload', 'browser_run_code_unsafe']) {
     assert.match((await guard(`mcp__playwright__${tool}`, {})).reason, /Unsafe MCP/);
@@ -298,17 +309,6 @@ test('native MCP names preserve browser and Git boundaries, including nested cal
   assert.match((await guard('read', { path: '.pi/agent/mcp-auth.json' })).reason, /Sensitive/);
 });
 
-test('invalid guard settings fail closed', async () => {
-  assert.match(
-    (await guard('read', { path: 'README.md' }, { PI_GIT_MUTATION: 'sometimes' })).reason,
-    /deny or allow/,
-  );
-  assert.match(
-    (await guard('write', { path: 'README.md' }, { PI_GUARD_FILE_SCOPE: 'sometimes' })).reason,
-    /full or repository/,
-  );
-});
-
 test('automatic PR delivery is recognized, scoped, and disabled in isolated sessions', async () => {
   const command = 'node scripts/ai-pr.mjs prepare';
   assert.equal(isGitMutationCommand(command), true);
@@ -320,4 +320,42 @@ test('automatic PR delivery is recognized, scoped, and disabled in isolated sess
     (await guard('bash', { command: `${command} && git push origin main` })).block,
     true,
   );
+});
+
+test('context7 docs queries allow ordinary questions but block secrets and sensitive paths', async () => {
+  assert.equal(
+    await guard('mcp', {
+      tool: 'query-docs',
+      args: { libraryId: '/vercel/next.js', query: 'How do I set up Next.js middleware?' },
+    }),
+    undefined,
+  );
+  assert.equal(
+    await guard('mcp__context7__query_docs', {
+      libraryId: '/vercel/next.js',
+      query: 'Cache Components in Next.js 16',
+    }),
+    undefined,
+  );
+  for (const query of [
+    // Built via concatenation so the repository secret scan sees no
+    // committed secret-looking literal; the runtime value still
+    // exercises the guard.
+    ['How do I use this with ', 'API', '_KEY=sk-live-', 'abcdef1234567890?'].join(''),
+    ['Bearer ctx7', 'sk-ab', 'cdef1234567890', ' not working'].join(''),
+    ['-----BEGIN RSA ', 'PRIVATE KEY----- pasted by mistake'].join(''),
+  ]) {
+    const result = await guard('mcp', {
+      tool: 'query-docs',
+      args: { libraryId: '/vercel/next.js', query },
+    });
+    assert.equal(result.block, true, query);
+    assert.match(result.reason, /secret/i, query);
+  }
+  const pathQuery = await guard('mcp__context7__query_docs', {
+    libraryId: '/x/y',
+    query: 'read my .env file for config',
+  });
+  assert.equal(pathQuery.block, true);
+  assert.match(pathQuery.reason, /sensitive file/i);
 });

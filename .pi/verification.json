@@ -42,9 +42,9 @@
     },
     {
       "id": "launcher",
-      "include": ["p", ".pi/models.env", "scripts/pi-sandbox.sh", "tests/launcher.test.mjs"],
+      "include": ["p", ".pi/models.env", "scripts/pi-sandbox.sh", "scripts/pi-extension-compat.mjs", "tests/launcher.test.mjs", "tests/pi-extension-compat.test.mjs"],
       "commands": [
-        ["node", "--test", "tests/launcher.test.mjs"]
+        ["node", "--test", "tests/launcher.test.mjs", "tests/pi-extension-compat.test.mjs"]
       ]
     },
     {

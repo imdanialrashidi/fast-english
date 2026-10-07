@@ -10,6 +10,30 @@ const artifactsRoot = path.join(repositoryRoot, '.artifacts');
 function runLauncher(overrides = {}, extraArgs = []) {
   fs.mkdirSync(artifactsRoot, { recursive: true });
   const temporaryDirectory = fs.mkdtempSync(path.join(artifactsRoot, 'launcher-test-'));
+  fs.mkdirSync(path.join(temporaryDirectory, 'scripts'));
+  fs.mkdirSync(path.join(temporaryDirectory, '.pi/npm/node_modules/pi-lsp-adapter'), {
+    recursive: true,
+  });
+  for (const file of [
+    'p',
+    'scripts/pi-extension-compat.mjs',
+    'scripts/pi-provider.mjs',
+    '.pi/settings.json',
+    '.pi/models.env',
+  ]) {
+    fs.copyFileSync(path.join(repositoryRoot, file), path.join(temporaryDirectory, file));
+  }
+  // Argument/environment tests start with an installed adapter. Actual missing-
+  // package installation is exercised by the separate native CLI smoke check.
+  fs.writeFileSync(
+    path.join(temporaryDirectory, '.pi/npm/node_modules/pi-lsp-adapter/package.json'),
+    JSON.stringify({
+      name: 'pi-lsp-adapter',
+      version: '0.1.3',
+      dependencies: {},
+      peerDependencies: { '@earendil-works/pi-tui': '*', typebox: '*' },
+    }),
+  );
   const fakePi = path.join(temporaryDirectory, 'pi');
   fs.writeFileSync(
     fakePi,
@@ -33,8 +57,8 @@ process.stdout.write(JSON.stringify({
   );
 
   try {
-    return spawnSync('bash', ['p', ...extraArgs], {
-      cwd: repositoryRoot,
+    const result = spawnSync('bash', ['p', ...extraArgs], {
+      cwd: temporaryDirectory,
       encoding: 'utf8',
       env: {
         ...process.env,
@@ -51,6 +75,7 @@ process.stdout.write(JSON.stringify({
         ...overrides,
       },
     });
+    return { ...result, fixtureRoot: temporaryDirectory };
   } finally {
     fs.rmSync(temporaryDirectory, { recursive: true, force: true });
   }
@@ -58,7 +83,7 @@ process.stdout.write(JSON.stringify({
 
 function parsed(result) {
   assert.equal(result.status, 0, result.stderr);
-  return JSON.parse(result.stdout);
+  return { ...JSON.parse(result.stdout), fixtureRoot: result.fixtureRoot };
 }
 
 test('launcher grants trusted full-scope work while Git and external mutation fail closed', () => {
@@ -70,7 +95,7 @@ test('launcher grants trusted full-scope work while Git and external mutation fa
   assert.equal(result.fileScope, 'full');
   assert.equal(result.gitMutation, 'deny');
   assert.equal(result.externalMutation, 'deny');
-  assert.equal(result.projectRoot, repositoryRoot);
+  assert.equal(result.projectRoot, result.fixtureRoot);
 });
 
 test('repository does not force a provider, model, or thinking level', () => {
@@ -172,6 +197,15 @@ test('native MCP subcommands are commands rather than accidental model prompts',
     runLauncher({ PI_MAIN_MODEL: 'provider/model-id' }, ['mcp', 'list', '--json']),
   );
   assert.deepEqual(result.args, ['mcp', 'list', '--json']);
+});
+
+test('native package installation and updates preserve command arguments', () => {
+  for (const args of [
+    ['install', '--local', 'npm:pi-lsp-adapter@0.1.3'],
+    ['update', '--help'],
+  ]) {
+    assert.deepEqual(parsed(runLauncher({}, args)).args, args);
+  }
 });
 
 test('custom-provider setup routes through Node before requiring Pi', () => {

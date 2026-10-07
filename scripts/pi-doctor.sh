@@ -46,6 +46,7 @@ required=(
   .github/dependabot.yml
   .github/pull_request_template.md
   p
+  scripts/pi-extension-compat.mjs
   .pi/mcp.json
   .pi/settings.json
   .pi/package-integrity.json
@@ -119,7 +120,7 @@ done
 
 node_version="$(node -p 'process.versions.node' 2>/dev/null || true)"
 if [[ -n "$node_version" ]] && version_at_least "$node_version" "22.19.0"; then
-  pass "Node $node_version satisfies Pi 1.0.0 requirement (>=22.19.0)"
+  pass "Node $node_version satisfies Pi 1.0.4 requirement (>=22.19.0)"
 else
   fail "Node >=22.19.0 is required for the reviewed Pi pin"
 fi
@@ -142,6 +143,12 @@ if node --check scripts/pi-provider.mjs >/dev/null 2>&1; then
   pass "custom provider setup script parses"
 else
   fail "custom provider setup script has a JavaScript syntax error"
+fi
+
+if node --check scripts/pi-extension-compat.mjs && node scripts/pi-extension-compat.mjs --check; then
+  pass "extension compatibility helper parses; any installed LSP manifest is compatible"
+else
+  fail "extension compatibility check failed; start ./p to repair the reviewed LSP package"
 fi
 
 if [[ "$static_mode" -eq 1 ]]; then
@@ -227,7 +234,6 @@ const required = [
   'npm:pi-sub-agent@0.1.5',
   'npm:@juicesharp/rpiv-todo@2.12.0',
   'npm:pi-lsp-adapter@0.1.3',
-  'npm:@dreki-gg/pi-doc-search@0.3.2',
   'npm:@bytetrue/pi-web-search@0.5.1',
 ];
 const missing = required.filter((item) => !installed.has(item));
@@ -236,6 +242,8 @@ if (missing.length) {
   process.exit(1);
 }
 for (const removed of [
+  'npm:@dreki-gg/pi-doc-search@0.3.2',
+  'npm:@upstash/context7-pi@0.1.2',
   'npm:pi-vision-tool@1.3.7',
   'npm:@getpipher/vision@0.5.2',
   'npm:@bytetrue/pi-vision@0.2.0',
@@ -285,9 +293,28 @@ for (const required of ['browser_snapshot', 'browser_find', 'browser_navigate', 
 if (server.args.includes('--allowed-origins')) {
   throw new Error('Autonomous browser mode must not be limited to localhost by MCP config');
 }
+const docs = config.mcpServers?.context7;
+if (!docs) throw new Error('Context7 MCP server is missing');
+if (!Array.isArray(docs.args) || !docs.args.includes('@upstash/context7-mcp@4.1.2')) {
+  throw new Error('Context7 MCP version pin is missing');
+}
+if (docs.args.some((value) => typeof value === 'string' && value.includes('ctx7sk-'))) {
+  throw new Error('Context7 API key must not be hardcoded in MCP args; use ${CONTEXT7_API_KEY} env mapping');
+}
+if (docs.env?.CONTEXT7_API_KEY !== '${CONTEXT7_API_KEY}') {
+  throw new Error('Context7 MCP must map CONTEXT7_API_KEY from the operator environment');
+}
+if (docs.exposure !== 'hidden') throw new Error('Unlisted Context7 tools must remain hidden');
+if (docs.toolExposure?.['resolve-library-id'] !== 'deferred' || docs.toolExposure?.['query-docs'] !== 'deferred') {
+  throw new Error('Context7 tools must be exactly deferred resolve-library-id and query-docs');
+}
+if (Object.keys(docs.toolExposure || {}).length !== 2) {
+  throw new Error('Context7 toolExposure must contain only the two reviewed tools');
+}
 NODE
 then
   pass "Native Playwright MCP is pinned, selectively deferred, and blocks file injection"
+  pass "Official Context7 MCP is pinned, deferred, and keeps the API key out of Git"
 else
   fail "Playwright MCP policy validation failed"
 fi
@@ -320,8 +347,6 @@ specialist_tools=(
   lsp_references
   lsp_workspace_symbols
   lsp_more
-  doc_search_resolve_library_id
-  doc_search_get_library_docs
   web_search
   web_fetch
 )
@@ -349,7 +374,6 @@ else
 fi
 
 if grep -Fq 'PI_SMART_READ:-1' p .pi/models.env && \
-   grep -Fq 'PI_SMART_READ:-1' p .pi/models.env && \
    grep -Fq 'PI_SMART_READ_BYTES:-98304' p .pi/models.env && \
    grep -Fq 'PI_SMART_READ_LINES:-400' p .pi/models.env && \
    grep -Fq 'PI_BLIND_RETRY_LIMIT:-2' p .pi/models.env && \
@@ -479,13 +503,13 @@ fi
 if command -v pi >/dev/null 2>&1; then
   version="$(pi --version 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
   if [[ -n "$version" ]]; then
-    if version_at_least "$version" "1.0.0"; then
-      pass "Pi $version satisfies minimum 1.0.0"
-      if [[ "$version" != "1.0.0" ]]; then
-        warn "Pi $version differs from the reviewed template pin 1.0.0; revalidate package/tool compatibility"
+    if version_at_least "$version" "1.0.4"; then
+      pass "Pi $version satisfies minimum 1.0.4"
+      if [[ "$version" != "1.0.4" ]]; then
+        warn "Pi $version differs from the reviewed template pin 1.0.4; revalidate package/tool compatibility"
       fi
     else
-      fail "Pi $version is older than required 1.0.0"
+      fail "Pi $version is older than required 1.0.4"
     fi
   else
     warn "Pi is installed but its version could not be parsed"

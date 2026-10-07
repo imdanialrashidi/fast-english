@@ -1,5 +1,5 @@
 // UI-only: no tools, prompt injection, stored transcripts, or provider calls.
-// Pi 1.0.0: agent_end can precede automatic recovery; agent_settled is final.
+// Pi 1.0.4: agent_end can precede automatic recovery; agent_settled is final.
 export default function runMetrics(pi, clock = {
   now: () => performance.now(),
   every: (fn) => setInterval(fn, 1000),
