@@ -7,7 +7,7 @@ Contributions should improve representative task outcomes, reduce risk/cost, or 
 1. Use Node.js 22.23.2 (`.nvmrc` + `package.json` engines).
 2. Install omp (`curl -fsSL https://omp.sh/install | sh`), then `/login` + `/model`.
 3. Review project workflow files (`.omp/`, `scripts/omp-pr.mjs`) before trusting the repository.
-4. Run `bash scripts/verify.sh` before and after a workflow change.
+4. Run `bash scripts/project-verify.sh` before and after a workflow change (full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec; requires PostgreSQL and an app server on `:8111`, else the browser lane prints `SKIP: browser lane (no server on :8111)`).
 5. omp runs with your OS permissions; approval tiers apply. For an untrusted repository or meaningful credential/private-data exposure, use an OS/container/VM boundary as described in `SECURITY.md`.
 
 ## Change contract
@@ -29,8 +29,10 @@ Workflow maintenance is allowed in the default mode. Keep it explicitly scoped, 
 Run:
 
 ```bash
-bash scripts/verify.sh
+bash scripts/project-verify.sh
 ```
+
+Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec. Requires PostgreSQL reachable and an app server on `:8111`; when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)`.
 
 For a material harness change, compare baseline/candidate on representative cases. Do not publish artifacts containing repository content or credentials.
 

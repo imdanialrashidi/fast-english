@@ -3,6 +3,7 @@ import { BookOpen, CircleCheck, Eye } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
+import { postJson } from '@/lib/http';
 import type { SharedProps } from '@/types';
 
 /**
@@ -40,10 +41,6 @@ const GRADE_SHORTCUTS: Record<string, string> = {
     easy: '4',
 };
 
-function csrfToken(): string {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-}
-
 export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     card,
     remaining,
@@ -65,16 +62,7 @@ export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: Rea
             }
             setBusy(true);
             try {
-                const response = await fetch(`/app/words/${card.id}/grade`, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                        'X-CSRF-TOKEN': csrfToken(),
-                    },
-                    body: JSON.stringify({ grade: value }),
-                });
+                const response = await postJson(`/app/words/${card.id}/grade`, { grade: value });
                 if (response.ok) {
                     router.reload({ only: ['card', 'remaining'] });
                 } else {

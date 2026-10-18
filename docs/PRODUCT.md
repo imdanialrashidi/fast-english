@@ -8,7 +8,7 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 
 Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English; final brand, domain ownership, prices, bank destination, legal text, SMTP, signing identity, hosting, staff roster, and content production are launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures.
 
-Reference domain in scope documents: `fastenglishpodcast.com` — ownership/access to be verified before launch (§25). No product code exists in this checkout; this is a fresh rebuild.
+Reference domain in scope documents: `fastenglishpodcast.com` — ownership/access to be verified before launch (§25). The checkout is a working rebuild-in-progress: domain models, shared Actions, policies, and private media controllers exist, the learner surface is Inertia post-M0–M5 with the M6 regression pending, and staff runs in Filament. See the stage map in `docs/PLAN.md` and the active migration plan in `docs/exec-plans/active/frontend-inertia-migration.md`.
 
 ## Scoped requirements by ID (scope §3)
 

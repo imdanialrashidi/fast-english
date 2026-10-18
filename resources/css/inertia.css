@@ -98,3 +98,200 @@ body {
         scroll-behavior: auto !important;
     }
 }
+
+/* React fe-* hooks (ported from app.css, mapped onto @theme tokens).
+ * Every class below is consumed by a React call site that ships with
+ * utility classes but keeps the hook for the layout contract the
+ * browser specs pin (fixed player/nav, card ratio, sentence rows,
+ * pagination/current states, 16px seek compat probe --fe-seek-pct).
+ * Server pages keep their own copy in app.css (public.blade.php). */
+.fe-playerbar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: calc(68px + env(safe-area-inset-bottom));
+    z-index: 20;
+}
+
+.fe-bottomnav {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 30;
+}
+
+.fe-bottomnav a {
+    min-height: 56px;
+}
+
+.fe-bottomnav a[aria-current='page'] {
+    color: var(--color-ink);
+    font-weight: 700;
+}
+
+.fe-bottomnav a[aria-current='page'] .fe-icon {
+    color: var(--color-primary);
+}
+
+@media (min-width: 640px) {
+    .fe-bottomnav {
+        display: none;
+    }
+    .fe-playerbar {
+        bottom: 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .fe-bottomnav {
+        display: none;
+    }
+    .fe-sidebar {
+        display: grid;
+    }
+}
+
+.fe-seek {
+    --fe-seek-pct: 0%;
+    appearance: none;
+}
+
+.fe-seek::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to left, var(--color-primary) 0 var(--fe-seek-pct), var(--color-line) var(--fe-seek-pct) 100%);
+}
+
+.fe-seek::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -9px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    border: 3px solid var(--color-surface);
+}
+
+.fe-seek::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-line);
+}
+
+.fe-seek::-moz-range-progress {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-primary);
+}
+
+.fe-seek::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    border: 3px solid var(--color-surface);
+}
+
+.fe-card-media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+}
+
+.fe-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.875rem;
+    font-family: var(--font-en);
+}
+
+.fe-sentences {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fe-sentence {
+    width: 100%;
+    min-height: 44px;
+    text-align: start;
+    font-family: var(--font-en);
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--color-ink);
+    background: transparent;
+    border: 1px solid transparent;
+    border-inline-start-width: 4px;
+    border-radius: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+}
+
+.fe-sentence:hover {
+    background: var(--color-surface);
+}
+
+.fe-sentence[aria-current='true'] {
+    background: var(--color-surface);
+    border-inline-start-color: var(--color-accent-strong);
+    border-color: var(--color-line);
+}
+
+.fe-english-body {
+    font-family: var(--font-en);
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--color-ink);
+}
+
+.fe-english-body p {
+    margin-block: 0 1.1em;
+}
+
+.fe-pagination a,
+.fe-pagination span {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.fe-pagination span[aria-current='page'] {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-surface);
+    font-weight: 700;
+}
+
+.fe-option input[type='radio'] {
+    width: 24px;
+    height: 24px;
+    accent-color: var(--color-primary);
+}
+
+.fe-alert {
+    border: 1px solid var(--color-danger);
+    color: var(--color-danger);
+    background: var(--color-surface);
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.fe-flash-word {
+    font-family: var(--font-en);
+    font-size: 2rem;
+    line-height: 1.3;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+}

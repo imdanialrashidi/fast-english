@@ -3,6 +3,7 @@ import { Lock, Mail, User, UserPlus } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { AuthFrame, authLayout } from './Frame';
+import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
 
 /**
@@ -10,9 +11,6 @@ import type { SharedProps } from '@/types';
  * Fortify endpoint. Success signs the account in and lands on the
  * account page (Fortify home, unchanged).
  */
-
-const INPUT_CLASS =
-    'min-h-11 w-full rounded-full border border-field bg-surface px-4 py-2 text-base text-ink';
 
 function FieldError({ id, message }: { id: string; message?: string }): React.JSX.Element | null {
     if (message === undefined) {

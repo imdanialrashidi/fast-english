@@ -3,6 +3,7 @@ import { Check, Lock, Mail } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { AuthFrame, authLayout } from './Frame';
+import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
 
 /**
@@ -15,9 +16,6 @@ interface ResetProps extends SharedProps {
     token: string;
     email: string;
 }
-
-const INPUT_CLASS =
-    'min-h-11 w-full rounded-full border border-field bg-surface px-4 py-2 text-base text-ink';
 
 export const ResetPassword: FunctionComponent<ResetProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     token,

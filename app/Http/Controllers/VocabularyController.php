@@ -33,9 +33,11 @@ class VocabularyController extends Controller
         $query = trim((string) $request->query('q', ''));
         $query = $query !== '' ? mb_substr($query, 0, 120) : null;
 
+        // The props below read only lesson.level + topic.slug off these
+        // eagers; the FKs stay so entries still match their parents.
         $words = VocabularyWord::query()
             ->where('user_id', $user->id)
-            ->with(['lesson', 'topic'])
+            ->with(['lesson:id,topic_id,level', 'topic:id,slug'])
             ->when($tab === 'due', fn ($q) => $q
                 ->where('status', 'learning')
                 ->where('due_at', '<=', now()))
@@ -48,16 +50,25 @@ class VocabularyController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        $dueCount = VocabularyWord::where('user_id', $user->id)
-            ->where('status', 'learning')
-            ->where('due_at', '<=', now())
-            ->count();
-        $learningCount = VocabularyWord::where('user_id', $user->id)
-            ->where('status', 'learning')
-            ->count();
-        $knownCount = VocabularyWord::where('user_id', $user->id)
-            ->where('status', 'known')
-            ->count();
+        // One grouped query for all three tab badges: the due badge needs
+        // its due_at scope, which a plain status group cannot express, so
+        // due stays a conditional sum inside the same row.
+        $statusRows = VocabularyWord::where('user_id', $user->id)
+            ->groupBy('status')
+            ->selectRaw('status, count(*) as total, sum(case when status = ? and due_at <= ? then 1 else 0 end) as due', ['learning', now()])
+            ->get();
+
+        $dueCount = 0;
+        $learningCount = 0;
+        $knownCount = 0;
+        foreach ($statusRows as $row) {
+            if ($row->status === 'learning') {
+                $learningCount = (int) $row->total;
+                $dueCount = (int) $row->due;
+            } elseif ($row->status === 'known') {
+                $knownCount = (int) $row->total;
+            }
+        }
 
         // Public-slice Inertia transport (ADR-0002): the same owner-
         // scoped query, tabs, counts, and pagination. Props carry the
@@ -206,7 +217,7 @@ class VocabularyController extends Controller
         $card = VocabularyWord::where('user_id', $user->id)
             ->where('status', 'learning')
             ->where('due_at', '<=', now())
-            ->with(['lesson', 'topic'])
+            ->with(['lesson:id,topic_id,level', 'topic:id,slug'])
             ->orderBy('due_at')
             ->orderBy('id')
             ->first();

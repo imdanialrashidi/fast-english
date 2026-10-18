@@ -23,7 +23,7 @@ use Inertia\Inertia;
  *   of the last start is refused; resuming the open attempt is allowed.
  * - Answers save per question (selected option only). The answer key
  *   (correct_option) and scoring rules never reach the client: not in
- *   HTML, not in JSON, not in Livewire state (these are plain Blade
+ *   HTML, not in JSON, not in Inertia props (these are plain Inertia
  *   routes with no Livewire component).
  * - Submit validates that every answer belongs to this attempt and
  *   version with no duplicates or foreign questions; a partial submit
@@ -246,13 +246,27 @@ class PlacementController extends Controller
         if ($existing !== null) {
             $existing->forceFill(['selected_option' => (int) $data['selected_option'], 'is_correct' => null])->save();
         } else {
-            $row = new PlacementAnswer;
-            $row->forceFill([
-                'attempt_id' => $attempt->id,
-                'question_id' => $question->id,
-                'selected_option' => (int) $data['selected_option'],
-                'is_correct' => null,
-            ])->save();
+            try {
+                $row = new PlacementAnswer;
+                $row->forceFill([
+                    'attempt_id' => $attempt->id,
+                    'question_id' => $question->id,
+                    'selected_option' => (int) $data['selected_option'],
+                    'is_correct' => null,
+                ])->save();
+            } catch (QueryException $e) {
+                // Concurrent double-submit: the loser hits the (attempt_id,
+                // question_id) unique index between the find and the insert.
+                // Converge onto the surviving row with the posted value so
+                // exactly one row remains; anything else rethrows.
+                $surviving = PlacementAnswer::where('attempt_id', $attempt->id)
+                    ->where('question_id', $question->id)
+                    ->first();
+                if ($surviving === null) {
+                    throw $e;
+                }
+                $surviving->forceFill(['selected_option' => (int) $data['selected_option'], 'is_correct' => null])->save();
+            }
         }
 
         if ($request->expectsJson()) {

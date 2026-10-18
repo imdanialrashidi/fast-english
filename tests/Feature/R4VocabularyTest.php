@@ -2,6 +2,8 @@
 
 use App\Models\Lesson;
 use App\Models\VocabularyWord;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
@@ -151,4 +153,48 @@ test('editing notes and removing a word persist across reloads', function () {
         ->get(route('words.index'))
         ->assertOk();
     expect($emptied->inertiaProps()['words'])->toBe([]);
+});
+
+test('a concurrent double-submit converges onto the surviving word row', function () {
+    $student = ContentFixtures::subscribedStudent();
+
+    $this->actingAs($student)
+        ->postJson(route('words.store'), ['word' => 'Parallel'])
+        ->assertCreated();
+    $surviving = VocabularyWord::where('user_id', $student->id)->firstOrFail();
+
+    // The (user_id, word_key) unique index is the race backstop: a direct
+    // second insert must fail inside a savepoint (which keeps the outer
+    // PostgreSQL test transaction alive), proving the loser leg the
+    // Vocabulary::save guard converges onto.
+    $violated = false;
+    try {
+        DB::transaction(function () use ($student, $surviving) {
+            VocabularyWord::create([
+                'user_id' => $student->id,
+                'word' => 'PARALLEL',
+                'word_key' => $surviving->word_key,
+                'status' => 'learning',
+                'ease_factor' => 2.5,
+                'interval_days' => 0,
+                'repetitions' => 0,
+                'lapses' => 0,
+                'due_at' => now(),
+                'last_reviewed_at' => null,
+            ]);
+        });
+    } catch (QueryException) {
+        $violated = true;
+    }
+    expect($violated)->toBeTrue('second insert for one (user_id, word_key) must be refused');
+
+    // And the endpoint maps the race onto the idempotent duplicate shape
+    // (422 + Persian message + surviving id), never a 500.
+    $this->actingAs($student)
+        ->postJson(route('words.store'), ['word' => 'parallel'])
+        ->assertStatus(422)
+        ->assertJsonPath('message', 'این واژه قبلاً در دفترچه شما ذخیره شده است.')
+        ->assertJsonPath('id', $surviving->id);
+
+    expect(VocabularyWord::where('user_id', $student->id)->count())->toBe(1);
 });

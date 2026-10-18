@@ -49,16 +49,17 @@ class TopicReaderController extends Controller
             abort(404);
         }
 
-        $publishedLessons = $topic->lessons()
+        // One small levels-only query for the switcher (ordered A1–C2);
+        // the matched lesson below is the only full row this page reads.
+        $availableLevels = $topic->lessons()
             ->where('status', 'published')
             ->orderByRaw(\App\Support\Levels::orderExpression())
-            ->get();
+            ->pluck('level')
+            ->all();
 
-        if ($publishedLessons->isEmpty()) {
+        if ($availableLevels === []) {
             abort(404);
         }
-
-        $availableLevels = $publishedLessons->pluck('level')->all();
 
         $rawLevel = $request->query('level', '');
         $requested = is_string($rawLevel) ? strtoupper($rawLevel) : '';
@@ -74,7 +75,24 @@ class TopicReaderController extends Controller
             }
         }
 
-        $lesson = $publishedLessons->firstWhere('level', $requested);
+        // The only lesson row this page renders: every column below is
+        // consumed by the gate (status/sample), Reading::prepared
+        // (body/glossary/cues/revision), the resume lookup
+        // (id/revision), or the props (title/level/minutes/duration).
+        $lesson = $topic->lessons()
+            ->where('status', 'published')
+            ->where('level', $requested)
+            ->first([
+                'id', 'topic_id', 'level', 'title_en', 'body_en', 'glossary',
+                'audio_cues', 'audio_cues_revision', 'audio_revision',
+                'duration_seconds', 'estimated_minutes', 'is_public_sample', 'status',
+            ]);
+
+        if ($lesson !== null) {
+            // Route binding already proved the topic published — reuse it
+            // for the lesson gate instead of re-querying the topic row.
+            $lesson->setRelation('topic', $topic);
+        }
 
         if ($lesson === null) {
             return Inertia::render('Reader/NotReady', [

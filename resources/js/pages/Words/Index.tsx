@@ -3,6 +3,7 @@ import { BookOpen, Check, Compass, Inbox, Pencil, Play, RotateCcw, Search, X } f
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
+import { postJson } from '@/lib/http';
 import type { PaginationMeta, SharedProps } from '@/types';
 
 /**
@@ -34,26 +35,13 @@ interface WordsProps extends SharedProps {
     knownCount: number;
 }
 
-function csrfToken(): string {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-}
-
 async function mutateWord(
     id: number,
     method: 'PATCH' | 'DELETE',
     body?: unknown,
 ): Promise<{ ok: boolean; message: string }> {
     try {
-        const response = await fetch(`/app/words/${id}`, {
-            method,
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'X-CSRF-TOKEN': csrfToken(),
-            },
-            body: body === undefined ? undefined : JSON.stringify(body),
-        });
+        const response = await postJson(`/app/words/${id}`, body, method);
         if (response.ok) {
             return { ok: true, message: '' };
         }

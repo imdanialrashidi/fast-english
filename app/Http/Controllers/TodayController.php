@@ -23,7 +23,7 @@ class TodayController extends Controller
         }
 
         $plan = DailyPlan::build($user);
-        $recommendations = DailyPlan::recommendations($user, 3);
+        $recommendations = DailyPlan::recommendations($user, 3, $plan['eligible'] ?? null);
 
         // Public-slice Inertia transport (ADR-0002): the same DailyPlan
         // derivation, the same continue/task shapes, the same

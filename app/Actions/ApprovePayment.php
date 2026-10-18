@@ -188,11 +188,18 @@ final class ApprovePayment
         if ($ownerId === null) {
             throw ValidationException::withMessages(['request' => 'The payment request was not found.']);
         }
+        if ((int) $ownerId === (int) $staff->id) {
+            throw ValidationException::withMessages(['request' => 'Staff cannot review their own payment request.']);
+        }
 
         // Fixed lock order User → PaymentRequest, same as approve.
         return DB::transaction(function () use ($requestId, $staff, $reason, $internalNote, $ownerId) {
             User::where('id', $ownerId)->lockForUpdate()->firstOrFail();
             $row = PaymentRequest::where('id', $requestId)->lockForUpdate()->firstOrFail();
+
+            if ((int) $row->user_id === (int) $staff->id) {
+                throw ValidationException::withMessages(['request' => 'Staff cannot review their own payment request.']);
+            }
 
             if ($row->status !== PaymentRequest::STATUS_PENDING) {
                 throw ValidationException::withMessages(['request' => 'Only a pending request can be rejected.']);
@@ -230,11 +237,18 @@ final class ApprovePayment
         if ($ownerId === null) {
             throw ValidationException::withMessages(['request' => 'The payment request was not found.']);
         }
+        if ((int) $ownerId === (int) $staff->id) {
+            throw ValidationException::withMessages(['request' => 'Staff cannot review their own payment request.']);
+        }
 
         // Fixed lock order User → PaymentRequest, same as approve.
         return DB::transaction(function () use ($requestId, $staff, $clean, $ownerId) {
             User::where('id', $ownerId)->lockForUpdate()->firstOrFail();
             $row = PaymentRequest::where('id', $requestId)->lockForUpdate()->firstOrFail();
+
+            if ((int) $row->user_id === (int) $staff->id) {
+                throw ValidationException::withMessages(['request' => 'Staff cannot review their own payment request.']);
+            }
 
             if ($row->status !== PaymentRequest::STATUS_PENDING) {
                 throw ValidationException::withMessages(['request' => 'Only a pending request can be cancelled by staff.']);
@@ -275,8 +289,17 @@ final class ApprovePayment
 
         $moment = self::moment($now);
 
+        if ((int) $userId === (int) $staff->id) {
+            throw ValidationException::withMessages(['request' => 'Staff cannot grant or revoke their own subscription.']);
+        }
+
         return DB::transaction(function () use ($userId, $staff, $durationDays, $clean, $moment) {
             $owner = User::where('id', $userId)->lockForUpdate()->firstOrFail();
+
+            if ((int) $owner->id === (int) $staff->id) {
+                throw ValidationException::withMessages(['request' => 'Staff cannot grant or revoke their own subscription.']);
+            }
+
             $subscription = Subscription::where('user_id', $owner->id)->lockForUpdate()->first();
             if ($subscription !== null) {
                 $subscription->setRelation('user', $owner);
@@ -346,11 +369,19 @@ final class ApprovePayment
         if ($clean === '') {
             throw ValidationException::withMessages(['reason' => 'A reason is required to revoke a subscription.']);
         }
-
         $moment = self::moment($now);
+
+        if ((int) $userId === (int) $staff->id) {
+            throw ValidationException::withMessages(['request' => 'Staff cannot grant or revoke their own subscription.']);
+        }
 
         return DB::transaction(function () use ($userId, $staff, $clean, $moment) {
             $owner = User::where('id', $userId)->lockForUpdate()->firstOrFail();
+
+            if ((int) $owner->id === (int) $staff->id) {
+                throw ValidationException::withMessages(['request' => 'Staff cannot grant or revoke their own subscription.']);
+            }
+
             $subscription = Subscription::where('user_id', $owner->id)->lockForUpdate()->firstOrFail();
 
             if ($subscription->revoked_at !== null) {

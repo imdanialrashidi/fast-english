@@ -50,7 +50,7 @@ test('S8 landing 360: hero, preview, sample, plans, install, faq', async ({ page
   await expect(page.getByText('یک‌ماهه آزمایشی (TEST)')).toBeVisible();
   await expect(page.getByRole('link', { name: 'مشاهده پلن‌ها و خرید' }).first()).toBeVisible();
   await expect(page.getByText('در دست آماده‌سازی')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'صفحه دانلود' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'صفحه دانلود' }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: 'مشاهده همه پرسش‌ها' })).toBeVisible();
   const html = await page.content();
   expect(html).toContain('lang="fa"');

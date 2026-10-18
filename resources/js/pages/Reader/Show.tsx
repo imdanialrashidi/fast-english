@@ -3,6 +3,8 @@ import { Bookmark, BookOpen, Check, Clock, Gauge, Headphones, Info, RotateCcw } 
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
+import { currentCueIndex } from '@/lib/audio';
+import { deleteJson, postJson } from '@/lib/http';
 import { usePlayer } from '@/lib/player';
 import type { GlossaryEntry, SentenceCue, SharedProps } from '@/types';
 
@@ -49,40 +51,6 @@ interface ReaderProps extends SharedProps {
     cues: SentenceCue[];
     cuesUsable: boolean;
     glossary: GlossaryEntry[];
-}
-
-function csrfToken(): string {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
-}
-
-async function postJson(url: string, body: unknown): Promise<Response> {
-    return fetch(url, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'X-CSRF-TOKEN': csrfToken(),
-        },
-        body: JSON.stringify(body),
-    });
-}
-
-function currentCueIndex(cues: SentenceCue[], time: number): number {
-    let active = -1;
-    for (let index = 0; index < cues.length; index += 1) {
-        const cue = cues[index];
-        if (cue !== undefined && time >= cue.start_seconds && time < cue.end_seconds) {
-            active = index;
-        }
-    }
-    if (active === -1 && cues.length > 0) {
-        const last = cues[cues.length - 1];
-        if (last !== undefined && time >= last.end_seconds) {
-            active = cues.length - 1;
-        }
-    }
-    return active;
 }
 
 function GlossaryRow({
@@ -240,11 +208,7 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
         setBusyAction(true);
         try {
             const response = bookmarked
-                ? await fetch(`/app/bookmarks/${topic.id}`, {
-                      method: 'DELETE',
-                      credentials: 'same-origin',
-                      headers: { Accept: 'application/json', 'X-CSRF-TOKEN': csrfToken() },
-                  })
+                ? await deleteJson(`/app/bookmarks/${topic.id}`)
                 : await postJson('/app/bookmarks', { topic_id: topic.id });
             if (response.ok) {
                 setBookmarked(!bookmarked);

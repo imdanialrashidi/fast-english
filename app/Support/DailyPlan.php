@@ -28,6 +28,7 @@ final class DailyPlan
      *   learned_minutes: int,
      *   progress_pct: int,
      *   due_words: int,
+     *   eligible: bool,
      *   tasks: list<array{key: string, title: string, detail: string|null, url: string, done: bool}>
      * }
      */
@@ -62,13 +63,16 @@ final class DailyPlan
             ->where('last_reviewed_at', '>=', $today)
             ->count();
 
-        $completedToday = LessonProgress::where('user_id', $user->id)
-            ->where('completed_at', '>=', $today)
-            ->with('lesson')
-            ->get();
+        // One joined sum instead of hydrating every completed row: the PHP
+        // sum over full lesson rows grew one query per lesson plus the
+        // lesson payload itself.
+        $completedMinutes = (int) LessonProgress::query()
+            ->where('lesson_progress.user_id', $user->id)
+            ->where('lesson_progress.completed_at', '>=', $today)
+            ->join('lessons', 'lessons.id', '=', 'lesson_progress.lesson_id')
+            ->sum('lessons.estimated_minutes');
 
-        $learnedMinutes = $completedToday->sum(fn ($progress) => (int) ($progress->lesson?->estimated_minutes ?? 0))
-            + min($reviewedToday, 5);
+        $learnedMinutes = $completedMinutes + min($reviewedToday, 5);
 
         $tasks = [];
 
@@ -140,6 +144,10 @@ final class DailyPlan
             'learned_minutes' => (int) $learnedMinutes,
             'progress_pct' => $goal > 0 ? (int) min(100, round($learnedMinutes / $goal * 100)) : 0,
             'due_words' => (int) $dueWords,
+            // Internal only: lets TodayController reuse this request's
+            // eligibility for recommendations() instead of recomputing
+            // the fresh-user + subscription lookup. Never rendered.
+            'eligible' => $eligible,
             'tasks' => $tasks,
         ];
     }
@@ -175,10 +183,15 @@ final class DailyPlan
             ->first();
     }
 
-    /** @return list<Topic> */
-    public static function recommendations(User $user, int $limit = 3): array
+    /**
+     * Eligibility is computed once in build() and passed in, so the Today
+     * page pays the fresh-user + subscription lookup exactly once.
+     * The Today controller is the only caller (verified 2026-10-18).
+     *
+     * @return list<Topic>
+     */
+    public static function recommendations(User $user, int $limit, bool $eligible): array
     {
-        $eligible = Entitlement::eligible($user);
 
         return Topic::query()
             ->where('status', 'published')
@@ -190,10 +203,13 @@ final class DailyPlan
                         fn ($q) => $q->where('level', $user->preferred_level)
                     );
             })
+            // TodayController reads only level + estimated_minutes off
+            // these; the FK stays so the eager matches back to topics.
             ->with(['lessons' => fn ($lessons) => $lessons
                 ->where('status', 'published')
                 ->when(! $eligible, fn ($q) => $q->where('is_public_sample', true))
-                ->orderBy('id'),
+                ->orderBy('id')
+                ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('published_at')
             ->orderByDesc('id')

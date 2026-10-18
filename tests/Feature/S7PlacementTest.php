@@ -211,3 +211,32 @@ test('duplicate, foreign, and incomplete submits store no result', function () {
     $this->actingAs($this->studentB)->postJson(route('placement.submit', $attempt))->assertForbidden();
     expect($attempt->fresh()->status)->toBe(PlacementAttempt::STATUS_IN_PROGRESS);
 });
+
+test('a concurrent first answer converges onto one row with the posted value', function () {
+    $version = s7BuildVersion('s7-answer-race-v1 (TEST)');
+    $this->actingAs($this->studentA)->post(route('placement.start'))->assertRedirect();
+    $attempt = PlacementAttempt::where('user_id', $this->studentA->id)->firstOrFail();
+    ['questions' => $questions] = s7Key($version);
+    $first = $questions->first();
+
+    // Loser leg: the row a concurrent first-save would have inserted.
+    // Inserted directly, then the endpoint re-saves the same question
+    // with the posted value — the race guard must converge, not 500.
+    $loser = new PlacementAnswer;
+    $loser->forceFill([
+        'attempt_id' => $attempt->id,
+        'question_id' => $first->id,
+        'selected_option' => 0,
+        'is_correct' => null,
+    ])->save();
+
+    $this->actingAs($this->studentA)->postJson(route('placement.answer', $attempt), [
+        'question_id' => $first->id,
+        'selected_option' => 2,
+    ])->assertOk();
+
+    $rows = PlacementAnswer::where('attempt_id', $attempt->id)->where('question_id', $first->id)->get();
+    expect($rows)->toHaveCount(1)
+        ->and((int) $rows->first()->selected_option)->toBe(2)
+        ->and($rows->first()->is_correct)->toBeNull();
+});

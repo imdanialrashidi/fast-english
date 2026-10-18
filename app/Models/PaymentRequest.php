@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * choice on create — amount, duration, destination, and status are never
  * fillable and are set via forceFill inside the controllers/actions.
  * Livewire public properties must not carry them either (S5 uses plain
- * Blade forms, no Livewire component).
+ * Inertia forms, no Livewire component).
  *
  * Privacy (scope §10.3, §16): receipt_path, bank_reference, sender_last4,
  * and internal_note are hidden from public serialization and never

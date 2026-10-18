@@ -49,8 +49,11 @@ class LandingController extends Controller
             ->where('status', 'published')
             ->whereHas('lessons', fn ($lessons) => $lessons->where('status', 'published'))
             ->with(['lessons' => fn ($lessons) => $lessons
+                // Cards read only level + estimated_minutes; the FK stays
+                // so lessons still match their topics.
                 ->where('status', 'published')
-                ->orderBy('id'),
+                ->orderBy('id')
+                ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('published_at')
             ->orderByDesc('id')

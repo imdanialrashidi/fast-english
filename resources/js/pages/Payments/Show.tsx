@@ -3,6 +3,7 @@ import { CardSim, Check, CircleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
+import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
 
 /**
@@ -44,9 +45,6 @@ function statusLabel(status: string): string {
             return status;
     }
 }
-
-const INPUT_CLASS =
-    'min-h-11 w-full rounded-full border border-field bg-surface px-4 py-2 text-base text-ink';
 
 export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     request,

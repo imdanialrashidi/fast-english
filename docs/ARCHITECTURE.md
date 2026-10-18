@@ -2,14 +2,14 @@
 
 Source: scope §2 (stack), §5 (roles), §8 (access/time), §9 (content), §10–11 (payment/subscription), §13 (player/progress), §14 (data model), §15 (state ownership), §16 (file delivery/security), §18 (PWA/TWA), §19 (deploy/ops). Section numbers refer to the scope.
 
-## Current system (target — nothing built yet)
+## Current system
 
 - Runtime: PHP 8.4 (supported patch), Laravel 13.x, Nginx + PHP-FPM, PostgreSQL (supported), Vite asset build, Node for build only (§2).
-- Learner UI: Blade + Tailwind CSS 4.1+ compatible; server-driven interaction Livewire 4.x; instant browser interaction Alpine bundled with Livewire + limited JS; Flux Free only where needed, no Flux Pro requirement (§2).
-- Staff: one Filament 5.x panel (`/admin`); learner Filament assets never loaded in learner layout (§2).
-- Auth: official Livewire starter kit with Fortify (login, register, reset, standard security) (§2).
+- Learner/public UI: Inertia 3 + React 19 + TypeScript + Tailwind CSS 4 + shadcn/ui, single permanent light theme (see `docs/adr/0002-inertia-react-learner-frontend.md` for the binding decision) (§2).
+- Staff: one Filament 5.x panel (`/admin`) with its internal Livewire isolated; learner Filament assets never loaded in learner layout (§2).
+- Auth: Fortify with Inertia pages (login, register, reset, standard security) (§2).
 - Topology: one Laravel app, one database, one origin. No subdomains, no separate auth client, no parallel REST API, no Node API server (§15, §6).
-- Resolved versions pinned in `composer.lock` + `package-lock.json` (+ PHP/Node pins) at S0; majors never auto-bumped per session (§2). Alpine never double-loaded via CDN/second bundle (§2). No Redis/Octane/WebSocket/standalone search/monorepo/public API/Docker required by this scope (§2).
+- Resolved versions pinned in `composer.lock` + `package-lock.json` (+ PHP/Node pins) at S0; majors never auto-bumped per session (§2). No Redis/Octane/WebSocket/standalone search/monorepo/public API/Docker required by this scope (§2).
 
 ## State ownership — one owner per piece of state (scope §15)
 
@@ -19,8 +19,8 @@ Source: scope §2 (stack), §5 (roles), §8 (access/time), §9 (content), §10�
 | Browse level, category, query, page | URL (`?level=`, filters, pagination) | Back/share/refresh compatible; silent default change forbidden |
 | `preferred_level` | `users` row | Only explicit settings change or placement-result accept |
 | `recommended_level` | Latest completed placement attempt | Browsing a level never changes it |
-| Forms + validation | Livewire / Laravel (server) | Server is validation reference |
-| `currentTime`, speed, play state | JS player (`resources/js/player.js`) | No round-trip for instant controls; never bind `timeupdate` to server |
+| Forms + validation | Inertia / Laravel (server) | Server is validation reference |
+| `currentTime`, speed, play state | Persistent React audio in the shared learner layout (`resources/js/lib/player.tsx` + `resources/js/components/AudioPlayer.tsx`) | No round-trip for instant controls; never bind `timeupdate` to server |
 | Confirmed progress | DB `lesson_progress` scoped to (user, lesson) | Browser only requests saves |
 | Sentence cues | DB `lessons.audio_cues` JSON, keyed to `audio_revision` | Client never authoritative; stale-revision cues rejected; missing cues fall back to plain reader |
 | Vocabulary state | DB `vocabulary_words` scoped to (user) | Client only requests save/review/remove; ownership enforced server-side |
@@ -28,9 +28,9 @@ Source: scope §2 (stack), §5 (roles), §8 (access/time), §9 (content), §10�
 | Guest non-sensitive preference | Limited `localStorage` | No tokens, receipts, lesson bodies, answer keys |
 | Theme | Fixed light in v1 | Dark/system needs its own scope |
 
-Code homes (proposed, §15): `routes/web.php` (pages + essential media/controller routes) · `app/Models` · `app/Policies` · `app/Livewire` (list/forms/account/placement with server state) · `app/Http/Controllers` (protected files + essential HTTP) · `app/Http/Requests` · `app/Actions` (shared sensitive rules: ApprovePayment/RejectPayment/PublishLesson) · `app/Filament` · `resources/views` (public/student layouts) · `resources/js/player.js` (single audio lifecycle) · `resources/css/app.css` (tokens) · migrations/seeders · `tests/Feature,Unit` + `tests/browser` · `docs`.
+Code homes (proposed, §15): `routes/web.php` (pages + essential media/controller routes) · `app/Models` · `app/Policies` · `app/Http/Controllers` (Inertia responses + protected files + essential HTTP) · `app/Http/Requests` · `app/Actions` (shared sensitive rules: ApprovePayment/RejectPayment/PublishLesson) · `app/Filament` · `resources/js/pages` + `resources/js/layouts` + `resources/js/components` (Inertia learner/public UI) · `resources/js/lib/player.tsx` + `resources/js/components/AudioPlayer.tsx` (single audio lifecycle) · `resources/css/app.css` (tokens) · migrations/seeders · `tests/Feature,Unit` + `tests/browser` · `docs`.
 
-Rules: one `HTMLAudioElement` in the shared learner layout with `@persist` for `wire:navigate`; never two concurrent audio elements (§13.1). No parallel controller/service/repository/manager per model; direct Eloquent is fine, Actions carry shared/transactional rules (§15). No speculative abstractions, public event bus, or framework-class wrappers (§15).
+Rules: one `HTMLAudioElement` in the shared learner layout (persistent across in-layout navigation); never two concurrent audio elements (§13.1). No parallel controller/service/repository/manager per model; direct Eloquent is fine, Actions carry shared/transactional rules (§15). No speculative abstractions, public event bus, or framework-class wrappers (§15).
 
 ## Eligibility and server-side enforcement (scope §8)
 

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { PlayerTrack } from '@/types';
+import { postJson } from './http';
 
 /**
  * M1 persistent audio owner (READ-01, MEDIA-01/02, PROG-01).
@@ -26,10 +27,6 @@ export function formatAudioTime(totalSeconds: number): string {
     }
     const total = Math.floor(totalSeconds);
     return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
-}
-
-function csrfToken(): string {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 }
 
 export interface ProgressCallbacks {
@@ -152,19 +149,10 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
         lastSave.current = now;
         const [lessonId, revision] = active.split(':').map(Number);
         try {
-            const response = await fetch('/app/progress', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrfToken(),
-                },
-                body: JSON.stringify({
-                    lesson_id: lessonId,
-                    audio_revision: revision,
-                    position_seconds: position,
-                }),
+            const response = await postJson('/app/progress', {
+                lesson_id: lessonId,
+                audio_revision: revision,
+                position_seconds: position,
             });
             if (response.status === 409) {
                 const data = (await response.json()) as { position_seconds?: number };
@@ -233,16 +221,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
                 return;
             }
             const [lessonId, revision] = activeKey.split(':').map(Number);
-            void fetch('/app/progress/complete', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrfToken(),
-                },
-                body: JSON.stringify({ lesson_id: lessonId, audio_revision: revision }),
-            })
+            void postJson('/app/progress/complete', { lesson_id: lessonId, audio_revision: revision })
                 .then((response) => {
                     if (response.ok) {
                         current.onCompleted();

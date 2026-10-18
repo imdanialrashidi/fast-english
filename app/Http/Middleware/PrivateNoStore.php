@@ -34,7 +34,19 @@ class PrivateNoStore
         // as the initial HTML visit. Locked by D5PrivacyHeadersTest.
         $isInertia = $request->headers->has('X-Inertia') || $request->headers->has('X-Inertia-Version');
 
-        if ($isHtml || $isInertia || $this->isLivewireUpdate($request)) {
+        // Livewire 4 serves its update endpoint under a hashed prefix
+        // (livewire-XXXXXXXX/update). Filament's internal Livewire is the
+        // only consumer; the panel carries its own copy of this middleware,
+        // and this branch covers the update XHR on `web`. Locked by
+        // S2CacheHeadersTest ("livewire update responses are private and
+        // uncacheable").
+        $route = $request->route();
+        $routeName = $route ? (string) $route->getName() : '';
+        $isLivewireUpdate = str_starts_with($routeName, 'livewire')
+            || str_starts_with($routeName, 'default-livewire')
+            || (bool) preg_match('#^livewire-[^/]+/(update|upload-file|preview-file)#', trim($request->path(), '/'));
+
+        if ($isHtml || $isInertia || $isLivewireUpdate) {
             $response->headers->set('Cache-Control', 'private, no-store');
         }
 
@@ -63,24 +75,5 @@ class PrivateNoStore
         }
 
         return false;
-    }
-
-    /**
-     * Livewire 4 serves its XHR endpoint under a hashed prefix
-     * (livewire-XXXXXXXX/update), so match the route name and the URI
-     * shape instead of a fixed path. Filament-only since the learner
-     * migration (ADR-0002): the panel carries its own copy of this
-     * middleware, so this branch is dead on `web` but harmless.
-     */
-    private function isLivewireUpdate(Request $request): bool
-    {
-        $route = $request->route();
-        $name = $route ? (string) $route->getName() : '';
-
-        if (str_starts_with($name, 'livewire') || str_starts_with($name, 'default-livewire')) {
-            return true;
-        }
-
-        return (bool) preg_match('#^livewire-[^/]+/(update|upload-file|preview-file)#', trim($request->path(), '/'));
     }
 }

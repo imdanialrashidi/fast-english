@@ -127,3 +127,33 @@ test('a replayed old approval never reactivates a revoked subscription', functio
     expect(SubscriptionEvent::where('source_payment_request_id', $pending->id)->count())->toBe(1);
     expect(SubscriptionAccess::eligible($this->studentA, $this->now->copy()->addDays(4)))->toBeFalse();
 });
+
+test('staff cannot grant their own subscription', function () {
+    $eventsBefore = SubscriptionEvent::count();
+
+    try {
+        ApprovePayment::grant($this->staff->id, $this->staff, 30, 'self grant (TEST)', $this->now);
+        $granted = true;
+    } catch (ValidationException $e) {
+        $granted = false;
+        expect(collect($e->errors())->flatten()->implode(' '))->toContain('own');
+    }
+    expect($granted)->toBeFalse('self-grant must be refused');
+    expect(Subscription::where('user_id', $this->staff->id)->exists())->toBeFalse();
+    expect(SubscriptionEvent::count())->toBe($eventsBefore);
+});
+
+test('staff cannot revoke their own subscription', function () {
+    $eventsBefore = SubscriptionEvent::where('user_id', $this->staff->id)->count();
+
+    try {
+        ApprovePayment::revoke($this->staff->id, $this->staff, 'self revoke (TEST)', $this->now);
+        $revoked = true;
+    } catch (ValidationException $e) {
+        $revoked = false;
+        expect(collect($e->errors())->flatten()->implode(' '))->toContain('own');
+    }
+    expect($revoked)->toBeFalse('self-revoke must be refused');
+    expect(Subscription::where('user_id', $this->staff->id)->exists())->toBeFalse();
+    expect(SubscriptionEvent::where('user_id', $this->staff->id)->count())->toBe($eventsBefore);
+});

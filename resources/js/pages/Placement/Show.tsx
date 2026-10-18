@@ -3,6 +3,7 @@ import { Check, GraduationCap } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
+import { postJson } from '@/lib/http';
 import type { SharedProps } from '@/types';
 
 /**
@@ -26,10 +27,6 @@ interface PlacementShowProps extends SharedProps {
     selected: Record<string, number>;
     answeredCount: number;
     totalCount: number;
-}
-
-function csrfToken(): string {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 }
 
 export const PlacementShow: FunctionComponent<PlacementShowProps> & { layout?: (page: ReactNode) => ReactNode } = ({
@@ -56,15 +53,9 @@ export const PlacementShow: FunctionComponent<PlacementShowProps> & { layout?: (
         }
         setSaving((previous) => ({ ...previous, [question.id]: true }));
         try {
-            const response = await fetch(`/app/placement/${attempt.id}/answer`, {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrfToken(),
-                },
-                body: JSON.stringify({ question_id: question.id, selected_option: chosen }),
+            const response = await postJson(`/app/placement/${attempt.id}/answer`, {
+                question_id: question.id,
+                selected_option: chosen,
             });
             if (response.ok) {
                 setNotice('پاسخ ذخیره شد.');

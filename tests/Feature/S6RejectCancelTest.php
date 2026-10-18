@@ -138,3 +138,34 @@ test('staff cancel needs a pending request and a reason', function () {
     $this->actingAs($this->studentB)->post(route('payments.cancel', $other))->assertForbidden();
     expect($other->fresh()->status)->toBe(PaymentRequest::STATUS_PENDING);
 });
+
+test('staff cannot reject their own request', function () {
+    $own = S6Payments::pendingRequest($this, $this->staff, $this->plan);
+    $eventsBefore = SubscriptionEvent::count();
+
+    try {
+        ApprovePayment::reject($own->id, $this->staff, 'ناخوانا (TEST)', null);
+        $rejected = true;
+    } catch (ValidationException $e) {
+        $rejected = false;
+        expect(collect($e->errors())->flatten()->implode(' '))->toContain('own');
+    }
+    expect($rejected)->toBeFalse('self-reject must be refused');
+    expect($own->fresh()->status)->toBe(PaymentRequest::STATUS_PENDING);
+    expect(SubscriptionEvent::count())->toBe($eventsBefore);
+});
+
+test('staff cannot cancel their own request', function () {
+    $own = S6Payments::pendingRequest($this, $this->staff, $this->plan);
+
+    try {
+        ApprovePayment::cancel($own->id, $this->staff, 'duplicate (TEST)');
+        $cancelled = true;
+    } catch (ValidationException $e) {
+        $cancelled = false;
+        expect(collect($e->errors())->flatten()->implode(' '))->toContain('own');
+    }
+    expect($cancelled)->toBeFalse('self-cancel must be refused');
+    expect($own->fresh()->status)->toBe(PaymentRequest::STATUS_PENDING);
+    expect(Subscription::where('user_id', $this->staff->id)->exists())->toBeFalse();
+});

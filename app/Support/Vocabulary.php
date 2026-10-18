@@ -6,6 +6,7 @@ use App\Models\Lesson;
 use App\Models\User;
 use App\Models\VocabularyWord;
 use Carbon\CarbonInterface;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -61,21 +62,36 @@ final class Vocabulary
 
         $initial = SpacedRepetition::initial($now);
 
-        $entry = VocabularyWord::create([
-            'user_id' => $user->id,
-            'word' => mb_substr($clean, 0, 120),
-            'meaning_fa' => $meaning !== '' ? mb_substr($meaning, 0, 500) : null,
-            'example_en' => $example !== '' ? mb_substr($example, 0, 500) : null,
-            'lesson_id' => $lesson?->id,
-            'topic_id' => $lesson?->topic_id,
-            'status' => 'learning',
-            'ease_factor' => $initial['ease_factor'],
-            'interval_days' => $initial['interval_days'],
-            'repetitions' => $initial['repetitions'],
-            'lapses' => $initial['lapses'],
-            'due_at' => $initial['due_at'],
-            'last_reviewed_at' => null,
-        ]);
+        try {
+            $entry = VocabularyWord::create([
+                'user_id' => $user->id,
+                'word' => mb_substr($clean, 0, 120),
+                'meaning_fa' => $meaning !== '' ? mb_substr($meaning, 0, 500) : null,
+                'example_en' => $example !== '' ? mb_substr($example, 0, 500) : null,
+                'lesson_id' => $lesson?->id,
+                'topic_id' => $lesson?->topic_id,
+                'status' => 'learning',
+                'ease_factor' => $initial['ease_factor'],
+                'interval_days' => $initial['interval_days'],
+                'repetitions' => $initial['repetitions'],
+                'lapses' => $initial['lapses'],
+                'due_at' => $initial['due_at'],
+                'last_reviewed_at' => null,
+            ]);
+        } catch (QueryException $e) {
+            // Concurrent double-submit: the loser hits the (user_id,
+            // word_key) unique index. Converge onto the surviving row so
+            // the caller renders the idempotent duplicate shape; any
+            // other failure (no surviving row) rethrows.
+            $surviving = VocabularyWord::where('user_id', $user->id)
+                ->where('word_key', self::key($clean))
+                ->first();
+            if ($surviving === null) {
+                throw $e;
+            }
+
+            return ['entry' => $surviving, 'created' => false, 'existingId' => $surviving->id];
+        }
 
         return ['entry' => $entry->fresh(), 'created' => true, 'existingId' => null];
     }

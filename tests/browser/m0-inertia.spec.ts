@@ -68,7 +68,7 @@ test('landing renders the React page with the real sample and one plans state', 
   // FAQ + final CTA + install links all render.
   await expect(page.locator('#app')).toContainText('بدون اشتراک می‌توانم امتحان کنم؟');
   await expect(page.getByRole('link', { name: 'شروع با نمونه رایگان' }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'صفحه دانلود' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'صفحه دانلود' }).first()).toBeVisible();
 
   expect(pageErrors).toEqual([]);
   expect(badResponses.filter((line) => !line.includes('/storage/'))).toEqual([]);

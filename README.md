@@ -57,16 +57,19 @@ Stack: PHP 8.4, Laravel 13, Inertia 3 + React 19 + TypeScript + Tailwind 4 + sha
 Local setup (PostgreSQL required; no SQLite substitute):
 
 ```bash
+composer install
 cp .env.example .env
 php artisan key:generate
-composer install
+# point DB_* at a local PostgreSQL, then:
+php artisan migrate --seed   # DatabaseSeeder chains S1SampleSeeder + S3/S5/S7 fixtures (labelled dev content)
+php artisan storage:link     # covers served from /storage/... via the public disk
 npm install
 npm run build
-# point DB_* at a local PostgreSQL, then:
-php artisan migrate
 php artisan test   # Pest suite runs on PostgreSQL (phpunit.xml)
 npm run typecheck
 ```
+
+One-command alternative: `composer setup` (install + env + key + migrate + build).
 
 Targeted browser proof (local policy: one relevant spec, one worker, zero retries, reuse servers):
 
@@ -77,8 +80,10 @@ npx playwright test m0-inertia --project=chromium
 ## Verification and delivery
 
 ```bash
-bash scripts/verify.sh
+bash scripts/project-verify.sh
 ```
+
+Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). Requires PostgreSQL reachable and an app server on `:8111` (default `BASE_URL=http://127.0.0.1:8111`); when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)` and the lanes that ran still count.
 
 Solo default: leave the proven change in the working tree and report its state. Team PR only on explicit request: `node scripts/omp-pr.mjs prepare` before editing, then `deliver --message ... --title ... --body-file .artifacts/omp-pr.md --file <path>...` after verification. No per-task branches, no main writes, no auto-merge. Read-only/local-only work never publishes; `OMP_PR_DELIVERY=off` opts out. See `docs/GIT_POLICY.md`.
 
