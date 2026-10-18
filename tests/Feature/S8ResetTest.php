@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S8-2 (reset, AUTH-02): the Fortify reset flow on the log/array mailers
@@ -107,10 +108,16 @@ test('reset with a forged token or mismatched email fails', function () {
 });
 
 test('reset forms render fa rtl with noindex', function () {
-    $forgot = $this->get(route('password.request'))->assertOk()->getContent();
+    // Public-slice port (ADR-0002): the same Fortify forms as Inertia
+    // pages. Persian copy renders client-side (proven in the browser);
+    // HTTP asserts the root template, the components, and the token +
+    // email props the reset form needs.
+    $forgot = $this->get(route('password.request'))->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Auth/ForgotPassword'))
+        ->getContent();
     expect($forgot)->toContain('lang="fa"')
-        ->and($forgot)->toContain('dir="rtl"')
-        ->and($forgot)->toContain('بازیابی رمز عبور');
+        ->and($forgot)->toContain('dir="rtl"');
 
     $this->post(route('password.email'), ['email' => $this->studentA->email]);
     Notification::assertSentTo($this->studentA, ResetPassword::class, function ($notification) use (&$token) {
@@ -119,8 +126,10 @@ test('reset forms render fa rtl with noindex', function () {
         return true;
     });
 
-    $reset = $this->get(route('password.reset', ['token' => $token]).'?email='.urlencode($this->studentA->email))
-        ->assertOk()->getContent();
-    expect($reset)->toContain('تعیین رمز عبور تازه')
-        ->and($reset)->toContain('name="token"');
+    $this->get(route('password.reset', ['token' => $token]).'?email='.urlencode($this->studentA->email))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Auth/ResetPassword')
+            ->where('token', $token)
+            ->where('email', $this->studentA->email));
 });

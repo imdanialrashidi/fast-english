@@ -2,6 +2,7 @@
 
 namespace Tests\Support;
 
+use App\Actions\ApprovePayment;
 use App\Models\Lesson;
 use App\Models\Topic;
 use App\Models\User;
@@ -21,6 +22,21 @@ final class ContentFixtures
     public static function student(): User
     {
         return User::factory()->create(['is_staff' => false]);
+    }
+
+    /**
+     * A student with an active subscription window, granted through the
+     * shared ApprovePayment action (same lock order, same audit event).
+     * For paid-only gate tests and specs: the user passes `subscribed`
+     * without touching any money/request fixture.
+     */
+    public static function subscribedStudent(int $durationDays = 30): User
+    {
+        $student = self::student();
+        $staff = self::staff();
+        ApprovePayment::grant($student->id, $staff, $durationDays, 'test fixture grant (TEST)');
+
+        return $student->fresh();
     }
 
     public static function publishedTopic(array $overrides = []): Topic

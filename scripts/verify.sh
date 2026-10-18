@@ -1,11 +1,45 @@
 #!/usr/bin/env bash
+# Canonical verification gate for this repository.
+# Template self-checks first, then the cheapest project lane that applies.
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-bash scripts/pi-doctor.sh --ci
+fail=0
+note() { printf '%s\n' "$1"; }
+bad() { printf 'FAIL: %s\n' "$1" >&2; fail=1; }
 
+# 1. Whitespace errors in tracked changes.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git --no-pager diff --check || bad "git diff --check reported whitespace errors."
+fi
+
+# 2. Every skill needs name + description frontmatter (omp discovery requires description).
+for skill in .omp/skills/*/SKILL.md; do
+  [[ -f "$skill" ]] || continue
+  front="$(sed -n '1,/^---$/p' "$skill" | sed '1d;$d')"
+  grep -Eq '^name: .+' <<<"$front" || bad "$skill is missing frontmatter name."
+  grep -Eq '^description: .+' <<<"$front" || bad "$skill is missing frontmatter description."
+done
+
+# 3. Every file command needs a description frontmatter.
+for cmd in .omp/commands/*.md; do
+  [[ -f "$cmd" ]] || continue
+  head -n 5 "$cmd" | grep -Eq '^description: .+' || bad "$cmd is missing frontmatter description."
+done
+
+# 4. PR helper must parse.
+if command -v node >/dev/null 2>&1; then
+  node --check scripts/omp-pr.mjs || bad "scripts/omp-pr.mjs does not parse."
+else
+  note "SKIP: node not installed; cannot syntax-check scripts/omp-pr.mjs."
+fi
+
+[[ "$fail" -eq 0 ]] || exit 1
+note "Template self-checks passed."
+
+# 5. Project override wins when the repo defines its own gate.
 if [[ -x scripts/project-verify.sh ]]; then
   exec scripts/project-verify.sh
 fi
@@ -63,7 +97,7 @@ fi
 
 if [[ "$ran" -eq 0 ]]; then
   if grep -Fxq -- '- Primary users:' docs/PRODUCT.md; then
-    printf '\nTemplate-only verification passed. Run /bootstrap after adding product source.\n'
+    printf '\nTemplate-only verification passed. Fill docs/PRODUCT.md on the first /spec.\n'
     exit 0
   fi
   cat >&2 <<'MSG'

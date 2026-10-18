@@ -21,8 +21,6 @@ storage/framework/sessions
 storage/framework/views
 storage/framework/testing
 storage/pail
-.pi/sessions
-.pi/cache
 .playwright
 playwright-report
 coverage

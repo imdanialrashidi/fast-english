@@ -47,7 +47,9 @@ test('switching level loads the other lesson and stops the old audio', async ({ 
     .toBe(true);
 
   await page.getByRole('link', { name: 'B1', exact: true }).click();
-  await page.waitForURL('**?level=B1');
+  // Paid-only slice: the sample levels resolve inside /sample (the
+  // query carries topic + level, so match the level param, not the tail).
+  await page.waitForURL(/level=B1/);
 
   const srcB1 = await page.locator('#lesson-audio').getAttribute('src');
   expect(srcB1).not.toBe(srcA2);

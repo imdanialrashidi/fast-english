@@ -2,8 +2,10 @@
 
 use App\Http\Middleware\DisablePasswordResetWhenSmtpMissing;
 use App\Http\Middleware\EnsureStaff;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PrivateNoStore;
 use App\Http\Middleware\RejectDisabledUsers;
+use App\Http\Middleware\RequireSubscription;
 use App\Http\Middleware\ThrottleUploads;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,11 +24,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             'reject.disabled' => RejectDisabledUsers::class,
+            // Paid-only learner gate (owner requirement): staff +
+            // active subscribers pass; all other learner states refuse.
+            'subscribed' => RequireSubscription::class,
             // S8: staff-only routes (2FA setup/challenge, panel extras).
             'staff' => EnsureStaff::class,
         ]);
         // S2 scope §16: private HTML/Livewire responses are uncacheable.
         $middleware->appendToGroup('web', PrivateNoStore::class);
+        // M0 Inertia foundation (ADR-0002): the Inertia protocol middleware
+        // serves X-Inertia responses + shared props; sessions, CSRF, and the
+        // Fortify/Filament behavior around it are unchanged.
+        $middleware->appendToGroup('web', HandleInertiaRequests::class);
         // S3 pre-slice scope §16: five upload requests per minute per user.
         $middleware->appendToGroup('web', ThrottleUploads::class);
         // S9a: production without SMTP disables reset (neutral, no send/log).

@@ -4,6 +4,7 @@ use App\Models\Lesson;
 use App\Models\LessonProgress;
 use Database\Seeders\S1SampleSeeder;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S4-3 completion: ended or explicit action marks completion; seeking to
@@ -16,7 +17,8 @@ beforeEach(function () {
     $this->a2 = Lesson::where('level', 'A2')
         ->whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))
         ->firstOrFail();
-    $this->student = ContentFixtures::student();
+    // Paid-only slice: progress mutations need an active subscription.
+    $this->student = ContentFixtures::subscribedStudent();
     ContentFixtures::student();
 });
 
@@ -52,12 +54,12 @@ test('explicit complete marks the lesson and survives a later pause-save', funct
 
     expect($progress->completed_at)->not->toBeNull();
 
-    $html = $this->actingAs($this->student)
+    // M1 port: the completion note renders client-side from this prop.
+    $this->actingAs($this->student)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
         ->assertOk()
-        ->getContent();
-
-    expect($html)->toContain('این درس تکمیل شده است');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('completed', true));
 });
 
 test('saving at the end position does not complete the lesson', function () {
@@ -112,11 +114,10 @@ test('a new audio revision does not inherit the old completion', function () {
     $this->a2->save();
     $this->a2->refresh();
 
-    $html = $this->actingAs($this->student)
+    $this->actingAs($this->student)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
         ->assertOk()
-        ->getContent();
-
-    expect($html)->not->toContain('این درس تکمیل شده است');
-    expect($html)->toContain('data-initial-position="0');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('completed', false)
+            ->where('initialPosition', 0));
 });

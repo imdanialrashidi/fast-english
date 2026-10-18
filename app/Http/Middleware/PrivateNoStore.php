@@ -29,8 +29,12 @@ class PrivateNoStore
 
         $contentType = (string) $response->headers->get('Content-Type', '');
         $isHtml = str_contains($contentType, 'text/html');
+        // Inertia protocol visits (X-Inertia) return JSON carrying premium
+        // props (reader body/glossary/audio_url) — same private discipline
+        // as the initial HTML visit. Locked by D5PrivacyHeadersTest.
+        $isInertia = $request->headers->has('X-Inertia') || $request->headers->has('X-Inertia-Version');
 
-        if ($isHtml || $this->isLivewireUpdate($request)) {
+        if ($isHtml || $isInertia || $this->isLivewireUpdate($request)) {
             $response->headers->set('Cache-Control', 'private, no-store');
         }
 
@@ -64,7 +68,9 @@ class PrivateNoStore
     /**
      * Livewire 4 serves its XHR endpoint under a hashed prefix
      * (livewire-XXXXXXXX/update), so match the route name and the URI
-     * shape instead of a fixed path.
+     * shape instead of a fixed path. Filament-only since the learner
+     * migration (ADR-0002): the panel carries its own copy of this
+     * middleware, so this branch is dead on `web` but harmless.
      */
     private function isLivewireUpdate(Request $request): bool
     {

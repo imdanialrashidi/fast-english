@@ -3,6 +3,7 @@
 use App\Models\Category;
 use App\Models\Lesson;
 use App\Models\Topic;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S3-4: level/category filters and title search return the correct subset;
@@ -28,6 +29,9 @@ beforeEach(function () {
         'slug' => 's3-gamma', 'title_en' => 'S3 Gamma Market', 'category_id' => $this->catA->id,
     ]);
     Lesson::factory()->for($gamma)->create(['level' => 'A1', 'status' => 'published', 'published_at' => now()]);
+
+    // Paid-only slice: the library needs an active subscription.
+    $this->actingAs(ContentFixtures::subscribedStudent());
 });
 
 test('level filter returns only topics with a published lesson at that level', function () {
@@ -55,19 +59,27 @@ test('title search is case-insensitive and ignores other fields', function () {
 });
 
 test('combined filters intersect and an empty result explains itself with a reset', function () {
-    $response = $this->get('/app?level=B2&category=s3-cata')->assertOk();
-
-    $response->assertSee('مطلبی با این مشخصات پیدا نشد');
-    $response->assertSee('پاک کردن فیلترها');
-    $response->assertDontSee('<article class="fe-card', false);
+    // M1 port: the empty message + reset render client-side (proven in
+    // tests/browser/s3-library.spec.ts); HTTP asserts the empty row set.
+    $this->get('/app?level=B2&category=s3-cata')
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Library/Index')
+            ->has('topics', 0)
+            ->where('pagination.total', 0)
+            ->where('hasFilters', true));
 });
 
 test('the active filter state is rendered back from the URL', function () {
+    // M1 port: pills + search input render client-side from these props
+    // (proven in tests/browser/s3-library.spec.ts).
     $response = $this->get('/app?level=B2&category=s3-catb&q=beta')->assertOk();
 
-    $response->assertSee('<option value="B2" selected', false);
-    $response->assertSee('<option value="s3-catb" selected', false);
-    $response->assertSee('value="beta"', false);
+    $response->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('activeLevel', 'B2')
+        ->where('activeCategory', 's3-catb')
+        ->where('activeQuery', 'beta')
+        ->where('hasFilters', true));
     $response->assertSee('S3 Beta Trains');
 });
 

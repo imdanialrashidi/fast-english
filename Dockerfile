@@ -1,5 +1,6 @@
 # S9a production image for Coolify (private repo). Owner performs the deploy.
-# Local proof only: no push/tag/deploy here. Dockerfile.pi is untouched.
+# Local proof only: no push/tag/deploy here. Pi workflow retired 2026-10-14
+# (Dockerfile.pi removed; recoverable in .artifacts/migration-backup-2026-10-14/).
 #
 # Stages:
 #  1. assets: Node 22.23.2 builds Vite assets.

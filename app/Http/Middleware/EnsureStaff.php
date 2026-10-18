@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Entitlement;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,7 @@ class EnsureStaff
             return redirect()->route('login');
         }
 
-        if ($user->disabled_at !== null || ! $user->is_staff) {
+        if (! Entitlement::staff($user)) {
             abort(403);
         }
 

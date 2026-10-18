@@ -1,25 +1,16 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { registerSubscribeAndApprove, test } from './helpers';
 
 // S8 pre-slice debt 2: placement question + result captured at 1280 CSS
 // px (desktop measure), plus the browser console record for the placement
 // and payment pages. Evidence is inspected as rendered pixels afterwards;
 // the console lines are printed into the test output for the record.
+// Paid-only slice: placement needs an approved subscription.
 
-async function registerFreshLearner(page, tag: string) {
-  const email = `s8-${tag}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
-  const password = 'password123';
-  await page.goto('/register');
-  await page.getByLabel('نام').fill(`S8 ${tag}`);
-  await page.getByLabel('ایمیل', { exact: true }).fill(email);
-  await page.getByLabel('رمز عبور', { exact: true }).fill(password);
-  await page.getByLabel('تکرار رمز عبور').fill(password);
-  await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
-  return email;
-}
-
-test('S8 preslice: placement at 1280 with console record', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
+test('S8 preslice: placement at 1280 with console record', async ({ browser }) => {
+  const { learnerCtx, learner: page } = await registerSubscribeAndApprove(browser, 'preslice');
+  try {
+    await page.setViewportSize({ width: 1280, height: 800 });
   const consoleErrors: string[] = [];
   const failedRequests: string[] = [];
   page.on('console', (msg) => {
@@ -30,19 +21,27 @@ test('S8 preslice: placement at 1280 with console record', async ({ page }) => {
     if (res.status() >= 500) failedRequests.push(`${res.status()} ${res.url()}`);
   });
 
-  await registerFreshLearner(page, 'preslice');
   await page.goto('/app/placement');
   await page.getByRole('button', { name: 'شروع آزمون' }).click();
   await page.waitForURL('**/app/placement/*');
   await expect(page.getByRole('heading', { name: 'سؤالات تعیین سطح' })).toBeVisible();
   await page.screenshot({ path: 'test-results/browser-shots/s8-placement-1280.png' });
 
+  // The confirmation text persists between saves: count real answer
+  // responses and drain all 20 before submitting.
+  let savedCount = 0;
+  page.on('response', (res) => {
+    if (res.request().method() === 'POST' && /\/app\/placement\/\d+\/answer/.test(res.url()) && res.ok()) {
+      savedCount += 1;
+    }
+  });
   for (let position = 1; position <= 20; position++) {
     const section = page.locator(`section[aria-label="سؤال ${position}"]`);
     await section.locator('input[type="radio"][value="0"]').check();
     await section.getByRole('button', { name: `ذخیره پاسخ سؤال ${position}` }).click();
     await expect(page.getByText('پاسخ ذخیره شد.')).toBeVisible();
   }
+  await expect.poll(() => savedCount, 'all 20 answer POSTs landed').toBe(20);
   await page.getByRole('button', { name: 'ثبت نهایی پاسخ‌ها' }).click();
   await page.waitForURL('**/app/placement/result/*');
   await expect(page.getByRole('heading', { name: 'نتیجه تعیین سطح' })).toBeVisible();
@@ -55,4 +54,7 @@ test('S8 preslice: placement at 1280 with console record', async ({ page }) => {
   await page.screenshot({ path: 'test-results/browser-shots/s8-payment-1280.png' });
 
   console.log(`S8-PRESLICE-CONSOLE placement+payment 1280: errors=${JSON.stringify(consoleErrors)} failed=${JSON.stringify(failedRequests)}`);
+  } finally {
+    await learnerCtx.close();
+  }
 });

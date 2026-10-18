@@ -4,6 +4,7 @@ use App\Models\Lesson;
 use App\Models\LessonProgress;
 use Database\Seeders\S1SampleSeeder;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S4-1/S4-2/S4-3 progress: validation, revision isolation, completion.
@@ -14,8 +15,9 @@ beforeEach(function () {
     $this->a2 = Lesson::where('level', 'A2')
         ->whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))
         ->firstOrFail();
-    $this->studentA = ContentFixtures::student();
-    $this->studentB = ContentFixtures::student();
+    // Paid-only slice: progress mutations need an active subscription.
+    $this->studentA = ContentFixtures::subscribedStudent();
+    $this->studentB = ContentFixtures::subscribedStudent();
 });
 
 test('a logged-in student saves and resumes position, nothing auto-plays', function () {
@@ -36,16 +38,22 @@ test('a logged-in student saves and resumes position, nothing auto-plays', funct
         ])
         ->assertOk();
 
-    // Refresh: the reader injects the saved position as initial data, and
-    // the audio element has no autoplay attribute.
+    // Refresh: the reader receives the saved position as the
+    // initialPosition prop (applied once to the persistent element),
+    // the resume notice renders client-side, and nothing auto-plays.
+    // M1 port (ADR-0002): data-initial-position travels as a prop.
+    $this->actingAs($this->studentA)
+        ->get(route('reader.show', ['topic' => 's4-resume', 'level' => 'A1']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Reader/Show')
+            ->where('initialPosition', 40));
+
     $html = $this->actingAs($this->studentA)
         ->get(route('reader.show', ['topic' => 's4-resume', 'level' => 'A1']))
         ->assertOk()
         ->getContent();
-
-    expect($html)->toContain('data-initial-position="40');
     expect($html)->not->toContain('autoplay');
-    expect($html)->toContain('ادامه از موقعیت ذخیره‌شده');
 });
 
 test('an anonymous visitor listening is never saved', function () {
@@ -71,12 +79,11 @@ test('a different lesson starts at zero', function () {
         ])
         ->assertOk();
 
-    $html = $this->actingAs($this->studentA)
+    $this->actingAs($this->studentA)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'B1']))
         ->assertOk()
-        ->getContent();
-
-    expect($html)->toContain('data-initial-position="0');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('initialPosition', 0));
 });
 
 test('a stale-revision save is rejected and old progress is not applied', function () {
@@ -110,12 +117,11 @@ test('a stale-revision save is rejected and old progress is not applied', functi
     expect((float) $stale->json('position_seconds'))->toBe(0.0);
 
     // Refresh shows zero for the new revision.
-    $html = $this->actingAs($this->studentA)
+    $this->actingAs($this->studentA)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
         ->assertOk()
-        ->getContent();
-
-    expect($html)->toContain('data-initial-position="0');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('initialPosition', 0));
 });
 
 test('two users never see each other progress', function () {
@@ -127,12 +133,11 @@ test('two users never see each other progress', function () {
         ])
         ->assertOk();
 
-    $htmlB = $this->actingAs($this->studentB)
+    $this->actingAs($this->studentB)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
         ->assertOk()
-        ->getContent();
-
-    expect($htmlB)->toContain('data-initial-position="0');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('initialPosition', 0));
     expect(LessonProgress::where('user_id', $this->studentB->id)->count())->toBe(0);
 });
 

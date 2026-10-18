@@ -1,21 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { registerSubscribeAndApprove } from './helpers';
 
 // S7-8 rendered mobile: the question and result pages at 360 and 390 CSS
 // px have no horizontal scroll, all targets are at least 44 px, and the
 // Persian copy renders. Screenshots are captured and must be inspected as
-// pixels (not counts).
-
-async function registerFreshLearner(page, tag: string) {
-  const email = `s7m-${tag}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
-  const password = 'password123';
-  await page.goto('/register');
-  await page.getByLabel('نام').fill(`S7M ${tag}`);
-  await page.getByLabel('ایمیل', { exact: true }).fill(email);
-  await page.getByLabel('رمز عبور', { exact: true }).fill(password);
-  await page.getByLabel('تکرار رمز عبور').fill(password);
-  await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
-}
+// pixels (not counts). Paid-only slice: each width mints an isolated
+// subscribed learner (single-open + 24h rules) through the helper.
 
 async function noHorizontalScroll(page) {
   return page.evaluate(() => ({
@@ -47,12 +37,13 @@ async function assertPlacementTargets(page) {
 
 for (const width of [360, 390]) {
   test(`S7-8 placement at ${width}px: question + result, no scroll, 44px, Persian`, async ({
-    page,
+    browser,
   }) => {
-    await page.setViewportSize({ width, height: 740 });
-    await registerFreshLearner(page, `w${width}`);
+    const { learnerCtx, learner: page } = await registerSubscribeAndApprove(browser, `w${width}`);
+    try {
+      await page.setViewportSize({ width, height: 740 });
 
-    await page.goto('/app/placement');
+      await page.goto('/app/placement');
     await page.getByRole('button', { name: 'شروع آزمون' }).click();
     await page.waitForURL('**/app/placement/*');
 
@@ -64,12 +55,21 @@ for (const width of [360, 390]) {
     await page.screenshot({ path: `test-results/browser-shots/s7-question-${width}.png` });
 
     // Answer everything (first option) and submit for the result state.
+    // The confirmation text persists between saves, so count real answer
+    // responses and drain all 20 before asserting server state.
+    let savedCount = 0;
+    page.on('response', (res) => {
+      if (res.request().method() === 'POST' && /\/app\/placement\/\d+\/answer/.test(res.url()) && res.ok()) {
+        savedCount += 1;
+      }
+    });
     for (let position = 1; position <= 20; position++) {
       const section = page.locator(`section[aria-label="سؤال ${position}"]`);
       await section.locator('input[type="radio"][value="0"]').check();
       await section.getByRole('button', { name: `ذخیره پاسخ سؤال ${position}` }).click();
       await expect(page.getByText('پاسخ ذخیره شد.')).toBeVisible();
     }
+    await expect.poll(() => savedCount, 'all 20 answer POSTs landed').toBe(20);
     await page.getByRole('button', { name: 'ثبت نهایی پاسخ‌ها' }).click();
     await page.waitForURL('**/app/placement/result/*');
 
@@ -82,5 +82,8 @@ for (const width of [360, 390]) {
     expect(bodyText).toContain('راهنمای اولیه، بدون گواهی رسمی');
     await assertPlacementTargets(page);
     await page.screenshot({ path: `test-results/browser-shots/s7-result-${width}.png` });
+    } finally {
+      await learnerCtx.close();
+    }
   });
 }

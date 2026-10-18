@@ -14,10 +14,10 @@ use Symfony\Component\HttpFoundation\Response;
  * Uploads travel through Livewire's hashed upload endpoint
  * (livewire-XXXXXXXX/upload-file + preview-file), so the middleware matches
  * the route name and the URI shape (same pattern as PrivateNoStore) instead
- * of a fixed path. S5 receipt intake (POST payments.receipt.store) shares
- * the same bucket and limit: the receipt upload goes through this throttle
- * and the sixth request in the window receives 429 with Retry-After.
- * The limit is enforced before any byte is processed.
+ * of a fixed path. Filament-only since the learner migration (ADR-0002);
+ * the receipt intake (POST payments.receipt.store) shares the same bucket
+ * and limit: the sixth request in the window receives 429 with
+ * Retry-After. The limit is enforced before any byte is processed.
  */
 class ThrottleUploads
 {

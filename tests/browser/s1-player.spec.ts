@@ -28,6 +28,9 @@ test('drag seek moves playback position', async ({ page }) => {
   // RTL page: the range is mirrored (min right, max left), so dragging
   // right-to-left moves playback forward.
   const seek = page.locator('#player-seek');
+  // The sample player expands in flow (unlike the fixed learner bar),
+  // so settle the scrolled geometry before measuring drag coordinates.
+  await seek.scrollIntoViewIfNeeded();
   const box = (await seek.boundingBox())!;
   const y = box.y + box.height / 2;
   await page.mouse.move(box.x + box.width - 10, y);

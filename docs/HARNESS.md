@@ -1,28 +1,25 @@
 # Agent Harness Operating Playbook
 
-This document contains the detailed operating model for non-trivial Pi coding sessions. `AGENTS.md` should remain a short map and point here instead of duplicating these rules.
+Detailed operating model for non-trivial omp sessions. `AGENTS.md` stays a short map and points here instead of duplicating rules. Everything below assumes omp-native tools; install nothing.
 
 ## Design principles
 
 1. **Intent steers; the agent finishes.** Convert the request into observable acceptance criteria, then execute reversible implementation and evidence gathering without intermediate approval loops.
 2. **Repository knowledge is the system of record.** Durable product, architecture, quality, decision, and execution state belongs in versioned repository artifacts rather than chat memory.
 3. **Progressive disclosure beats giant prompts.** Keep always-loaded instructions small and retrieve code, docs, skills, and external facts just in time.
-4. **The interface is part of intelligence.** High-quality tools, focused outputs, browser evidence, diagnostics, and deterministic verification materially affect coding-agent performance.
+4. **Native tools beat bolted-on tooling.** `lsp`, `eval`, `task`, `debug`, `web_search`, `browser`, `/advisor`, `/plan`, `/handoff` are already in the box — plus `/spec`, `/build`, `/review`, `/ship` in this template for the contract→slice→verdict→delivery loop. Prefer them over scripts, MCP servers, and packages that duplicate them.
 5. **Prefer mechanical constraints over repeated prose.** If an invariant can be linted, tested, typed, validated, or blocked by tooling, encode it there.
 6. **Evaluation needs a contract.** Independent review is most useful when it judges explicit observable criteria, not vague taste.
-7. **Complexity must earn its cost.** Add agents, skills, tools, loops, or persistent artifacts only for demonstrated failure modes.
-8. **Visual quality needs an explicit direction.** Aesthetic evaluation is useful only when it judges a product-specific thesis, rendered states, and measurable usability constraints rather than generic taste.
+7. **Complexity must earn its cost.** Add agents, skills, commands, loops, or persistent artifacts only for demonstrated failure modes.
 
 ## Execution protocol
 
 ### 1. Classify the task
 
-Use the task classes in `AGENTS.md`.
-
-- Localized: load `/skill:quick-fix` when minimal ceremony is requested; use one direct patch, one targeted proof, and scoped diff review.
-- Standard: compact acceptance contract, focused implementation, and material self-review; add an independent evaluator only when its evidence justifies the cost.
-- Complex: planning plus persistent execution state when continuity is needed.
-- High risk: threat-boundary analysis, independent review, negative-path proof, full gate.
+- Quick: `/skill:quick-fix` — one direct patch, one targeted proof, scoped diff review.
+- Standard: `/spec` → `/build` → `/ship`.
+- Complex: native `/plan` mode for planning; durable `docs/exec-plans/active/` state only when work must cross sessions; native `/handoff` + `/resume` for continuity.
+- High risk: threat-boundary analysis, negative-path proof, `/review` reviewer pass plus `/advisor on` for High-risk turns only (second model, extra cost), recovery notes, full gate.
 
 ### 2. Establish the acceptance contract
 
@@ -41,61 +38,52 @@ Good criteria describe user-visible or externally observable behavior. Avoid imp
 
 Additional rules:
 
-- Bug: capture the failure or a precise characterization before changing code when practical.
+- Bug: capture the failure or a precise characterization before changing code when practical — attach `debug` (DAP) for crashes/hangs instead of print statements.
 - Performance: capture a reproducible baseline and target.
-- UI: include the critical user journey plus important loading/error/empty/permission states.
-- Visual UI: include the accepted `docs/DESIGN.md` thesis/signature, desktop/mobile proof, accessibility/performance hard gates, and craft threshold.
+- UI: include the critical user journey plus important loading/error/empty/permission states, and the accepted `docs/DESIGN.md` thesis for visually significant work.
 - Security/data: include rejection/tampering/idempotency/ownership evidence where relevant.
 - Do not accept placeholder buttons, stub handlers, fake persistence, TODO implementations, or display-only controls as satisfying functional criteria.
 
-Ordinary contracts may live in the todo state. Complex or multi-session contracts belong in an execution plan.
+Keep ordinary contracts compact and in context. Complex or multi-session contracts belong in an execution plan.
 
-The agent derives the contract from available evidence. It asks a question only when no safe reversible interpretation exists; ordinary product, implementation, naming, tooling, and test choices are agent-owned.
+The agent derives the contract from available evidence. It asks via `ask` only when no safe reversible interpretation exists; ordinary product, implementation, naming, tooling, and test choices are agent-owned.
 
 ### 3. Discover with a context budget
 
-Start from identifiers, not bulk context.
-
-The initial runtime surface is `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`, `harness_tools`, and native `tool_search`. Stay on that core for localized work. When the task needs planning, delegation, LSP, or current web evidence, call `harness_tools` once with every required capability instead of activating specialists one by one. For MCP/browser/docs work, use `tool_search` directly and call only the returned schemas; no browser/docs loader group is required.
-
-An implicit read of a regular text file at or above 96 KiB is bounded to 400 lines and returns the next offset. An explicit `offset` or `limit` is always preserved. Prefer exact search/symbol lookup and focused ranges over walking the rest of a large file linearly.
-
-Preferred order:
+Start from identifiers, not bulk context. Prefer in this order:
 
 1. repository map and relevant project docs;
-2. exact search/symbol lookup;
+2. `lsp` (definitions, references, rename impact, diagnostics) before `grep` for anything the language server knows;
 3. focused source ranges and affected tests;
-4. LSP definitions/references/diagnostics;
-5. installed types and local dependency source;
-6. `mcp__deepwiki__*` via `tool_search` for public-repo documentation;
-7. web search for current upstream issues, advisories, regressions, or release notes.
+4. `eval`/`bash` runs for runtime truth;
+5. `web_search` + `read` on URLs/PDFs for current upstream issues, advisories, regressions, or release notes.
 
-If subagents are available, use `scout` only when the relevant surface or cross-module flow is genuinely unclear. Otherwise investigate directly. Do not delegate the same discovery twice.
+Large reads summarize instead of dumping; use exact search/symbol lookup and focused ranges rather than walking files linearly.
+
+Use `task` scouts only when the relevant surface or cross-module flow is genuinely unclear. Otherwise investigate directly. Do not delegate the same discovery twice. One primary writer owns the worktree.
 
 ### 4. Implement one coherent vertical slice
 
-Prefer a complete end-to-end behavior over many half-finished layers. Keep one primary writer.
+Prefer a complete end-to-end behavior over many half-finished layers.
 
 During implementation:
 
-- use the narrowest reliable verification after meaningful edits;
-- map the affected symbols/contracts/dependencies and nearest tests before editing;
-- when tests change, use `test-design` and pass its Test Value Gate: distinct failure model, evidence gap, independent oracle, cheapest faithful layer, and defect sensitivity where practical; `no new test` is valid when existing evidence is already sufficient;
-- preserve existing architectural boundaries;
-- avoid speculative abstractions;
-- keep data validation at boundaries;
-- keep business rules testable outside UI/transport code where appropriate;
+- use the narrowest reliable verification after meaningful edits (`/skill:verify`, affected lane);
+- map the affected symbols/contracts/dependencies and nearest tests before editing — `lsp` references first for exported symbols;
+- when tests change, use `/skill:test-design` and pass its Test Value Gate; `no new test` is valid when existing evidence is already sufficient;
+- preserve existing architectural boundaries; avoid speculative abstractions;
+- keep data validation at boundaries; keep business rules testable outside UI/transport code where appropriate;
 - do not clean unrelated code merely because it is nearby.
+
+Magic words available per turn: `ultrathink` for careful multi-step reasoning, `orchestrate` to fan substantial independent work through parallel subagents with per-phase verification.
 
 ### 5. Evaluate independently
 
 After the slice is functionally complete and targeted checks pass, evaluate against the acceptance contract and `docs/QUALITY.md`.
 
-Use an independent `reviewer` for non-trivial user-facing, cross-module, production-bug, or material-regression work only when subagents are available and isolated context adds value. Use `security-auditor` for High-risk work under the same condition; otherwise perform a separate evidence-focused pass directly.
+Prefer `/review` (bounded read-only reviewer pass through `task` subagents with a verdict) for non-trivial user-facing, cross-module, production-bug, or material-regression work. For High-risk work only, add `/advisor on` so a second model reviews each turn (default cadence; costs extra inference — never a substitute for the verdict pass). Otherwise perform a separate evidence-focused pass directly.
 
-For browser-visible behavior, use the real application through `browser-qa`'s pixel-inspection loop. Accessibility snapshots and interaction evidence come before screenshots. For material appearance changes, inspect supplied references and the rendered baseline, then actually receive and inspect current desktop/mobile images. The runtime reports configured image capability and returned image blocks; neither proves perception. Use focused crops for detail, deterministic measurements for exact claims, and re-capture after repairs. If pixels cannot be inspected, mark appearance-dependent criteria `UNPROVEN`.
-
-For visually significant work, load `frontend-design` and evaluate in two passes. The product pass proves journey, states, accessibility, responsiveness, and measurable budgets. The studio pass compares rendered evidence with `docs/DESIGN.md`, runs the anti-template review, and scores visual craft where the evidence is actually inspectable. Novelty never cancels a hard-gate failure.
+For browser-visible behavior, drive the real application through the `browser` tool; interaction evidence comes before screenshots. For visually significant work, judge the rendered result against `docs/DESIGN.md` hard gates and quality budgets. If pixels cannot be inspected, mark appearance-dependent criteria `UNPROVEN`.
 
 The evaluator should answer:
 
@@ -109,9 +97,7 @@ Default to at most **two evaluator/repair rounds**. If a BLOCKER or MAJOR issue 
 
 ### 6. Verify and report evidence
 
-Load `verification-routing` and use its targeted, affected, feature, and full lanes. A configured affected route may narrow known changes, but an unmatched file must use the full fallback. The final report maps every acceptance criterion to evidence.
-
-Never convert these into the same status:
+Load `/skill:verify` and use its affected, feature, and full lanes. Map every acceptance criterion to evidence:
 
 - passed;
 - failed;
@@ -119,112 +105,26 @@ Never convert these into the same status:
 - blocked by prerequisite;
 - not executed.
 
-### 7. Deliver the scoped pull request
+These are distinct statuses — never merge them. `UNPROVEN` is not ready.
 
-For implementation, follow `docs/GIT_POLICY.md`: prepare the persistent `ai-changes` branch before editing, finish accepted verification, then run the scoped PR helper with explicit file paths and exact evidence. It commits/pushes and creates the PR or updates the same related PR. Do not create per-task branches, mix unrelated work into an open PR, write to `main`, or merge automatically. Read-only/local-only tasks and evals do not deliver. A missing credential blocks delivery, not safe local implementation; report both states accurately.
+### Memory, context, and continuity
+
+- `retain` for durable repo facts the next session will need (decisions, invariants, gotchas); `recall` before re-deriving them; `learn` for reusable lessons. Never store secrets, credentials, or personal data.
+- Keep `.omp/config.yml` memory decisions explicit: `memory.backend: local` only when cross-session recall earns its keep, otherwise `off`. `autolearn.enabled` stays `false` unless the owner opts in.
+- Forge a TTSR rule via `/omfg` only for a recurring misbehavior pattern (seen 2+ times), not a one-off mistake.
+- Before context pressure bites: `/context` to check usage, `/compact` to summarize in place, `/shake` to drop heavy tool output, `/handoff` + `/resume` to continue Complex work fresh. Durable multi-session state lives in `docs/exec-plans/active/<short-slug>.md` (structure below); update it before every `/handoff` or deliberate reset. The working tree and actual checks stay authoritative if the plan goes stale.
+- Plan shape: Goal / Non-goals / Acceptance contract (checkboxes + proof) / Confirmed current state / Relevant surface / Decisions / Evidence (command → result) / Next actions / Risks-blockers / Handoff (changed, remaining, do-not-overwrite, first action). No pasted transcripts or giant logs.
+
+### 7. Deliver (solo default, team PR opt-in)
+
+Solo default: leave the proven change in the working tree and report its state. Team delivery only on request: follow `docs/GIT_POLICY.md` — prepare the persistent `ai-changes` branch before editing, finish accepted verification, then run the scoped PR helper with explicit file paths and exact evidence. It commits/pushes and creates the PR or updates the same related PR. Do not create per-task branches, mix unrelated work into an open PR, write to `main`, or merge automatically. A missing credential blocks delivery, not safe local implementation; report both states accurately.
 
 ## Failure-recovery ladder
 
-Repeated blind retries are a harness failure. When the same check or approach fails twice without materially new evidence:
+If the same approach fails twice without new evidence, climb — do not loop:
 
-1. Stop repeating the unchanged action.
-2. Preserve the exact failure: command, error, relevant log/response, and current diff state.
-3. State 1–3 competing root-cause hypotheses.
-4. Choose the cheapest discriminating observation for each hypothesis.
-5. Use semantic/local evidence first; use official/current external sources only when needed.
-6. Revert only the agent's own failed local experiment when a safe targeted reversal exists; never overwrite unrelated user work.
-7. If the task is still unclear and subagents are available, delegate one focused read-only investigation rather than another broad implementation attempt; otherwise run that focused investigation directly.
-8. If the context has become noisy, the goal changed materially, or progress must survive a fresh session, use the handoff protocol.
-
-The runtime hashes the tool name plus canonical arguments and blocks a third identical call after two errored executions. It never persists the arguments themselves. A different successful evidence/action step clears the blind-retry counter; changing only wording without changing the actual tool input does not.
-
-A failure that recurs across different tasks should become a harness improvement: a regression test, clearer tool, structural check, documented invariant, or safety rule. Do not merely add another paragraph to the system prompt.
-
-## Execution plans and long-running work
-
-Use a persistent execution plan when any of these is true:
-
-- the task is expected to span multiple sessions or context resets;
-- several modules or services must change in sequence;
-- migrations, rollout, recovery, or high-risk state transitions require staged work;
-- investigation has produced decisions that would be expensive to rediscover;
-- the todo state alone is not enough to resume safely.
-
-Store active plans under `docs/exec-plans/active/` and completed historical plans under `docs/exec-plans/completed/` when the project benefits from retaining them.
-
-An execution plan should contain:
-
-```text
-Goal / non-goals
-Acceptance contract
-Confirmed current state
-Relevant files/systems
-Decisions and rationale
-Ordered next actions
-Verification evidence
-Open risks/blockers
-Handoff note
-```
-
-Keep it concise and update facts, decisions, evidence, and next steps—not a transcript of every tool call.
-
-The runtime continuity capsule is a recovery aid, not the execution plan. It persists a bounded list of active specialist groups, repository-relative modified paths, recent recognized verification outcomes, hashed open failures, and Smart Read count. It is injected once after session restore or compaction. Pi's built-in compaction summary and the execution plan remain authoritative for goals, decisions, constraints, and unresolved reasoning.
-
-## Handoff and context reset
-
-Compaction is useful for a continuing coherent task, but a clean context can be better when the task has accumulated stale hypotheses or is crossing sessions.
-
-Before a clean restart:
-
-1. update the active execution plan or create a concise handoff artifact;
-2. record what is actually implemented, not what was intended;
-3. record exact verification outcomes;
-4. record unresolved hypotheses and the next discriminating action;
-5. record relevant changed files and user-owned work that must be preserved.
-
-Then start a fresh Pi session and use `/resume <plan-path>`.
-
-Do not use a handoff to hide an unresolved failure or to mark unfinished criteria complete.
-
-## Quality ratchet
-
-Treat repeated agent mistakes as evidence about the environment.
-
-When a class of defect recurs, prefer this order:
-
-1. regression test;
-2. type/schema/boundary validation;
-3. deterministic lint or structural test;
-4. clearer repository-local API or helper;
-5. focused documentation/reference;
-6. specialized skill only if the workflow is truly domain-specific;
-7. extra always-loaded prompt text only as a last resort.
-
-Project bootstrap should identify important architecture or quality invariants that can be enforced mechanically and add project-specific checks where justified.
-
-## Mechanical evidence limits
-
-Continuity restores the active Pi session branch on resume and `/tree`, not the newest entry across sibling branches. In-flight tracking is cleared on navigation. Old snapshots labeled `passed` are downgraded to `unproven`.
-
-Recognized checks retain a bounded redacted check label, not unrelated shell segments. A simple invocation may record `process-ok` or `failed`; shell control flow, pipes, substitution, quoting or redirection records `unproven`. These are historical process observations, never proof of assertions, test coverage, or the current worktree. Inspect the output and accepted behavior before reporting PASS. Complex valid commands remain usable; only automatic classification is conservative.
-
-## Harness evaluation
-
-Judge harness changes against realistic tasks, not toy prompts. Useful measures include:
-
-- task success against observable acceptance criteria;
-- number of repair rounds;
-- total tool calls and tool errors;
-- wall-clock duration;
-- token/context growth;
-- unnecessary broad reads/searches;
-- regressions caught by reviewer/browser/security evaluation;
-- visual hard-gate pass rate and craft-score distribution for frontend eval cases;
-- generic-design failure rate (interchangeable palettes, type, cards, hero, copy, or motion);
-- number of user interventions required for routine reversible work.
-
-Do not keep a harness feature because it feels sophisticated. Keep it because it improves outcomes or reduces cost/risk on representative tasks.
-
-## Research basis
-
-[`docs/RESEARCH.md`](RESEARCH.md) records the primary sources, the exact workflow decision derived from each, benchmark limitations, the repository audit, and the promotion protocol. Keep that evidence map current when a harness component or threshold changes.
+1. **Re-characterize:** reproduce the failure more precisely (`debug`, minimal repro, narrower log) before changing anything else.
+2. **Shrink scope:** cut the slice to the smallest still-meaningful behavior and re-prove it.
+3. **Change the tool:** `lsp` instead of guessing, `eval` cell instead of a script file, `browser` instead of DOM inference, `/review` for an independent verdict.
+4. **Reassess the contract:** the criterion may be wrong, unmeasurable, or blocked by a genuine prerequisite — say so, mark it `BLOCKED`/`UNPROVEN`, and finish reachable work.
+5. **Durable state:** for Complex work, write the current state into `docs/exec-plans/active/` and continue via `/handoff` + `/resume` in a fresh session.

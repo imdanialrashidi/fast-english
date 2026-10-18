@@ -8,14 +8,13 @@
 }
 
 /*
- * Fast English application tokens — modern hybrid system 2026-10-10
+ * Fast English server-surface tokens — modern hybrid light 2026-10-10
  * (see docs/DESIGN.md). Owner base: ivory #F7F5EF / navy #172238 /
- * blue #4263EB / amber #E9AC52. The two :root[data-theme] blocks own
- * every color value; components use only var(--fe-*). Light is soft
- * (white cards, floating pill nav, centered player) like hybrid-light;
- * dark is bold (navy surfaces, condensed uppercase titles, solid pills)
- * like hybrid-dark; IA follows fast-english-editorial
- * (Today/Discover/Reader/Words/Account + landing hero + desktop sidebar).
+ * blue #4263EB / amber #E9AC52. Permanent light theme only (ADR-0002):
+ * the single :root block below owns every color value; components use
+ * only var(--fe-*). This stylesheet serves preserved server-rendered
+ * pages only (staff 2FA, error pages); learner/public product surfaces
+ * render through resources/css/inertia.css + React.
  * Amber is limited to ring/highlights/progress accents; blue fills appear
  * only on primary actions, active states, and focus — never a card wall.
  * Persian: self-hosted Vazirmatn variable (public/fonts/vazirmatn, OFL
@@ -39,53 +38,6 @@
     unicode-range: U+0000-00FF, U+2000-206F;
 }
 
-:root[data-theme='light'] {
-    --fe-canvas: #f7f5ef;
-    --fe-surface: #ffffff;
-    --fe-text: #172238;
-    --fe-muted-text: #5b6372;
-    --fe-border: #e7dfd2;
-    --fe-input-border: #5b6372;
-    --fe-primary: #4263eb;
-    --fe-primary-hover: #364fc7;
-    --fe-on-primary: #ffffff;
-    --fe-secondary: #dde5fb;
-    --fe-on-secondary: #172238;
-    --fe-accent: #e9ac52;
-    --fe-on-accent: #172238;
-    --fe-tint-lavender: #ede8d6;
-    --fe-success: #0f766e;
-    --fe-danger: #be123c;
-    --fe-elev-1: 0 1px 2px rgb(23 34 56 / 0.08);
-    --fe-elev-2: 0 12px 32px rgb(23 34 56 / 0.12);
-    --fe-font-fa: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
-    --fe-font-en: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-:root[data-theme='dark'] {
-    --fe-canvas: #0e1626;
-    --fe-surface: #172238;
-    --fe-text: #f7f5ef;
-    --fe-muted-text: #b9c4d0;
-    --fe-border: #2a3a55;
-    --fe-input-border: #b9c4d0;
-    --fe-primary: #8aa4ff;
-    --fe-primary-hover: #a3b8ff;
-    --fe-on-primary: #172238;
-    --fe-secondary: #2a3a55;
-    --fe-on-secondary: #f7f5ef;
-    --fe-accent: #e9ac52;
-    --fe-on-accent: #172238;
-    --fe-tint-lavender: #232f45;
-    --fe-success: #2dd4bf;
-    --fe-danger: #fb7185;
-    --fe-elev-1: 0 1px 2px rgb(0 0 0 / 0.5);
-    --fe-elev-2: 0 12px 32px rgb(0 0 0 / 0.5);
-    --fe-font-fa: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
-    --fe-font-en: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* Fallback before the pre-paint theme script runs: light values. */
 :root {
     --fe-canvas: #f7f5ef;
     --fe-surface: #ffffff;
@@ -634,7 +586,7 @@ body[data-player-expanded='true'] .fe-main-pad {
     min-height: 44px;
 }
 
-/* Owner header lockup: exactly one variant shows per data-theme. */
+/* Owner header lockup: permanent light theme only (ADR-0002). */
 .fe-brand-logo {
     display: inline-flex;
     align-items: center;
@@ -644,15 +596,6 @@ body[data-player-expanded='true'] .fe-main-pad {
     display: block;
     height: 36px;
     width: auto;
-}
-
-:root[data-theme='dark'] .fe-logo-light {
-    display: none;
-}
-
-:root[data-theme='light'] .fe-logo-dark,
-:root:not([data-theme]) .fe-logo-dark {
-    display: none;
 }
 
 .fe-brand-sub {
@@ -2417,42 +2360,6 @@ html.fe-js .fe-reveal.is-visible {
     .fe-grade-row {
         grid-template-columns: repeat(4, 1fr);
     }
-}
-
-/* Settings: appearance radios share the option-card language. */
-.fe-appearance {
-    display: grid;
-    gap: 0.5rem;
-}
-
-.fe-appearance-option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    border: 1px solid var(--fe-border);
-    border-radius: 1rem;
-    background: var(--fe-surface);
-    padding: 0.625rem 0.875rem;
-    min-height: 44px;
-    cursor: pointer;
-}
-
-.fe-appearance-option:has(input:checked) {
-    border-color: var(--fe-primary);
-    border-width: 2px;
-    padding: calc(0.625rem - 1px) calc(0.875rem - 1px);
-}
-
-.fe-appearance-option input[type='radio'] {
-    width: 24px;
-    height: 24px;
-    accent-color: var(--fe-primary);
-    flex-shrink: 0;
-}
-
-.fe-appearance-option:focus-within {
-    outline: 3px solid var(--fe-primary);
-    outline-offset: 2px;
 }
 
 .fe-meta-table {

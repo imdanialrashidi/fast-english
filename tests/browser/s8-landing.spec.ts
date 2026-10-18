@@ -68,8 +68,13 @@ test('S8 landing reduced-motion: content renders without animation', async ({ br
   const page = await ctx.newPage();
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'انگلیسی را با داستان‌های کوتاه و صوت هماهنگ یاد بگیر' })).toBeVisible();
-  const opacity = await page.locator('.fe-preview').evaluate((el) => getComputedStyle(el).opacity);
+  // M0 port (ADR-0002): the React landing renders statically with the
+  // reduced-motion kill-switch in CSS — same oracle as the Blade
+  // .fe-preview check, via the stable aria labels instead of fe-* classes.
+  const preview = page.getByLabel('پیش‌نمایش روش یادگیری با نمونه واقعی');
+  await expect(preview).toBeVisible();
+  const opacity = await preview.evaluate((el) => getComputedStyle(el).opacity);
   expect(opacity).toBe('1');
-  await expect(page.locator('.fe-preview-lines li').first()).toBeVisible();
+  await expect(page.locator('ol[aria-label="سه جمله از نمونه واقعی"] li').first()).toBeVisible();
   await ctx.close();
 });

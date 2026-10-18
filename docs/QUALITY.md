@@ -58,8 +58,16 @@ Evidence hierarchy (cheapest faithful first): deterministic Pest test on real Po
 
 ## Visual excellence
 
-For new learner surfaces (list, reader, account), load `frontend-design` and judge rendered evidence against DESIGN.md thesis plus its visual-quality rubric. Ordinary production craft threshold is 2.75/4 with no dimension below 2; an explicitly flagship surface requires 3.25/4 with every dimension at least 3. Hard-gate failures (contrast, focus, touch, RTL/LTR, reduced motion) cannot be offset by aesthetic scoring.
+For new learner surfaces (list, reader, account), judge rendered evidence against the `docs/DESIGN.md` thesis and quality budgets using the `browser` tool. Ordinary production craft threshold is 2.75/4 with no dimension below 2; an explicitly flagship surface requires 3.25/4 with every dimension at least 3. Hard-gate failures (contrast, focus, touch, RTL/LTR, reduced motion) cannot be offset by aesthetic scoring.
 
 ## Entry gates per slice (proposed commands resolved by checkout)
 
 Pint check, slice-scoped Pest suite on PostgreSQL, Vite asset build where UI changes, related Playwright journeys where browser/device risk exists. Canonical commands come from this checkout and QUALITY policy, not from assumed script names; no hypothetical command is invented to resemble the scope.
+
+## Frontend-migration proof delta 2026-10-10 (M0–M5 delivered 2026-10-11; AC table above unchanged)
+
+- Prop-leakage rule: "never in Livewire payloads/hydration" reads as "never in Inertia props" with identical force (premium body/glossary/audio URLs, answer keys, `correct_option`/`scoring_rules`, receipt paths/bank references, secrets, tokens). Existing absence assertions are ported per slice, never weakened to obtain green.
+- AC-06 (MEDIA-02) is proven against the Inertia persistent-layout player (navigation preserves playback; level-switch/logout stops; single audio element; no duplicate listeners) instead of `@persist`/`wire:navigate`.
+- AC-18/AC-27 are re-proven in the single light theme only: RTL/FA + LTR/EN, keyboard/focus, 200% zoom, 320 reflow, 44px targets, `prefers-reduced-motion`, and re-measured contrast on the exact light pairs. Dark-theme assertions are retired only after the single-light parity proof; the S3DesignTest no-literal rule is extended to the React/TS surface.
+- Money/concurrency proof is unchanged and stays PostgreSQL-only (AC-11/12/13 race suite + fixed lock order User → PaymentRequest → Subscription). Transport migration never weakens these tests.
+- Obsolete-learner-code removal (Blade learner views, `app/Livewire`, `reader-player.js`, `theme.js`, `wire:navigate`/`@persist`/`fe-theme`) is accepted only with per-slice parity evidence (Pest + affected Playwright + inspected rendered images). Filament Livewire stays.

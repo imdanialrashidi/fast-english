@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 use Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse;
 use Laravel\Fortify\Contracts\SuccessfulPasswordResetLinkRequestResponse;
 use Laravel\Fortify\Fortify;
@@ -48,10 +49,18 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->singleton(FailedPasswordResetLinkRequestResponse::class, fn () => new NeutralPasswordResetLinkResponse);
         $this->app->singleton(SuccessfulPasswordResetLinkRequestResponse::class, fn () => new NeutralPasswordResetLinkResponse);
 
-        Fortify::loginView(fn () => view('auth.login'));
-        Fortify::registerView(fn () => view('auth.register'));
-        Fortify::requestPasswordResetLinkView(fn () => view('auth.forgot-password'));
-        Fortify::resetPasswordView(fn ($request) => view('auth.reset-password', ['request' => $request]));
+        // Public auth slice (ADR-0002): the same Fortify endpoints serve
+        // Inertia pages instead of Blade. Validation, throttle, disabled
+        // handling, and redirects are unchanged; only the HTML transport
+        // moved. Error bags + old input travel through the Inertia
+        // protocol automatically.
+        Fortify::loginView(fn () => Inertia::render('Auth/Login'));
+        Fortify::registerView(fn () => Inertia::render('Auth/Register'));
+        Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword'));
+        Fortify::resetPasswordView(fn ($request) => Inertia::render('Auth/ResetPassword', [
+            'token' => (string) $request->route('token'),
+            'email' => (string) ($request->input('email') ?? ''),
+        ]));
 
         // Disabled accounts get the same generic error as bad credentials.
         Fortify::authenticateUsing(function (Request $request) {

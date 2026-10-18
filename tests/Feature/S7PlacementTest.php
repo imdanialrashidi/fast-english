@@ -8,6 +8,7 @@ use App\Models\PlacementTest;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\ContentFixtures;
 
 // S7 placement flow (scope §12, AC-09): pinned attempts, per-question
 // saves, server marking, explicit accept. Every question/seed row is
@@ -64,8 +65,9 @@ function s7AnswerAll(object $test, User $user, PlacementAttempt $attempt, bool $
 }
 
 beforeEach(function () {
-    $this->studentA = User::factory()->create(['is_staff' => false]);
-    $this->studentB = User::factory()->create(['is_staff' => false]);
+    // Paid-only slice: placement needs an active subscription.
+    $this->studentA = ContentFixtures::subscribedStudent();
+    $this->studentB = ContentFixtures::subscribedStudent();
 });
 
 // S7-1 (answer key absent): the question page HTML and every JSON payload
@@ -135,8 +137,11 @@ test('second start resumes the open attempt and 24-hour restart is refused', fun
         'question_id' => $q2->id, 'selected_option' => ((int) $key[$q2->id] + 2) % 4,
     ])->assertRedirect();
 
-    $html = $this->actingAs($this->studentA)->get(route('placement.show', $first))->assertOk()->getContent() ?? '';
-    expect(substr_count($html, 'checked'))->toBeGreaterThanOrEqual(2);
+    // Public-slice port (ADR-0002): resume state travels as the
+    // `selected` prop (the radios render client-side); two saved answers
+    // mean two selected entries.
+    $resumed = $this->actingAs($this->studentA)->get(route('placement.show', $first))->assertOk();
+    expect($resumed->inertiaProps()['selected'])->toHaveCount(2);
 
     // The second student is isolated: their attempt is empty and separate.
     $this->actingAs($this->studentB)->post(route('placement.start'))->assertRedirect();

@@ -4,6 +4,7 @@ use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
 use Database\Seeders\S5PaymentFixtureSeeder;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S5-7 (cancel + reject): the learner can cancel awaiting_receipt (row is
@@ -71,12 +72,15 @@ test('a rejected row shows its reason and a new purchase creates a new request',
     $rejected = $rejected->fresh();
     $before = $rejected->getAttributes();
 
-    $html = $this->actingAs($this->studentA)
+    // Public-slice port (ADR-0002): the rejected state travels as
+    // decoded props (the Persian reason renders client-side).
+    $shown = $this->actingAs($this->studentA)
         ->get(route('payments.show', $rejected))
         ->assertOk()
-        ->getContent();
-    expect($html)->toContain('رسید ناخوانا بود')
-        ->and($html)->toContain('خرید دوباره');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Payments/Show')
+            ->where('request.status', 'rejected'));
+    expect($shown->inertiaProps()['request']['public_reason'])->toContain('رسید ناخوانا بود');
 
     // A new purchase creates a new request; the old row is unchanged.
     $this->actingAs($this->studentA)->post(route('payments.store'), ['plan_id' => $this->plan90->id]);

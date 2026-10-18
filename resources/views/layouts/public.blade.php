@@ -1,25 +1,14 @@
 <!DOCTYPE html>
-{{-- S8 public layout: Persian RTL marketing/trust surface (scope §6, §19).
-     Uses learner tokens only (no new colors). Indexable pages provide a
-     canonical URL; auth-adjacent users of this layout (reset forms) carry
-     an explicit noindex meta on top of the noindex header. --}}
-<html lang="fa" dir="rtl" data-theme="light">
+{{-- Preserved server layout (staff 2FA + error pages): Persian RTL, permanent
+     light theme only — no data-theme switching, no fe-theme storage, no
+     pre-paint theme script. Learner/public product surfaces render through
+     the Inertia root (views/app.blade.php); this layout serves classic
+     server-rendered pages only. --}}
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f7f5ef">
-    <script>
-        (function () {
-            try {
-                var raw = (localStorage.getItem('fe-theme') || 'system').toLowerCase();
-                var theme = raw === 'light' ? 'light' : raw === 'dark' ? 'dark'
-                    : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                document.documentElement.setAttribute('data-theme', theme);
-            } catch (e) {
-                document.documentElement.setAttribute('data-theme', 'light');
-            }
-        })();
-    </script>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="/icons/apple-touch-180.png">
     <meta name="description" content="@yield('meta_description', 'Fast English — خواندن و شنیدن متن‌های انگلیسی کوتاه در سطح مناسب')">
@@ -30,7 +19,7 @@
         <link rel="canonical" href="@yield('canonical')">
     @endif
     <title>@yield('title', 'Fast English')</title>
-    @vite(['resources/css/app.css', 'resources/js/theme.js', 'resources/js/auth.js'])
+    @vite(['resources/css/app.css'])
 </head>
 <body class="fe-learner">
 <a class="fe-skip" href="#fe-content">پرش به محتوا</a>

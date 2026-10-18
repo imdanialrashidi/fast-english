@@ -78,8 +78,9 @@ test('receipt path and bank reference stay out of HTML, logs, and public JSON', 
         ->and($html)->not->toContain('S5SECRETREF999')
         ->and($html)->not->toContain('receipts/');
 
-    // The other student's library/account HTML carries none of it either.
-    $library = $this->actingAs($this->studentB)->get(route('app.home'))->assertOk()->getContent();
+    // The other student's library HTML carries none of it either (the
+    // paid-only gate locks the page: 403 with no lesson content at all).
+    $library = $this->actingAs($this->studentB)->get(route('app.home'))->assertForbidden()->getContent();
     expect($library)->not->toContain($row->receipt_path)
         ->and($library)->not->toContain('S5SECRETREF999');
 

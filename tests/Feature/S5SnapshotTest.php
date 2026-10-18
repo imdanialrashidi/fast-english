@@ -4,6 +4,7 @@ use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
 use Database\Seeders\S5PaymentFixtureSeeder;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S5-1 (snapshot): the server creates awaiting_receipt with an immutable
@@ -36,12 +37,16 @@ test('selecting a plan creates awaiting_receipt with the server snapshot', funct
         ->and($row->receipt_path)->toBeNull();
 
     // The request page shows the snapshot values (not live plan data).
-    $html = $this->actingAs($this->studentA)
+    // Public-slice port (ADR-0002): asserted on the decoded Inertia
+    // props instead of the encoded page.
+    $shown = $this->actingAs($this->studentA)
         ->get(route('payments.show', $row))
         ->assertOk()
-        ->getContent();
-    expect($html)->toContain($this->plan30->name_fa)
-        ->and($html)->toContain($this->destination->card_number);
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Payments/Show'));
+    $shownProps = $shown->inertiaProps();
+    expect($shownProps['request']['plan_name'])->toBe($this->plan30->name_fa)
+        ->and($shownProps['request']['card_number'])->toBe($this->destination->card_number);
 });
 
 test('client-sent amount, duration, destination, or status is rejected with 422', function () {

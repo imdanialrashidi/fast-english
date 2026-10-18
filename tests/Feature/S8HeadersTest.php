@@ -9,8 +9,9 @@ use Tests\Support\ContentFixtures;
 // for both the learner and another account.
 
 test('private surfaces carry no-store for both users', function () {
-    $studentA = ContentFixtures::student();
-    $studentB = ContentFixtures::student();
+    // Paid-only slice: the library leg needs an active subscription.
+    $studentA = ContentFixtures::subscribedStudent();
+    $studentB = ContentFixtures::subscribedStudent();
 
     foreach ([$studentA, $studentB] as $student) {
         $home = $this->actingAs($student)->get(route('app.home'))->assertOk();
@@ -21,7 +22,8 @@ test('private surfaces carry no-store for both users', function () {
 });
 
 test('app admin and login carry noindex in every environment', function () {
-    $student = ContentFixtures::student();
+    // Paid-only slice: the library leg needs an active subscription.
+    $student = ContentFixtures::subscribedStudent();
 
     $this->actingAs($student)->get(route('app.home'))->assertHeader('X-Robots-Tag', 'noindex, nofollow');
     $this->get(route('login'))->assertHeader('X-Robots-Tag', 'noindex, nofollow');

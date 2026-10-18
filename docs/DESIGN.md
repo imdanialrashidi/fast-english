@@ -23,7 +23,163 @@ The product and landing must look polished, distinctive, and professional, compa
 5. Amber replaces the navy/blue identity from scope §17.1 (primary `#1D4ED8`, primary-hover `#1E40AF`) with the Night Studio amber scale (dark `#F5A524`, light `#B45309`, sepia `#92400E`); navy/blue is no longer the identity. Owner-approved on 2026-10-09 by owner direction. Reason: owner direction requires a distinctive polished palette with a warm amber signal for play/progress.
 6. Soft Day light theme (owner Softly inspiration, 2026-10-09) replaces the Night Studio light table and the §17.1 proposal values in code for learner app surfaces: canvas `#FDFCF8`, surface `#FFFFFF`, text `#292524`, muted `#78716C`, coral primary `#FFB7B2`/hover `#FF9E99` with dark label `#292524`, divider `#E7E5E4`, input-boundary `#78716C`, lavender tint `#EFEDF4`; sage `#E8EFE8` recorded for landing. Performance-heavy effects explicitly excluded (no grain overlay, no backdrop-blur, no permanent/floating animation, no giant blurred blobs). Landing markup untouched. Owner-approved on 2026-10-09 by owner direction. Reason: owner wants the Softly look in the app without the perf cost.
 
-## Owner-approved application palette 2026-10-10 — Modern Hybrid (APPROVED, canonical; supersedes Blue/Teal)
+## Owner-approved design direction 2026-10-10 — Premium editorial publication (APPROVED, canonical; design-contract only, no UI built this turn)
+
+This section records the new owner-approved design direction verbatim as the canonical design contract. It supersedes all earlier token tables for application UI (Modern Hybrid light/dark 2026-10-10, Blue/Teal 2026-10-09, Soft Day, Night Studio dark/light/sepia, section 17.1 proposals) which are retained below as history only. It also supersedes the 2026-10-09 dark-mode requirement (Owner instruction + amendment 1: system/light/dark choice) — the product now has one permanent light theme only. The 2026-10-10 Inertia migration decision (single permanent light theme) is consistent with this direction and is not reopened. No application code was changed in this turn.
+
+### Owner direction (explicit — OWNER, not agent inference)
+
+- Product feel: distinctive, premium English-learning publication — editorial, calm, sophisticated, highly readable, warm, carefully crafted.
+- Explicit avoids: generic SaaS dashboards, excessive cards, clutter, gratuitous gradients, glow effects, random decoration, AI-generated-template aesthetics.
+- 2026-10-11 public-to-learning slice (OWNER request: warm editorial canvas, crisp white surfaces, deep navy hierarchy, restrained teal accents, reader-first): maps exactly onto the hexes above with no new values — canvas/surface/ink carry the warmth and hierarchy, accent/accent-strong carry the teal restraint. No new palette choice recorded.
+- Exact owner-approved Tailwind CSS 4 palette (hexes preserved exactly, no substitution):
+
+```css
+@theme {
+  --color-canvas: #F7F4EE;
+  --color-surface: #FFFFFF;
+  --color-ink: #101B33;
+  --color-muted: #55607A;
+  --color-line: #E4DED2;
+  --color-field: #7C8798;
+  --color-primary: #1F3B82;
+  --color-primary-hover: #172F69;
+  --color-accent: #0E8F8A;
+  --color-accent-strong: #0B6E6A;
+  --color-success: #1B7F4B;
+  --color-danger: #B42318;
+}
+```
+
+- Permanent light theme only: no dark/system setting, no alternate palette, no theme-choice UI, no theme storage.
+- Persian interface with correct RTL layout; English learning content remains LTR and uses appropriate English typography.
+- Mobile-first, excellent reading ergonomics, generous but purposeful whitespace, consistent spacing, typography, radii, borders, controls, and interaction states.
+- Distinctive information hierarchy; strong editorial treatment of lesson titles and English text.
+- Subtle, purposeful transitions only; respect reduced-motion preferences.
+- Accessible contrast, clear focus states, descriptive control labels, touch-friendly targets.
+- Preserve the exact hex values; define semantic roles and measure real foreground/background pairs rather than arbitrarily changing colors.
+
+### Brief pin (agent synthesis from PRODUCT.md + scope sections 1/6/7/13/17 — PROPOSED framing, not new owner facts)
+
+- Audience: adult Persian-speaking learners (mobile-first) picking a short English article at a CEFR level, reading + listening to the same version, saving words, resuming later.
+- Surface single job: get the learner into the right lesson text + matching audio with minimum friction, then keep reading/listening/resuming calm.
+- Content/states: real topics/lessons per level, sentence cues with fallback, key-word glossary, vocab notebook + SRS, daily plan, player (play/pause/seek/plus-minus-10s/speed), progress/resume, saved, placement (optional), payment/subscription states (pending/rejected/expired/locked), loading/empty/error/retry/offline.
+- Brand tensions (PROPOSED): editorial yet usable; warm yet precise; distinctive yet restrained; confident hierarchy yet quiet chrome; print-craft yet one-thumb mobile.
+- Platform baseline: one Laravel app + one DB + one origin; learner/public surfaces migrate to Inertia 3 + React 19 + TS + Tailwind 4 + shadcn/ui (per ADR-0002); Filament stays staff-only; PWA shell with safe-area; no second learner frontend.
+- Material constraints: integer-toman money, level-as-content (no substitution), eligibility-gated premium body/audio, private media with Range, no paid-content offline cache, real covers with license records, no fabricated counts/testimonials/prices.
+
+### Thesis, signature, restraint
+
+- Thesis (PROPOSED refinement of owner direction): a warm-paper editorial publication — deep-ink text on ivory, one deep-blue voice for action, one teal voice for learning progress; the reader is the product, chrome stays quiet.
+- Signature (PROPOSED): the composed immersive reader — editorial lesson title + bounded cover + level selector + studio player + LTR English sentences + key words as one reading environment, with a calm continue-learning moment on Today.
+- Intentional restraint (OWNER constraint + PROPOSED execution): one primary + one accent family only; surfaces stay canvas/surface with hairline dividers; cards only where grouping/interaction requires them (forms, review card, purchase snapshot); lists use quiet divider rows; no gradients/glow/decorative shadows, no permanent animation, no dashboard KPI walls, no badge piles, no stock filler, no decorative charts/numbering.
+
+### Semantic tokens — exact values, roles, code mapping (OWNER hexes; roles + mapping PROPOSED unless noted)
+
+| Tailwind `@theme` token | Hex (OWNER, exact) | Semantic role (OWNER intent + PROPOSED detail) |
+|---|---|---|
+| `--color-canvas` | `#F7F4EE` | App canvas: warm paper background for all learner/public surfaces. |
+| `--color-surface` | `#FFFFFF` | Surface: cards/bars/inputs/sheets on canvas; also label color on primary/accent-strong/success/danger fills. |
+| `--color-ink` | `#101B33` | Body text on canvas/surface; headings, lesson titles, focus-ring alternative. |
+| `--color-muted` | `#55607A` | Secondary text/meta on canvas/surface only; never as boundary or faint decoration. |
+| `--color-line` | `#E4DED2` | Hairline dividers/borders only; decorative, never the sole indicator. |
+| `--color-field` | `#7C8798` | Input/checkbox/radio boundaries + placeholder-adjacent chrome; boundary-only, never body text. |
+| `--color-primary` | `#1F3B82` | Primary fills, primary-as-text, active nav/level/speed states, focus ring. |
+| `--color-primary-hover` | `#172F69` | Hover/pressed fill for primary actions (white label kept). |
+| `--color-accent` | `#0E8F8A` | Restricted accent: progress fill, sentence-highlight bar, tiny highlights; large-text/control use only (see contrast). |
+| `--color-accent-strong` | `#0B6E6A` | Legible accent: accent-as-text + label-bearing accent fills (white label). |
+| `--color-success` | `#1B7F4B` | Status text/fill (always with text/icon, never color-alone). |
+| `--color-danger` | `#B42318` | Status text/fill (always with text/icon, never color-alone). |
+
+Implementation mapping (PROPOSED, binding for the next build): Tailwind 4 `@theme` owns every color value; components use utilities (`bg-canvas`, `bg-surface`, `text-ink`, `text-muted`, `border-line`, `text-primary`, `bg-primary`, `bg-accent`, etc.) or `var(--color-*)` only. No hex literal outside the `@theme` block. No `dark:` variant, no `[data-theme]` switching, no `fe-theme` storage, no pre-paint theme script, no appearance radio, no second palette. Elevations (if needed) stay named tokens only; no ad-hoc shadows.
+
+Measured contrast (computed WCAG relative luminance, same method as S1/S3, 2026-10-10; pairs are the OWNER hexes, not approvals of new values): ink/canvas 15.60:1, ink/surface 17.12:1, muted/canvas 5.73:1, muted/surface 6.29:1, primary-as-text/surface 10.47:1, primary-as-text/canvas 9.54:1, white-on-primary 10.47:1, white-on-primary-hover 12.75:1, accent-strong-as-text/surface 6.08:1, accent-strong-as-text/canvas 5.54:1, white-on-accent-strong 6.08:1, success-as-text/surface 5.02:1, success-as-text/canvas 4.57:1, danger-as-text/surface 6.57:1, danger-as-text/canvas 5.99:1 — all PASS normal text (>=4.5:1). Controls/focus: primary/surface 10.47:1, field/surface 3.64:1, field/canvas 3.31:1 — PASS non-text boundary (>=3:1); field is boundary-only (3.64:1 FAILS body text, correctly restricted). Accent restriction (no hex changed): accent-as-text/surface 3.95:1 FAILS normal text (passes large/control >=3:1); white-on-accent 3.95:1 FAILS normal text; ink-on-accent 4.33:1 FAILS normal text — therefore `--color-accent` never carries normal-text labels and never stands alone as body text; label-bearing accent fills use `--color-accent-strong` with white (6.08:1 PASS); accent-as-text is large-text/control-only and always paired with a non-color cue. Line/canvas 1.22:1 — dividers only, decorative, never sole indicators. No failing pair waived.
+
+### Type roles (OWNER: Persian RTL + English LTR; fonts carried from prior owner approval, no new font approved this turn)
+
+- Persian chrome/labels: Vazirmatn self-hosted (existing `public/fonts/vazirmatn/`, OFL beside files) with system fallback — carried owner-approved; unchanged this turn (PROPOSED: keep variable weight, controls >=16px).
+- English titles/body/player numerals: Inter self-hosted under OFL with license recorded, system-stack fallback when unavailable — carried owner-approved; unchanged this turn (PROPOSED: reader 18–19px/1.8, measure ~680px, well-separated paragraphs; EN title semibold LTR, FA meta muted).
+- Direction (OWNER): chrome `lang=fa dir=rtl`; English lesson body/glossary/examples `lang=en dir=ltr`. Long FA/EN text + 200% zoom must not break structure (PROPOSED: test both).
+- Display treatment (PROPOSED): editorial lesson titles and English text carry the hierarchy (size/weight/measure, not color); Persian keeps normal case; no condensed-uppercase display unless a later owner direction asks.
+
+### Composition, spacing, shape, controls (OWNER constraints; values PROPOSED)
+
+- Mobile-first single column; desktop recomposes (restrained sidebar or centered measure, not stretched mobile); reading measure ~680px, wide narrative <=1024px (PROPOSED).
+- Generous but purposeful whitespace (PROPOSED): sections breathe (~1.5rem), related rows sit tight (0.5–0.75rem); consistent spacing scale, no random padding.
+- Radii/borders (PROPOSED): restrained cards ~20–24px, buttons/inputs/pills pill or quiet radius, hairline `line` dividers only; controlled borders, restrained named shadows only.
+- Controls (OWNER: consistent + descriptive + touch-friendly; PROPOSED): >=44px targets, visible `<label>`s, field-associated errors, error keeps safe values, success only after server confirmation, color never sole signal, keyboard-operable seek/speed/level, logical order, visible focus (primary 10.47:1 on surface or ink 17.12:1 — never accent-on-white).
+- Information hierarchy (OWNER): title → meta → cover → level → player → body → key words stays the reader order; lists show one row per topic (cover/title/levels/minutes), never six results per topic; account shows subscription + current request + one CTA.
+
+### Responsive behavior (PROPOSED unless noted)
+
+- Recomposition, not shrinkage: 1 col mobile → 2 cols from ~640px → 3 from ~1024px for library grids; reader stays single measure at all widths.
+- Review at 360/390/430/768/1440 + reflow at 320 CSS px with no h-scroll; bounded covers (`max-height ~15rem`, `object-fit: cover`, fixed 16/9 in cards, lazy except hero).
+- Fixed layers clear content via end-padding + `env(safe-area-inset-bottom)`; URL owns browse state (`?level/category/q/page`) for back/share/refresh.
+
+### Player + navigation layering (PROPOSED principles; prior IA preserved)
+
+- IA preserved (owner-approved editorial IA: Today/Discover/Reader/Words/Account + landing hero; mobile bottom tabs + desktop sidebar — unchanged this turn): placement/payment/settings are sub-paths; admin never in learner nav.
+- One audio element in the persistent layout; in-layout navigation preserves playback, level-switch/logout stops old audio, no duplicate listeners (behavioral contract unchanged).
+- Layer order bottom-up: content → mini/full player → bottom tabs → safe-area; end-of-content padding follows player state so the bar never covers the last line; player never overlaps keyboard or tabs.
+- Player stack (PROPOSED): title + speed-cycle top row, full-width seek with real fill, elapsed/total times, centered [minus-10s][play][plus-10s]; speed is one cycle button with visible `Nx` + live `aria-label`, sticky rate, keyboard-operable; controls always have accessible names, never icon-only without a name.
+- Sentence cues (READ-03): highlight from real validated cues, select seeks to interval, usable plain-reader fallback when cues absent/stale; lesson stays completable.
+
+### Page-specific rules (PROPOSED; no page built this turn)
+
+- Landing: promise → real sample → how-it-works → plans (real data or honest not-on-sale) → FAQ → install/support; stages the real reader, no marketing art, no fake counts/testimonials/ratings.
+- Today: greeting + Continue Learning first, then plan divider rows, goal ring/progress, due vocab, recommendations; incomplete stays incomplete; goal change never writes `preferred_level`.
+- Discover: editorial rows (cover + EN title LTR + FA meta + level), pill filters + search with labels, result count, empty + reset, pagination 12/page.
+- Reader: title/cover/level/player/LTR body/vocab in one measure; loading/audio-error/locked/missing-level (exact message + available levels, no substitution)/empty-vocab states all designed; mobile safe-area clearance.
+- Words: quiet divider rows for list, one solid card for Again/Hard/Good/Easy review; due/learning/known states with text, never color-alone.
+- Account: calm subscription + current request + one CTA; pending/rejected/expired each have one clear next action.
+- Auth/payment/placement/trust/download/offline: same tokens/type/controls; no second visual language.
+
+### Art direction (OWNER + PROPOSED)
+
+- OWNER (preserved): every published topic shows a real cover — deterministic GD abstract (slug-seeded, no baked text, EXIF stripped, no runtime fetch) or staff-uploaded licensed photo with a four-line license record (source, license name, date checked, usage notes); no empty placeholders, no runtime third-party fetch, no stock filler.
+- PROPOSED: covers stay the only imagery in lists/reader; Lucide local inline SVGs stay the single icon family (no CDN, no emoji substitutes, `aria-hidden` by default, named touch targets); no decorative illustration/texture in the learning surfaces.
+
+### Motion (OWNER: subtle + purposeful, reduced-motion respected; values PROPOSED)
+
+- Transitions <=200ms for press/focus/player-state only; seek fill itself never animates; sentence auto-scroll uses `block: nearest` and is skipped under reduced motion; no autoplay, no permanent/floating animation, no gradient blobs/heavy blur/grain.
+- `prefers-reduced-motion` disables all motion; content renders fully without JS.
+
+### Content voice (PROPOSED per no-ai-slop)
+
+- Direct Persian chrome, LTR English body; trigger/progress/success/failure copy stays consistent; missing level keeps the exact message; no invented claims.
+
+### Quality budgets (carried; PROPOSED application to this direction)
+
+- Accessibility: WCAG 2.2 AA working target on main paths (full claim needs audit); normal text >=4.5:1, large/control/focus/boundary >=3:1 — measured above, no waiver.
+- Performance: LCP <=2.5s, INP <=200ms, CLS <=0.1 at p75 unless stricter budgets accepted; audio `preload=metadata`, never bulk-download list audio; no admin assets in learner bundle.
+- Craft: flagship reader demands distinctive editorial finish; hard-gate failures (contrast, focus, touch, RTL/LTR, reduced motion) cannot be offset by aesthetics.
+
+### Anti-template check (run on unresolved choices; explicit owner palette preserved as constraint)
+
+- Palette is an OWNER constraint, not a default failure — preserved exactly, roles chosen for legibility without changing hexes.
+- Remaining choices checked: warm-paper publication + deep-navy ink + deep-blue action + teal progress + reader-first composition + quiet divider rows + staged real reader on landing is product-specific; REJECTED the generic slate-blue SaaS card wall, KPI dashboard widgets, gradient/glow hero, floating-card grids, stock-photo filler, decorative charts/badges, and Inter-default marketing look. Boldness is spent on the reader + Today-continue moment; surrounding system stays disciplined.
+
+### Screen-level visual acceptance + required evidence (no implementation ships without this)
+
+- List/Discover + saved: loading/empty/error/locked at 360–430 + 768 + 1440, fa-RTL — inspected rendered images.
+- Lesson reader + player: level switch, missing level, network error, cue highlight/seek + fallback; mobile + desktop measure, en-LTR body — rendered + browser interaction (play/pause/seek/speed/keyboard).
+- Today + Words + Account/payment: next-action-first, review grades, pending/rejected/expired — rendered + server proof where money/access is involved.
+- Hard gates each round: measured contrast on the pairs above, visible focus, 44px targets, keyboard order, 200% zoom, 320 reflow, `prefers-reduced-motion`, RTL/LTR integrity, no console errors, no layout shift from covers.
+- Evidence: inspected screenshots (narrow mobile + desktop + one demanding state) + browser interaction notes recorded in QUALITY.md terms (AC-18/AC-27 style); unseen screenshots or exit-zero alone are not proof. Uninspected states stay UNPROVEN.
+
+### What changed vs history (explicit)
+
+- New canonical: this section. Demoted to history: Modern Hybrid tables (light+dark), Blue/Teal tables, Soft Day tokens, Night Studio tables, section 17.1 proposals, and any `data-theme`/system/dark/sepia behavior. Landing markup and cover pipeline are untouched in this turn; shared-token changes must not regress landing (to be verified in browser at build time).
+- Resolved open decisions: permanent-light resolves the dark-companion and sepia items (no dark/sepia variants); palette-confirmed resolves to the 12 hexes above; fonts/icons/covers/supplier items stay open as before.
+- Agent-proposed vs owner: only the hexes, light-only rule, RTL/LTR rule, editorial-calm-sophisticated-readable-warm-crafted feel, and the avoid-list are OWNER. Thesis wording, signature, radii/spacing values, type scale numbers, player layout details, page copy, and budgets are PROPOSED and reversible without changing owner hexes.
+
+### Implementation state 2026-10-11 (M0–M5 delivered; M6 pending)
+
+- `resources/css/inertia.css` `@theme` implements the 12 hexes above verbatim; React components use tokens/utilities only (locked by `M0InertiaFoundationTest`; no `dark:` variant, no hex literal outside `@theme`).
+- `resources/css/app.css` serves preserved server-rendered pages only (staff 2FA, error pages) in its pre-existing light `--fe-*` tokens with the dark block retired (locked light-only by `S3DesignTest`) — explicitly not a second application palette; server-surface realignment stays a deferred slice.
+- Latin uppercase kickers (`DISCOVER`, `TODAY`) read as editorial section kickers under this thesis; flagged for one owner sign-off, not changed unilaterally.
+
+## Owner-approved application palette 2026-10-10 — Modern Hybrid (SUPERSEDED by Premium editorial publication above; retained as history)
 
 Explicit owner decision recorded before coding (owner inputs 2026-10-10): single package 299000 toman context aside, the app gets a full modern hybrid refresh — dark-bold Today/stats like hybrid-dark, light-soft Reader/Player like hybrid-light, editorial IA like fast-english-editorial (Today/Discover/Reader/Words/Account + landing hero + desktop sidebar + Vazirmatn FA + Inter EN + ivory #F7F5EF / navy #172238 / blue #4263EB / amber #E9AC52 as base). Both themes reuse the same `--fe-*` names in `resources/css/app.css :root[data-theme]`. The Blue/Teal tables below become history; no hex lives outside `:root` (locked by `tests/Feature/S3DesignTest.php` for BOTH themes).
 

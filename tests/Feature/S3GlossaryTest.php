@@ -3,6 +3,7 @@
 use App\Models\Lesson;
 use App\Support\Glossary;
 use Illuminate\Validation\ValidationException;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // Glossary (READ-02): validated JSON, at most 12 entries, word + meaning_fa
@@ -64,14 +65,24 @@ test('the reader shows the active lesson glossary only, escaped', function () {
         'glossary' => [['word' => 'B1word', 'meaning_fa' => 'معنی ب۱', 'example_en' => 'A <b>bold</b> example.']],
     ]);
 
-    $a2 = $this->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'A2']))->assertOk();
+    // Paid-only slice: flagged lessons resolve through the public
+    // sample experience; the active-lesson glossary travels with it.
+    $a2Redirect = $this->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'A2']))->assertRedirect();
+    $a2 = $this->followRedirects($a2Redirect)->assertOk();
+    // M1 note: Persian copy travels unicode-escaped in the encoded page,
+    // so raw assertSee only fits ASCII; the decoded props carry the claim.
     $a2->assertSee('A2word');
-    $a2->assertSee('معنی آ۲');
     $a2->assertDontSee('B1word');
+    $a2->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('glossary.0.word', 'A2word')
+        ->where('glossary.0.meaning_fa', 'معنی آ۲'));
 
-    $b1 = $this->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'B1']))->assertOk();
+    $b1Redirect = $this->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'B1']))->assertRedirect();
+    $b1 = $this->followRedirects($b1Redirect)->assertOk();
     $b1->assertSee('B1word');
-    // Staff-entered HTML in the example is escaped, never rendered.
-    $b1->assertSee('A &lt;b&gt;bold&lt;/b&gt; example.', false);
+    // Staff-entered HTML in the example travels raw in props and is
+    // escaped at render time by React (proven in the browser journey).
+    $b1->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('glossary.0.example_en', 'A <b>bold</b> example.'));
     $b1->assertDontSee('A2word');
 });

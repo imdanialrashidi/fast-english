@@ -3,6 +3,7 @@
 use App\Models\Lesson;
 use App\Models\Plan;
 use Database\Seeders\S5PaymentFixtureSeeder;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S8-1 (public pages): landing + trust pages render with lang fa, dir
@@ -22,29 +23,51 @@ test('landing renders fa rtl with metadata, sample link, plans, and no draft lab
         'is_public_sample' => true,
     ]);
 
+    // M0 port (ADR-0002): the same claims through the Inertia transport.
+    // Persian copy assertions moved to the rendered browser proof
+    // (tests/browser/m0-inertia.spec.ts) — HTTP sees the root template +
+    // the encoded page, not client-rendered text.
     $html = $this->get(route('landing'))->assertOk()->getContent();
 
     expect($html)->toContain('lang="fa"')
         ->and($html)->toContain('dir="rtl"')
         ->and($html)->toContain('rel="canonical"')
-        ->and($html)->toContain(route('download'))
-        ->and($html)->toContain(route('trust.faq'))
         // The landing is real copy now: no DRAFT badge (trust pages keep theirs).
-        ->and($html)->not->toContain('DRAFT')
-        ->and($html)->toContain(route('reader.show', $topic).'?level=A2')
-        // Hero preview stages the real sample body text.
-        ->and($html)->toContain('پیش‌نمایش روش کار با متن واقعی')
-        // Plan names from the database, never amounts (no price claims).
-        ->and($html)->toContain('یک‌ماهه آزمایشی (TEST)')
-        ->and($html)->not->toContain('100000')
-        ->and($html)->not->toContain('۱۰۰٬۰۰۰');
+        ->and($html)->not->toContain('DRAFT');
+
+    $this->get(route('landing'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Landing/Index')
+            // Deep link to the public sample experience + level.
+            ->where('sample.reader_url', route('sample', ['topic' => $topic->slug, 'level' => 'A2']))
+            ->where('sample.level', 'A2')
+            ->has('sampleSentences')
+            // Plan names from the database, never amounts (no price claims).
+            ->has('plans', fn (AssertableInertia $plans) => $plans
+                ->where('0.name_fa', 'یک‌ماهه آزمایشی (TEST)')
+                ->missing('0.price_toman')
+                ->missing('0.amount_toman')
+                ->etc())
+            ->where('salesOn', true)
+            ->where('urls.download', route('download'))
+            ->where('urls.faq', route('trust.faq')));
+
+    // Amounts never appear anywhere in the encoded page either.
+    expect($html)->not->toContain('100000')
+        ->and($html)->not->toContain('price_toman');
 });
 
 test('landing without a sample shows the neutral state, never a broken link', function () {
-    $html = $this->get(route('landing'))->assertOk()->getContent();
-
-    expect($html)->toContain('نمونه عمومی به‌زودی آماده می‌شود')
-        ->and($html)->not->toContain('?level=');
+    // M0 port: no sample resolves to a null prop (the neutral panel is
+    // rendered client-side and proven in tests/browser/m0-inertia.spec.ts).
+    $this->get(route('landing'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Landing/Index')
+            ->where('sample', null)
+            ->where('sampleSentences', [])
+            ->missing('sample.reader_url'));
 });
 
 test('landing with sales off shows the preparing state and no purchase cta', function () {
@@ -58,11 +81,20 @@ test('landing with sales off shows the preparing state and no purchase cta', fun
         'is_public_sample' => true,
     ]);
 
-    $html = $this->get(route('landing'))->assertOk()->getContent();
-
-    expect($html)->toContain('در دست آماده‌سازی')
-        ->and($html)->not->toContain('مشاهده پلن‌ها و خرید')
-        ->and($html)->not->toContain('یک‌ماهه آزمایشی (TEST)');
+    // M0 port: the switch travels as a prop; the preparing panel and the
+    // absent purchase CTA render client-side (no plan names rendered).
+    // The plan rows stay in props (snapshot source for later slices) but
+    // carry no amounts.
+    $this->get(route('landing'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Landing/Index')
+            ->where('salesOn', false)
+            ->where('sample.level', 'A2')
+            ->has('plans', fn (AssertableInertia $plans) => $plans
+                ->has('0.name_fa')
+                ->missing('0.price_toman')
+                ->etc()));
 });
 
 test('trust pages render fa rtl drafts with canonical tags', function () {

@@ -6,6 +6,7 @@ use App\Support\Sentences;
 use Database\Seeders\S1SampleSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // R3 sentence cues (READ-03, AC-24): real validated timing data drives the
@@ -83,17 +84,25 @@ test('the reader exposes cues only for the current audio revision', function () 
     // revision: the reader must ignore them.
     DB::table('lessons')->where('id', $lesson->id)->update(['audio_revision' => 2]);
 
-    $stale = $this->get(route('reader.show', ['topic' => 'r3-cues', 'level' => 'A2']))->assertOk();
-    $stale->assertDontSee('fe-sentence', false);
-    $stale->assertSee('همگام‌سازی جمله‌به‌جمله برای این نسخه هنوز آماده نیست');
+    // Paid-only slice: the flagged lesson resolves through the public
+    // sample experience; cue props travel with it unchanged.
+    $staleRedirect = $this->get(route('reader.show', ['topic' => 'r3-cues', 'level' => 'A2']))->assertRedirect();
+    $stale = $this->followRedirects($staleRedirect)->assertOk();
+    // M1 port: the fallback notice renders client-side (proven in the
+    // browser journey); HTTP asserts the empty cue set on decoded props.
+    $stale->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('Sample/Show')
+        ->where('cuesUsable', false)
+        ->where('cues', []));
 
     DB::table('lessons')->where('id', $lesson->id)->update(['audio_revision' => 1]);
 
-    $synced = $this->get(route('reader.show', ['topic' => 'r3-cues', 'level' => 'A2']))->assertOk();
-    $synced->assertSee('fe-sentence', false);
-    $synced->assertSee('data-start="0"', false);
-    $synced->assertSee('data-end="20"', false);
-    $synced->assertDontSee('همگام‌سازی جمله‌به‌جمله برای این نسخه هنوز آماده نیست');
+    $syncedRedirect = $this->get(route('reader.show', ['topic' => 'r3-cues', 'level' => 'A2']))->assertRedirect();
+    $synced = $this->followRedirects($syncedRedirect)->assertOk();
+    $synced->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('cuesUsable', true)
+        ->where('cues.0.start_seconds', 0)
+        ->where('cues.1.end_seconds', 20));
 });
 
 test('cue count must match the reader sentence split while cues are edited', function () {

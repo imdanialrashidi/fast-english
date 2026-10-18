@@ -168,9 +168,11 @@ class PwaController extends Controller
         }
 
         $wanted = [
-            'resources/css/app.css',
-            'resources/js/app.js',
-            'resources/js/reader-player.js',
+            // Inertia bundle only: the server stylesheet (app.css) stays
+            // a Vite input for staff-2FA/error pages but never enters
+            // the SW precache — Inertia users would cache dead CSS.
+            'resources/css/inertia.css',
+            'resources/js/app.tsx',
             'resources/js/pwa.js',
         ];
 

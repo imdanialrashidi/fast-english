@@ -20,17 +20,6 @@ final class SubscriptionAccess
 {
     public static function eligible(User $user, ?CarbonInterface $now = null): bool
     {
-        if ($user->disabled_at !== null) {
-            return false;
-        }
-
-        $subscription = $user->subscription;
-        if ($subscription === null || $subscription->revoked_at !== null) {
-            return false;
-        }
-
-        $moment = $now ?? now();
-
-        return $subscription->starts_at <= $moment && $moment < $subscription->expires_at;
+        return Entitlement::active($user, $now);
     }
 }

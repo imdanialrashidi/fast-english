@@ -26,12 +26,8 @@ final class PaymentReviewActions
     /** @param mixed $record */
     private static function snapshotLine($record): string
     {
-        if (is_object($record) && isset($record->amount_toman_snapshot)) {
-            $plan = (string) ($record->plan_name_snapshot ?? '');
-            $amount = Toman::format((int) $record->amount_toman_snapshot);
-            $days = (int) ($record->duration_days_snapshot ?? 0);
-
-            return "Snapshot: {$plan} — {$amount} — {$days} days. Confirm to apply.";
+        if ($record instanceof \App\Models\PaymentRequest) {
+            return $record->snapshotLine();
         }
 
         return 'Confirm to apply this subscription change.';
@@ -45,7 +41,7 @@ final class PaymentReviewActions
             ->requiresConfirmation()
             ->modalHeading('Confirm approval')
             ->modalDescription(fn ($record) => self::snapshotLine($record))
-            ->visible(fn ($record) => $record !== null && $record->status === 'pending')
+            ->visible(fn ($record) => $record !== null && $record->status === \App\Models\PaymentRequest::STATUS_PENDING)
             ->action(function (Action $action, $record) {
                 try {
                     $outcome = ApprovePayment::approve($record->id, auth()->user());
@@ -79,7 +75,7 @@ final class PaymentReviewActions
                     ->label('Internal note (staff only)')
                     ->rows(2),
             ])
-            ->visible(fn ($record) => $record !== null && $record->status === 'pending')
+            ->visible(fn ($record) => $record !== null && $record->status === \App\Models\PaymentRequest::STATUS_PENDING)
             ->action(function (Action $action, $record, array $data) {
                 try {
                     ApprovePayment::reject($record->id, auth()->user(), (string) ($data['public_reason'] ?? ''), isset($data['internal_note']) ? (string) $data['internal_note'] : null);
@@ -106,7 +102,7 @@ final class PaymentReviewActions
                     ->required()
                     ->rows(2),
             ])
-            ->visible(fn ($record) => $record !== null && $record->status === 'pending')
+            ->visible(fn ($record) => $record !== null && $record->status === \App\Models\PaymentRequest::STATUS_PENDING)
             ->action(function (Action $action, $record, array $data) {
                 try {
                     ApprovePayment::cancel($record->id, auth()->user(), (string) ($data['reason'] ?? ''));

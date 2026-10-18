@@ -42,7 +42,7 @@ class StaffTwoFactorController extends Controller
                 'confirmed' => $user->two_factor_confirmed_at !== null,
                 'provisioning' => $provisioning,
             ])
-            ->withHeaders($this->noStore());
+            ->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function start(Request $request)
@@ -89,7 +89,7 @@ class StaffTwoFactorController extends Controller
         // The ONLY response that ever carries the plain codes.
         return response()
             ->view('staff-two-factor.recovery', ['codes' => $codes])
-            ->withHeaders($this->noStore());
+            ->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function challenge(Request $request)
@@ -108,7 +108,7 @@ class StaffTwoFactorController extends Controller
 
         return response()
             ->view('staff-two-factor.challenge')
-            ->withHeaders($this->noStore());
+            ->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function verifyChallenge(Request $request)
@@ -189,9 +189,4 @@ class StaffTwoFactorController extends Controller
         $request->session()->put('staff_last_activity', time());
     }
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
-    }
 }

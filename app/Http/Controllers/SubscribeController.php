@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Support\Toman;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * S5 subscribe page (scope §6, §17): the student plan list.
@@ -36,14 +39,18 @@ class SubscribeController extends Controller
                 ->get()
             : collect();
 
-        return response()
-            ->view('subscribe.index', ['plans' => $plans, 'salesOn' => $salesOn])
-            ->withHeaders($this->noStore());
-    }
-
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
+        // Public-slice Inertia transport (ADR-0002): the same plan list
+        // with the same sales switch. Plan choice posts the plan ID only;
+        // snapshot/ownership rules in PaymentRequestController are
+        // unchanged.
+        return Inertia::render('Subscribe/Index', [
+            'plans' => $plans->map(fn (Plan $plan) => [
+                'id' => $plan->id,
+                'name_fa' => (string) $plan->name_fa,
+                'price_label' => Toman::format((int) $plan->price_toman),
+                'duration_days' => (int) $plan->duration_days,
+            ])->all(),
+            'salesOn' => $salesOn,
+        ]);
     }
 }

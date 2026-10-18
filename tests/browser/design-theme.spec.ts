@@ -1,47 +1,41 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
-// Design slice: Blue/Teal application theme + icon system + studio player.
-// Asserts theme behavior (system default, persistence, OS-following,
-// pre-paint application, Livewire-navigation consistency) and captures the
-// inspected screenshot set. Screenshots land in test-results/browser-shots
-// (gitignored artifacts); each is opened and inspected, not counted.
+// Design slice: Premium editorial permanent-light theme (ADR-0002 +
+// docs/DESIGN.md canonical palette) + studio player + keyboard/focus/
+// reduced-motion health. Dark/system/sepia theming was removed by owner
+// decision: there is no data-theme switching, no fe-theme storage, and
+// no appearance choice anywhere. Screenshots land in
+// test-results/browser-shots (gitignored artifacts); each is opened and
+// inspected, not counted.
 
 const READER = '/app/topics/city-park?level=A2';
 const FRESH = () => ({ email: `design-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`, password: 'password-Test1' });
 
-// Seed the theme once per context: later navigations (incl. reloads) must
-// keep the user's own choice instead of re-seeding it.
-async function seedThemeOnce(page, theme: 'light' | 'dark' | 'system') {
-  await page.addInitScript((wanted: string) => {
-    if (!localStorage.getItem('fe-theme-seeded')) {
-      if (wanted === 'system') localStorage.removeItem('fe-theme');
-      else localStorage.setItem('fe-theme', wanted);
-      localStorage.setItem('fe-theme-seeded', '1');
-    }
-  }, theme);
-}
+// Permanent light canvas (docs/DESIGN.md --color-canvas #F7F4EE).
+const CANVAS_RGB = 'rgb(247, 244, 238)';
 
-async function registerAndLogin(page, user: { email: string; password: string }) {
-  await page.goto('/register');
-  await page.getByLabel('نام').fill('Design Proof');
-  await page.getByLabel('ایمیل', { exact: true }).fill(user.email);
-  await page.getByLabel('رمز عبور', { exact: true }).fill(user.password);
-  await page.getByLabel('تکرار رمز عبور').fill(user.password);
-  await page.getByRole('button', { name: 'ساخت حساب' }).click();
+// Paid-only slice: learner captures need the subscribed lane account
+// (fresh registrations land on the locked state by owner requirement).
+async function loginAsSub(page) {
+  await page.goto('/login');
+  await page.getByLabel('ایمیل', { exact: true }).fill('browser-sub@example.com');
+  await page.getByLabel('رمز عبور', { exact: true }).fill('password');
+  await page.getByRole('button', { name: 'ورود' }).click();
   await page.waitForURL('**/account**');
 }
 
 async function noOverflow(page) {
   const m = await page.evaluate(() => ({
-    scroll: document.scrollingElement?.scrollWidth ?? 0,
+    scroll: document.documentElement?.scrollWidth ?? 0,
     inner: window.innerWidth,
   }));
   expect(m.scroll).toBeLessThanOrEqual(m.inner);
 }
 
 async function expectTargets(page) {
-  // Radio/checkbox/range inputs are 24px by design; their label row
-  // carries the 44px target and is asserted separately below.
+  // Radio/checkbox/range inputs are small by design; their label rows
+  // carry the 44px target.
   const small = await page.evaluate(() => {
     const els = Array.from(document.querySelectorAll('a, button, input'));
     return els
@@ -54,148 +48,126 @@ async function expectTargets(page) {
       .filter((m) => m.w < 44 || m.h < 44);
   });
   expect(small).toEqual([]);
-  for (const row of await page.locator('.fe-appearance-option').all()) {
-    const box = await row.boundingBox();
-    if (!box) continue;
-    expect(box.height).toBeGreaterThanOrEqual(44);
-  }
 }
 
-test('theme: system default follows OS, explicit choice persists, no flash', async ({ browser }) => {
-  // Fresh context, dark OS, no stored choice -> dark without a light flash.
+async function expectPermanentLight(page) {
+  // No theme switching code anywhere: no data-theme attribute, no
+  // fe-theme storage, no prefers-color-scheme script.
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', /./);
+  const stored = await page.evaluate(() => localStorage.getItem('fe-theme'));
+  expect(stored).toBeNull();
+  const canvas = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  expect(canvas).toBe(CANVAS_RGB);
+  const html = await page.content();
+  expect(html).not.toContain('fe-theme');
+  expect(html).not.toContain('prefers-color-scheme');
+}
+
+test('theme: permanent light under any OS scheme, no stored choice, no flash', async ({ browser }) => {
+  // Dark OS, fresh context, no stored choice -> the same warm canvas.
   const darkCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
   const darkPage = await darkCtx.newPage();
   await darkPage.goto('/login');
-  await expect(darkPage.locator('html')).toHaveAttribute('data-theme', 'dark');
-  const canvas = await darkPage.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(canvas).toBe('rgb(14, 22, 38)');
+  await expectPermanentLight(darkPage);
   await darkCtx.close();
 
-  // Stored light wins over a dark OS, and survives a reload + navigation.
+  // The choice-free theme survives reload + navigation, and an OS change
+  // never flips it.
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
   const page = await ctx.newPage();
-  await seedThemeOnce(page, 'light');
-  await page.goto('/login');
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-
-  // Settings radios switch + persist; System returns to OS-following.
-  await registerAndLogin(page, FRESH());
+  await loginAsSub(page);
   await page.goto('/app/account/settings');
-  await page.getByRole('radio', { name: /تیره/ }).check();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.getByText('حالت تیره فعال شد.')).toBeVisible();
+  await expectPermanentLight(page);
+  // No appearance radios anywhere on the settings page.
+  await expect(page.getByRole('radio')).toHaveCount(0);
+  await expect(page.locator('.fe-appearance-option')).toHaveCount(0);
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expectPermanentLight(page);
   await page.goto('/app/today');
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.goto('/app/account/settings');
-  await page.getByRole('radio', { name: /سیستم/ }).check();
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark'); // dark OS
-  // OS change while on System flips the theme live.
+  await expectPermanentLight(page);
   await page.emulateMedia({ colorScheme: 'light' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expectPermanentLight(page);
   await ctx.close();
 
-  // Light OS + system -> light.
+  // Light OS renders identically.
   const lightCtx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'light' });
   const lightPage = await lightCtx.newPage();
   await lightPage.goto('/login');
-  await expect(lightPage.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expectPermanentLight(lightPage);
   await lightCtx.close();
 });
 
-test('capture: auth at 390 in both themes', async ({ browser }) => {
-  for (const theme of ['light', 'dark'] as const) {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: theme === 'dark' ? 'dark' : 'light' });
-    const page = await ctx.newPage();
-    await seedThemeOnce(page, theme);
-    await page.goto('/login');
-    await expect(page.getByRole('heading', { name: 'ورود به حساب' })).toBeVisible();
-    await noOverflow(page);
-    await expectTargets(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-login-${theme}-390.png` });
-    await page.goto('/register');
-    await expect(page.getByRole('heading', { name: 'ساخت حساب' })).toBeVisible();
-    await noOverflow(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-register-${theme}-390.png` });
-    await ctx.close();
-  }
-});
-
-test('capture: library, reader, today, words, settings in both themes', async ({ browser }) => {
-  for (const theme of ['light', 'dark'] as const) {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: theme === 'dark' ? 'dark' : 'light' });
-    const page = await ctx.newPage();
-    await seedThemeOnce(page, theme);
-    // Fresh account per context: avoids the §16 login throttle entirely.
-    await registerAndLogin(page, FRESH());
-
-    await page.goto('/app');
-    await expect(page.getByRole('heading', { name: 'کشف مطالب' })).toBeVisible();
-    await noOverflow(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-library-${theme}-390.png` });
-
-    await page.goto(READER);
-    await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
-    await noOverflow(page);
-    await expectTargets(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-reader-${theme}-390.png` });
-
-    await page.goto('/app/today');
-    await noOverflow(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-today-${theme}-390.png` });
-
-    await page.goto('/app/words');
-    await noOverflow(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-words-${theme}-390.png` });
-
-    await page.goto('/app/account/settings');
-    await noOverflow(page);
-    await expectTargets(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-settings-${theme}-390.png` });
-
-    await page.goto('/app/account');
-    await noOverflow(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-account-${theme}-390.png` });
-
-    await ctx.close();
-  }
-});
-
-test('capture: player playing state with progress fill (light + dark)', async ({ browser }) => {
-  for (const theme of ['light', 'dark'] as const) {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: theme === 'dark' ? 'dark' : 'light' });
-    const page = await ctx.newPage();
-    await seedThemeOnce(page, theme);
-    await registerAndLogin(page, FRESH());
-    await page.goto(READER);
-    await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
-    // Cycle the speed once (1 -> 1.25) to prove the control, then play.
-    await page.locator('#player-speed').click();
-    await expect(page.locator('#player-speed-label')).toHaveText('1.25×');
-    await page.locator('#player-play').click();
-    await expect.poll(() => page.evaluate(() => !document.querySelector<HTMLAudioElement>('#lesson-audio')?.paused)).toBe(true);
-    await page.waitForTimeout(2500);
-    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
-    // Open the console so the seek slider + transport are proven visible.
-    await page.locator('#player-toggle').click();
-    await expect(page.locator('#player-seek')).toBeVisible();
-    const fill = await page.locator('#player-seek').evaluate((el) => el.style.getPropertyValue('--fe-seek-pct'));
-    expect(parseFloat(fill)).toBeGreaterThan(0);
-    await noOverflow(page);
-    await page.screenshot({ path: `test-results/browser-shots/design-playing-${theme}-390.png` });
-    await ctx.close();
-  }
-});
-
-test('capture: library cards scrolled + landing regression', async ({ browser }) => {
+test('capture: auth at 390 in the permanent light theme', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'light' });
   const page = await ctx.newPage();
-  await registerAndLogin(page, FRESH());
+  await page.goto('/login');
+  await expect(page.getByRole('heading', { name: 'ورود به حساب' })).toBeVisible();
+  await noOverflow(page);
+  await expectTargets(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-login-light-390.png' });
+  await page.goto('/register');
+  await expect(page.getByRole('heading', { name: 'ساخت حساب' })).toBeVisible();
+  await noOverflow(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-register-light-390.png' });
+  await ctx.close();
+});
+
+test('capture: library, reader, today, words, settings in the permanent light theme', async ({ sub: page }) => {
+  // Paid-only slice: captures drive the shared subscribed page (one lane
+  // login per worker, honoring the §16 throttle).
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto('/app');
+  await expect(page.getByRole('heading', { name: 'کشف مطالب' })).toBeVisible();
+  await noOverflow(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-library-light-390.png' });
+
+  await page.goto(READER);
+  await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
+  await noOverflow(page);
+  await expectTargets(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-reader-light-390.png' });
+
+  await page.goto('/app/today');
+  await noOverflow(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-today-light-390.png' });
+
+  await page.goto('/app/words');
+  await noOverflow(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-words-light-390.png' });
+
+  await page.goto('/app/account/settings');
+  await noOverflow(page);
+  await expectTargets(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-settings-light-390.png' });
+
+  await page.goto('/app/account');
+  await noOverflow(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-account-light-390.png' });
+});
+
+test('capture: player playing state with progress fill', async ({ sub: page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(READER);
+  await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
+  // Cycle the speed once (1 -> 1.25) to prove the control, then play.
+  await page.locator('#player-speed').click();
+  await expect(page.locator('#player-speed-label')).toHaveText('1.25×');
+  await page.locator('#player-play').click();
+  await expect.poll(() => page.evaluate(() => !document.querySelector<HTMLAudioElement>('#lesson-audio')?.paused)).toBe(true);
+  await page.waitForTimeout(2500);
+  await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
+  // Open the console so the seek slider + transport are proven visible.
+  await page.locator('#player-toggle').click();
+  await expect(page.locator('#player-seek')).toBeVisible();
+  const fill = await page.locator('#player-seek').evaluate((el) => el.style.getPropertyValue('--fe-seek-pct'));
+  expect(parseFloat(fill)).toBeGreaterThan(0);
+  await noOverflow(page);
+  await page.screenshot({ path: 'test-results/browser-shots/design-playing-light-390.png' });
+});
+
+test('capture: library cards scrolled + landing regression', async ({ browser, sub: page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/app');
   const firstCard = page.locator('.fe-card').first();
   await expect(firstCard.locator('.fe-chip').first()).toBeVisible();
@@ -203,7 +175,6 @@ test('capture: library cards scrolled + landing regression', async ({ browser })
   await page.evaluate(() => window.scrollBy(0, -8));
   await noOverflow(page);
   await page.screenshot({ path: 'test-results/browser-shots/design-library-cards-390.png' });
-  await ctx.close();
 
   // Landing shares tokens but keeps its own composition (out of scope):
   // it must still render without overflow or missing headings.
@@ -245,17 +216,11 @@ test('keyboard, focus, reduced-motion, console health', async ({ browser }) => {
   await expect(page.getByRole('button', { name: 'پنهان کردن رمز عبور' })).toBeFocused();
 
   // Reduced motion: state transitions collapse to none.
-  const dur = await page.evaluate(() => getComputedStyle(document.querySelector('.fe-btn')!).transitionDuration);
+  const dur = await page.locator('form button[type="submit"]').first().evaluate((el) => getComputedStyle(el).transitionDuration);
   expect(dur === '0s' || dur === '0s, 0s' || dur === '').toBe(true);
 
-  // Reader by keyboard: first sentence seeks the audio.
-  await page.goto('/register');
-  await page.getByLabel('نام').fill('Design Keys');
-  await page.getByLabel('ایمیل', { exact: true }).fill(user.email);
-  await page.getByLabel('رمز عبور', { exact: true }).fill(user.password);
-  await page.getByLabel('تکرار رمز عبور').fill(user.password);
-  await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
+  // Reader by keyboard: first sentence seeks the audio (same subscribed
+  // session as above — no second login).
   await page.goto(READER);
   await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
   const first = page.locator('.fe-sentence').first();
@@ -271,11 +236,9 @@ test('keyboard, focus, reduced-motion, console health', async ({ browser }) => {
   await ctx.close();
 });
 
-test('capture: responsive sweep of the reader + library', async ({ browser }) => {
+test('capture: responsive sweep of the reader + library', async ({ sub: page }) => {
   for (const width of [360, 390, 430, 768, 1024, 1360]) {
-    const ctx = await browser.newContext({ viewport: { width, height: 844 }, colorScheme: 'light' });
-    const page = await ctx.newPage();
-    await registerAndLogin(page, FRESH());
+    await page.setViewportSize({ width, height: 844 });
     await page.goto(READER);
     await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
     await noOverflow(page);
@@ -283,6 +246,5 @@ test('capture: responsive sweep of the reader + library', async ({ browser }) =>
     await page.goto('/app');
     await noOverflow(page);
     await page.screenshot({ path: `test-results/browser-shots/design-library-light-${width}.png` });
-    await ctx.close();
   }
 });

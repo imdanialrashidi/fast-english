@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Illuminate\Http\Request;
+use Inertia\Middleware;
+
+class HandleInertiaRequests extends Middleware
+{
+    /**
+     * The root template that's loaded on the first page visit.
+     *
+     * @see https://inertiajs.com/server-side-setup#root-template
+     *
+     * @var string
+     */
+    protected $rootView = 'app';
+
+    /**
+     * Determines the current asset version.
+     *
+     * @see https://inertiajs.com/asset-versioning
+     */
+    public function version(Request $request): ?string
+    {
+        return parent::version($request);
+    }
+
+    /**
+     * Define the props that are shared by default.
+     *
+     * @see https://inertiajs.com/shared-data
+     *
+     * @return array<string, mixed>
+     */
+    public function share(Request $request): array
+    {
+        return [
+            ...parent::share($request),
+            // M0 foundation: the only props every Inertia page may assume.
+            // The authenticated user is an allowlist (id/name/email) — never
+            // password hashes, tokens, or internal flags. Flash messages are
+            // set by controllers with ->with('success'|'error', ...).
+            // Session access is guarded: the error-page renderer resolves
+            // this middleware for sessionless paths too (missing favicons,
+            // unsigned /storage probes), where user()/session() must stay null.
+            'auth' => [
+                'user' => $request->hasSession() && $request->user()
+                    ? $request->user()->only(['id', 'name', 'email'])
+                    : null,
+            ],
+            'flash' => [
+                'success' => fn () => ($request->hasSession() ? $request->session()->get('success') : null),
+                'error' => fn () => ($request->hasSession() ? $request->session()->get('error') : null),
+            ],
+            // Public slice (auth reset + settings + placement): Fortify and
+            // the settings/placement controllers flash neutral `status`
+            // strings (never secrets). Pages read this prop instead of
+            // the Blade session helper; null when no status was flashed.
+            'status' => fn () => ($request->hasSession() ? $request->session()->get('status') : null),
+        ];
+    }
+}

@@ -1,16 +1,21 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
 // S3-4 browser proof: filter/search on the real library (fe_browser seed:
 // S1 + S3 fixtures + S4 labelled pagination fixtures for the pre-slice
 // item 4). State lives in the URL query string, so reload and
-// back/forward preserve it. Anonymous — no login needed.
+// back/forward preserve it.
 //
+
+// Paid-only slice: the library needs an active subscription, so every leg
+// signs in with the subscribed lane account first.
+
 // S4 pre-slice adaptation: the lane now holds >=13 visible topics, so the
 // unfiltered first page shows 12 cards (pagination) instead of 4. Filter
 // expectations that are unaffected by the A1-only S4 fixtures (category,
 // title, B1, empty C2) keep their counts; the A1 and reset legs expect 12.
 
-test('S3-4 library shows one card per visible topic and hides the rest', async ({ page }) => {
+test('S3-4 library shows one card per visible topic and hides the rest', async ({ sub: page }) => {
   await page.goto('/app');
 
   const cards = page.locator('article.fe-card');
@@ -27,7 +32,7 @@ test('S3-4 library shows one card per visible topic and hides the rest', async (
   }
 });
 
-test('S3-4 level and category filters plus title search narrow correctly', async ({ page }) => {
+test('S3-4 level and category filters plus title search narrow correctly', async ({ sub: page }) => {
   // A1 now includes the 12 labelled S4 fixtures + Morning Market = 13
   // total, 12 on the first page.
   await page.goto('/app?level=A1');
@@ -43,7 +48,7 @@ test('S3-4 level and category filters plus title search narrow correctly', async
   await expect(page.getByRole('heading', { name: 'Morning Market' })).toBeVisible();
 });
 
-test('S3-4 empty result explains itself and the reset restores the list', async ({ page }) => {
+test('S3-4 empty result explains itself and the reset restores the list', async ({ sub: page }) => {
   await page.goto('/app?level=C2');
 
   await expect(page.getByText('مطلبی با این مشخصات پیدا نشد')).toBeVisible();
@@ -54,7 +59,7 @@ test('S3-4 empty result explains itself and the reset restores the list', async 
   await expect(page.locator('article.fe-card')).toHaveCount(12);
 });
 
-test('S3-4 filter state survives UI change, reload, and back navigation', async ({ page }) => {
+test('S3-4 filter state survives UI change, reload, and back navigation', async ({ sub: page }) => {
   await page.goto('/app');
 
   // Premium pill filters are links carrying the same GET params: clicking

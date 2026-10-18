@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
+use App\Support\Toman;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 /**
  * S5 payment requests (scope §7.3, §10.1–10.2): snapshot before transfer.
@@ -55,7 +57,7 @@ class PaymentRequestController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'فروش در حال حاضر فعال نیست.',
-                ], 422)->withHeaders($this->noStore());
+                ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
             }
 
             return redirect()->route('subscribe.index')->withErrors([
@@ -71,7 +73,7 @@ class PaymentRequestController extends Controller
                 return response()->json([
                     'message' => 'درخواست شامل فیلد غیرمجاز سرور است.',
                     'field' => $key,
-                ], 422)->withHeaders($this->noStore());
+                ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
             }
         }
 
@@ -91,7 +93,7 @@ class PaymentRequestController extends Controller
         if ($todayCount >= 10) {
             return response()->json([
                 'message' => 'امروز درخواست بیش از حد ثبت شده است. لطفاً فردا تلاش کنید.',
-            ], 429)->withHeaders($this->noStore());
+            ], 429)->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         // Fast path: an existing open request is returned, never doubled.
@@ -106,13 +108,13 @@ class PaymentRequestController extends Controller
         $plan = Plan::find($data['plan_id']);
         if ($plan === null || ! $plan->is_active) {
             return response()->json(['message' => 'پلن انتخاب‌شده در دسترس نیست.'], 422)
-                ->withHeaders($this->noStore());
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         $destination = PaymentDestination::where('is_active', true)->first();
         if ($destination === null) {
             return response()->json(['message' => 'مقصد پرداخت در دسترس نیست.'], 422)
-                ->withHeaders($this->noStore());
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         try {
@@ -178,10 +180,29 @@ class PaymentRequestController extends Controller
         // Reload-safe: a plain GET with the snapshot, the public reason,
         // and the explicit next step per state. Staff-only fields
         // (internal_note, reviewed_by, receipt_path, bank_reference,
-        // sender_last4) are never passed to this view.
-        return response()
-            ->view('payments.show', ['paymentRequest' => $paymentRequest->fresh()])
-            ->withHeaders($this->noStore());
+        // sender_last4) are never passed to this page. Amounts render
+        // server-formatted (Toman) so no raw integer/rial ambiguity
+        // reaches the client. Shape owned by PaymentRequest::snapshot().
+        $fresh = $paymentRequest->fresh();
+        $snapshot = $fresh->snapshot();
+
+        return Inertia::render('Payments/Show', [
+            'request' => [
+                'id' => $fresh->id,
+                'status' => (string) $fresh->status,
+                'plan_name' => $snapshot['plan_name'],
+                'amount_label' => $snapshot['amount_label'],
+                'duration_days' => $snapshot['duration_days'],
+                'card_number' => $snapshot['card_number'],
+                'holder_name' => $snapshot['holder_name'],
+                'bank_name' => $snapshot['bank_name'],
+                'public_reason' => $fresh->public_reason,
+                'has_receipt' => $fresh->receipt_path !== null && $fresh->receipt_path !== '',
+                'receipt_url' => $fresh->receipt_path !== null && $fresh->receipt_path !== ''
+                    ? route('payments.receipt.show', $fresh)
+                    : null,
+            ],
+        ]);
     }
 
     public function cancel(Request $request, PaymentRequest $paymentRequest)
@@ -214,7 +235,7 @@ class PaymentRequestController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['status' => PaymentRequest::STATUS_CANCELLED])
-                ->withHeaders($this->noStore());
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()
@@ -228,17 +249,12 @@ class PaymentRequestController extends Controller
             return response()->json([
                 'id' => $open->id,
                 'status' => $open->status,
-            ])->withHeaders($this->noStore());
+            ])->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()->route('payments.show', $open);
     }
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
-    }
 
     private function isUniqueViolation(QueryException $e): bool
     {

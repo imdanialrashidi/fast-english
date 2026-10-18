@@ -37,7 +37,7 @@ final class DailyPlan
             ? (int) $user->daily_goal_minutes
             : 10;
 
-        $eligible = SubscriptionAccess::eligible($user);
+        $eligible = Entitlement::eligible($user);
         $today = now()->startOfDay();
 
         $continueProgress = LessonProgress::where('user_id', $user->id)
@@ -178,7 +178,7 @@ final class DailyPlan
     /** @return list<Topic> */
     public static function recommendations(User $user, int $limit = 3): array
     {
-        $eligible = SubscriptionAccess::eligible($user);
+        $eligible = Entitlement::eligible($user);
 
         return Topic::query()
             ->where('status', 'published')

@@ -1,8 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
 // S4 pre-slice 3+4: fixed 16/9 card container re-measured at 320/360/390,
 // plus pagination rendering with >=13 labelled topics (S4PaginationSeeder).
 // Fixture labels are s4-paginate-NN; S1/S3 fixtures supply the rest.
+
 
 async function mediaRatio(page): Promise<number> {
   const box = await page.locator('.fe-card-media').first().boundingBox();
@@ -11,7 +13,7 @@ async function mediaRatio(page): Promise<number> {
 }
 
 for (const width of [320, 360, 390]) {
-  test(`S4 pre-slice cover ratio at ${width}px stays 16/9`, async ({ page }) => {
+  test(`S4 pre-slice cover ratio at ${width}px stays 16/9`, async ({ sub: page }) => {
     await page.setViewportSize({ width, height: 740 });
     await page.goto('/app');
     await page.locator('.fe-card-media').first().waitFor();
@@ -30,7 +32,7 @@ for (const width of [320, 360, 390]) {
   });
 }
 
-test('S4 pre-slice cover ratio matches across widths', async ({ page }) => {
+test('S4 pre-slice cover ratio matches across widths', async ({ sub: page }) => {
   const ratios: number[] = [];
   for (const width of [320, 360, 390]) {
     await page.setViewportSize({ width, height: 740 });
@@ -42,7 +44,7 @@ test('S4 pre-slice cover ratio matches across widths', async ({ page }) => {
   expect(spread).toBeLessThan(0.05);
 });
 
-test('S4 pre-slice pagination renders and works at 360px with 44px targets', async ({ page }) => {
+test('S4 pre-slice pagination renders and works at 360px with 44px targets', async ({ sub: page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto('/app');
   await page.locator('article.fe-card').first().waitFor();

@@ -14,6 +14,8 @@ use App\Support\BrowserDatabaseGuard;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Inertia\ExceptionResponse;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,22 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PaymentRequest::class, PaymentRequestPolicy::class);
         Gate::policy(PlacementAttempt::class, PlacementAttemptPolicy::class);
         Gate::policy(VocabularyWord::class, VocabularyWordPolicy::class);
+
+        // M0 Inertia foundation (ADR-0002): production error handling per
+        // https://inertiajs.com/error-handling. Initial-visit and XHR
+        // failures with these statuses render the React ErrorPage with the
+        // shared props instead of the dev modal; anything else falls
+        // through to Laravel's default rendering. Existing Blade error
+        // views keep serving non-Inertia responses.
+        Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
+            if (in_array($response->statusCode(), [403, 404, 500, 503], true)) {
+                return $response->render('ErrorPage', [
+                    'status' => $response->statusCode(),
+                ])->withSharedData();
+            }
+
+            return null;
+        });
 
         // S2: destructive console commands must never wipe the browser-lane
         // database. Seeding uses plain `migrate --seeder=...`, which is

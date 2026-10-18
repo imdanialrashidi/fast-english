@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
 // S4-6 persistent player + logout in Chromium: audio keeps playing through
 // an in-app navigation (reader → library → back) with no duplicate
@@ -9,7 +10,7 @@ const LOGIN = '/login';
 const READER_A2 = '/app/topics/city-park?level=A2';
 const LIBRARY = '/app';
 const ACCOUNT = '/account';
-const F = { email: 'browser-f@example.com', password: 'password' };
+const SUB = { email: 'browser-sub@example.com', password: 'password' };
 const G = { email: 'browser-g@example.com', password: 'password' };
 
 async function login(page, user: { email: string; password: string }) {
@@ -24,8 +25,7 @@ async function listenerCount(page): Promise<number> {
   return page.evaluate(() => (window as unknown as { __fePlayerBound?: boolean }).__fePlayerBound ? 1 : 0);
 }
 
-test('S4-6 audio survives reader to library and back with one listener set', async ({ page }) => {
-  await login(page, F);
+test('S4-6 audio survives reader to library and back with one listener set', async ({ sub: page }) => {
   await page.goto(READER_A2);
   await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration));
 
@@ -65,7 +65,7 @@ test('S4-6 audio survives reader to library and back with one listener set', asy
 });
 
 test('S4-6 logout stops the audio, clears its source, and isolates accounts', async ({ page }) => {
-  await login(page, F);
+  await login(page, SUB);
   await page.goto(READER_A2);
   await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration));
   await page.locator('#player-play').click();
@@ -90,19 +90,20 @@ test('S4-6 logout stops the audio, clears its source, and isolates accounts', as
 
   // Real logout through the account form (full navigation, no wire:navigate).
   await page.goto(ACCOUNT);
-  await expect(page.locator('body')).toContainText(F.email);
+  await expect(page.locator('body')).toContainText(SUB.email);
   await page.getByRole('button', { name: 'خروج از حساب' }).click();
   await page.waitForURL(/\/(login|$)/);
   await expect(page.locator('#lesson-audio')).toHaveCount(0);
-  await expect(page.locator('body')).not.toContainText(F.email);
+  await expect(page.locator('body')).not.toContainText(SUB.email);
 
-  // Second account sees none of the first account's state.
+  // Second account (no subscription) sees none of the first
+  // account's state: a non-sample learner URL refuses with the locked
+  // state (sample URLs redirect to the public experience instead).
   await login(page, G);
-  await page.goto(READER_A2);
-  await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration));
-  await expect(page.locator('#lesson-audio')).toHaveJSProperty('paused', true);
+  await page.goto('/app/topics/night-trains?level=B1');
+  await expect(page.getByRole('heading', { name: 'برای ادامه، اشتراک فعال لازم است' })).toBeVisible();
   await expect(page.getByText('ادامه از موقعیت ذخیره‌شده')).toHaveCount(0);
 
   await page.goto('/app/saved');
-  await expect(page.getByText('هنوز مطلبی ذخیره نکرده‌اید')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'برای ادامه، اشتراک فعال لازم است' })).toBeVisible();
 });

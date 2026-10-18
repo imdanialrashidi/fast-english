@@ -7,6 +7,7 @@ use App\Models\VocabularyWord;
 use App\Support\SpacedRepetition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 /**
  * R4 vocabulary notebook (VOCAB-01): save lesson words, review with
@@ -58,16 +59,36 @@ class VocabularyController extends Controller
             ->where('status', 'known')
             ->count();
 
-        return response()
-            ->view('words.index', [
-                'words' => $words,
-                'tab' => $tab,
-                'activeQuery' => $query,
-                'dueCount' => $dueCount,
-                'learningCount' => $learningCount,
-                'knownCount' => $knownCount,
-            ])
-            ->withHeaders($this->noStore());
+        // Public-slice Inertia transport (ADR-0002): the same owner-
+        // scoped query, tabs, counts, and pagination. Props carry the
+        // student's own words only (policy-checked); mutations stay on
+        // the existing JSON endpoints with identical shapes.
+        return Inertia::render('Words/Index', [
+            'words' => $words->getCollection()->map(fn (VocabularyWord $entry) => [
+                'id' => $entry->id,
+                'word' => (string) $entry->word,
+                'meaning_fa' => $entry->meaning_fa,
+                'example_en' => $entry->example_en,
+                'status' => (string) $entry->status,
+                'is_due' => (bool) $entry->is_due,
+                'due_at' => $entry->due_at?->toIso8601String(),
+                'lesson_level' => $entry->lesson?->level,
+                'reader_url' => $entry->lesson !== null && $entry->topic !== null
+                    ? route('reader.show', ['topic' => $entry->topic->slug, 'level' => $entry->lesson->level])
+                    : null,
+            ])->all(),
+            'pagination' => [
+                'current_page' => $words->currentPage(),
+                'last_page' => $words->lastPage(),
+                'total' => $words->total(),
+                'per_page' => $words->perPage(),
+            ],
+            'tab' => $tab,
+            'activeQuery' => $query,
+            'dueCount' => (int) $dueCount,
+            'learningCount' => (int) $learningCount,
+            'knownCount' => (int) $knownCount,
+        ]);
     }
 
     public function store(Request $request)
@@ -84,12 +105,6 @@ class VocabularyController extends Controller
             'lesson_id' => ['nullable', 'integer', 'exists:lessons,id'],
         ]);
 
-        $word = trim($data['word']);
-        if ($word === '') {
-            return response()->json(['message' => 'واژه نمی‌تواند خالی باشد.'], 422)
-                ->withHeaders($this->noStore());
-        }
-
         $lesson = null;
         if (! empty($data['lesson_id'])) {
             $lesson = Lesson::with('topic')->findOrFail($data['lesson_id']);
@@ -101,57 +116,34 @@ class VocabularyController extends Controller
             }
         }
 
-        $meaning = isset($data['meaning_fa']) ? trim((string) $data['meaning_fa']) : '';
-        $example = isset($data['example_en']) ? trim((string) $data['example_en']) : '';
-
-        // Reuse the lesson glossary when a matching entry exists.
-        if ($lesson !== null && is_array($lesson->glossary)) {
-            foreach ($lesson->glossary as $entry) {
-                if (mb_strtolower(trim((string) ($entry['word'] ?? ''))) === mb_strtolower($word)) {
-                    if ($meaning === '') {
-                        $meaning = trim((string) ($entry['meaning_fa'] ?? ''));
-                    }
-                    if ($example === '' && ! empty($entry['example_en'])) {
-                        $example = trim((string) $entry['example_en']);
-                    }
-                    break;
-                }
-            }
+        try {
+            $result = \App\Support\Vocabulary::save(
+                $user,
+                (string) $data['word'],
+                isset($data['meaning_fa']) ? (string) $data['meaning_fa'] : null,
+                isset($data['example_en']) ? (string) $data['example_en'] : null,
+                $lesson,
+                now(),
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => collect($e->errors())->flatten()->first() ?? 'خطا.'], 422)
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
-        $existing = VocabularyWord::where('user_id', $user->id)
-            ->where('word_key', mb_strtolower($word))
-            ->first();
-        if ($existing !== null) {
+        if (! $result['created']) {
             return response()->json([
                 'message' => 'این واژه قبلاً در دفترچه شما ذخیره شده است.',
-                'id' => $existing->id,
-            ], 422)->withHeaders($this->noStore());
+                'id' => $result['existingId'],
+            ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
-        $initial = SpacedRepetition::initial(now());
-
-        $entry = VocabularyWord::create([
-            'user_id' => $user->id,
-            'word' => mb_substr($word, 0, 120),
-            'meaning_fa' => $meaning !== '' ? mb_substr($meaning, 0, 500) : null,
-            'example_en' => $example !== '' ? mb_substr($example, 0, 500) : null,
-            'lesson_id' => $lesson?->id,
-            'topic_id' => $lesson?->topic_id,
-            'status' => 'learning',
-            'ease_factor' => $initial['ease_factor'],
-            'interval_days' => $initial['interval_days'],
-            'repetitions' => $initial['repetitions'],
-            'lapses' => $initial['lapses'],
-            'due_at' => $initial['due_at'],
-            'last_reviewed_at' => null,
-        ]);
+        $entry = $result['entry'];
 
         return response()->json([
             'id' => $entry->id,
             'word' => $entry->word,
             'due_at' => $entry->due_at?->toIso8601String(),
-        ], 201)->withHeaders($this->noStore());
+        ], 201)->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function update(Request $request, VocabularyWord $word)
@@ -167,21 +159,15 @@ class VocabularyController extends Controller
             'status' => ['nullable', 'in:learning,known'],
         ]);
 
-        $updates = [];
-        if (array_key_exists('meaning_fa', $data)) {
-            $meaning = trim((string) $data['meaning_fa']);
-            $updates['meaning_fa'] = $meaning !== '' ? $meaning : null;
-        }
-        if (array_key_exists('example_en', $data)) {
-            $example = trim((string) $data['example_en']);
-            $updates['example_en'] = $example !== '' ? $example : null;
-        }
-        if (! empty($data['status'])) {
-            $updates['status'] = $data['status'];
-            if ($data['status'] === 'learning' && $word->last_reviewed_at === null) {
-                $updates['due_at'] = now();
-            }
-        }
+        $updates = \App\Support\Vocabulary::noteUpdates(
+            $word,
+            array_key_exists('meaning_fa', $data),
+            array_key_exists('meaning_fa', $data) ? (string) $data['meaning_fa'] : null,
+            array_key_exists('example_en', $data),
+            array_key_exists('example_en', $data) ? (string) $data['example_en'] : null,
+            ! empty($data['status']) ? (string) $data['status'] : null,
+            now(),
+        );
 
         $word->forceFill($updates)->save();
 
@@ -190,7 +176,7 @@ class VocabularyController extends Controller
             'status' => $word->status,
             'meaning_fa' => $word->meaning_fa,
             'example_en' => $word->example_en,
-        ])->withHeaders($this->noStore());
+        ])->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function destroy(Request $request, VocabularyWord $word)
@@ -202,7 +188,7 @@ class VocabularyController extends Controller
 
         $word->delete();
 
-        return response()->json(['deleted' => true])->withHeaders($this->noStore());
+        return response()->json(['deleted' => true])->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function review(Request $request)
@@ -225,13 +211,22 @@ class VocabularyController extends Controller
             ->orderBy('id')
             ->first();
 
-        return response()
-            ->view('words.review', [
-                'card' => $card,
-                'remaining' => $remaining,
-                'grades' => SpacedRepetition::GRADES,
-            ])
-            ->withHeaders($this->noStore());
+        // Public-slice Inertia transport (ADR-0002): the same due-first
+        // card selection. Grading stays on the JSON grade endpoint with
+        // the deterministic SRS schedule untouched.
+        return Inertia::render('Words/Review', [
+            'card' => $card ? [
+                'id' => $card->id,
+                'word' => (string) $card->word,
+                'meaning_fa' => $card->meaning_fa,
+                'example_en' => $card->example_en,
+                'reader_url' => $card->lesson !== null && $card->topic !== null
+                    ? route('reader.show', ['topic' => $card->topic->slug, 'level' => $card->lesson->level])
+                    : null,
+            ] : null,
+            'remaining' => (int) $remaining,
+            'grades' => SpacedRepetition::GRADES,
+        ]);
     }
 
     public function grade(Request $request, VocabularyWord $word)
@@ -245,44 +240,22 @@ class VocabularyController extends Controller
             'grade' => ['required', 'in:again,hard,good,easy'],
         ]);
 
-        if ($word->status !== 'learning') {
-            return response()->json(['message' => 'این واژه در برنامه مرور نیست.'], 422)
-                ->withHeaders($this->noStore());
+        try {
+            $result = \App\Support\Vocabulary::grade($user, $word, $data['grade'], now());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => collect($e->errors())->flatten()->first() ?? 'خطا.'], 422)
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
-        $next = SpacedRepetition::schedule([
-            'ease_factor' => (float) $word->ease_factor,
-            'interval_days' => (int) $word->interval_days,
-            'repetitions' => (int) $word->repetitions,
-            'lapses' => (int) $word->lapses,
-        ], $data['grade'], now());
-
-        $word->forceFill([
-            'ease_factor' => $next['ease_factor'],
-            'interval_days' => $next['interval_days'],
-            'repetitions' => $next['repetitions'],
-            'lapses' => $next['lapses'],
-            'due_at' => $next['due_at'],
-            'last_reviewed_at' => $next['last_reviewed_at'],
-        ])->save();
-
-        $remaining = VocabularyWord::where('user_id', $user->id)
-            ->where('status', 'learning')
-            ->where('due_at', '<=', now())
-            ->count();
+        $entry = $result['entry'];
 
         return response()->json([
-            'id' => $word->id,
-            'due_at' => $word->due_at?->toIso8601String(),
-            'interval_days' => $word->interval_days,
-            'repetitions' => $word->repetitions,
-            'remaining' => $remaining,
-        ])->withHeaders($this->noStore());
+            'id' => $entry->id,
+            'due_at' => $entry->due_at?->toIso8601String(),
+            'interval_days' => $entry->interval_days,
+            'repetitions' => $entry->repetitions,
+            'remaining' => $result['remaining'],
+        ])->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
-    }
 }

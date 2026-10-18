@@ -64,6 +64,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-only default: auth, admin, component updates, audio/video,
-  // and every other data-bearing request bypass all caches.
-});
+  // Network-only default: everything not on the allowlist bypasses all
+  // caches. Non-allowlisted requests MUST never enter FE_PRECACHE —
+  // pinning them would cache private bytes. Locked by the precache test.

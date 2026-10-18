@@ -59,7 +59,7 @@ class PaymentReceiptController extends Controller
                 return response()->json([
                     'id' => $paymentRequest->id,
                     'status' => $paymentRequest->status,
-                ])->withHeaders($this->noStore());
+                ])->withHeaders(\App\Http\Responses\NoStore::headers());
             }
 
             return redirect()->route('payments.show', $paymentRequest);
@@ -144,7 +144,7 @@ class PaymentReceiptController extends Controller
             return response()->json([
                 'id' => $fresh->id,
                 'status' => $fresh->status,
-            ])->withHeaders($this->noStore());
+            ])->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()
@@ -207,9 +207,4 @@ class PaymentReceiptController extends Controller
             : 'application/octet-stream';
     }
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
-    }
 }

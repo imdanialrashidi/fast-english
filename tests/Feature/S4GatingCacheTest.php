@@ -2,6 +2,7 @@
 
 use App\Models\Lesson;
 use Database\Seeders\S1SampleSeeder;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S4 gating + cache-header proof for the new routes: every protected route
@@ -21,8 +22,10 @@ beforeEach(function () {
     $this->a2 = Lesson::where('level', 'A2')
         ->whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))
         ->firstOrFail();
-    $this->studentA = ContentFixtures::student();
-    $this->studentB = ContentFixtures::student();
+    // Paid-only slice: saved/progress/bookmark routes need an active
+    // subscription (settings stays auth-only and works the same).
+    $this->studentA = ContentFixtures::subscribedStudent();
+    $this->studentB = ContentFixtures::subscribedStudent();
 });
 
 test('saved and settings pages are private and owner-scoped', function () {
@@ -71,11 +74,11 @@ test('a second account cannot touch the first account progress or saved items', 
     $this->actingAs($this->studentA)->postJson(route('bookmarks.store'), ['topic_id' => $topic->id])->assertOk();
 
     // B sees none of A's state.
-    $htmlB = $this->actingAs($this->studentB)
+    $this->actingAs($this->studentB)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
         ->assertOk()
-        ->getContent();
-    expect($htmlB)->toContain('data-initial-position="0');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('initialPosition', 0));
 
     $savedB = $this->actingAs($this->studentB)->get(route('app.saved'))->assertOk()->getContent();
     expect($savedB)->not->toContain('S4 Cache Own');

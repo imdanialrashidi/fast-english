@@ -16,17 +16,9 @@
 docs/private/**
 !docs/private/.gitkeep
 
-# Pi local runtime and installed project packages
-.pi/npm/
-.pi/git/
-.pi/sessions/
-.pi/cache/
-.pi/auth.json
-.pi/models.json
-.pi/trust.json
-.pi/mcp-auth.json
-.pi/mcp-oauth/
-.pi/mcp-traces/
+# OMP local runtime (project config in .omp/ is tracked; nothing local to ignore).
+# The Pi workflow retired 2026-10-14 (see .artifacts/migration-backup-2026-10-14/);
+# its former .pi/ runtime entries were removed here.
 
 # Dependencies and environments
 node_modules/

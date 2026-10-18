@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionEvent;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Illuminate\Validation\ValidationException;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\S6Payments;
 
 // S6 reject + staff cancel (scope §10.1, §11.3, AC-14): pending-only, reason
@@ -37,10 +38,14 @@ test('reject carries the public reason, hides the internal note, and grants noth
     expect(SubscriptionEvent::where('source_payment_request_id', $pending->id)->count())->toBe(0);
 
     // The learner page shows the public reason but never the internal note.
+    // Public-slice port (ADR-0002): asserted on the decoded props.
     $page = $this->actingAs($this->studentA)->get(route('payments.show', $pending));
-    $page->assertOk();
-    expect($page->getContent() ?? '')->toContain('رسید ناخوانا بود (TEST).')
-        ->and($page->getContent() ?? '')->not->toContain('card mismatch? check (TEST)');
+    $page->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Payments/Show'));
+    $props = $page->inertiaProps();
+    expect($props['request']['public_reason'])->toBe('رسید ناخوانا بود (TEST).');
+    expect((string) json_encode($props))->not->toContain('card mismatch? check (TEST)');
 
     // The other student sees nothing of it (negative path).
     $this->actingAs($this->studentB)->get(route('payments.show', $pending))->assertForbidden();

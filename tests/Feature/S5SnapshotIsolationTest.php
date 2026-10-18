@@ -4,6 +4,7 @@ use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
 use Database\Seeders\S5PaymentFixtureSeeder;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S5-5 (snapshot isolation): later plan/destination edits never mutate an
@@ -39,14 +40,18 @@ test('an existing request keeps its snapshot after plan and destination edits', 
     // amount and card (snapshot, not live data).
     expect($old->fresh()->getAttributes())->toBe($before);
 
-    $html = $this->actingAs($this->studentA)
+    // Public-slice port (ADR-0002): the snapshot values travel as
+    // decoded props (the Persian amount renders client-side).
+    $shown = $this->actingAs($this->studentA)
         ->get(route('payments.show', $old))
         ->assertOk()
-        ->getContent();
-    expect($html)->toContain('۱۰۰٬۰۰۰ تومان')
-        ->and($html)->toContain($oldDestination->card_number)
-        ->and($html)->not->toContain('۲۰۰٬۰۰۰ تومان')
-        ->and($html)->not->toContain($newDestination->card_number);
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Payments/Show'));
+    $shownProps = $shown->inertiaProps();
+    expect($shownProps['request']['amount_label'])->toBe('۱۰۰٬۰۰۰ تومان')
+        ->and($shownProps['request']['card_number'])->toBe($oldDestination->card_number)
+        ->and($shownProps['request']['amount_label'])->not->toBe('۲۰۰٬۰۰۰ تومان')
+        ->and($shownProps['request']['card_number'])->not->toBe($newDestination->card_number);
 
     // A new request (second student) uses the new values.
     $this->actingAs($this->studentB)->post(route('payments.store'), ['plan_id' => $plan30->id]);

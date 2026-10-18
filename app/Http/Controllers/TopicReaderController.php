@@ -2,30 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\LockedResponse;
 use App\Models\Bookmark;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Topic;
+use App\Support\Entitlement;
 use App\Support\Sentences;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
- * S1 reader: /app/topics/{slug}?level=XX.
+ * S1 reader: /app/topics/{slug}?level=XX + M1 Inertia transport (ADR-0002).
  *
  * The level comes from the URL only (plain link/GET). S4 keeps the rule:
  * browsing a level never writes users.preferred_level (only the explicit
- * settings form does). A missing level is never silently substituted.
+ * settings form does). A missing level is never silently substituted —
+ * the NotReady page names the exact message plus the available levels.
  *
- * S4 adds resume data for the signed-in owner only: when the stored
- * revision matches the current lesson revision the saved position is
- * injected as the initial position (no autoplay); otherwise zero. Guests
- * receive zero and their listening is never saved server-side.
+ * Props are an allowlist for the authorized reader only: the controller
+ * authorizes the lesson BEFORE rendering, so premium bodies, glossaries,
+ * and the private audio URL never reach ineligible clients (403 via the
+ * shared ErrorPage handler). Draft/archived content is 404 to everyone.
+ *
+ * S4 resume travels as data: owner-only, revision-isolated, no autoplay.
+ * Guests receive zero and their listening is never saved server-side.
+ *
+ * R3 sentence cues: only cues timed against the current audio revision
+ * are exposed, and only when their count matches the reader sentence
+ * split. Otherwise the plain-reader fallback props stay and the lesson
+ * remains completable.
  */
 class TopicReaderController extends Controller
 {
-    private const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-
+    /**
+     * Returns the learner reader, the missing-level page, the locked
+     * state (403), or a redirect to the public sample experience.
+     *
+     * @return Response|\Symfony\Component\HttpFoundation\Response
+     */
     public function show(Request $request, Topic $topic)
     {
         if ($topic->status !== 'published') {
@@ -34,7 +51,7 @@ class TopicReaderController extends Controller
 
         $publishedLessons = $topic->lessons()
             ->where('status', 'published')
-            ->orderByRaw($this->levelOrder())
+            ->orderByRaw(\App\Support\Levels::orderExpression())
             ->get();
 
         if ($publishedLessons->isEmpty()) {
@@ -60,34 +77,39 @@ class TopicReaderController extends Controller
         $lesson = $publishedLessons->firstWhere('level', $requested);
 
         if ($lesson === null) {
-            return response()
-                ->view('reader.not-ready', [
-                    'topic' => $topic,
-                    'requestedLevel' => $requested,
-                    'availableLevels' => $availableLevels,
-                ])
-                ->withHeaders($this->noStore());
+            return Inertia::render('Reader/NotReady', [
+                'topic' => [
+                    'slug' => $topic->slug,
+                    'title_en' => $topic->title_en,
+                ],
+                'requestedLevel' => $requested,
+                'availableLevels' => $availableLevels,
+            ]);
         }
 
-        $this->authorizeLesson($lesson);
-
-        // R3 sentence cues: only the cues timed against the current audio
-        // revision are exposed, and only when their count matches the
-        // reader's sentence split. Otherwise the plain reader stays with
-        // an understandable fallback — the lesson remains completable.
-        $sentences = Sentences::split((string) $lesson->body_en);
-        $cues = is_array($lesson->audio_cues) ? $lesson->audio_cues : [];
-        $cuesUsable = $cues !== []
-            && (int) ($lesson->audio_cues_revision ?? 0) === (int) $lesson->audio_revision
-            && count($cues) === count($sentences);
-        if (! $cuesUsable) {
-            $cues = [];
+        // Paid-only gate (owner requirement): the designated public sample
+        // resolves to the public sample experience, never the learner
+        // shell. Every other lesson needs an eligible subscriber or staff;
+        // ineligible page requests get the locked state (403, no premium
+        // props) with one subscription CTA.
+        if ($lesson->is_public_sample && ! Entitlement::eligible($request->user())) {
+            return redirect()->to(route('sample', ['topic' => $topic->slug, 'level' => $lesson->level]));
         }
+
+        $locked = $this->authorizeLesson($request, $lesson);
+        if ($locked !== null) {
+            return $locked;
+        }
+
+        $prepared = \App\Support\Reading::prepared($lesson);
+        $sentences = $prepared['sentences'];
+        $cues = $prepared['cues'];
+        $cuesUsable = $prepared['cuesUsable'];
 
         // S4 resume: owner-only, revision-isolated. No user write happens
         // here — the level in the URL never touches preferred_level.
         $initialPosition = 0.0;
-        $completedAt = null;
+        $completed = false;
         $bookmarked = false;
         $user = $request->user();
         if ($user !== null && $user->disabled_at === null) {
@@ -96,52 +118,66 @@ class TopicReaderController extends Controller
                 ->first();
             if ($stored !== null && (int) $stored->audio_revision === (int) $lesson->audio_revision) {
                 $initialPosition = max(0.0, (float) $stored->position_seconds);
-                $completedAt = $stored->completed_at;
+                $completed = $stored->completed_at !== null;
             }
             $bookmarked = Bookmark::where('user_id', $user->id)
                 ->where('topic_id', $topic->id)
                 ->exists();
         }
 
-        return response()
-            ->view('reader.show', [
-                'topic' => $topic,
-                'lesson' => $lesson,
-                'availableLevels' => $availableLevels,
-                'initialPosition' => $initialPosition,
-                'completedAt' => $completedAt,
-                'bookmarked' => $bookmarked,
-                'sentences' => $sentences,
-                'cues' => $cues,
-                'cuesUsable' => $cuesUsable,
-            ])
-            ->withHeaders($this->noStore());
+        // Plain-reader paragraphs for the no-cue fallback (the split
+        // sentences stay the synced-reader source of truth). Shape owned
+        // by Reading::prepared() above.
+        $paragraphs = $prepared['paragraphs'];
+
+        return Inertia::render('Reader/Show', [
+            'topic' => [
+                'id' => $topic->id,
+                'slug' => $topic->slug,
+                'title_en' => $topic->title_en,
+                'summary_public' => $topic->summary_public,
+                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
+            ],
+            'lesson' => [
+                'id' => $lesson->id,
+                'title_en' => $lesson->title_en,
+                'level' => $lesson->level,
+                'estimated_minutes' => (int) $lesson->estimated_minutes,
+                'duration_seconds' => (int) $lesson->duration_seconds,
+                'audio_revision' => (int) $lesson->audio_revision,
+                'audio_url' => route('media.lesson.audio', $lesson),
+            ],
+            'availableLevels' => $availableLevels,
+            'initialPosition' => (float) $initialPosition,
+            'completed' => $completed,
+            'bookmarked' => $bookmarked,
+            'isGuest' => $user === null,
+            'sentences' => $sentences,
+            'paragraphs' => $paragraphs,
+            'cues' => $cues,
+            'cuesUsable' => $cuesUsable,
+            'glossary' => $prepared['glossary'],
+        ]);
     }
 
-    private function authorizeLesson(Lesson $lesson): void
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response|null the locked page (403) or null when allowed.
+     */
+    private function authorizeLesson(Request $request, Lesson $lesson): ?\Symfony\Component\HttpFoundation\Response
     {
         if ($lesson->status !== 'published' || $lesson->topic->status !== 'published') {
             abort(404);
         }
 
         if (Gate::allows('view', $lesson) !== true) {
-            abort(403);
+            return LockedResponse::forbidden($request, $request->user());
         }
+
+        return null;
     }
 
     private function levelOrder(): string
     {
-        $cases = [];
-        foreach (self::LEVELS as $i => $level) {
-            $cases[] = "when level = '{$level}' then {$i}";
-        }
-
-        return 'case '.implode(' ', $cases).' else 99 end';
-    }
-
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
+        return \App\Support\Levels::orderExpression();
     }
 }

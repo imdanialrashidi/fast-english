@@ -6,6 +6,7 @@ use App\Models\PaymentRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionEvent;
 use App\Models\User;
+use App\Support\Entitlement;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Database\QueryException;
@@ -90,11 +91,11 @@ final class ApprovePayment
             }
 
             $subscription = Subscription::where('user_id', $owner->id)->lockForUpdate()->first();
+            if ($subscription !== null) {
+                $subscription->setRelation('user', $owner);
+            }
 
-            $active = $subscription !== null
-                && $subscription->revoked_at === null
-                && $subscription->starts_at <= $moment
-                && $moment < $subscription->expires_at;
+            $active = $subscription !== null && Entitlement::windowActive($subscription, $moment);
 
             $base = $active ? $subscription->expires_at->copy() : $moment->copy();
             $newExpires = $base->copy()->addDays($duration);
@@ -277,11 +278,11 @@ final class ApprovePayment
         return DB::transaction(function () use ($userId, $staff, $durationDays, $clean, $moment) {
             $owner = User::where('id', $userId)->lockForUpdate()->firstOrFail();
             $subscription = Subscription::where('user_id', $owner->id)->lockForUpdate()->first();
+            if ($subscription !== null) {
+                $subscription->setRelation('user', $owner);
+            }
 
-            $active = $subscription !== null
-                && $subscription->revoked_at === null
-                && $subscription->starts_at <= $moment
-                && $moment < $subscription->expires_at;
+            $active = $subscription !== null && Entitlement::windowActive($subscription, $moment);
 
             $base = $active ? $subscription->expires_at->copy() : $moment->copy();
             $newExpires = $base->copy()->addDays($durationDays);
@@ -387,7 +388,7 @@ final class ApprovePayment
     {
         $staff->refresh();
 
-        if (! $staff->is_staff || $staff->disabled_at !== null) {
+        if (! Entitlement::staff($staff)) {
             throw ValidationException::withMessages(['staff' => 'Only active staff can review payments.']);
         }
     }

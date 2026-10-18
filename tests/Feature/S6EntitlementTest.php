@@ -61,8 +61,12 @@ test('pending grants nothing but approval opens every published level', function
         $this->actingAs($this->studentA)->get(route('reader.show', ['topic' => 'night-trains', 'level' => 'B1']))->assertOk();
         $this->actingAs($this->studentA)->get(route('media.lesson.audio', $this->premium))->assertOk();
         // The public sample stays open to everyone, including the
-        // non-subscribed second student (negative path for gating scope).
-        $this->actingAs($this->studentB)->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))->assertOk();
+        // non-subscribed second student — through the public sample
+        // experience (paid-only slice: learner URLs redirect there).
+        $sampleRedirect = $this->actingAs($this->studentB)
+            ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
+            ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
+        $this->followRedirects($sampleRedirect)->assertOk();
         $this->actingAs($this->studentB)->get(route('reader.show', ['topic' => 'night-trains', 'level' => 'B1']))->assertForbidden();
     } finally {
         Carbon::setTestNow(null);

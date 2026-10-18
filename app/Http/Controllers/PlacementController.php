@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 /**
  * S7 optional placement (scope §6, §12): pinned attempts, per-question
@@ -48,9 +49,19 @@ class PlacementController extends Controller
             ->orderByDesc('id')
             ->first();
 
-        return response()
-            ->view('placement.index', ['current' => $current, 'openAttempt' => $open])
-            ->withHeaders($this->noStore());
+        // Public-slice Inertia transport (ADR-0002): the same optional
+        // placement entry with the same neutral «در دست آماده‌سازی»
+        // state when no version is current. Start/submit/accept keep
+        // their redirect-or-JSON dual behavior below.
+        return Inertia::render('Placement/Index', [
+            'current' => $current ? [
+                'version' => (string) $current->version,
+            ] : null,
+            'openAttempt' => $open ? [
+                'id' => $open->id,
+                'url' => route('placement.show', $open),
+            ] : null,
+        ]);
     }
 
     public function start(Request $request)
@@ -64,7 +75,7 @@ class PlacementController extends Controller
         if ($current === null) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'آزمون در حال حاضر در دست آماده‌سازی است.'], 422)
-                    ->withHeaders($this->noStore());
+                    ->withHeaders(\App\Http\Responses\NoStore::headers());
             }
 
             return redirect()->route('placement.index')->with('status', 'آزمون در حال حاضر در دست آماده‌سازی است.');
@@ -85,7 +96,7 @@ class PlacementController extends Controller
         if ($last !== null && $last->started_at !== null && $last->started_at->greaterThan(now()->subDay())) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'شروع تازه تا ۲۴ ساعت پس از آخرین شروع مجاز نیست.'], 429)
-                    ->withHeaders($this->noStore());
+                    ->withHeaders(\App\Http\Responses\NoStore::headers());
             }
 
             return redirect()->route('placement.index')->with('status', 'شروع تازه تا ۲۴ ساعت پس از آخرین شروع مجاز نیست.');
@@ -171,13 +182,28 @@ class PlacementController extends Controller
             ->pluck('selected_option', 'question_id')
             ->all();
 
-        return response()
-            ->view('placement.show', [
-                'attempt' => $attempt->fresh(),
-                'questions' => $questions,
-                'selected' => $selected,
-            ])
-            ->withHeaders($this->noStore());
+        // Public-slice Inertia transport (ADR-0002): only
+        // id/position/prompt/options travel — the answer key
+        // (correct_option) and scoring rules never reach the client,
+        // not in props, not in JSON. Per-question saves stay on the
+        // JSON answer endpoint; the page posts saves without reload.
+        return Inertia::render('Placement/Show', [
+            'attempt' => [
+                'id' => $attempt->id,
+                'status' => (string) $attempt->status,
+            ],
+            'questions' => $questions->map(fn ($question) => [
+                'id' => $question->id,
+                'position' => (int) $question->position,
+                'prompt' => (string) $question->prompt,
+                'options' => array_values((array) ($question->options ?? [])),
+            ])->all(),
+            'selected' => collect($selected)->mapWithKeys(fn ($option, $questionId) => [
+                (string) $questionId => (int) $option,
+            ])->all(),
+            'answeredCount' => count($selected),
+            'totalCount' => $questions->count(),
+        ]);
     }
 
     public function answer(Request $request, PlacementAttempt $attempt)
@@ -208,7 +234,7 @@ class PlacementController extends Controller
         if ($question === null || (int) $question->test_id !== (int) $attempt->test_id) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'سؤال متعلق به این آزمون نیست.'], 422)
-                    ->withHeaders($this->noStore());
+                    ->withHeaders(\App\Http\Responses\NoStore::headers());
             }
 
             return redirect()->route('placement.show', $attempt)->with('status', 'سؤال متعلق به این آزمون نیست.');
@@ -231,7 +257,7 @@ class PlacementController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['id' => $attempt->id, 'status' => $attempt->status])
-                ->withHeaders($this->noStore());
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()->route('placement.show', $attempt)->with('status', 'پاسخ ذخیره شد.');
@@ -255,7 +281,7 @@ class PlacementController extends Controller
         } catch (ValidationException $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => collect($e->errors())->flatten()->implode(' ')], 422)
-                    ->withHeaders($this->noStore());
+                    ->withHeaders(\App\Http\Responses\NoStore::headers());
             }
 
             abort(422, collect($e->errors())->flatten()->implode(' '));
@@ -270,7 +296,7 @@ class PlacementController extends Controller
                 'status' => $fresh->status,
                 'score' => $fresh->score,
                 'recommended_level' => $fresh->recommended_level,
-            ])->withHeaders($this->noStore());
+            ])->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()->route('placement.result', $fresh);
@@ -290,9 +316,18 @@ class PlacementController extends Controller
             return redirect()->route('placement.show', $attempt);
         }
 
-        return response()
-            ->view('placement.result', ['attempt' => $attempt->fresh()])
-            ->withHeaders($this->noStore());
+        $fresh = $attempt->fresh();
+
+        // Public-slice Inertia transport (ADR-0002): score + suggested
+        // level + disclaimer only. Accepting the result writes
+        // preferred_level explicitly; browsing never does.
+        return Inertia::render('Placement/Result', [
+            'attempt' => [
+                'id' => $fresh->id,
+                'score' => (int) $fresh->score,
+                'recommended_level' => $fresh->recommended_level,
+            ],
+        ]);
     }
 
     public function accept(Request $request, PlacementAttempt $attempt)
@@ -314,7 +349,7 @@ class PlacementController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['preferred_level' => $user->preferred_level])
-                ->withHeaders($this->noStore());
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()->route('placement.result', $attempt)->with('status', 'سطح ترجیحی ذخیره شد.');
@@ -332,17 +367,12 @@ class PlacementController extends Controller
     {
         if ($request->expectsJson()) {
             return response()->json(['id' => $attempt->id, 'status' => $attempt->status])
-                ->withHeaders($this->noStore());
+                ->withHeaders(\App\Http\Responses\NoStore::headers());
         }
 
         return redirect()->route('placement.show', $attempt);
     }
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
-    }
 
     private function isUniqueViolation(QueryException $e): bool
     {

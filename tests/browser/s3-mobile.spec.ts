@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
 // S3-7 rendered mobile proof for the library: no horizontal scroll, fixed
 // cover aspect ratio, 44px control targets at 360/390, reflow at 320.
@@ -13,7 +14,9 @@ async function noHorizontalScroll(page): Promise<{ scroll: number; inner: number
   }));
 }
 
-test('S3-7 library at 360px: no scroll, kept aspect ratio, reachable controls', async ({ page }) => {
+// Paid-only slice: the library needs the subscribed lane account.
+
+test('S3-7 library at 360px: no scroll, kept aspect ratio, reachable controls', async ({ sub: page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto('/app');
   await page.locator('article.fe-card').first().waitFor();
@@ -49,7 +52,7 @@ test('S3-7 library at 360px: no scroll, kept aspect ratio, reachable controls', 
   await page.screenshot({ path: 'test-results/browser-shots/s3-mobile-360.png' });
 });
 
-test('S3-7 library at 390px: no scroll, kept aspect ratio', async ({ page }) => {
+test('S3-7 library at 390px: no scroll, kept aspect ratio', async ({ sub: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/app');
   await page.locator('article.fe-card').first().waitFor();
@@ -65,7 +68,7 @@ test('S3-7 library at 390px: no scroll, kept aspect ratio', async ({ page }) => 
   await page.screenshot({ path: 'test-results/browser-shots/s3-mobile-390.png' });
 });
 
-test('S3-7 library at 320px reflows without losing controls', async ({ page }) => {
+test('S3-7 library at 320px reflows without losing controls', async ({ sub: page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/app?level=A1');
   await page.locator('article.fe-card').first().waitFor();

@@ -6,24 +6,27 @@ use App\Actions\PublishLesson;
 use App\Models\Category;
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
- * S3 topic library (scope §17.2): one card per topic.
+ * S3 topic library (scope §17.2) + M1 Inertia transport (ADR-0002).
  *
- * Browse state (level, category, query, page) lives in the URL query string,
- * so reload, back/forward, and sharing preserve the filter state. Only
- * published topics with at least one published lesson ever appear; drafts,
- * archived lessons, and lesson-less topics are excluded at the query level.
- * The response carries metadata only — never bodies, glossaries, or
- * private paths (the S1 reader policy still guards the full content).
+ * One result per topic, 12 per page, browse state (level, category,
+ * query, page) in the URL query string so reload, back/forward, and
+ * sharing preserve the filter state. Only published topics with at
+ * least one published lesson ever appear; drafts, archived lessons,
+ * and lesson-less topics are excluded at the query level.
+ *
+ * Props are an allowlist — metadata only, never bodies, glossaries,
+ * audio URLs, amounts, or private paths (the S1 reader policy still
+ * guards the full content; see S5PrivacyTest).
  */
 class TopicLibraryController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        $level = strtoupper((string) $request->query('level', ''));
-        $level = in_array($level, PublishLesson::LEVELS, true) ? $level : null;
-
+        $level = \App\Support\Levels::valid((string) $request->query('level', ''));
         $categorySlug = trim((string) $request->query('category', ''));
         $categorySlug = $categorySlug !== '' ? $categorySlug : null;
 
@@ -48,7 +51,7 @@ class TopicLibraryController extends Controller
                 'category',
                 'lessons' => fn ($lessons) => $lessons
                     ->where('status', 'published')
-                    ->orderByRaw($this->levelOrder())
+                    ->orderByRaw(\App\Support\Levels::orderExpression())
                     ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('topics.published_at')
@@ -65,32 +68,38 @@ class TopicLibraryController extends Controller
             ->select(['id', 'name_fa', 'slug'])
             ->get();
 
-        return response()
-            ->view('library.index', [
-                'topics' => $topics,
-                'categories' => $categories,
-                'levels' => PublishLesson::LEVELS,
-                'activeLevel' => $level,
-                'activeCategory' => $categorySlug,
-                'activeQuery' => $query,
-                'hasFilters' => $level !== null || $categorySlug !== null || $query !== null,
-            ])
-            ->withHeaders($this->noStore());
+        return Inertia::render('Library/Index', [
+            'topics' => $topics->getCollection()->map(fn (Topic $topic) => [
+                'slug' => $topic->slug,
+                'title_en' => $topic->title_en,
+                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
+                'category_name' => $topic->category?->name_fa,
+                'levels' => $topic->lessons->pluck('level')->filter()->values()->all(),
+                'first_level' => $topic->lessons->pluck('level')->filter()->values()->first(),
+                'extra_levels' => max(0, $topic->lessons->pluck('level')->filter()->count() - 1),
+                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
+                'reader_url' => route('reader.show', $topic),
+            ])->all(),
+            'pagination' => [
+                'current_page' => $topics->currentPage(),
+                'last_page' => $topics->lastPage(),
+                'total' => $topics->total(),
+                'per_page' => $topics->perPage(),
+            ],
+            'categories' => $categories->map(fn (Category $category) => [
+                'slug' => $category->slug,
+                'name_fa' => $category->name_fa,
+            ])->all(),
+            'levels' => PublishLesson::LEVELS,
+            'activeLevel' => $level,
+            'activeCategory' => $categorySlug,
+            'activeQuery' => $query,
+            'hasFilters' => $level !== null || $categorySlug !== null || $query !== null,
+        ]);
     }
 
     private function levelOrder(): string
     {
-        $cases = [];
-        foreach (PublishLesson::LEVELS as $i => $level) {
-            $cases[] = "when level = '{$level}' then {$i}";
-        }
-
-        return 'case '.implode(' ', $cases).' else 99 end';
-    }
-
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
+        return \App\Support\Levels::orderExpression();
     }
 }

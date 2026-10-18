@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PwaController;
 use Database\Seeders\S1SampleSeeder;
+use Tests\Support\ContentFixtures;
 
 // S2 PWA shell + TWA association (scope §18). Staging installability itself
 // is BLOCKED without an HTTPS host; these tests lock the served shape that
@@ -90,9 +91,13 @@ test('offline page shows the exact Persian message with a retry control', functi
 
 test('app start_url resolves', function () {
     // Since S3 /app is the real library: it resolves and lists seeded content.
+    // Paid-only slice: anonymous installs bounce to login; a subscribed
+    // learner resolves the start_url with the seeded topic listed.
     $this->seed(S1SampleSeeder::class);
 
-    $this->get('/app')
+    $this->get('/app')->assertRedirect(route('login'));
+
+    $this->actingAs(ContentFixtures::subscribedStudent())->get('/app')
         ->assertOk()
         ->assertSee('city-park', false);
 });
@@ -137,7 +142,10 @@ test('robots allows production', function () {
 test('non-production HTML carries a noindex robots header', function () {
     $this->seed(S1SampleSeeder::class);
 
-    $response = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']));
+    // Paid-only slice: the sample resolves through the public
+    // experience; the noindex blanket holds on the followed page.
+    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))->assertRedirect();
+    $response = $this->followRedirects($redirect);
 
     $response->assertOk();
     expect($response->headers->get('X-Robots-Tag'))->toBe('noindex, nofollow');

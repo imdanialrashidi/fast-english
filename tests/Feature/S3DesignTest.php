@@ -1,12 +1,12 @@
 <?php
 
-// Modern hybrid system (owner-approved 2026-10-10; see
-// docs/DESIGN.md): every learner text pair reuses the canonical tokens at
-// or above 4.5:1 (WCAG 2.2 AA normal text) in BOTH themes. Light is soft
-// ivory/navy/blue/amber (hybrid-light + editorial); dark is bold navy
-// (hybrid-dark). This test parses the canonical token
-// source (resources/css/app.css :root[data-theme] blocks), recomputes
-// relative luminance, and locks the pairs per theme.
+// Permanent light only (owner-approved ADR-0002; see docs/DESIGN.md):
+// every server-surface text pair reuses the canonical light tokens at
+// or above 4.5:1 (WCAG 2.2 AA normal text). The dark :root[data-theme]
+// block was retired with the migration — this test parses the single
+// :root block in resources/css/app.css, recomputes relative luminance,
+// and locks the pairs. The Inertia learner surface owns its own exact
+// palette in resources/css/inertia.css (locked by M0InertiaFoundationTest).
 
 function s3Luminance(string $hex): float
 {
@@ -34,7 +34,13 @@ function s3Contrast(string $a, string $b): float
 
 function s3ThemeTokens(string $css, string $theme): array
 {
-    $pattern = "/:root\\[data-theme='".$theme."'\\]\\s*\\{(.*?)\\}/s";
+    // Permanent light only (ADR-0002): the single plain :root block owns
+    // every value. Any :root[data-theme] block is a dark-resurrection
+    // regression and parses as absent here.
+    if ($theme !== 'light') {
+        return [];
+    }
+    $pattern = '/:root\\s*\\{(.*?)\\}/s';
     if (! preg_match($pattern, $css, $match)) {
         return [];
     }
@@ -48,7 +54,7 @@ function s3ThemeTokens(string $css, string $theme): array
     return $tokens;
 }
 
-test('learner text pairs measure at or above 4.5 to 1 in both themes', function () {
+test('learner text pairs measure at or above 4.5 to 1 in the permanent light theme', function () {
     $css = (string) file_get_contents(resource_path('css/app.css'));
 
     $pairs = [
@@ -65,14 +71,12 @@ test('learner text pairs measure at or above 4.5 to 1 in both themes', function 
         'danger on surface' => ['danger', 'surface'],
     ];
 
-    foreach (['light', 'dark'] as $theme) {
+    foreach (['light'] as $theme) {
         $tokens = s3ThemeTokens($css, $theme);
-        expect($tokens)->not->toBeEmpty("missing :root[data-theme='{$theme}'] block");
+        expect($tokens)->not->toBeEmpty('missing plain :root token block');
 
-        // The owner base colors must stay exactly as approved.
-        $owner = $theme === 'light'
-            ? ['text' => '#172238', 'canvas' => '#f7f5ef', 'primary' => '#4263eb', 'secondary' => '#dde5fb', 'accent' => '#e9ac52']
-            : ['text' => '#f7f5ef', 'canvas' => '#0e1626', 'primary' => '#8aa4ff', 'secondary' => '#2a3a55', 'accent' => '#e9ac52'];
+        // The owner base colors must stay exactly as approved (light only).
+        $owner = ['text' => '#172238', 'canvas' => '#f7f5ef', 'primary' => '#4263eb', 'secondary' => '#dde5fb', 'accent' => '#e9ac52'];
         foreach ($owner as $token => $hex) {
             expect($tokens)->toHaveKey($token);
             expect($tokens[$token])->toBe($hex, "[{$theme}] --fe-{$token} must stay owner-approved {$hex}");
@@ -87,7 +91,7 @@ test('learner text pairs measure at or above 4.5 to 1 in both themes', function 
     }
 });
 
-test('learner control and focus pairs measure at or above 3 to 1 in both themes', function () {
+test('learner control and focus pairs measure at or above 3 to 1 in the permanent light theme', function () {
     $css = (string) file_get_contents(resource_path('css/app.css'));
 
     $pairs = [
@@ -96,7 +100,7 @@ test('learner control and focus pairs measure at or above 3 to 1 in both themes'
         'primary on surface (focus ring)' => ['primary', 'surface'],
     ];
 
-    foreach (['light', 'dark'] as $theme) {
+    foreach (['light'] as $theme) {
         $tokens = s3ThemeTokens($css, $theme);
         expect($tokens)->not->toBeEmpty();
 
@@ -111,6 +115,10 @@ test('learner control and focus pairs measure at or above 3 to 1 in both themes'
 
 test('no color literal lives outside the token blocks', function () {
     $css = (string) file_get_contents(resource_path('css/app.css'));
+
+    // Permanent light only (ADR-0002): any theme-attribute block is a
+    // dark-resurrection regression.
+    expect($css)->not->toContain('[data-theme');
 
     $rest = $css;
     // Strip every :root...{...} token block (themed + fallback).

@@ -1,6 +1,7 @@
 <?php
 
 use Database\Seeders\S1SampleSeeder;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S4-5 preferred level (LEVEL-01): explicit settings writes only. The reader
@@ -9,8 +10,9 @@ use Tests\Support\ContentFixtures;
 
 beforeEach(function () {
     $this->seed(S1SampleSeeder::class);
-    $this->studentA = ContentFixtures::student();
-    $this->studentB = ContentFixtures::student();
+    // Paid-only slice: the reader leg needs an active subscription.
+    $this->studentA = ContentFixtures::subscribedStudent();
+    $this->studentB = ContentFixtures::subscribedStudent();
 });
 
 test('preferred level changes only through the settings page', function () {
@@ -47,13 +49,20 @@ test('the unavailable-level message and no-substitution rule still hold', functi
         ->patch(route('account.settings.update'), ['preferred_level' => 'B1'])
         ->assertRedirect();
 
-    // city-park has no C1: the exact message appears with A2/B1 links, and
-    // no body or audio from another level leaks in.
+    // city-park has no C1: the NotReady page renders the exact message
+    // client-side with A2/B1 links, and no body or audio from another
+    // level leaks in (proven in tests/browser/m1-journey.spec.ts).
+    $this->actingAs($this->studentA)
+        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'C1']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Reader/NotReady')
+            ->where('requestedLevel', 'C1')
+            ->where('availableLevels', ['A2', 'B1']));
+
     $response = $this->actingAs($this->studentA)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'C1']))
         ->assertOk();
-
-    $response->assertSee('این سطح هنوز آماده نیست', false);
     expect($response->getContent())->not->toContain('On Saturday morning, Sara walks');
     expect($response->getContent())->not->toContain('/media/lessons/');
 });

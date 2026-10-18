@@ -4,6 +4,7 @@ use App\Models\PaymentRequest;
 use App\Models\Plan;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Illuminate\Config\Repository;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S8 sales switch: a configuration flag, off by default in production.
@@ -28,14 +29,17 @@ test('sales flag defaults off outside testing config', function () {
 test('sales off shows preparing state with no purchase forms', function () {
     config(['sales.enabled' => false]);
 
-    $html = $this->actingAs($this->studentA)->get(route('subscribe.index'))->assertOk()->getContent();
+    // Public-slice port (ADR-0002): the sales-off state travels as
+    // salesOn=false with no plans (the Persian copy renders client-side).
+    $off = $this->actingAs($this->studentA)->get(route('subscribe.index'))->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Subscribe/Index')
+            ->where('salesOn', false));
+    expect($off->inertiaProps()['plans'])->toBe([]);
+    expect($off->getContent())->not->toContain('یک‌ماهه آزمایشی (TEST)');
 
-    expect($html)->toContain('در دست آماده‌سازی')
-        ->and($html)->not->toContain('انتخاب این پلن')
-        ->and($html)->not->toContain('یک‌ماهه آزمایشی (TEST)');
-
-    $htmlB = $this->actingAs($this->studentB)->get(route('subscribe.index'))->assertOk()->getContent();
-    expect($htmlB)->toContain('در دست آماده‌سازی');
+    $offB = $this->actingAs($this->studentB)->get(route('subscribe.index'))->assertOk();
+    expect($offB->inertiaProps()['plans'])->toBe([]);
 });
 
 test('sales off refuses payment creation with nothing stored', function () {
@@ -61,9 +65,12 @@ test('sales off refuses payment creation with nothing stored', function () {
 test('sales on lists plans and allows creation', function () {
     config(['sales.enabled' => true]);
 
-    $html = $this->actingAs($this->studentA)->get(route('subscribe.index'))->assertOk()->getContent();
-    expect($html)->toContain('انتخاب این پلن')
-        ->and($html)->not->toContain('در دست آماده‌سازی');
+    // Public-slice port (ADR-0002): plans travel as decoded props.
+    $on = $this->actingAs($this->studentA)->get(route('subscribe.index'))->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Subscribe/Index')
+            ->where('salesOn', true));
+    expect($on->inertiaProps()['plans'])->not->toBe([]);
 
     $this->actingAs($this->studentA)
         ->post(route('payments.store'), ['plan_id' => $this->plan30->id])

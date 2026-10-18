@@ -1,23 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
 // S4-7 rendered mobile: saved + reader at 360/390 have no horizontal
 // scroll, the mini-player never covers text, and every target is >=44px.
 // Screenshots are captured and must be inspected as pixels (not counts).
 
-const LOGIN = '/login';
 const READER = '/app/topics/city-park?level=A2';
-const F = { email: 'browser-f@example.com', password: 'password' };
-const G = { email: 'browser-g@example.com', password: 'password' };
-const C = { email: 'browser-c@example.com', password: 'password' };
-const D = { email: 'browser-d@example.com', password: 'password' };
-
-async function login(page, user: { email: string; password: string }) {
-  await page.goto(LOGIN);
-  await page.getByLabel('ایمیل', { exact: true }).fill(user.email);
-  await page.getByLabel('رمز عبور', { exact: true }).fill(user.password);
-  await page.getByRole('button', { name: 'ورود' }).click();
-  await page.waitForURL('**/account**');
-}
 
 async function noHorizontalScroll(page) {
   return page.evaluate(() => ({
@@ -48,12 +36,10 @@ async function assertTargets(page) {
   }
 }
 
-const S4_MOBILE_USERS = { 360: { reader: F, saved: G }, 390: { reader: C, saved: D } };
 
 for (const width of [360, 390]) {
-  test(`S4-7 reader at ${width}px: no scroll, mini-player clear, 44px targets`, async ({ page }) => {
+  test(`S4-7 reader at ${width}px: no scroll, mini-player clear, 44px targets`, async ({ sub: page }) => {
     await page.setViewportSize({ width, height: 740 });
-    await login(page, S4_MOBILE_USERS[width].reader);
     await page.goto(READER);
     await page.locator('ol.fe-sentences, article.fe-english-body').first().waitFor();
     await page.locator('#player-toggle').click();
@@ -85,9 +71,8 @@ for (const width of [360, 390]) {
     await page.screenshot({ path: `test-results/browser-shots/s4-reader-${width}.png` });
   });
 
-  test(`S4-7 saved at ${width}px: no scroll, 44px targets`, async ({ page }) => {
+  test(`S4-7 saved at ${width}px: no scroll, 44px targets`, async ({ sub: page }) => {
     await page.setViewportSize({ width, height: 740 });
-    await login(page, S4_MOBILE_USERS[width].saved);
     await page.goto('/app/saved');
     await page.locator('#fe-content').waitFor();
 

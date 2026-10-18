@@ -2,13 +2,14 @@
 
 use App\Models\Lesson;
 use App\Models\VocabularyWord;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // R4 vocabulary notebook (VOCAB-01, AC-25): persistent, owner-isolated,
 // deterministic SRS scheduling with Again/Hard/Good/Easy.
 
 test('a student saves a lesson word with glossary reuse and sees it after reload', function () {
-    $student = ContentFixtures::student();
+    $student = ContentFixtures::subscribedStudent();
     $topic = ContentFixtures::publishedTopic(['slug' => 'r4-gloss']);
     $lesson = Lesson::factory()->for($topic)->create([
         'level' => 'A2',
@@ -37,11 +38,14 @@ test('a student saves a lesson word with glossary reuse and sees it after reload
         ->and($entry->status)->toBe('learning');
 
     // A fresh GET (reload) lists the saved word with its lesson context.
-    $this->actingAs($student)
+    // Public-slice port (ADR-0002): English survives the encoded page;
+    // the Persian meaning is asserted on the decoded props.
+    $reload = $this->actingAs($student)
         ->get(route('words.index'))
         ->assertOk()
-        ->assertSee('Crowded')
-        ->assertSee('شلوغ');
+        ->assertSee('Crowded');
+    $listed = collect($reload->inertiaProps()['words']);
+    expect($listed->firstWhere('word', 'Crowded')['meaning_fa'])->toBe('شلوغ');
 
     // Duplicate (case-insensitive) is refused, not doubled.
     $this->actingAs($student)
@@ -51,8 +55,8 @@ test('a student saves a lesson word with glossary reuse and sees it after reload
 });
 
 test('guests cannot save and students cannot touch each others words', function () {
-    $owner = ContentFixtures::student();
-    $other = ContentFixtures::student();
+    $owner = ContentFixtures::subscribedStudent();
+    $other = ContentFixtures::subscribedStudent();
     $entry = VocabularyWord::factory()->for($owner)->create(['word' => 'habit']);
 
     $this->postJson(route('words.store'), ['word' => 'habit'])->assertUnauthorized();
@@ -73,7 +77,7 @@ test('guests cannot save and students cannot touch each others words', function 
 });
 
 test('grading reschedules deterministically and known words leave review', function () {
-    $student = ContentFixtures::student();
+    $student = ContentFixtures::subscribedStudent();
     $entry = VocabularyWord::factory()->for($student)->create([
         'word' => 'opportunity',
         'due_at' => now()->subDay(),
@@ -111,14 +115,18 @@ test('grading reschedules deterministically and known words leave review', funct
         ->postJson(route('words.grade', $entry), ['grade' => 'good'])
         ->assertStatus(422);
 
-    $this->actingAs($student)
+    $review = $this->actingAs($student)
         ->get(route('words.review'))
         ->assertOk()
-        ->assertSee('واژه‌ای برای مرور نیست');
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Words/Review')
+            ->where('card', null)
+            ->where('remaining', 0));
+    expect($review->inertiaProps()['card'])->toBeNull();
 });
 
 test('editing notes and removing a word persist across reloads', function () {
-    $student = ContentFixtures::student();
+    $student = ContentFixtures::subscribedStudent();
     $entry = VocabularyWord::factory()->for($student)->create(['word' => 'progress']);
 
     $this->actingAs($student)
@@ -128,10 +136,10 @@ test('editing notes and removing a word persist across reloads', function () {
         ])
         ->assertOk();
 
-    $this->actingAs($student)
+    $edited = $this->actingAs($student)
         ->get(route('words.index'))
-        ->assertOk()
-        ->assertSee('پیشرفت');
+        ->assertOk();
+    expect(collect($edited->inertiaProps()['words'])->firstWhere('word', 'progress')['meaning_fa'])->toBe('پیشرفت');
 
     $this->actingAs($student)
         ->deleteJson(route('words.destroy', $entry))
@@ -139,8 +147,8 @@ test('editing notes and removing a word persist across reloads', function () {
 
     expect(VocabularyWord::where('user_id', $student->id)->count())->toBe(0);
 
-    $this->actingAs($student)
+    $emptied = $this->actingAs($student)
         ->get(route('words.index'))
-        ->assertOk()
-        ->assertSee('هنوز واژه‌ای ذخیره نکرده‌ای');
+        ->assertOk();
+    expect($emptied->inertiaProps()['words'])->toBe([]);
 });

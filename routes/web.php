@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountSettingsController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\LandingController;
@@ -63,6 +64,15 @@ Route::middleware(['auth', 'staff'])->group(function () {
     // S8 placement management (scope §5): publish through the same shared
     // action the placement:publish CLI uses.
     Route::post('/staff/placement/{test}/publish', [StaffPlacementController::class, 'publish'])->name('staff.placement.publish');
+    // Panel-based one-click backup & restore (OPS-01): staff-only,
+    // private no-store. The Filament Backups page posts here so every
+    // destructive step has an HTTP-testable server-side boundary.
+    Route::post('/staff/backups', [BackupController::class, 'store'])->middleware('throttle:6,1')->name('staff.backups.store');
+    Route::post('/staff/backups/upload', [BackupController::class, 'upload'])->middleware('throttle:6,1')->name('staff.backups.upload');
+    Route::get('/staff/backups/{backup}', [BackupController::class, 'show'])->name('staff.backups.status');
+    Route::get('/staff/backups/{backup}/download', [BackupController::class, 'download'])->name('staff.backups.download');
+    Route::delete('/staff/backups/{backup}', [BackupController::class, 'destroy'])->name('staff.backups.destroy');
+    Route::post('/staff/backups/{backup}/restore', [BackupController::class, 'restore'])->middleware('throttle:6,1')->name('staff.backups.restore');
 });
 
 // S2 PWA shell + TWA association (scope §18). The static public/robots.txt
@@ -72,7 +82,6 @@ Route::get('/sw.js', [PwaController::class, 'serviceWorker'])->name('pwa.sw');
 Route::get('/offline', [PwaController::class, 'offline'])->name('pwa.offline');
 // S3 library (scope §17.2): replaces the S2 /app stub with the real topic
 // list. Same path and route name, so the manifest start_url keeps working.
-Route::get('/app', [TopicLibraryController::class, 'index'])->name('app.home');
 Route::get('/.well-known/assetlinks.json', [PwaController::class, 'assetlinks'])->name('pwa.assetlinks');
 Route::get('/robots.txt', [PwaController::class, 'robots'])->name('robots');
 
@@ -89,37 +98,46 @@ Route::patch('/app/account/settings', [AccountSettingsController::class, 'update
     ->middleware(['auth', 'reject.disabled'])
     ->name('account.settings.update');
 
+// Paid-only learner app (owner requirement): library, Today, saved,
+// words/review, placement, progress, and bookmarks recompute an active
+// subscription per request (`subscribed`, after auth + reject.disabled).
+// Staff passes through; account/status/checkout/payment pages stay on
+// auth-only so purchasing and status remain reachable without access.
+Route::get('/app', [TopicLibraryController::class, 'index'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('app.home');
+
 Route::get('/app/saved', [SavedTopicsController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('app.saved');
 
 // R5 Today — «امروز»: the principal signed-in student destination.
 Route::get('/app/today', [TodayController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('today.index');
 
 // R4 vocabulary notebook (VOCAB-01): owner-scoped, private no-store.
 // The review page is registered before the {word} binding so /review
 // never resolves as a word id.
 Route::get('/app/words/review', [VocabularyController::class, 'review'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.review');
 Route::get('/app/words', [VocabularyController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.index');
 Route::post('/app/words', [VocabularyController::class, 'store'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.store');
 Route::patch('/app/words/{word}', [VocabularyController::class, 'update'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('word')
     ->name('words.update');
 Route::delete('/app/words/{word}', [VocabularyController::class, 'destroy'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('word')
     ->name('words.destroy');
 Route::post('/app/words/{word}/grade', [VocabularyController::class, 'grade'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('word')
     ->name('words.grade');
 
@@ -127,20 +145,20 @@ Route::post('/app/words/{word}/grade', [VocabularyController::class, 'grade'])
 // private no-store JSON. The service worker never caches these (POST +
 // network-only allowlist), so the S2 cache proofs keep passing.
 Route::post('/app/progress', [LessonProgressController::class, 'store'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('progress.store');
 Route::post('/app/progress/complete', [LessonProgressController::class, 'complete'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('progress.complete');
 Route::post('/app/progress/reset', [LessonProgressController::class, 'reset'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('progress.reset');
 
 Route::post('/app/bookmarks', [BookmarkController::class, 'store'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('bookmarks.store');
 Route::delete('/app/bookmarks/{topic}', [BookmarkController::class, 'destroy'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('bookmarks.destroy');
 
 // S1 reader: level travels in the URL (?level=XX), never in stored state.
@@ -178,28 +196,28 @@ Route::get('/media/payment-requests/{paymentRequest}/receipt', [PaymentReceiptCo
 // saves, server-side marking, explicit accept. Every HTML/JSON response
 // here is private, no-store; the SW allowlist never caches them.
 Route::get('/app/placement', [PlacementController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('placement.index');
 Route::post('/app/placement/start', [PlacementController::class, 'start'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('placement.start');
 Route::get('/app/placement/{attempt}', [PlacementController::class, 'show'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('attempt')
     ->name('placement.show');
 Route::post('/app/placement/{attempt}/answer', [PlacementController::class, 'answer'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('attempt')
     ->name('placement.answer');
 Route::post('/app/placement/{attempt}/submit', [PlacementController::class, 'submit'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('attempt')
     ->name('placement.submit');
 Route::get('/app/placement/result/{attempt}', [PlacementController::class, 'result'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('attempt')
     ->name('placement.result');
 Route::post('/app/placement/{attempt}/accept', [PlacementController::class, 'accept'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('attempt')
     ->name('placement.accept');

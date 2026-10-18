@@ -3,6 +3,7 @@
 use App\Models\Lesson;
 use App\Models\User;
 use Database\Seeders\S1SampleSeeder;
+use Inertia\Testing\AssertableInertia;
 use Livewire\Features\SupportAutoInjectedAssets\SupportAutoInjectedAssets;
 
 // S1-1: anonymous sample journey. Each level view shows only that lesson's
@@ -18,30 +19,52 @@ beforeEach(function () {
 });
 
 test('anonymous visitor reads the A2 sample lesson with only its body and audio', function () {
-    $response = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']));
+    // M1 port (ADR-0002): the same no-mixing claims through the Inertia
+    // transport. Persian copy and LTR attributes render client-side and
+    // are proven in tests/browser/s1-journey.spec.ts; HTTP asserts the
+    // root document direction plus the exact decoded props.
+    // Paid-only slice: the learner URL redirects to the public sample
+    // experience (owner requirement); the claims hold on the followed page.
+    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
+        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
+    $response = $this->followRedirects($redirect);
 
     $response->assertOk()
-        ->assertSee('lang="fa" dir="rtl"', false)
-        ->assertSee('lang="en" dir="ltr"', false);
+        ->assertSee('lang="fa" dir="rtl"', false);
 
     $a2Audio = route('media.lesson.audio', $this->a2);
-    $response->assertSee('On Saturday morning, Sara walks');
-    $response->assertSee($a2Audio, false);
+    $response->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('Sample/Show')
+        ->where('lesson.level', 'A2')
+        ->where('lesson.audio_url', $a2Audio)
+        ->where('topic.slug', 'city-park'));
+
+    $props = $response->inertiaProps();
+    expect(implode("\n", $props['sentences']))->toContain('On Saturday morning, Sara walks')
+        ->and(implode("\n", $props['sentences']))->not->toContain('Sara loves Saturday mornings')
+        ->and($response->getContent())->not->toContain(route('media.lesson.audio', $this->b1, false));
 
     // The B1 lesson's body and audio are absent: no cross-level mixing.
     $response->assertDontSee('Sara loves Saturday mornings');
-    $response->assertDontSee(route('media.lesson.audio', $this->b1), false);
 });
 
 test('anonymous visitor reads the B1 sample lesson with only its body and audio', function () {
-    $response = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'B1']));
+    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'B1']))
+        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'B1']));
+    $response = $this->followRedirects($redirect);
 
-    $response->assertOk();
+    $b1Audio = route('media.lesson.audio', $this->b1);
+    $response->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('Sample/Show')
+        ->where('lesson.level', 'B1')
+        ->where('lesson.audio_url', $b1Audio));
+
+    $props = $response->inertiaProps();
+    expect(implode("\n", $props['sentences']))->toContain('Sara loves Saturday mornings')
+        ->and(implode("\n", $props['sentences']))->not->toContain('On Saturday morning, Sara walks');
+
     $response->assertSee('Sara loves Saturday mornings');
-    $response->assertSee(route('media.lesson.audio', $this->b1), false);
-
     $response->assertDontSee('On Saturday morning, Sara walks');
-    $response->assertDontSee(route('media.lesson.audio', $this->a2), false);
 });
 
 test('sample audio bytes differ per level so a mix-up is detectable', function () {
@@ -55,50 +78,58 @@ test('sample audio bytes differ per level so a mix-up is detectable', function (
         ->not->toBe($b1->headers->get('Content-Length'));
 });
 
-test('learner layout loads no Filament assets and no second Alpine copy', function () {
-    // S4 adaptation: the learner layout now owns the persistent player via
-    // Livewire navigate (@persist + wire:navigate), so `livewire` is
-    // expected in the HTML and blade sources. Filament and a second Alpine
-    // copy stay forbidden: Alpine arrives only once via the Livewire
-    // bundle, never via CDN or a duplicate script.
+test('learner shell loads no Filament assets and binds exactly one audio source', function () {
+    // M1 port (ADR-0002): the persistent player moved from Blade
+    // @persist + reader-player.js to the React persistent layout. The
+    // root document carries no Filament/Livewire/Alpine payload; the
+    // single audio binding travels as exactly one authorized audio_url
+    // prop for the active level (the element itself renders client-side
+    // and is proven singular in tests/browser/s1-journey.spec.ts).
+    // Static reset: Livewire's auto-injection flag persists across tests
+    // in one process (set by Filament panel tests); a real HTTP request
+    // starts clean, so the test resets it to prove the shell itself.
     if (class_exists(SupportAutoInjectedAssets::class)) {
         SupportAutoInjectedAssets::$hasRenderedAComponentThisRequest = false;
         SupportAutoInjectedAssets::$forceAssetInjection = false;
     }
 
-    $html = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
+    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
+        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
+    $html = $this->followRedirects($redirect)
         ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Sample/Show')
+            ->where('lesson.audio_url', route('media.lesson.audio', $this->a2)))
         ->getContent();
 
     expect($html)->not->toContain('filament')
-        ->and($html)->not->toContain('alpinejs');
+        ->and($html)->not->toContain('alpinejs')
+        ->and($html)->not->toContain('livewire');
 
-    // The persistent player is present exactly once in the layout.
-    expect(substr_count($html, 'id="lesson-audio"'))->toBe(1);
-    expect($html)->toContain('persist');
-
-    // Structural backstop: none of the learner/error views reference
-    // Filament or a second Alpine at the source level.
-    $views = array_merge(
-        glob(resource_path('views/layouts/learner*.blade.php')) ?: [],
-        glob(resource_path('views/reader/*.blade.php')) ?: [],
-        glob(resource_path('views/errors/*.blade.php')) ?: []
-    );
-    expect($views)->not->toBeEmpty();
-    foreach ($views as $view) {
-        $source = strtolower((string) file_get_contents($view));
-        expect($source)->not->toContain('filament')
-            ->and($source)->not->toContain('alpine');
+    // Structural backstop: the React surface references no second audio
+    // owner and no admin stack at the source level.
+    $sources = '';
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(resource_path('js'))) as $file) {
+        if ($file->isFile() && in_array($file->getExtension(), ['ts', 'tsx'], true)) {
+            $sources .= (string) file_get_contents($file->getPathname());
+        }
     }
+    expect(strtolower($sources))->not->toContain('filament')
+        ->and(strtolower($sources))->not->toContain('alpine');
 });
 
 test('two users see the same public sample without leaking each other', function () {
     User::factory()->create(['email' => 'student-a@example.com']);
     User::factory()->create(['email' => 'student-b@example.com']);
 
-    $this->actingAs(User::where('email', 'student-a@example.com')->first())
+    // Paid-only slice: ineligible learners resolve the sample through
+    // the public experience (redirect); the followed page carries only
+    // the viewer's own shared user, never the other account.
+    $redirect = $this->actingAs(User::where('email', 'student-a@example.com')->first())
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
-        ->assertOk()
-        ->assertSee('On Saturday morning, Sara walks')
-        ->assertDontSee('student-b@example.com');
+        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
+    $followed = $this->followRedirects($redirect)->assertOk();
+    $props = $followed->inertiaProps();
+    expect(implode("\n", $props['sentences']))->toContain('On Saturday morning, Sara walks')
+        ->and($followed->getContent())->not->toContain('student-b@example.com');
 });

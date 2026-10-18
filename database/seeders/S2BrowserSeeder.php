@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Actions\ApprovePayment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -94,5 +95,31 @@ class S2BrowserSeeder extends Seeder
             ['email' => self::BROWSER_STAFF_EMAIL],
             ['name' => 'Browser Staff', 'password' => self::BROWSER_PASSWORD, 'is_staff' => true]
         );
+
+        // Paid-only lane: one subscribed learner (TEST-ONLY, 365-day
+        // window granted through the shared action) so Chromium journeys
+        // that need an active subscription log in instead of minting
+        // production-shaped money rows from the browser.
+        $this->seedSubscribedLearner();
+    }
+
+    public const BROWSER_SUB_EMAIL = 'browser-sub@example.com';
+
+    private function seedSubscribedLearner(): void
+    {
+        $learner = User::updateOrCreate(
+            ['email' => self::BROWSER_SUB_EMAIL],
+            ['name' => 'Browser Sub', 'password' => self::BROWSER_PASSWORD]
+        );
+
+        $active = $learner->subscription !== null
+            && $learner->subscription->revoked_at === null
+            && $learner->subscription->starts_at <= now()
+            && now() < $learner->subscription->expires_at;
+
+        if (! $active) {
+            $staff = User::where('email', self::BROWSER_STAFF_EMAIL)->firstOrFail();
+            ApprovePayment::grant($learner->id, $staff, 365, 'browser lane fixture (TEST)');
+        }
     }
 }

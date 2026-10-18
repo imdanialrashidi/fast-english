@@ -4,6 +4,7 @@ use App\Models\PaymentRequest;
 use App\Models\Plan;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Illuminate\Http\UploadedFile;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S7 pre-slice 3: learner-facing validation and status messages on the
@@ -56,10 +57,17 @@ test('receipt validation errors are Persian', function () {
     $message = (string) json_encode($response->json(), JSON_UNESCAPED_UNICODE);
     expect($message)->toContain('رسید');
 
-    // The HTML page renders the Persian field error after redirect.
-    $page = $this->actingAs($this->studentA)
+    // The Inertia page renders the Persian field error after redirect:
+    // the 302 carries the error bag, and the next visit shares it.
+    $this->actingAs($this->studentA)
         ->post(route('payments.receipt.store', $row), ['receipt' => $bad])
-        ->assertStatus(302);
-    $follow = $this->actingAs($this->studentA)->get(route('payments.show', $row))->assertOk()->getContent() ?? '';
-    expect($follow)->toContain('رسید');
+        ->assertStatus(302)
+        ->assertSessionHasErrors('receipt');
+    $bag = session('errors');
+    expect($bag->first('receipt'))->toContain('رسید');
+    $this->actingAs($this->studentA)
+        ->get(route('payments.show', $row))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Payments/Show'));
 });

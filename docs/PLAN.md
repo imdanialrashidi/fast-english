@@ -46,6 +46,20 @@ Non-goals for S0: real lessons library, player polish, PWA/TWA builds, payments,
 - S8 covers AC-01/02 (public legs), AC-18, AC-21, AC-23 (copy/infra legs).
 - S9 covers AC-19/20/21/22/23 final PASS + full AC sweep.
 
+## Frontend migration M0 → M6 (2026-10-10 owner-approved; transport only, behavior preserved)
+
+S0–S9/R1–R5 above remain the behavioral milestones; migration slices below are frontend transport with per-slice parity proof. Backend, routes/URLs, money/time rules, and AC proof obligations are unchanged. Status 2026-10-11: M0–M5 delivered in the working tree (uncommitted); M6 pending. Exact sequence and evidence live in `docs/exec-plans/active/frontend-inertia-migration.md`.
+
+| Slice | Output | Exit condition | Status |
+|---|---|---|---|
+| M0 — Shell + auth parity | Inertia 3 + React 19 + TS + Tailwind 4 + shadcn/ui shell, single light theme, session/CSRF intact; login/register/logout/reset pages | Fortify flows pass on PostgreSQL; no dark code; no learner Livewire | Delivered 2026-10-11 |
+| M1 — Public + library + reader | Landing/sample/trust/download + library + reader + covers as Inertia pages | Sample without login; level-URL semantics + missing-level message; RTL/LTR; cues + fallback | Delivered 2026-10-11 |
+| M2 — Player persistence | React persistent-layout audio (play/pause/seek/±10s/speed) | In-layout nav preserves; switch/logout stops; one element | Delivered with M1/M3 2026-10-11 |
+| M3 — Returning user | Progress/bookmarks/account/settings/Today/words-SRS/placement as Inertia | Resume/isolation/completion; SRS determinism; pinned-version exam | Delivered 2026-10-11 |
+| M4 — Payment views | Subscribe/payments status/cancel/receipt-upload UI as Inertia | Snapshot immutability; upload validation; ownership; approval stays Filament | Delivered 2026-10-11 |
+| M5 — PWA + hardening + obsolete removal | Manifest/SW/offline/robots/assetlinks/sitemap intact; no-store/SW-allowlist re-audit; Blade learner views + `app/Livewire` + `reader-player.js` + `theme.js` removed after parity | No private SW cache; Range re-proven; no admin assets in learner bundle | Delivered 2026-10-11 |
+| M6 — Full regression + handover | Entire Pest + Playwright suites green; rendered inspection desktop + mobile | All migration acceptance criteria PASS with evidence | Pending |
+
 ## Fixtures vs launch boundaries
 
 Dev/test fixtures (clearly labelled, never production): test users/staff, one topic with two real lessons, one local/test-only valid subscription seed, synthetic receipt fixture (§21). Seeds never create free production subscriptions or default credentials (§21). Missing real prices, bank destination, legal text, brand, domain, SMTP, signing identity, hosting, staff roster, or content (§25) disables only its commercial boundary (public sale / public exam / release APK / real email) with a clear BLOCKED state — local/staging work continues on fixtures. No fabricated price/card/legal text is ever used for sale (§25).

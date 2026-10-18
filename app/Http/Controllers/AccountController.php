@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaymentRequest;
+use App\Support\Entitlement;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * S6 account page (scope §6, §17): profile + subscription + payment state.
@@ -14,7 +17,7 @@ use Illuminate\Http\Request;
  */
 class AccountController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $user = $request->user();
         if ($user === null || $user->disabled_at !== null) {
@@ -32,18 +35,33 @@ class AccountController extends Controller
 
         $subscription = $user->subscription;
 
-        return response()
-            ->view('account', [
-                'openRequest' => $openRequest,
-                'latestRequest' => $latestRequest,
-                'subscription' => $subscription,
-            ])
-            ->withHeaders($this->noStore());
-    }
+        // Public-slice Inertia transport (ADR-0002): the same
+        // subscription + open/latest request derivation with one clear
+        // CTA. Props are an allowlist — staff-only and private fields
+        // (internal_note, receipt_path, bank_reference, sender_last4)
+        // never travel to this page. Display-name editing moved here
+        // from the retired learner Livewire component (same
+        // required/string/255 server rule, same isolation).
+        $mapRequest = fn (?PaymentRequest $row) => $row ? [
+            'id' => $row->id,
+            'status' => (string) $row->status,
+            'plan_name' => (string) $row->plan_name_snapshot,
+            'url' => route('payments.show', $row),
+        ] : null;
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
+        return Inertia::render('Account/Index', [
+            'user' => [
+                'name' => (string) $user->name,
+                'email' => (string) $user->email,
+                'preferred_level' => $user->preferred_level,
+                'daily_goal_minutes' => (int) ($user->daily_goal_minutes ?? 10),
+            ],
+            'subscription' => $subscription ? [
+                'active' => Entitlement::active($user),
+                'expires_at' => $subscription->expires_at?->timezone('Asia/Tehran')->format('Y/m/d H:i'),
+            ] : null,
+            'openRequest' => $mapRequest($openRequest),
+            'latestRequest' => $mapRequest($latestRequest),
+        ]);
     }
 }

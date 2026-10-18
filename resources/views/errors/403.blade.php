@@ -1,4 +1,4 @@
-@extends('layouts.learner')
+@extends('layouts.public')
 
 @section('title', 'دسترسی ندارید')
 

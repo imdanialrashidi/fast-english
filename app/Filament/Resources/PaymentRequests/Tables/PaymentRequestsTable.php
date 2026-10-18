@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PaymentRequests\Tables;
 
 use App\Filament\Resources\PaymentRequests\PaymentReviewActions;
+use App\Models\PaymentRequest;
 use App\Support\Toman;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -21,7 +22,7 @@ class PaymentRequestsTable
         return $table
             ->modifyQueryUsing(fn ($query) => $query
                 ->with(['user'])
-                ->orderByRaw("case when status = 'pending' then 0 else 1 end")
+                ->orderByRaw("case when status = '".PaymentRequest::STATUS_PENDING."' then 0 else 1 end")
                 ->orderBy('created_at'))
             ->columns([
                 TextColumn::make('id')
@@ -50,11 +51,11 @@ class PaymentRequestsTable
             ->filters([
                 SelectFilter::make('status')
                     ->options([
-                        'pending' => 'Pending',
-                        'awaiting_receipt' => 'Awaiting receipt',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
-                        'cancelled' => 'Cancelled',
+                        PaymentRequest::STATUS_PENDING => 'Pending',
+                        PaymentRequest::STATUS_AWAITING_RECEIPT => 'Awaiting receipt',
+                        PaymentRequest::STATUS_APPROVED => 'Approved',
+                        PaymentRequest::STATUS_REJECTED => 'Rejected',
+                        PaymentRequest::STATUS_CANCELLED => 'Cancelled',
                     ]),
             ])
             ->recordActions([

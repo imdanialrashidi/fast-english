@@ -8,6 +8,7 @@ import { promises as fs } from 'node:fs';
 const APP = '/app';
 const READER_A2 = '/app/topics/city-park?level=A2';
 const ACCOUNT = '/account';
+const SETTINGS = '/app/account/settings';
 const LOGIN = '/login';
 const OFFLINE_MESSAGE = 'برای ادامه به اینترنت وصل شوید';
 const SW_VERSION_FILE = 'storage/app/sw-version';
@@ -25,9 +26,11 @@ async function login(page, user: { email: string; password: string }) {
   await page.getByLabel('ایمیل', { exact: true }).fill(user.email);
   await page.getByLabel('رمز عبور', { exact: true }).fill(user.password);
   await page.getByRole('button', { name: 'ورود' }).click();
-  // Fortify redirects a successful login to /account; wait for the POST
+  // Fortify redirects a successful login to /account — or to the saved
+  // intended URL when an earlier guest visit bounced to login first
+  // (paid-only slice: guest hits on /app now bounce). Wait for the POST
   // to complete before any further navigation (no race with goto).
-  await page.waitForURL('**/account**');
+  await page.waitForURL(/\/(app|app\/account|account)$/);
 }
 
 async function serviceWorkerReady(page) {
@@ -168,11 +171,13 @@ test('S2-4 a new service worker never reloads during playback or a dirty form', 
   expect(playing).toBe(true);
 
   // A dirty form also survives: type, navigate, confirm no reload happened.
-  await page.goto(ACCOUNT);
+  // (Public-slice port: display-name editing moved from the retired
+    // learner Livewire component to the Inertia settings form.)
+  await page.goto(SETTINGS);
   await expect(page.locator('#pwa-update')).toBeVisible();
-  await page.locator('#display-name').fill('Unsaved Draft Name');
-  expect(page.url()).toContain(ACCOUNT);
-  await expect(page.locator('#display-name')).toHaveValue('Unsaved Draft Name');
+  await page.locator('#settings-name').fill('Unsaved Draft Name');
+  expect(page.url()).toContain(SETTINGS);
+  await expect(page.locator('#settings-name')).toHaveValue('Unsaved Draft Name');
 
   // User-triggered refresh activates the new worker and evicts old caches.
   // Wait for the NEXT navigation: waitForLoadState would resolve instantly
@@ -188,7 +193,7 @@ test('S2-4 a new service worker never reloads during playback or a dirty form', 
       expect(after, `old cache evicted: ${key}`).not.toContain(key);
     }
   }
-  expect(page.url()).toContain(ACCOUNT);
+  expect(page.url()).toContain(SETTINGS);
 
   await fs.rm(SW_VERSION_FILE, { force: true });
 });
@@ -219,6 +224,10 @@ test('S2-3 logout clears the player and back/forward leaks no first-account data
   await page.getByRole('button', { name: 'خروج از حساب' }).click();
   await expect(page.locator('#lesson-audio')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(A.email);
+  // Drain in-flight requests (e.g. the audio stream) before the next
+  // login: a zombie response carrying the invalidated session cookie
+  // would otherwise overwrite the fresh login cookie on arrival.
+  await page.waitForLoadState('networkidle');
 
   await login(page, B);
   await page.goto(ACCOUNT);

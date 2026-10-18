@@ -11,28 +11,42 @@ namespace App\Support;
  */
 final class PlacementLevel
 {
+    /**
+     * @return list<array{max: int, level: string}>
+     */
+    private static function bands(): array
+    {
+        return [
+            ['max' => 3, 'level' => 'A1'],
+            ['max' => 7, 'level' => 'A2'],
+            ['max' => 11, 'level' => 'B1'],
+            ['max' => 15, 'level' => 'B2'],
+            ['max' => 18, 'level' => 'C1'],
+            ['max' => 20, 'level' => 'C2'],
+        ];
+    }
+
     public static function forScore(int $score): string
     {
-        return match (true) {
-            $score <= 3 => 'A1',
-            $score <= 7 => 'A2',
-            $score <= 11 => 'B1',
-            $score <= 15 => 'B2',
-            $score <= 18 => 'C1',
-            default => 'C2',
-        };
+        foreach (self::bands() as $band) {
+            if ($score <= $band['max']) {
+                return $band['level'];
+            }
+        }
+
+        return 'C2';
     }
 
     /** @return array<string, array{int, int}> */
     public static function fixtureMap(): array
     {
-        return [
-            'A1' => [0, 3],
-            'A2' => [4, 7],
-            'B1' => [8, 11],
-            'B2' => [12, 15],
-            'C1' => [16, 18],
-            'C2' => [19, 20],
-        ];
+        $map = [];
+        $floor = 0;
+        foreach (self::bands() as $band) {
+            $map[$band['level']] = [$floor, $band['max']];
+            $floor = $band['max'] + 1;
+        }
+
+        return $map;
     }
 }

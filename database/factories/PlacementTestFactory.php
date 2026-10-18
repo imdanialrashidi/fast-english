@@ -22,7 +22,7 @@ class PlacementTestFactory extends Factory
             'version' => 's7-test-'.$this->faker->unique()->lexify('??????').' (TEST)',
             'status' => PlacementTest::STATUS_DRAFT,
             'is_current' => false,
-            'scoring_rules' => ['note' => 'FIXTURE — not a validated CEFR scale'],
+            'scoring_rules' => ['note' => 'FIXTURE — not a validated CEFR scale', 'map' => \App\Support\PlacementLevel::fixtureMap()],
         ];
     }
 }

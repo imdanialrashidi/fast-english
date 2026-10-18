@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\Lesson;
 use App\Models\User;
-use App\Support\SubscriptionAccess;
+use App\Support\Entitlement;
 
 /**
  * S6 eligibility (scope §8):
@@ -32,10 +32,10 @@ class LessonPolicy
             return false;
         }
 
-        if ($user->is_staff) {
+        if (Entitlement::staff($user)) {
             return true;
         }
 
-        return SubscriptionAccess::eligible($user);
+        return Entitlement::active($user);
     }
 }

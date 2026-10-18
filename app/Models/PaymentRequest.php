@@ -97,4 +97,40 @@ class PaymentRequest extends Model
     {
         return in_array($this->status, self::OPEN_STATUSES, true);
     }
+
+    /**
+     * Server-written immutable snapshot (scope §10.2): the single shape
+     * shared by the learner receipt page, the panel queue, and the
+     * review confirmations. Field changes happen here, not in renderers.
+     *
+     * @return array{plan_name: string, amount_toman: int, amount_label: string, duration_days: int, card_number: string, holder_name: string, bank_name: string}
+     */
+    public function snapshot(): array
+    {
+        $destination = is_array($this->destination_snapshot) ? $this->destination_snapshot : [];
+
+        return [
+            'plan_name' => (string) ($this->plan_name_snapshot ?? ''),
+            'amount_toman' => (int) ($this->amount_toman_snapshot ?? 0),
+            'amount_label' => \App\Support\Toman::format((int) ($this->amount_toman_snapshot ?? 0)),
+            'duration_days' => (int) ($this->duration_days_snapshot ?? 0),
+            'card_number' => (string) ($destination['card_number'] ?? ''),
+            'holder_name' => (string) ($destination['holder_name'] ?? ''),
+            'bank_name' => (string) ($destination['bank_name'] ?? ''),
+        ];
+    }
+
+    /**
+     * One-line confirmation copy for the review actions: plan, amount,
+     * duration from the snapshot above — never re-derived per caller.
+     */
+    public function snapshotLine(): string
+    {
+        $snapshot = $this->snapshot();
+        if ($snapshot['plan_name'] === '' && $snapshot['amount_toman'] === 0) {
+            return 'Confirm to apply this subscription change.';
+        }
+
+        return "Snapshot: {$snapshot['plan_name']} — {$snapshot['amount_label']} — {$snapshot['duration_days']} days. Confirm to apply.";
+    }
 }

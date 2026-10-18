@@ -40,7 +40,7 @@ class BookmarkController extends Controller
         );
 
         return response()->json(['bookmarked' => true])
-            ->withHeaders($this->noStore());
+            ->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
     public function destroy(Request $request, Topic $topic)
@@ -55,12 +55,7 @@ class BookmarkController extends Controller
             ->delete();
 
         return response()->json(['bookmarked' => false])
-            ->withHeaders($this->noStore());
+            ->withHeaders(\App\Http\Responses\NoStore::headers());
     }
 
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
-    }
 }

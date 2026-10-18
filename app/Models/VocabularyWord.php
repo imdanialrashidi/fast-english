@@ -65,7 +65,7 @@ class VocabularyWord extends Model
     protected static function booted(): void
     {
         static::saving(function (VocabularyWord $entry) {
-            $entry->word_key = mb_strtolower(trim((string) $entry->word));
+            $entry->word_key = \App\Support\Vocabulary::key((string) $entry->word);
         });
     }
 }

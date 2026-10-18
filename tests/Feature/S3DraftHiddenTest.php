@@ -41,6 +41,11 @@ beforeEach(function () {
 });
 
 test('draft topics are absent from browse, search, filter, and direct URLs', function () {
+    // Paid-only slice: anonymous browsing bounces to login; a subscribed
+    // learner sees the list with drafts excluded.
+    $this->get('/app')->assertRedirect(route('login'));
+
+    $this->actingAs(ContentFixtures::subscribedStudent());
     foreach ([$this->get('/app'), $this->get('/app?q=Hidden'), $this->get('/app?level=A2')] as $response) {
         $response->assertOk();
         $response->assertDontSee('S3 Hidden Draft');
@@ -54,7 +59,7 @@ test('draft topics are absent from browse, search, filter, and direct URLs', fun
 });
 
 test('archived lessons and lesson-less topics never appear in the library', function () {
-    $response = $this->get('/app');
+    $response = $this->actingAs(ContentFixtures::subscribedStudent())->get('/app');
     $response->assertOk();
     $response->assertDontSee('S3 Archived Only');
     $response->assertDontSee('S3 Empty Shelf');

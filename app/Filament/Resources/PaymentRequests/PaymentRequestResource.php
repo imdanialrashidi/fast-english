@@ -6,6 +6,7 @@ use App\Filament\Resources\PaymentRequests\Pages\ListPaymentRequests;
 use App\Filament\Resources\PaymentRequests\Pages\ViewPaymentRequest;
 use App\Filament\Resources\PaymentRequests\Tables\PaymentRequestsTable;
 use App\Models\PaymentRequest;
+use App\Support\Entitlement;
 use App\Support\Toman;
 use BackedEnum;
 use Filament\Infolists\Components\ImageEntry;
@@ -49,17 +50,17 @@ class PaymentRequestResource extends Resource
                 TextEntry::make('plan_name_snapshot')->label('Plan'),
                 TextEntry::make('amount_toman_snapshot')
                     ->label('Amount (toman)')
-                    ->getStateUsing(fn ($record) => Toman::format((int) $record->amount_toman_snapshot)),
+                    ->getStateUsing(fn ($record) => $record->snapshot()['amount_label']),
                 TextEntry::make('duration_days_snapshot')->label('Duration (days)'),
                 TextEntry::make('destination_card')
                     ->label('Destination card')
-                    ->getStateUsing(fn ($record) => $record->destination_snapshot['card_number'] ?? '—'),
+                    ->getStateUsing(fn ($record) => $record->snapshot()['card_number'] !== '' ? $record->snapshot()['card_number'] : '—'),
                 TextEntry::make('destination_holder')
                     ->label('Card holder')
-                    ->getStateUsing(fn ($record) => $record->destination_snapshot['holder_name'] ?? '—'),
+                    ->getStateUsing(fn ($record) => $record->snapshot()['holder_name'] !== '' ? $record->snapshot()['holder_name'] : '—'),
                 TextEntry::make('destination_bank')
                     ->label('Bank')
-                    ->getStateUsing(fn ($record) => $record->destination_snapshot['bank_name'] ?? '—'),
+                    ->getStateUsing(fn ($record) => $record->snapshot()['bank_name'] !== '' ? $record->snapshot()['bank_name'] : '—'),
                 TextEntry::make('status')->badge(),
                 TextEntry::make('public_reason')->label('Public reason')->placeholder('—'),
                 TextEntry::make('created_at')->label('Opened')->dateTime(),
@@ -103,8 +104,6 @@ class PaymentRequestResource extends Resource
 
     private static function activeStaff(): bool
     {
-        $user = auth()->user();
-
-        return $user !== null && (bool) $user->is_staff && $user->disabled_at === null;
+        return Entitlement::staff(auth()->user());
     }
 }

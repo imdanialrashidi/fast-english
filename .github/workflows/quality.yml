@@ -30,5 +30,146 @@ jobs:
       - name: Validate template
         run: bash scripts/verify.sh
 
-      - name: Verify pinned packages against npm
-        run: node scripts/verify-package-integrity.mjs --online
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.2
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck the Inertia React surface
+        run: npm run typecheck
+
+      - name: Build frontend assets
+        run: npm run build
+
+  php:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: testing
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: dom, curl, libxml, mbstring, zip, pgsql, pdo_pgsql, gd, bcmath
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Check code style
+        run: vendor/bin/pint --test
+
+      - name: Run Pest on PostgreSQL (incl. money race suite)
+        run: php artisan test
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [frontend, php]
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: testing
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      BASE_URL: http://127.0.0.1:8111
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: dom, curl, libxml, mbstring, zip, pgsql, pdo_pgsql, gd, bcmath
+          coverage: none
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.2
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          composer install --prefer-dist --no-progress --no-interaction
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Prepare and seed the browser-lane database
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --force --seed
+
+      - name: Serve the application
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8111 > storage/logs/serve-ci.log 2>&1 &
+          for i in $(seq 1 60); do curl -fs http://127.0.0.1:8111/ >/dev/null && break; sleep 1; done
+
+      - name: Run migration browser specs (Chromium)
+        run: npx playwright test m0-inertia m1-journey design-theme --project=chromium

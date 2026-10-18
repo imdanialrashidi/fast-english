@@ -13,3 +13,5 @@ Artisan::command('inspire', function () {
 // production image. Runs daily; the command itself is idempotent.
 Schedule::command('receipts:retain-reviewed')->daily();
 Schedule::command('receipts:cleanup')->daily();
+// Panel backup retention (scope §19.3: 30-day rotation).
+Schedule::command('backup:prune')->daily();

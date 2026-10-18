@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Topic;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * S4 saved page (SAVE-01): the user's bookmarked topics, rendered with the
@@ -16,7 +18,7 @@ use Illuminate\Http\Request;
  */
 class SavedTopicsController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $user = $request->user();
         if ($user === null || $user->disabled_at !== null) {
@@ -37,14 +39,27 @@ class SavedTopicsController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return response()
-            ->view('saved.index', ['topics' => $topics])
-            ->withHeaders($this->noStore());
-    }
-
-    /** @return array<string, string> */
-    private function noStore(): array
-    {
-        return ['Cache-Control' => 'private, no-store'];
+        // Public-slice Inertia transport (ADR-0002): the same bookmark-
+        // scoped query and the same library row shape (metadata only —
+        // never bodies, glossaries, or audio). A bookmark never grants
+        // access; the reader policy still guards premium opens.
+        return Inertia::render('Saved/Index', [
+            'topics' => $topics->getCollection()->map(fn (Topic $topic) => [
+                'slug' => $topic->slug,
+                'title_en' => $topic->title_en,
+                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
+                'levels' => $topic->lessons->pluck('level')->filter()->values()->all(),
+                'first_level' => $topic->lessons->pluck('level')->filter()->values()->first(),
+                'extra_levels' => max(0, $topic->lessons->pluck('level')->filter()->count() - 1),
+                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
+                'reader_url' => route('reader.show', $topic),
+            ])->all(),
+            'pagination' => [
+                'current_page' => $topics->currentPage(),
+                'last_page' => $topics->lastPage(),
+                'total' => $topics->total(),
+                'per_page' => $topics->perPage(),
+            ],
+        ]);
     }
 }

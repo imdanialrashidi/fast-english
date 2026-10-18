@@ -1,32 +1,25 @@
 import { expect, test } from '@playwright/test';
+import { registerSubscribeAndApprove } from './helpers';
 
-// S7 answer flow on Chromium: a fresh learner starts the pinned attempt,
-// saves one answer per question through the real forms (resume-safe),
-// submits once, sees the score + suggested level + disclaimer, and accepts
-// the result into preferred_level. Real HTTP, no mocks. The fixture key
-// rotates (position-1)%4, so selecting the first option everywhere scores
+// S7 answer flow on Chromium: a fresh learner subscribes and is approved
+// (paid-only gate), then starts the pinned attempt, saves one answer per
+// question through the real forms (resume-safe), submits once, sees the
+// score + suggested level + disclaimer, and accepts the result into
+// preferred_level. Real HTTP, no mocks. The fixture key rotates
+// (position-1)%4, so selecting the first option everywhere scores
 // exactly 5 → A2; the client never receives the key (proven in Pest S7-1).
 
-async function registerFreshLearner(page, tag: string) {
-  const email = `s7-${tag}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
-  const password = 'password123';
-  await page.goto('/register');
-  await page.getByLabel('نام').fill(`S7 ${tag}`);
-  await page.getByLabel('ایمیل', { exact: true }).fill(email);
-  await page.getByLabel('رمز عبور', { exact: true }).fill(password);
-  await page.getByLabel('تکرار رمز عبور').fill(password);
-  await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
-}
-
 test('S7 flow: start, answer each question, submit once, accept sets level', async ({
-  page,
+  browser,
 }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await registerFreshLearner(page, 'flow');
+  // Paid-only slice: placement needs an approved subscription; the
+  // helper mints an isolated learner + approval per run.
+  const { learnerCtx, learner: page } = await registerSubscribeAndApprove(browser, 'flow');
+  try {
+    await page.setViewportSize({ width: 390, height: 844 });
 
-  // Start pins an attempt to the current published version.
-  await page.goto('/app/placement');
+    // Start pins an attempt to the current published version.
+    await page.goto('/app/placement');
   await page.getByRole('heading', { name: 'تعیین سطح (اختیاری)' }).waitFor();
   await page.getByRole('button', { name: 'شروع آزمون' }).click();
   await page.waitForURL('**/app/placement/*');
@@ -38,6 +31,22 @@ test('S7 flow: start, answer each question, submit once, accept sets level', asy
   expect(questionHtml).not.toContain('scoring_rules');
 
   // Save the first option on all 20 questions, one mutation per question.
+  // The confirmation text persists between saves, so the loop alone
+  // cannot prove the final POST landed: count real answer responses and
+  // drain all 20 before asserting server state after reload.
+  let savedCount = 0;
+  const saveIds = new Set<string>();
+  const saveStatuses: Array<string> = [];
+  page.on('response', (res) => {
+    const m = res.url().match(/\/app\/placement\/(\d+)\/answer/);
+    if (res.request().method() === 'POST' && m !== null) {
+      saveStatuses.push(`${res.status()}`);
+      if (res.ok()) {
+        savedCount += 1;
+        saveIds.add(m[1] as string);
+      }
+    }
+  });
   for (let position = 1; position <= 20; position++) {
     const section = page.locator(`section[aria-label="سؤال ${position}"]`);
     await expect(section).toBeVisible();
@@ -45,6 +54,9 @@ test('S7 flow: start, answer each question, submit once, accept sets level', asy
     await section.getByRole('button', { name: `ذخیره پاسخ سؤال ${position}` }).click();
     await expect(page.getByText('پاسخ ذخیره شد.')).toBeVisible();
   }
+  await expect.poll(() => savedCount, 'all 20 answer POSTs landed').toBe(20);
+  // All saves target the single pinned attempt (no cross-attempt split).
+  expect(saveIds.size).toBe(1);
 
   // Resume check: reload keeps the selections.
   await page.reload();
@@ -66,4 +78,7 @@ test('S7 flow: start, answer each question, submit once, accept sets level', asy
 
   await page.goto('/app/account');
   await expect(page.getByText('سطح ترجیحی: A2')).toBeVisible();
+  } finally {
+    await learnerCtx.close();
+  }
 });

@@ -7,6 +7,8 @@ use App\Models\PlacementQuestion;
 use App\Models\PlacementTest;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
+use Inertia\Testing\AssertableInertia;
+use Tests\Support\ContentFixtures;
 
 // S7 result, preference, versioning, and disabled state (scope §12,
 // AC-09). Two users plus a negative path per protected route. No mocking
@@ -47,8 +49,9 @@ function s7Fill(object $test, User $user, PlacementAttempt $attempt, callable $p
 }
 
 beforeEach(function () {
-    $this->studentA = User::factory()->create(['is_staff' => false]);
-    $this->studentB = User::factory()->create(['is_staff' => false]);
+    // Paid-only slice: placement needs an active subscription.
+    $this->studentA = ContentFixtures::subscribedStudent();
+    $this->studentB = ContentFixtures::subscribedStudent();
 });
 
 // S7-4 (submit idempotency): a double submit yields one stored result and
@@ -110,8 +113,14 @@ test('only accept changes preferred level; browsing never does', function () {
     expect($this->studentA->fresh()->preferred_level)->toBeNull();
 
     // Result browsing still changes nothing.
-    $resultHtml = $this->actingAs($this->studentA)->get(route('placement.result', $done))->assertOk()->getContent() ?? '';
-    expect($resultHtml)->toContain('راهنمای اولیه، بدون گواهی رسمی');
+    // Public-slice port (ADR-0002): the disclaimer renders client-side
+    // (proven in the browser); HTTP asserts the component and the
+    // server-marked score props.
+    $this->actingAs($this->studentA)->get(route('placement.result', $done))->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Placement/Result')
+            ->where('attempt.score', 0)
+            ->where('attempt.recommended_level', 'A1'));
     expect($this->studentA->fresh()->preferred_level)->toBeNull();
 
     // Accept writes preferred_level explicitly.
@@ -167,9 +176,13 @@ test('with no current version the neutral state and manual path work', function 
     // Fresh Pest database: no placement versions exist here.
     expect(PlacementTest::where('status', PlacementTest::STATUS_PUBLISHED)->where('is_current', true)->count())->toBe(0);
 
-    $html = $this->actingAs($this->studentA)->get(route('placement.index'))->assertOk()->getContent() ?? '';
-    expect($html)->toContain('در دست آماده‌سازی');
-    expect($html)->toContain(route('account.settings'));
+    // Public-slice port (ADR-0002): the neutral state travels as a null
+    // current version; the manual level path renders client-side.
+    $this->actingAs($this->studentA)->get(route('placement.index'))->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Placement/Index')
+            ->where('current', null)
+            ->where('openAttempt', null));
 
     // Starting with no current version is refused and stores nothing.
     $this->actingAs($this->studentA)->postJson(route('placement.start'))->assertStatus(422);

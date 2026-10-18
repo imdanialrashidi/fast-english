@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+
 /**
  * S8 download page (scope §18.2): the APK is «هنوز منتشر نشده».
  *
@@ -27,8 +29,19 @@ class DownloadController extends Controller
             fn ($value): bool => $value !== null && trim((string) $value) !== ''
         )->count() === 5 && $release['file_url'] !== null && trim((string) $release['file_url']) !== '';
 
-        return response()->view('download.index', [
-            'release' => $release,
+        // Public-slice Inertia transport (ADR-0002): the same
+        // «هنوز منتشر نشده» state until a real build fills the release
+        // metadata. No file, link, or checksum renders from invented
+        // values — rows come only from config/release.php.
+        return Inertia::render('Download/Index', [
+            'release' => [
+                'version_name' => $release['version_name'],
+                'version_code' => $release['version_code'],
+                'release_date' => $release['release_date'],
+                'size_bytes' => $release['size_bytes'],
+                'sha256' => $release['sha256'],
+                'file_url' => $release['file_url'],
+            ],
             'published' => $published,
         ]);
     }
