@@ -142,6 +142,8 @@ test('capture: library, reader, today, words, settings in the permanent light th
   await page.screenshot({ path: 'test-results/browser-shots/design-settings-light-390.png' });
 
   await page.goto('/app/account');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByText('اشتراک', { exact: true }).first()).toBeVisible();
   await noOverflow(page);
   await page.screenshot({ path: 'test-results/browser-shots/design-account-light-390.png' });
 });
@@ -187,6 +189,28 @@ test('capture: library cards scrolled + landing regression', async ({ browser, s
   await pub.close();
 });
 
+test('account: active subscription shows renewal and the desktop rail stays compact', async ({ sub: page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/app/account');
+
+  await expect(page.getByText(/اشتراک فعال تا/)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'تمدید اشتراک' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'انتخاب پلن' })).toHaveCount(0);
+
+  // The active desktop rail item is a normal 44px pill, not a stretched
+  // grid cell (regression: it used to fill the whole column height).
+  const activeRail = page.locator('aside a[aria-current="page"]');
+  const box = await activeRail.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.height).toBeLessThan(80);
+  expect(box!.width).toBeGreaterThan(100);
+  await page.screenshot({ path: 'test-results/browser-shots/account-active-1440.png' });
+
+  // Landing is guest-only: a signed-in learner lands back in the app.
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/app\/today$/);
+});
+
 test('keyboard, focus, reduced-motion, console health', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'light', reducedMotion: 'reduce' });
   const page = await ctx.newPage();
@@ -219,19 +243,20 @@ test('keyboard, focus, reduced-motion, console health', async ({ browser }) => {
   const dur = await page.locator('form button[type="submit"]').first().evaluate((el) => getComputedStyle(el).transitionDuration);
   expect(dur === '0s' || dur === '0s, 0s' || dur === '').toBe(true);
 
-  // Reader by keyboard: first sentence seeks the audio (same subscribed
-  // session as above — no second login).
+  // Reader by keyboard: the play control works with no sentence-level
+  // text interaction (same subscribed session as above — no second login).
   await page.goto(READER);
   await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration ?? NaN));
-  const first = page.locator('.fe-sentence').first();
-  await first.focus();
-  await expect(first).toBeFocused();
+  await expect(page.locator('article.fe-english-body p').first()).toBeVisible();
+  await expect(page.locator('.fe-sentence')).toHaveCount(0);
+  const play = page.locator('#player-play');
+  await play.focus();
+  await expect(play).toBeFocused();
   await page.keyboard.press('Enter');
   await expect
-    .poll(() => page.evaluate(() => document.querySelector<HTMLAudioElement>('#lesson-audio')?.currentTime ?? NaN))
-    .toBeGreaterThanOrEqual(0);
-  const active = await first.getAttribute('aria-current');
-  expect(['true', 'false']).toContain(active);
+    .poll(() => page.evaluate(() => document.querySelector<HTMLAudioElement>('#lesson-audio')?.paused ?? true))
+    .toBe(false);
+  await page.keyboard.press('Enter');
   expect(errors).toEqual([]);
   await ctx.close();
 });

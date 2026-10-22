@@ -102,8 +102,8 @@ body {
 /* React fe-* hooks (ported from app.css, mapped onto @theme tokens).
  * Every class below is consumed by a React call site that ships with
  * utility classes but keeps the hook for the layout contract the
- * browser specs pin (fixed player/nav, card ratio, sentence rows,
- * pagination/current states, 16px seek compat probe --fe-seek-pct).
+ * browser specs pin (fixed player/nav, card ratio, pagination/current
+ * states, 16px seek compat probe --fe-seek-pct).
  * Server pages keep their own copy in app.css (public.blade.php). */
 .fe-playerbar {
     position: fixed;
@@ -209,40 +209,6 @@ body {
     padding: 0.125rem 0.625rem;
     font-size: 0.875rem;
     font-family: var(--font-en);
-}
-
-.fe-sentences {
-    display: grid;
-    gap: 0.25rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.fe-sentence {
-    width: 100%;
-    min-height: 44px;
-    text-align: start;
-    font-family: var(--font-en);
-    font-size: 18px;
-    line-height: 1.8;
-    color: var(--color-ink);
-    background: transparent;
-    border: 1px solid transparent;
-    border-inline-start-width: 4px;
-    border-radius: 0.75rem;
-    padding: 0.375rem 0.75rem;
-    cursor: pointer;
-}
-
-.fe-sentence:hover {
-    background: var(--color-surface);
-}
-
-.fe-sentence[aria-current='true'] {
-    background: var(--color-surface);
-    border-inline-start-color: var(--color-accent-strong);
-    border-color: var(--color-line);
 }
 
 .fe-english-body {

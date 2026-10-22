@@ -1,9 +1,10 @@
 import * as React from 'react';
 import type { PlayerTrack } from '@/types';
+import { useAudioTransport } from './audio';
 import { postJson } from './http';
 
 /**
- * M1 persistent audio owner (READ-01, MEDIA-01/02, PROG-01).
+ * M1 persistent audio adapter (READ-01, MEDIA-01/02, PROG-01).
  *
  * One HTMLAudioElement lives in the persistent AppLayout, so Inertia
  * visits (reader ↔ library) never destroy it: playback continues across
@@ -11,23 +12,14 @@ import { postJson } from './http';
  * stops the old audio with no autoplay. Logout is a native form POST
  * (full reload), which destroys the element and stops everything.
  *
- * Server rules preserved from reader-player.js: saves go to the
- * existing JSON endpoints (store/complete) at most every 15 s while
- * playing plus on pause; stale revisions (409) adopt the server
- * position; failures show #progress-error + #progress-retry and never
- * claim success; completion comes only from the `ended` event or the
- * explicit خواندم action, never from seeking to the end.
+ * The transport (`lib/audio.ts`) owns the element events and controls;
+ * this adapter adds the track identity, resume position, progress saves,
+ * completion, and the stale-revision (409) response. Server rules are
+ * preserved: saves go to the existing JSON endpoints at most every 15 s
+ * while playing plus on pause; stale revisions adopt the server position;
+ * failures show the save error and never claim success; completion comes
+ * only from the `ended` event or the explicit خواندم action.
  */
-
-export const PLAYER_RATES = [1, 1.25, 1.5, 0.75] as const;
-
-export function formatAudioTime(totalSeconds: number): string {
-    if (!Number.isFinite(totalSeconds) || totalSeconds < 0) {
-        return '–:––';
-    }
-    const total = Math.floor(totalSeconds);
-    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
-}
 
 export interface ProgressCallbacks {
     canSave: boolean;
@@ -35,35 +27,64 @@ export interface ProgressCallbacks {
     onStale: (position: number) => void;
 }
 
-interface PlayerContextValue {
-    audioRef: React.RefObject<HTMLAudioElement | null>;
+interface PlayerState {
     track: PlayerTrack | null;
-    setTrack: (track: PlayerTrack, callbacks: ProgressCallbacks) => void;
-    clearTrack: () => void;
+    bindRef: (element: HTMLAudioElement | null) => void;
     playing: boolean;
     time: number;
     duration: number;
     rate: number;
+    fraction: number;
     hasError: boolean;
     expanded: boolean;
     setExpanded: (value: boolean) => void;
     saveError: string | null;
-    retrySaveNow: () => void;
+}
+
+interface PlayerActions {
+    setTrack: (track: PlayerTrack, callbacks: ProgressCallbacks) => void;
+    clearTrack: () => void;
     toggle: () => void;
     seekTo: (seconds: number) => void;
+    seekToFraction: (percent: number) => void;
     skipBy: (delta: number) => void;
     cycleRate: () => void;
     retry: () => void;
+    retrySaveNow: () => void;
 }
 
-const PlayerContext = React.createContext<PlayerContextValue | null>(null);
+const PlayerStateContext = React.createContext<PlayerState | null>(null);
+const PlayerActionsContext = React.createContext<PlayerActions | null>(null);
+const PlayerTrackContext = React.createContext<PlayerTrack | null | undefined>(undefined);
 
-export function usePlayer(): PlayerContextValue {
-    const value = React.useContext(PlayerContext);
-    if (value === null) {
+export function usePlayerActions(): PlayerActions {
+    const actions = React.useContext(PlayerActionsContext);
+    if (actions === null) {
+        throw new Error('usePlayerActions must be used inside PlayerProvider');
+    }
+    return actions;
+}
+
+/**
+ * Track presence only. Layouts use this instead of usePlayer() so the
+ * shell does not re-render on every timeupdate; the value changes only
+ * when a lesson is bound or cleared.
+ */
+export function usePlayerTrack(): PlayerTrack | null {
+    const track = React.useContext(PlayerTrackContext);
+    if (track === undefined) {
+        throw new Error('usePlayerTrack must be used inside PlayerProvider');
+    }
+    return track;
+}
+
+export function usePlayer(): PlayerState & PlayerActions {
+    const state = React.useContext(PlayerStateContext);
+    const actions = React.useContext(PlayerActionsContext);
+    if (state === null || actions === null) {
         throw new Error('usePlayer must be used inside PlayerProvider');
     }
-    return value;
+    return { ...state, ...actions };
 }
 
 function trackKey(track: PlayerTrack): string {
@@ -75,62 +96,14 @@ const NOOP_CALLBACKS: ProgressCallbacks = { canSave: false, onCompleted: () => {
 export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX.Element {
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const [track, setTrackState] = React.useState<PlayerTrack | null>(null);
-    const [playing, setPlaying] = React.useState(false);
-    const [time, setTime] = React.useState(0);
-    const [duration, setDuration] = React.useState(Number.NaN);
-    const [rate, setRate] = React.useState<number>(1);
-    const [hasError, setHasError] = React.useState(false);
-    const [expanded, setExpanded] = React.useState(false);
     const [saveError, setSaveError] = React.useState<string | null>(null);
+    const [bound, setBound] = React.useState(false);
 
     const loadedKey = React.useRef<string | null>(null);
     const pendingSeek = React.useRef<number | null>(null);
     const callbacks = React.useRef<ProgressCallbacks>(NOOP_CALLBACKS);
     const lastSave = React.useRef(0);
     const retrySave = React.useRef<(() => void) | null>(null);
-    const rateRef = React.useRef(rate);
-    rateRef.current = rate;
-
-    const setTrack = React.useCallback((next: PlayerTrack, nextCallbacks: ProgressCallbacks) => {
-        callbacks.current = nextCallbacks;
-        if (loadedKey.current === trackKey(next)) {
-            // Same lesson version (back/forward revisit): keep the
-            // element, its time, and its play state untouched.
-            setTrackState(next);
-            return;
-        }
-        audioRef.current?.pause();
-        pendingSeek.current = next.initialPosition > 1 ? next.initialPosition : null;
-        setTrackState(next);
-    }, []);
-
-    const clearTrack = React.useCallback(() => {
-        audioRef.current?.pause();
-        loadedKey.current = null;
-        pendingSeek.current = null;
-        setTrackState(null);
-        setTime(0);
-        setDuration(Number.NaN);
-        setHasError(false);
-    }, []);
-
-    // Bind the source when the track identity changes.
-    React.useEffect(() => {
-        const audio = audioRef.current;
-        if (audio === null || track === null) {
-            return;
-        }
-        if (loadedKey.current === trackKey(track)) {
-            return;
-        }
-        loadedKey.current = trackKey(track);
-        setHasError(false);
-        setTime(0);
-        setDuration(Number.NaN);
-        audio.playbackRate = rateRef.current;
-        audio.src = track.audioUrl;
-        audio.load();
-    }, [track]);
 
     const savePosition = React.useCallback(async (position: number, manual: boolean): Promise<void> => {
         const current = callbacks.current;
@@ -177,50 +150,32 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
         }
     }, []);
 
-    const retrySaveNow = React.useCallback(() => {
-        retrySave.current?.();
-    }, []);
-
-    // Element event wiring: bound once per mounted element, never
-    // duplicated across visits. It re-runs when the track binds because
-    // a logged-out shell mounts no audio element at all — the first
-    // mount has nothing to bind until the reader sets its track.
-    React.useEffect(() => {
-        const audio = audioRef.current;
-        if (audio === null) {
-            return;
-        }
-        // S4-6 compat probe: exactly one owner binds the element.
-        (window as unknown as { __fePlayerBound?: boolean }).__fePlayerBound = true;
-
-        const onPlay = (): void => setPlaying(true);
-        const onPause = (): void => {
-            setPlaying(false);
+    const transport = useAudioTransport({
+        audioRef,
+        resetKey: track ? trackKey(track) : null,
+        onBind: () => {
+            setBound(true);
+            window.__fePlayerBound = true;
+        },
+        onPause: (audio) => {
             void savePosition(audio.currentTime, true);
-        };
-        const onTime = (): void => {
-            setTime(audio.currentTime);
-            if (!audio.paused && !audio.seeking) {
-                void savePosition(audio.currentTime, false);
-            }
-        };
-        const onMeta = (): void => {
-            setDuration(audio.duration);
-            setHasError(false);
-            audio.playbackRate = rateRef.current;
+        },
+        onTime: (audio) => {
+            void savePosition(audio.currentTime, false);
+        },
+        onLoadedMetadata: (audio) => {
             if (pendingSeek.current !== null && Number.isFinite(audio.duration)) {
                 audio.currentTime = Math.min(pendingSeek.current, Math.max(0, audio.duration - 0.5));
                 pendingSeek.current = null;
             }
-        };
-        const onEnded = (): void => {
-            setPlaying(false);
+        },
+        onEnded: () => {
             const current = callbacks.current;
-            const activeKey = loadedKey.current;
-            if (!current.canSave || activeKey === null) {
+            const active = loadedKey.current;
+            if (!current.canSave || active === null) {
                 return;
             }
-            const [lessonId, revision] = activeKey.split(':').map(Number);
+            const [lessonId, revision] = active.split(':').map(Number);
             void postJson('/app/progress/complete', { lesson_id: lessonId, audio_revision: revision })
                 .then((response) => {
                     if (response.ok) {
@@ -230,136 +185,90 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
                 .catch(() => {
                     setSaveError('ثبت تکمیل درس ممکن نشد. دکمه خواندم را دوباره بزنید.');
                 });
-        };
-        const onError = (): void => {
-            if (audio.currentSrc === '') {
-                return;
-            }
-            setPlaying(false);
-            setHasError(true);
-            setExpanded(true);
-        };
-
-        audio.addEventListener('play', onPlay);
-        audio.addEventListener('pause', onPause);
-        audio.addEventListener('timeupdate', onTime);
-        audio.addEventListener('loadedmetadata', onMeta);
-        audio.addEventListener('ended', onEnded);
-        audio.addEventListener('error', onError);
-        return () => {
-            audio.removeEventListener('play', onPlay);
-            audio.removeEventListener('pause', onPause);
-            audio.removeEventListener('timeupdate', onTime);
-            audio.removeEventListener('loadedmetadata', onMeta);
-            audio.removeEventListener('ended', onEnded);
-            audio.removeEventListener('error', onError);
-        };
-    }, [savePosition, track]);
-
-    const toggle = React.useCallback(() => {
-        const audio = audioRef.current;
-        if (audio === null || track === null) {
-            return;
-        }
-        if (hasError) {
-            setHasError(false);
-            audio.load();
-        }
-        if (audio.paused) {
-            void audio.play().catch(() => {
-                setHasError(true);
-                setExpanded(true);
-            });
-        } else {
-            audio.pause();
-        }
-    }, [track, hasError]);
-
-    const seekTo = React.useCallback((seconds: number) => {
-        const audio = audioRef.current;
-        if (audio === null || !Number.isFinite(audio.duration)) {
-            return;
-        }
-        audio.currentTime = Math.min(Math.max(0, seconds), audio.duration);
-        setTime(audio.currentTime);
-    }, []);
-
-    const skipBy = React.useCallback(
-        (delta: number) => {
-            const audio = audioRef.current;
-            if (audio === null || !Number.isFinite(audio.duration)) {
-                return;
-            }
-            seekTo(audio.currentTime + delta);
         },
-        [seekTo],
-    );
+    });
 
-    const cycleRate = React.useCallback(() => {
-        setRate((previous) => {
-            const index = PLAYER_RATES.indexOf(previous as (typeof PLAYER_RATES)[number]);
-            const next = PLAYER_RATES[(index + 1) % PLAYER_RATES.length] ?? 1;
-            const audio = audioRef.current;
-            if (audio !== null) {
-                audio.playbackRate = next;
-            }
-            return next;
-        });
-    }, []);
+    const { bindRef, toggle, seekTo, seekToFraction, skipBy, cycleRate, retry } = transport;
 
-    const retry = React.useCallback(() => {
-        const audio = audioRef.current;
-        if (audio === null || track === null) {
+    const setTrack = React.useCallback((next: PlayerTrack, nextCallbacks: ProgressCallbacks) => {
+        callbacks.current = nextCallbacks;
+        if (loadedKey.current === trackKey(next)) {
+            // Same lesson version (back/forward revisit): keep the
+            // element, its time, and its play state untouched.
+            setTrackState(next);
             return;
         }
-        setHasError(false);
-        audio.load();
-        void audio.play().catch(() => {
-            setHasError(true);
-            setExpanded(true);
-        });
-    }, [track]);
+        audioRef.current?.pause();
+        pendingSeek.current = next.initialPosition > 1 ? next.initialPosition : null;
+        setTrackState(next);
+    }, []);
 
-    const value = React.useMemo<PlayerContextValue>(
+    const clearTrack = React.useCallback(() => {
+        audioRef.current?.pause();
+        loadedKey.current = null;
+        pendingSeek.current = null;
+        setTrackState(null);
+        setSaveError(null);
+    }, []);
+
+    // Bind the source when the track identity changes. `bound` makes the
+    // effect replay if the element mounted after the first track render.
+    React.useEffect(() => {
+        const audio = audioRef.current;
+        if (audio === null || track === null || !bound) {
+            return;
+        }
+        if (loadedKey.current === trackKey(track)) {
+            return;
+        }
+        loadedKey.current = trackKey(track);
+        audio.src = track.audioUrl;
+        audio.load();
+    }, [track, bound]);
+
+    const retrySaveNow = React.useCallback(() => {
+        retrySave.current?.();
+    }, []);
+
+    const state = React.useMemo<PlayerState>(
         () => ({
-            audioRef,
             track,
-            setTrack,
-            clearTrack,
-            playing,
-            time,
-            duration,
-            rate,
-            hasError,
-            expanded,
-            setExpanded,
+            bindRef,
+            playing: transport.playing,
+            time: transport.time,
+            duration: transport.duration,
+            rate: transport.rate,
+            fraction: transport.fraction,
+            hasError: transport.hasError,
+            expanded: transport.expanded,
+            setExpanded: transport.setExpanded,
             saveError,
-            retrySaveNow,
-            toggle,
-            seekTo,
-            skipBy,
-            cycleRate,
-            retry,
         }),
         [
             track,
-            setTrack,
-            clearTrack,
-            playing,
-            time,
-            duration,
-            rate,
-            hasError,
-            expanded,
+            bindRef,
+            transport.playing,
+            transport.time,
+            transport.duration,
+            transport.rate,
+            transport.fraction,
+            transport.hasError,
+            transport.expanded,
+            transport.setExpanded,
             saveError,
-            retrySaveNow,
-            toggle,
-            seekTo,
-            skipBy,
-            cycleRate,
-            retry,
         ],
     );
 
-    return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>;
+    const actions = React.useMemo<PlayerActions>(
+        () => ({ setTrack, clearTrack, toggle, seekTo, seekToFraction, skipBy, cycleRate, retry, retrySaveNow }),
+        [setTrack, clearTrack, toggle, seekTo, seekToFraction, skipBy, cycleRate, retry, retrySaveNow],
+    );
+
+    return (
+        <PlayerActionsContext.Provider value={actions}>
+            <PlayerTrackContext.Provider value={track}>
+                <PlayerStateContext.Provider value={state}>{children}</PlayerStateContext.Provider>
+            </PlayerTrackContext.Provider>
+        </PlayerActionsContext.Provider>
+    );
 }

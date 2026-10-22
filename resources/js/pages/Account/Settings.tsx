@@ -1,5 +1,5 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { Check, Settings as SettingsIcon, User } from 'lucide-react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Check, ChevronRight, Settings as SettingsIcon, User } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
@@ -45,6 +45,13 @@ export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (pag
         <>
             <Head title="تنظیمات حساب" />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
+                <Link
+                    href="/app/account"
+                    className="inline-flex min-h-11 w-fit items-center gap-1 rounded-full px-2 text-sm font-bold text-muted no-underline hover:text-ink"
+                >
+                    <ChevronRight size={18} aria-hidden="true" />
+                    حساب
+                </Link>
                 <div>
                     <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">تنظیمات</h1>
                     <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">نام، سطح و هدف روزانه‌ات را اینجا تنظیم کن.</p>

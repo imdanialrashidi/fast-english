@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\Entitlement;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -64,7 +65,7 @@ class User extends Authenticatable implements FilamentUser
 
     /**
      * S6 current subscription window, if any (scope §11.1). Access is
-     * computed from this row per request — see SubscriptionAccess.
+     * computed from this row per request — see Entitlement.
      */
     public function subscription(): HasOne
     {
@@ -91,6 +92,6 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return \App\Support\Entitlement::staff($this);
+        return Entitlement::staff($this);
     }
 }

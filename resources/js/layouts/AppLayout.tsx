@@ -2,7 +2,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { BookOpen, Compass, House, Languages, User } from 'lucide-react';
 import * as React from 'react';
 import { AudioPlayer } from '@/components/AudioPlayer';
-import { PlayerProvider, usePlayer } from '@/lib/player';
+import { PlayerProvider, usePlayerActions, usePlayerTrack } from '@/lib/player';
 import type { SharedProps } from '@/types';
 
 /**
@@ -59,15 +59,16 @@ const DESTINATIONS: Destination[] = [
     },
 ];
 
-function BrandMark(): React.JSX.Element {
+function BrandMark({ signedIn }: { signedIn: boolean }): React.JSX.Element {
     return (
-        <Link href="/" className="inline-flex min-h-11 items-center gap-2.5 rounded-full no-underline" aria-label="Fast English — صفحه اصلی">
+        <Link
+            href={signedIn ? '/app/today' : '/'}
+            className="inline-flex min-h-11 items-center gap-2.5 rounded-full no-underline"
+            aria-label="Fast English — صفحه اصلی"
+        >
             <img src="/icons/icon-192.png" alt="" width={30} height={30} loading="eager" className="h-[30px] w-[30px] rounded-[9px]" />
-            <span className="flex flex-col leading-5">
-                <span lang="en" dir="ltr" className="font-en text-[1.0625rem] font-extrabold tracking-tight">
-                    Fast English
-                </span>
-                <span className="hidden text-xs text-muted sm:block">انگلیسی با داستان کوتاه و صوت هماهنگ</span>
+            <span lang="en" dir="ltr" className="font-en text-[1.0625rem] font-extrabold tracking-tight">
+                Fast English
             </span>
         </Link>
     );
@@ -78,7 +79,8 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     const user = props.auth.user;
     const flash = props.flash;
     const [navigating, setNavigating] = React.useState(false);
-    const { clearTrack } = usePlayer();
+    const { clearTrack } = usePlayerActions();
+    const track = usePlayerTrack();
 
     // Logout (or session loss) stops the previous account's audio: the
     // layout survives the redirect visit, so the track must be cleared
@@ -115,40 +117,30 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
             <header className="border-b border-line bg-canvas">
                 <div aria-hidden="true" className={navigating ? 'h-0.5 w-full bg-accent' : 'h-0.5 w-full bg-transparent'} />
                 <div className="mx-auto flex w-full max-w-[1024px] items-center justify-between gap-3 px-4 py-2.5">
-                    <BrandMark />
-                    <nav aria-label="دسترسی سریع" className="flex items-center gap-2">
-                        {user === null ? (
-                            <>
-                                <Link
-                                    href="/login"
-                                    className="inline-flex min-h-11 min-w-11 items-center rounded-full px-3 py-2 text-muted no-underline hover:bg-surface hover:text-ink"
-                                >
-                                    ورود
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-4 py-2 font-bold text-surface no-underline hover:bg-primary-hover"
-                                >
-                                    ساخت حساب
-                                </Link>
-                            </>
-                        ) : (
+                    <BrandMark signedIn={user !== null} />
+                    {user === null && (
+                        <nav aria-label="دسترسی سریع" className="flex items-center gap-2">
                             <Link
-                                href="/app/account"
-                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-ink no-underline hover:bg-canvas"
+                                href="/login"
+                                className="inline-flex min-h-11 min-w-11 items-center rounded-full px-3 py-2 text-muted no-underline hover:bg-surface hover:text-ink"
                             >
-                                <User size={18} aria-hidden="true" />
-                                حساب
+                                ورود
                             </Link>
-                        )}
-                    </nav>
+                            <Link
+                                href="/register"
+                                className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-4 py-2 font-bold text-surface no-underline hover:bg-primary-hover"
+                            >
+                                ساخت حساب
+                            </Link>
+                        </nav>
+                    )}
                 </div>
             </header>
 
             <div className="mx-auto grid w-full max-w-[1024px] gap-8 px-4 lg:grid-cols-[12.5rem_1fr]">
                 {/* Desktop rail: the same four destinations as the mobile tabs. */}
                 <aside className="fe-sidebar hidden lg:block" aria-label="ناوبری اصلی">
-                    <nav className="sticky top-4 grid gap-1 pt-6" aria-label="بخش‌های یادگیری">
+                    <nav className="sticky top-4 flex flex-col gap-1 pt-6" aria-label="بخش‌های یادگیری">
                         {DESTINATIONS.map((destination) => {
                             const active = destination.match(url);
                             return (
@@ -197,25 +189,11 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                             )}
                         </div>
                     )}
-                    {/* End-padding clears the fixed player + mobile tabs. */}
-                    <main id="fe-content" className="pb-64 lg:pb-52">
+                    {/* End-padding clears the fixed player + mobile tabs.
+                        No bound track means only the tabs need clearance. */}
+                    <main id="fe-content" className={track === null ? 'pb-28 lg:pb-8' : 'pb-64 lg:pb-52'}>
                         {children}
                     </main>
-                    <footer className="border-t border-line pt-4 pb-8">
-                        <p className="m-0 text-sm leading-7 text-muted">Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت.</p>
-                        <nav aria-label="پیوندهای اعتماد" className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-                            {[
-                                { href: '/about', label: 'درباره' },
-                                { href: '/faq', label: 'پرسش‌های پرتکرار' },
-                                { href: '/support', label: 'پشتیبانی' },
-                                { href: '/download', label: 'دانلود' },
-                            ].map((link) => (
-                                <Link key={link.href} href={link.href} className="inline-flex min-h-11 min-w-11 items-center text-sm text-muted no-underline hover:text-ink">
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </footer>
                 </div>
             </div>
 

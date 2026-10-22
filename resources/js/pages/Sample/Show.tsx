@@ -2,9 +2,9 @@ import { Head, Link } from '@inertiajs/react';
 import { BookOpen, ChevronDown, Clock, Gauge, Pause, Play, RotateCcw, RotateCw, TriangleAlert } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
-import PublicLayout, { publicLayout } from '@/layouts/PublicLayout';
-import { formatAudioTime, useHeadlessAudio } from '@/lib/audio';
-import type { GlossaryEntry, SentenceCue, SharedProps } from '@/types';
+import { publicLayout } from '@/layouts/PublicLayout';
+import { formatAudioTime, useAudioTransport } from '@/lib/audio';
+import type { LessonPayload, ReadingContent, SharedProps, TopicPayload } from '@/types';
 
 /**
  * Public sample experience (/sample, owner paid-only requirement): the
@@ -19,68 +19,21 @@ import type { GlossaryEntry, SentenceCue, SharedProps } from '@/types';
  * lesson's content travels with the page.
  */
 
-interface SampleTopic {
-    slug: string;
-    title_en: string;
-    summary_public: string | null;
-    cover_url: string | null;
-}
-
-interface SampleLesson {
-    id: number;
-    title_en: string;
-    level: string;
-    estimated_minutes: number;
-    duration_seconds: number;
-    audio_revision: number;
-    audio_url: string;
-}
-
-interface SampleProps extends SharedProps {
-    topic: SampleTopic;
-    lesson: SampleLesson;
+interface SampleProps extends SharedProps, ReadingContent {
+    topic: TopicPayload;
+    lesson: LessonPayload;
     sampleLevels: string[];
-    sentences: string[];
-    paragraphs: string[];
-    cues: SentenceCue[];
-    cuesUsable: boolean;
-    glossary: GlossaryEntry[];
 }
 
 export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     topic,
     lesson,
     sampleLevels,
-    sentences,
     paragraphs,
-    cues,
-    cuesUsable,
     glossary,
 }: SampleProps): React.JSX.Element => {
-    const audio = useHeadlessAudio(lesson.audio_url, cues, cuesUsable);
-    const { audioRef, playing, time, duration, rate, hasError, expanded, setExpanded, fraction, activeIndex, toggle, seekTo, skipBy, cycleRate, retry } = audio;
-    const sentenceRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
-
-    React.useEffect(() => {
-        if (activeIndex < 0 || !playing) {
-            return;
-        }
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            return;
-        }
-        sentenceRefs.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
-    }, [activeIndex, playing]);
-
-    const selectSentence = (index: number): void => {
-        const cue = cues[index];
-        if (cue === undefined) {
-            return;
-        }
-        seekTo(cue.start_seconds + 0.01);
-        if (!playing) {
-            toggle();
-        }
-    };
+    const audio = useAudioTransport({ resetKey: lesson.audio_url });
+    const { bindRef, playing, time, duration, rate, hasError, expanded, setExpanded, fraction, toggle, seekToFraction, skipBy, cycleRate, retry } = audio;
 
     return (
         <>
@@ -111,7 +64,7 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
                             alt=""
                             loading="eager"
                             fetchPriority="high"
-                            className="block aspect-video w-full rounded-3xl border border-line bg-canvas object-cover"
+                            className="block h-56 w-full rounded-3xl border border-line bg-canvas object-cover"
                         />
                     )}
                     {sampleLevels.length > 1 && (
@@ -139,7 +92,7 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
                     )}
                 </header>
 
-                <section className="fe-playerbar grid gap-3 rounded-3xl border border-line bg-surface p-4" data-expanded={expanded ? 'true' : 'false'} aria-label="پخش‌کننده نمونه">
+                <section className="grid gap-3 rounded-3xl border border-line bg-surface p-4" data-expanded={expanded ? 'true' : 'false'} aria-label="پخش‌کننده نمونه">
                     <div className="flex items-center gap-3">
                         <button
                             id="player-play"
@@ -199,16 +152,8 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
                             max={100}
                             step={0.1}
                             value={Math.round(fraction * 1000) / 10}
-                            onInput={(event) => {
-                                if (Number.isFinite(duration) && duration > 0) {
-                                    seekTo((Number(event.currentTarget.value) / 100) * duration);
-                                }
-                            }}
-                            onChange={(event) => {
-                                if (Number.isFinite(duration) && duration > 0) {
-                                    seekTo((Number(event.currentTarget.value) / 100) * duration);
-                                }
-                            }}
+                            onInput={(event) => seekToFraction(Number(event.currentTarget.value))}
+                            onChange={(event) => seekToFraction(Number(event.currentTarget.value))}
                             aria-label="جست‌وجو در صوت نمونه"
                             className="h-11 w-full cursor-pointer"
                         />
@@ -254,64 +199,16 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
                             </button>
                         </p>
                     </div>
-                    <audio
-                        id="lesson-audio"
-                        ref={audioRef}
-                        src={lesson.audio_url}
-                        preload="metadata"
-                        onPlay={audio.bind.onPlay}
-                        onPause={audio.bind.onPause}
-                        onTimeUpdate={audio.bind.onTimeUpdate}
-                        onLoadedMetadata={audio.bind.onLoadedMetadata}
-                        onDurationChange={audio.bind.onDurationChange}
-                        onError={audio.bind.onError}
-                    />
+                    <audio id="lesson-audio" ref={bindRef} src={lesson.audio_url} preload="metadata" />
                 </section>
 
-                {cuesUsable ? (
-                    <ol lang="en" dir="ltr" aria-label="متن نمونه با همگام‌سازی صوت" className="fe-sentences m-0 grid list-none gap-1 p-0">
-                        {sentences.map((sentence, index) => {
-                            const cue = cues[index];
-                            const active = index === activeIndex;
-                            return (
-                                <li key={index}>
-                                    <button
-                                        type="button"
-                                        ref={(element) => {
-                                            sentenceRefs.current[index] = element;
-                                        }}
-                                        onClick={() => selectSentence(index)}
-                                        data-index={index}
-                                        data-start={cue?.start_seconds ?? 0}
-                                        data-end={cue?.end_seconds ?? 0}
-                                        aria-current={active ? 'true' : 'false'}
-                                        aria-label={`پخش جمله ${index + 1} از ${sentences.length}`}
-                                        className={
-                                            active
-                                                ? 'fe-sentence block min-h-11 w-full cursor-pointer rounded-xl border border-line border-s-4 border-s-accent-strong bg-canvas px-3 py-2 text-left font-en text-[1.125rem] leading-8'
-                                                : 'fe-sentence block min-h-11 w-full cursor-pointer rounded-xl border border-transparent border-s-4 px-3 py-2 text-left font-en text-[1.125rem] leading-8 hover:bg-surface'
-                                        }
-                                    >
-                                        {sentence}
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ol>
-                ) : (
-                    <>
-                        <article lang="en" dir="ltr" className="fe-english-body grid gap-5">
-                            {paragraphs.map((paragraph, index) => (
-                                <p key={index} className="m-0 text-left font-en text-[1.125rem] leading-8">
-                                    {paragraph}
-                                </p>
-                            ))}
-                        </article>
-                        <p role="note" className="m-0 flex items-start gap-2 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
-                            همگام‌سازی جمله‌به‌جمله برای این نسخه هنوز آماده نیست؛ پخش عادی فعال است.
+                <article lang="en" dir="ltr" className="fe-english-body grid gap-5">
+                    {paragraphs.map((paragraph, index) => (
+                        <p key={index} className="m-0 text-left font-en text-[1.125rem] leading-8">
+                            {paragraph}
                         </p>
-                    </>
-                )}
+                    ))}
+                </article>
 
                 <section aria-label="واژه‌های کلیدی نمونه" className="grid gap-1 rounded-3xl border border-line bg-surface px-5 py-2">
                     <h2 className="m-0 flex items-center gap-2 pt-3 pb-1 text-xl leading-8">

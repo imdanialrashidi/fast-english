@@ -2,6 +2,16 @@
 
 Source: scope §17 (UI/UX), §6 (routes/nav), §7 (flows), §13 (player/progress). Scope §17.1 palette/typography values are **proposals, not owner approval**.
 
+## Owner instruction 2026-10-21 — plain reader, Persian chrome, app-like account
+
+This is the current owner direction and supersedes every sentence-cue, English-kicker, and account-navigation rule later in this file.
+
+- **Plain reader:** the learner reader, public sample, and landing preview render normal English paragraphs beside the normal player. No sentence highlight, bold/active row, click-to-seek, cue follow-scroll, or cue-derived copy. Cue columns, validators, staff editor, and cue tests were removed.
+- **Persian chrome:** remove the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the English `Example` field label. English remains only for lesson content, level codes, timestamps, and the brand.
+- **App shell:** remove the in-app marketing footer, the duplicate signed-in header account CTA, and the account page’s duplicate main-navigation chips. The bottom tabs / desktop rail are the only main navigation.
+- **Account:** an app-style profile screen — identity card, level/goal summary, subscription status with exactly one next action, a quiet settings list (settings, saved, placement), and logout. Persian dates and digits; email stays LTR.
+- **Today:** one due-vocabulary action, no duplicate due-words section, no repeated level line, and a real progress ring derived from `progress_pct`.
+
 ## Owner direction (confirmed)
 
 - Calm, professional, adult, readable, editorial; visual focus on text, lesson image, and playback (§17.1).
@@ -637,3 +647,36 @@ No new explicit owner style/color choice was given for this slice, so nothing be
 - Art direction (proposed): real GD/staff covers only (D4 pipeline, hero eager + fetchpriority high, rest lazy, no placeholders, no stock filler); Lucide local icons only (`headphones`/`play`/`compass`/`book-open`/`file-text`/`clock`/`languages`/`circle-check`/`bookmark`/`card`/`info`/`user`/`arrow-left`); no decorative imagery.
 - Motion (proposed): CSS-only — 8 `.fe-reveal` max (hero-copy/hero-preview/how/sample/featured/workflow/benefits/plans; FAQ/final/install static), 180ms entry + ≤200ms press/focus/hover; hero pulse keyframes exist only for `[data-playing=true]` (static preview never sets it, so no permanent animation); `prefers-reduced-motion` kills ALL motion and content renders without JS (opacity 1 default); no autoplay, no floating/blob/blur/grain/backdrop-blur; lab LCP 268ms ≤2.5s, zero pageerrors.
 - Copy (proposed, per no-ai-slop): keep proven strings — «انگلیسی را با داستان‌های کوتاه و صوت هماهنگ یاد بگیر», «هر مطلب یک متن انگلیسی در سطح توست با صوت همان نسخه.», «شروع با نمونه رایگان», «دیدن مطالب», «نمونه بدون ثبت‌نام باز می‌شود.», «پیش‌نمایش روش کار با متن واقعی نمونه — برای شنیدن، نمونه را باز کن.», 3-step how, «یک نمونه واقعی، بدون ثبت‌نام», «تازه‌ترین مطالب», «در دست آماده‌سازی», «بسته واحد ۲۹۹٬۰۰۰ تومان», «پیشنهاد محدود», FAQ 3, «با همان نمونه رایگان شروع کن», «نصب و دانلود»; new strings kept direct — «مسیر روزانه‌ات از پیشرفت واقعی ساخته می‌شود», «برای خواندن و شنیدن واقعی ساخته شده», «باز کردن نسخه وب»; no invented counts/testimonials/claims.
+
+## Landing rebuild 2026-10-21 — owner request: professional, de-slopped, mobile-first
+
+Owner direction (explicit, this turn): fully audit the landing, fix its problems, make it more beautiful and professional, remove its AI-slop character, and make it more responsive on phones. No new palette, font, theme, or fabricated content was requested.
+
+Baseline defects found and fixed:
+- Twelve stacked sections repeated the same three promises (why / how / experience / daily path / sentence notes) and repeated the sample CTA four times and the download CTA five times.
+- Every card used a 40px radius plus shadow; three cards were rotated; every section carried an icon-chip eyebrow. The hero preview showed a fake 38% progress bar and a display-only 1× control.
+- The sample cover rendered a 16:9 image in a 4:5 frame, cropping it to a flat colour band; the featured shelf required sideways scrolling on phones.
+- The header wordmark and nav wrapped at 360px, and three conditionally hidden nav links stayed visible because the base `inline-flex` overrode `hidden`, producing 563px of scroll width at a 390px viewport.
+- The dev server 404ed the self-hosted Vazirmatn files because laravel-vite-plugin disables Vite's publicDir; `vite.config.js` now proxies `/fonts` to `APP_URL` in dev (production already served them from `/public`).
+
+Implementation (agent-owned; PROPOSED details on top of the owner direction):
+- IA: asymmetric hero (copy beside a working sample) → three-step method band → real sample feature → newest topics as divider rows → plans (DB names and durations, or the honest preparing state) → three FAQ rows → closing action. Removed the why/experience/sentence-notes/daily-path/install sections and their duplicated copy.
+- Hero preview is the real product: the sample's own audio stream, its opening paragraphs, play/pause, elapsed/duration, a read-only progress bar, and the real rate cycle (1 → 1.25 → 1.5 → 0.75). No autoplay, no mock controls, retry on error. Sentence-level cues are retired (owner direction 2026-10-21).
+- Form: 12–20px radii, hairline `line` borders, no shadows (the preview is a flat bordered surface), no rotation, gradient, glow, blur, grain, or looping motion. Primary actions use `primary`; `accent-strong` is reserved for progress/accents. English content stays LTR; Persian prose uses Persian digits, player time/rate stay LTR.
+- Chrome: a full-width sticky masthead on `canvas` with a hairline rule replaces the floating pill; a full-bleed ink footer holds the brand and a two-column link grid. Brand wordmark is right-aligned against its monogram and hidden below 350px so login/register never wrap.
+- Responsive: 320/360/390 single column with 16px gutters; method steps recompose from 1 to 3 columns; sample and hero pair at ≥1024; featured rows replace the horizontal shelf; every link/button target is ≥44px; no horizontal scroll at any tested width.
+- Kept browser contracts: H1 text, «شروع با نمونه رایگان», preview label and note, the opening-paragraph preview, «نمونه واقعی» heading, «تازه‌ترین مطالب», both sales lanes, the FAQ question, «صفحه دانلود», and «مشاهده همه پرسش‌ها».
+
+Verification: Playwright at 320/360/390/768/1440 (no overflow, no sub-44px control, no pageerror or 4xx), `s8-landing` 4/4 with the sales lane enabled, `m0-inertia` 2/2, the `m1-journey` landing leg, and a played preview (20s stream, rate cycle, progress bar). Visual inspection covered the mobile hero/footer/plans and desktop hero/method/footer.
+
+## Landing/app boundary + account correction 2026-10-21 — owner request
+
+Owner direction (explicit, this turn): fix the account page; make the landing system fully separate from the app; a signed-in user must not reach the landing; the landing exists for Google discovery and app download. No new palette, font, theme, or fabricated content was requested.
+
+Implementation (agent-owned; PROPOSED visual details on top of the owner direction):
+- `marketing.guest` middleware (`RedirectAuthenticatedToApp`) gates `/`, the trust pages, `/download`, and `/install`. A signed-in request returns to `/app/today`; `/sample` stays outside the boundary because the in-app locked state links to it as the free path. The app shell no longer links to marketing pages: brand and footer point at app surfaces only; the public shell shows a signed-in viewer of `/sample` a «بازگشت به اپ» action and app-local footer links.
+- The landing never links into `/app`: featured topics are informational rows, plan interest goes through registration, and the primary conversion is the download page. Hero and closing actions are «دانلود اپلیکیشن» + the free sample; no link bounces a guest to login.
+- SEO moved server-side: `LandingController` supplies title, description, canonical, and JSON-LD (`WebSite`, `SoftwareApplication`, `FAQPage`); `app.blade.php` renders description/Open Graph/Twitter/JSON-LD before React. The FAQ list has one server source for both the visible accordion and structured data. Download gets its own server-rendered title/description. Page-level `<Head>` keeps the title only — no second client-rendered description meta.
+- Account page: an active subscription now reads «اشتراک فعال تا …» and offers «تمدید اشتراک» (renewal extends from the current end), never the first-purchase «انتخاب پلن» CTA. Expired/revoked/no-subscription states stay distinct. The profile email gets its own LTR line, daily-goal digits are Persian, the desktop rail is a compact 44px pill (no stretched grid cell), and the main end-padding follows actual track presence so pages without audio no longer reserve a phantom player's height.
+
+Verification: Pest `S0AccountTest`, `S8LandingTest`, `M0InertiaFoundationTest`, and the full suite (306 passed) on PostgreSQL; `npm run typecheck` and `npm run build` clean; Playwright on the `fe_browser` lane with built assets: `s8-landing` 4/4, `s8-download` 2/2, `m0-inertia` 2/2, `design-theme` 8/8 including the new active-account/desktop-rail test. Inspected pixels: landing 390/1440, account 390/1440, download and mobile library/words/reader.

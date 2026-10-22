@@ -98,10 +98,7 @@ export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: Rea
             <Head title="مرور واژه‌ها" />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
                 <div>
-                    <p lang="en" dir="ltr" className="m-0 font-en text-sm font-bold tracking-[0.18em] text-accent-strong uppercase">
-                        Review
-                    </p>
-                    <h1 className="m-0 mt-1 text-3xl leading-[1.6] font-extrabold tracking-tight">مرور واژه‌ها</h1>
+                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">مرور واژه‌ها</h1>
                     <p role="status" className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">
                         {remaining} واژه برای مرور
                     </p>

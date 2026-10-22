@@ -2,7 +2,8 @@ import { Head, Link } from '@inertiajs/react';
 import { BookOpen, Check, Compass, Headphones, Languages, Play, Sun } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
-import type { SharedProps } from '@/types';
+import { formatAudioTime } from '@/lib/audio';
+import type { SharedProps, TopicRow } from '@/types';
 
 /**
  * Today — «امروز» (PLAN-01): greeting, Continue Learning, today's plan,
@@ -21,17 +22,7 @@ interface PlanTask {
     level: string | null;
     cover_url: string | null;
     position_seconds: number | null;
-    duration_seconds: number | null;
     estimated_minutes: number | null;
-}
-
-interface Recommendation {
-    slug: string;
-    title_en: string;
-    cover_url: string | null;
-    levels: string[];
-    minutes: number;
-    reader_url: string;
 }
 
 interface TodayProps extends SharedProps {
@@ -43,12 +34,7 @@ interface TodayProps extends SharedProps {
         due_words: number;
         tasks: PlanTask[];
     };
-    recommendations: Recommendation[];
-}
-
-function clock(totalSeconds: number): string {
-    const total = Math.max(0, Math.floor(totalSeconds));
-    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+    recommendations: TopicRow[];
 }
 
 export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: ReactNode) => ReactNode } = ({
@@ -63,10 +49,7 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
             <Head title="امروز" />
             <div className="mx-auto grid max-w-[680px] gap-6 px-4 py-6">
                 <div>
-                    <p lang="en" dir="ltr" className="m-0 font-en text-sm font-bold tracking-[0.18em] text-accent-strong uppercase">
-                        Today
-                    </p>
-                    <p className="m-0 mt-1 inline-flex items-center gap-1.5 leading-8 text-muted">
+                    <p className="m-0 inline-flex items-center gap-1.5 leading-8 text-muted">
                         <Sun size={20} aria-hidden="true" />
                         سلام، {userName}
                     </p>
@@ -109,21 +92,22 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                                 )}
                             </div>
                         </div>
-                        <p className="m-0 leading-8 text-muted">
-                            سطح{' '}
-                            <span lang="en" dir="ltr" className="font-en font-bold">
-                                {continueTask.level ?? ''}
-                            </span>
-                            {continueTask.position_seconds !== null && continueTask.duration_seconds !== null && (
-                                <>
-                                    {' '}· ادامه از <span dir="ltr">{clock(continueTask.position_seconds)}</span> از{' '}
-                                    <span dir="ltr">{clock(continueTask.duration_seconds)}</span>
-                                </>
-                            )}
-                            {continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0 && (
-                                <> · حدود {continueTask.estimated_minutes} دقیقه</>
-                            )}
-                        </p>
+                        {(continueTask.position_seconds !== null ||
+                            (continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0)) && (
+                            <p className="m-0 leading-8 text-muted">
+                                {continueTask.position_seconds !== null && (
+                                    <>
+                                        ادامه از <span dir="ltr">{formatAudioTime(continueTask.position_seconds)}</span>
+                                    </>
+                                )}
+                                {continueTask.position_seconds !== null && continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0 && (
+                                    <> · </>
+                                )}
+                                {continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0 && (
+                                    <>حدود {continueTask.estimated_minutes} دقیقه</>
+                                )}
+                            </p>
+                        )}
                         <p className="m-0">
                             <Link
                                 href={continueTask.url}
@@ -194,20 +178,36 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
 
                 <section
                     aria-label="هدف امروز"
-                    className="grid gap-4 rounded-3xl border border-line bg-surface p-5 sm:grid-cols-[auto_1fr] sm:items-center"
+                    className="grid grid-cols-[auto_1fr] items-center gap-4 rounded-3xl border border-line bg-surface p-5"
                 >
                     <div
                         role="img"
                         aria-label={`پیشرفت امروز: ${plan.progress_pct} درصد`}
-                        className="inline-flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-line"
-                        style={{ borderTopColor: 'var(--color-accent-strong)' }}
+                        className="relative inline-flex h-20 w-20 shrink-0 items-center justify-center"
                     >
-                        <span dir="ltr" className="font-en text-sm font-bold tabular-nums">
+                        <svg viewBox="0 0 100 100" aria-hidden="true" className="absolute inset-0 h-full w-full">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--color-line)" strokeWidth="8" />
+                            {plan.progress_pct > 0 && (
+                                <circle
+                                    cx="50"
+                                    cy="50"
+                                    r="42"
+                                    fill="none"
+                                    stroke="var(--color-accent-strong)"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    pathLength={100}
+                                    strokeDasharray={`${Math.min(100, plan.progress_pct)} 100`}
+                                    transform="rotate(-90 50 50)"
+                                />
+                            )}
+                        </svg>
+                        <span dir="ltr" className="font-en text-xs font-bold tabular-nums">
                             {plan.learned_minutes}/{plan.goal_minutes}
                         </span>
                     </div>
                     <div>
-                        <h2 className="m-0 text-lg leading-8">هدف امروز: {plan.goal_minutes} دقیقه مطالعه</h2>
+                        <h2 className="m-0 text-base leading-8 sm:text-lg">هدف امروز: {plan.goal_minutes} دقیقه مطالعه</h2>
                         <p className="m-0 mt-1 leading-8 text-muted">{plan.learned_minutes} دقیقه از برنامه امروز انجام شده.</p>
                         {plan.due_words > 0 && (
                             <p className="m-0 mt-2">
@@ -222,24 +222,6 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                         )}
                     </div>
                 </section>
-
-                {plan.due_words > 0 && (
-                    <section aria-label="واژه‌های امروز" className="grid gap-2 rounded-3xl border border-line bg-surface p-5">
-                        <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
-                            <Languages size={20} aria-hidden="true" />
-                            {plan.due_words} واژه برای مرور امروز
-                        </h2>
-                        <p className="m-0">
-                            <Link
-                                href="/app/words/review"
-                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                            >
-                                <Play size={20} aria-hidden="true" />
-                                شروع مرور
-                            </Link>
-                        </p>
-                    </section>
-                )}
 
                 {recommendations.length > 0 && (
                     <section aria-label="مطالب پیشنهادی" className="grid gap-3">

@@ -1,7 +1,7 @@
 # Frontend migration to Inertia 3 + React 19 — safe plan
 
-Status: M0–M5 delivered in the working tree (uncommitted); M6 pending.
-Updated: 2026-10-11
+Status: M0–M6 delivered and verified in the working tree (uncommitted); owner direction 2026-10-21 included.
+Updated: 2026-10-22
 
 Binding owner change: `docs/adr/0002-inertia-react-learner-frontend.md` (2026-10-10). It explicitly supersedes the Blade/Livewire/Alpine learner-stack assumptions and the dark-mode approvals listed there; all other scope/contracts/history stay in force.
 
@@ -13,13 +13,13 @@ Non-goals: database replacement; Laravel regeneration; discarding functionality;
 
 ## 2. Observable acceptance criteria with proof required for each
 
-- [ ] A1 — Route inventory complete: every existing public, auth, learner, media, payment, placement, vocabulary, and account route below is assigned a migration strategy (§4). Proof: documentation review of this plan against `routes/web.php` + Fortify routes.
-- [ ] A2 — Backend invariants survive byte-for-byte in behavior (eligibility, level semantics, integer toman, snapshot-before-transfer, one open request, fixed lock order User → PaymentRequest → Subscription, idempotent approve, self-approval ban, revision isolation, Range contract, `private, no-store`, SW allowlist). Proof: existing Pest suites (S0–S8/R3–R5 incl. PostgreSQL race suite) stay green unweakened per slice + targeted prop-absence assertions.
-- [ ] A3 — Filament distinguished and intact: staff panel at `/admin` (content + payment-review resources, placement overview, staff TOTP) works with its internal Livewire isolated; no learner Filament assets; no second learner frontend. Proof: Pest policy/`canAccessPanel` tests + Playwright staff review journey per affected slice.
-- [ ] A4 — Slices are small, testable, reversible with stop/verification points (§7). Proof: per-slice exit evidence (Pint + slice Pest on PostgreSQL + Vite build + affected Playwright) before the next slice starts; obsolete Blade/Livewire removed only after parity.
+- [x] A1 — Route inventory complete: every existing public, auth, learner, media, payment, placement, vocabulary, and account route below is assigned a migration strategy (§4). Proof: documentation review of this plan against `routes/web.php` + Fortify routes.
+- [x] A2 — Backend invariants survive byte-for-byte in behavior (eligibility, level semantics, integer toman, snapshot-before-transfer, one open request, fixed lock order User → PaymentRequest → Subscription, idempotent approve, self-approval ban, revision isolation, Range contract, `private, no-store`, SW allowlist). Proof: existing Pest suites (S0–S8/R3–R5 incl. PostgreSQL race suite) stay green unweakened per slice + targeted prop-absence assertions.
+- [x] A3 — Filament distinguished and intact: staff panel at `/admin` (content + payment-review resources, placement overview, staff TOTP) works with its internal Livewire isolated; no learner Filament assets; no second learner frontend. Proof: Pest policy/`canAccessPanel` tests + Playwright staff review journey per affected slice.
+- [x] A4 — Slices are small, testable, reversible with stop/verification points (§7). Proof: per-slice exit evidence (Pint + slice Pest on PostgreSQL + Vite build + affected Playwright) before the next slice starts; obsolete Blade/Livewire removed only after parity.
 - [x] A5 — Single light theme only, exact palette, no substitution: DESIGN.md Premium editorial hexes (2026-10-10, canonical; ADR-0002 points at DESIGN.md as the single source) own every color; no dark/system code, no `fe-theme`, no appearance radios. Proof: token-ownership structural tests (M0 for inertia.css, S3 light-only for app.css) + re-measured contrast pairs + inspected rendered images (360/390 desktop) in RTL/FA with LTR/EN islands.
-- [ ] A6 — Player/RT L/PWA risks closed: persistent React audio preserves across Inertia navigation, stops on level-switch/logout, single element, no autoplay, retry on network error; RTL/keyboard/focus/zoom/44px/reduced-motion intact; SW caches no private data; Range re-proven on real MP3. Proof: Playwright journeys + cache audit + HTTP Range checks + inspected images.
-- [x] A7 — Planning turn left zero application-code diffs (superseded: M0–M5 implemented after that turn). Proof at the time: `git status` showed only the six docs/plan paths touched by the planning turn.
+- [x] A6 — Player/RT L/PWA risks closed: persistent React audio preserves across Inertia navigation, stops on level-switch/logout, single element, no autoplay, retry on network error; RTL/keyboard/focus/zoom/44px/reduced-motion intact; SW caches no private data; Range re-proven on real MP3. Proof: Playwright journeys + cache audit + HTTP Range checks + inspected images.
+- [x] A7 — Planning turn left zero application-code diffs (superseded: M0–M6 implemented after that turn). Proof at the time: `git status` showed only the six docs/plan paths touched by the planning turn.
 
 ## 3. Confirmed facts, constraints, assumptions, and material unknowns
 
@@ -30,7 +30,7 @@ Material unknowns (build agent must resolve against version-matched official doc
 
 ## 4. Existing patterns/components/contracts to reuse
 
-Reuse as-is: `routes/web.php` paths/names; all `app/Models`, `app/Policies`, `app/Actions` (`ApprovePayment`, `PublishLesson`, `PublishPlacementTest`, `SubmitPlacement`), `app/Support` validators (`AudioCues`, `Glossary`, `SpacedRepetition`, `DailyPlan`, `Toman`, `TopicCover`, `ReceiptImage`), middleware (`PrivateNoStore`, `ThrottleUploads`, `RejectDisabledUsers`, `EnsureStaff`, `RequireStaffTwoFactor`), file controllers (`LessonAudioController`, `PaymentReceiptController`) with Range + `X-Accel-Redirect` docblock; PWA controllers/routes (manifest/SW/offline/robots/assetlinks/sitemap); Fortify wiring + neutral reset responses; Filament resources/pages + staff 2FA + placement-publish action; DB constraints/uniques/checks/indexes; existing Pest suites as the regression oracle (ported, never weakened).
+Reuse as-is: `routes/web.php` paths/names; all `app/Models`, `app/Policies`, `app/Actions` (`ApprovePayment`, `PublishLesson`, `PublishPlacementTest`, `SubmitPlacement`), `app/Support` validators (`Glossary`, `SpacedRepetition`, `DailyPlan`, `Toman`, `TopicCover`, `ReceiptImage`), middleware (`PrivateNoStore`, `ThrottleUploads`, `RejectDisabledUsers`, `EnsureStaff`, `RequireStaffTwoFactor`), file controllers (`LessonAudioController`, `PaymentReceiptController`) with Range + `X-Accel-Redirect` docblock; PWA controllers/routes (manifest/SW/offline/robots/assetlinks/sitemap); Fortify wiring + neutral reset responses; Filament resources/pages + staff 2FA + placement-publish action; DB constraints/uniques/checks/indexes; existing Pest suites as the regression oracle (ported, never weakened).
 
 ## 5. Smallest viable design and relevant data/control flow
 
@@ -75,6 +75,25 @@ Current state: M0–M5 delivered in the working tree (uncommitted); M6 full regr
 Smallest next implementation action (M6, authorized next): run the full gate where supported — Pint, entire Pest on PostgreSQL (incl. race suite), Vite build, full Playwright Chromium suite, fresh inspected captures (320/390/430/768/1440 + demanding state), contrast re-measurement — then hand over with evidence.
 
 Smallest first implementation action (M0, authorized next): resolve Inertia 3 + React 19 + TS versions against version-matched official docs for Laravel 13 without touching backend behavior; scaffold the Inertia shell + single-light tokens + session/CSRF proof; migrate login/register/logout/reset pages only; prove with Pest auth/reset on PostgreSQL + Playwright login/logout/refresh + structural no-dark/no-`fe-theme` check; stop before M1. Do not install a starter kit over the repo; do not change routes, models, migrations, policies, or money logic.
+
+## 11. Architecture deepening pass — 2026-10-21 (uncommitted)
+
+Scope: the five candidates from the architecture review; no route, schema, money, or permission change. `GLOSSARY.md` records the domain terms used below.
+
+- Audio transport: `resources/js/lib/audio.ts` owns element events, play/pause, seek, fraction seek, skip, rate cycle, error/retry, and time state. `lib/player.tsx` is the persistent learner adapter (track identity, resume, progress/complete, 409) and the public pages use the same transport with no callbacks. The player context is split into state/actions so `AppLayout` consumes actions only; `lessonUrl` and the duplicate time formatter are gone.
+- Reading surface 2026-10-21: `ReadingSentences` and all cue props were removed by owner direction. `Reading::prepared()` returns plain paragraphs + glossary; reader/sample render `article.fe-english-body`; the landing preview renders opening paragraphs beside the normal player. The `audio_cues` columns, `AudioCues`/`Sentences` helpers, Filament cue repeater, and cue tests were removed in the same cutover.
+- Entitlement: deleted `LearnerAccess` and `SubscriptionAccess`; `LessonPolicy` uses `Entitlement::eligible()` (fresh + staff); the S6 matrices assert `Entitlement::active()` — the same seam production crosses.
+- Payloads: `App\Support\TopicCard` owns the topic-card shape for library, saved, Today, and landing; `ReadingPayload` owns the reader/sample payload and the landing preview slice; `TopicCover::url()` owns the `/storage/` rule. Shared `TopicPayload`/`LessonPayload`/`ReadingContent` types live in `resources/js/types.ts`. The M0 privacy test now asserts prop keys and the single public `sampleAudioUrl` instead of grepping raw HTML for “audio”; the working-tree red test is fixed.
+- Precache: `resources/public-assets.json` is the single allowlist read by `vite.config.js` and `App\Support\PublicAssets`; `PwaController` delegates and a completeness test fails if a `precache: true` input is missing from the build manifest. Also fixed the truncated `/sw.js` fetch listener (pre-existing syntax error), made `swVersion()` fall back to `s2-v1` when `SW_VERSION` is empty, and precache with `credentials: 'omit'` so an install cannot persist a session cookie across logout.
+
+Evidence: Pest 302 passed / 3608 assertions on PostgreSQL (including the direct `D5PayloadsTest` shape tests and the precache completeness test); `npm run typecheck` clean; `npm run build` clean; Pint clean on every changed PHP file (global Pint still flags pre-existing, unrelated style drift, left untouched); Playwright Chromium on the browser lane (`fe_browser` + `.env.browser` + `SALES_ENABLED=true`): 23/23 audio/reader/landing specs, landing 4/4, and 41/42 of the affected regression batch. The one logout/back-forward spec is order-dependent: it passes standalone and in the full `s2-pwa` file (6/6), and its spec already documents the in-flight-response race; no assertion was weakened to obtain green.
+
+M6 verification 2026-10-22 (working tree, uncommitted):
+- Pest 301 passed / 3869 assertions on PostgreSQL; Pint clean on every changed PHP file (global Pint still flags 14 pre-existing unrelated files); `npm run typecheck` and `npm run build` clean.
+- Full Playwright Chromium suite on a localhost secure-context lane (`fe_browser`, built assets, `SALES_ENABLED=true`): 84/84. Three test-contract/race fixes were required and keep the same assertions: `s1-player` targets the public sample's in-flow console; `s7-placement` reads the level definition-row and waits for hydration after reload; `backup-admin` targets the completed row instead of the status flash. The lane also needed its missing `backup-staff@example.com` fixture and clearing a stale `cache_locks` entry from an interrupted local attempt; no product code changed. `s2-pwa` 6/6 includes the allowlist cache audit, offline fallback, update-without-reload, and logout/back-forward isolation.
+- Inspected fresh captures: landing 360/390/full-page and 1440, account active 390/1440, reader 390/1440 + 320 reflow, download 390, library/reader responsive sweep 360–1360, playing state. Contrast and light-only locks stay with `S3DesignTest`/`design-theme`.
+- Independent `reviewer` + `security-reviewer` passes: no unresolved BLOCKER/MAJOR.
+- Lane note: :8111 uses `fe_dev`; the documented browser lane is `fe_browser` with `.env` + `.env.browser`, served on a localhost origin (service workers need a secure context).
 
 ## Appendix — route inventory → migration strategy (from `routes/web.php` + Fortify)
 

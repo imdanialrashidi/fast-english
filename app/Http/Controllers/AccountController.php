@@ -34,6 +34,7 @@ class AccountController extends Controller
             ->first();
 
         $subscription = $user->subscription;
+        $subscriptionActive = $subscription !== null && Entitlement::active($user);
 
         // Public-slice Inertia transport (ADR-0002): the same
         // subscription + open/latest request derivation with one clear
@@ -57,8 +58,15 @@ class AccountController extends Controller
                 'daily_goal_minutes' => (int) ($user->daily_goal_minutes ?? 10),
             ],
             'subscription' => $subscription ? [
-                'active' => Entitlement::active($user),
-                'expires_at' => $subscription->expires_at?->timezone('Asia/Tehran')->format('Y/m/d H:i'),
+                'active' => $subscriptionActive,
+                // Display state, never a permission: active, expired, or
+                // revoked. Access still comes only from Entitlement.
+                'state' => $subscriptionActive
+                    ? 'active'
+                    : ($subscription->revoked_at !== null ? 'revoked' : 'expired'),
+                // ISO instant; the client formats it for Asia/Tehran so
+                // Persian dates and digits are presentation-owned.
+                'expires_at' => $subscription->expires_at?->toIso8601String(),
             ] : null,
             'openRequest' => $mapRequest($openRequest),
             'latestRequest' => $mapRequest($latestRequest),

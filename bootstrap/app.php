@@ -4,6 +4,7 @@ use App\Http\Middleware\DisablePasswordResetWhenSmtpMissing;
 use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PrivateNoStore;
+use App\Http\Middleware\RedirectAuthenticatedToApp;
 use App\Http\Middleware\RejectDisabledUsers;
 use App\Http\Middleware\RequireSubscription;
 use App\Http\Middleware\ThrottleUploads;
@@ -29,6 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscribed' => RequireSubscription::class,
             // S8: staff-only routes (2FA setup/challenge, panel extras).
             'staff' => EnsureStaff::class,
+            // Owner requirement (2026-10-21): landing/marketing pages are
+            // guest-only; signed-in learners return to the app.
+            'marketing.guest' => RedirectAuthenticatedToApp::class,
         ]);
         // S2 scope §16: private HTML/Livewire responses are uncacheable.
         $middleware->appendToGroup('web', PrivateNoStore::class);

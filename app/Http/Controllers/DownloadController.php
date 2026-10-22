@@ -43,6 +43,11 @@ class DownloadController extends Controller
                 'file_url' => $release['file_url'],
             ],
             'published' => $published,
+            'seo' => [
+                'title' => 'دانلود Fast English',
+                'description' => 'دانلود اپلیکیشن اندروید Fast English — وضعیت انتشار نسخه، مشخصات فایل نصب، و راه شروع با نمونه رایگان.',
+                'canonical' => route('download'),
+            ],
         ]);
     }
 }

@@ -69,10 +69,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
             <Head title="کشف مطالب" />
             <div className="mx-auto grid max-w-[1024px] gap-6 px-4 py-6">
                 <div>
-                    <p lang="en" dir="ltr" className="m-0 font-en text-sm font-bold tracking-[0.18em] text-accent-strong uppercase">
-                        Discover
-                    </p>
-                    <h1 className="m-0 mt-1 text-3xl leading-[1.6] font-extrabold tracking-tight">کشف مطالب</h1>
+                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">کشف مطالب</h1>
                     <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">
                         یک مطلب کوتاه در سطح خودت پیدا کن — هر موضوع یک‌بار، با سطح‌های موجودش.
                     </p>
@@ -96,7 +93,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                                 name="q"
                                 type="search"
                                 defaultValue={activeQuery ?? ''}
-                                placeholder="مثلاً park"
+                                placeholder="عنوان انگلیسی را بنویس"
                                 autoComplete="off"
                                 maxLength={120}
                                 className="min-h-11 w-full min-w-0 flex-1 rounded-full border border-field bg-surface px-4 py-2 text-base text-ink placeholder:text-muted"

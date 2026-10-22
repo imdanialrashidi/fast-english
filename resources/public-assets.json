@@ -1,0 +1,18 @@
+{
+    "viteInputs": [
+        { "path": "resources/css/app.css", "precache": false },
+        { "path": "resources/js/pwa.js", "precache": true },
+        { "path": "resources/css/inertia.css", "precache": true },
+        { "path": "resources/js/app.tsx", "precache": true }
+    ],
+    "staticPrecache": [
+        "/offline",
+        "/manifest.webmanifest",
+        "/icons/icon-192.png",
+        "/icons/icon-512.png",
+        "/icons/icon-maskable-512.png",
+        "/icons/apple-touch-180.png",
+        "/fonts/vazirmatn/vazirmatn-arabic-variable.woff2",
+        "/fonts/vazirmatn/vazirmatn-latin-variable.woff2"
+    ]
+}

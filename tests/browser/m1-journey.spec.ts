@@ -3,7 +3,7 @@ import { test } from './helpers';
 
 // M1 public-to-learning journey (PUB-01, LIB-01/02, READ-01/02/03):
 // landing → sample CTA → library (search/filter/pagination/empty) →
-// reader (level select, audio, cues, glossary, save/progress) with the
+// reader (level select, audio, plain paragraphs, glossary, save/progress) with the
 // locked, missing-level, and fallback states. Real seeded data on the
 // browser lane; one fresh account per run keeps mutations deterministic.
 
@@ -27,7 +27,7 @@ test('M1 landing stages the real sample and its CTA opens the reader', async ({ 
 
     await cta.click();
     await page.waitForURL(/\/sample/);
-    await expect(page.locator('ol.fe-sentences, article.fe-english-body').first()).toBeVisible();
+    await expect(page.locator('article.fe-english-body').first()).toBeVisible();
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
@@ -78,22 +78,21 @@ test('M1 library filters, searches, paginates, and explains empty results', asyn
     await page.screenshot({ path: 'test-results/browser-shots/m1-library-390.png' });
 });
 
-test('M1 reader plays synced sentences and keeps level selection in the URL', async ({ page }) => {
+test('M1 reader renders normal paragraphs and keeps level selection in the URL', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(CITY_A2);
-    await expect(page.locator('ol.fe-sentences')).toBeVisible();
+    await expect(page.locator('article.fe-english-body')).toBeVisible();
+    await expect(page.locator('.fe-sentence')).toHaveCount(0);
     await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration));
 
-    // Selecting a sentence seeks to its interval and plays it.
-    const second = page.locator('.fe-sentence').nth(1);
-    const start = Number(await second.getAttribute('data-start'));
-    await second.click();
+    // Normal playback advances the audio without any text highlighting.
+    await page.locator('#player-play').click();
     await expect
         .poll(() => page.locator('#lesson-audio').evaluate((a: HTMLAudioElement) => !a.paused))
         .toBe(true);
-    const current = await page.locator('#lesson-audio').evaluate((a: HTMLAudioElement) => a.currentTime);
-    expect(Math.abs(current - start)).toBeLessThan(1.5);
-    await expect.poll(() => page.locator('.fe-sentence[aria-current="true"]').count()).toBeGreaterThan(0);
+    await expect
+        .poll(() => page.locator('#lesson-audio').evaluate((a: HTMLAudioElement) => a.currentTime))
+        .toBeGreaterThan(0);
     await page.locator('#player-play').click();
 
     // Demanding state: expanded console with the seek control and times.
@@ -112,7 +111,7 @@ test('M1 reader plays synced sentences and keeps level selection in the URL', as
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(CITY_A2);
-    await page.locator('.fe-sentence').first().waitFor();
+    await page.locator('article.fe-english-body p').first().waitFor();
     const scroll = await page.evaluate(() => ({
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth: window.innerWidth,
@@ -130,7 +129,7 @@ test('M1 library at 1440px', async ({ sub: page }) => {
     await page.screenshot({ path: 'test-results/browser-shots/m1-library-1440.png' });
 });
 
-test('M1 missing level, locked premium, and cue fallback stay honest', async ({ page }) => {
+test('M1 missing level, locked premium, and plain reader stay honest', async ({ page }) => {
     // Missing level: exact message with the available levels, no substitution.
     await page.goto('/app/topics/city-park?level=B2');
     await expect(page.getByRole('heading', { name: 'این سطح هنوز آماده نیست' })).toBeVisible();
@@ -150,10 +149,11 @@ test('M1 missing level, locked premium, and cue fallback stay honest', async ({ 
     const locked = await page.locator('body').textContent();
     expect(locked).not.toContain('The night train left the station');
 
-    // Cue fallback: usable plain reader with an honest notice.
+    // No-cue path is now the only path: normal paragraphs, no sync notice.
     await page.goto(MARKET_A1);
     await expect(page.locator('article.fe-english-body')).toBeVisible();
-    await expect(page.getByText('همگام‌سازی جمله‌به‌جمله برای این نسخه هنوز آماده نیست')).toBeVisible();
+    await expect(page.locator('.fe-sentence')).toHaveCount(0);
+    await expect(page.getByText('همگام‌سازی جمله‌به‌جمله')).toHaveCount(0);
 });
 
 test('M1 signed-in reader saves bookmarks, words, and completion', async ({ sub: page }) => {

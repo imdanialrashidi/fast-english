@@ -24,28 +24,36 @@ use App\Http\Controllers\TrustController;
 use App\Http\Controllers\VocabularyController;
 use Illuminate\Support\Facades\Route;
 
-// S8 landing (scope §6, PUB-01): short Persian page with the promise,
-// the real sample link, how it works, the DB plan list, install and
-// download links, and the FAQ link.
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+// Owner requirement (2026-10-21): the landing system is a guest-only
+// marketing surface for search and download. Signed-in learners never
+// see the public shell; middleware sends them back into /app. The public
+// sample stays outside this group because the in-app locked state links
+// to it as the free path.
+Route::middleware('marketing.guest')->group(function () {
+    // S8 landing (scope §6, PUB-01): short Persian page with the promise,
+    // the real sample link, how it works, the DB plan list, install and
+    // download links, and the FAQ link.
+    Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+    // S8 trust pages (scope §6, PUB-02): draft copy labelled as draft;
+    // support/terms/privacy show explicit BLOCKED states (scope §25).
+    Route::get('/about', [TrustController::class, 'about'])->name('trust.about');
+    Route::get('/cooperation', [TrustController::class, 'cooperation'])->name('trust.cooperation');
+    Route::get('/faq', [TrustController::class, 'faq'])->name('trust.faq');
+    Route::get('/support', [TrustController::class, 'support'])->name('trust.support');
+    Route::get('/terms', [TrustController::class, 'terms'])->name('trust.terms');
+    Route::get('/privacy', [TrustController::class, 'privacy'])->name('trust.privacy');
+
+    // S8 download page (scope §18.2): «هنوز منتشر نشده» until a real build
+    // fills the release metadata. /install redirects here (scope §6).
+    Route::get('/download', [DownloadController::class, 'index'])->name('download');
+    Route::redirect('/install', '/download', 302)->name('install');
+});
 
 // Public sample entry (scope §6, PUB-01/AC-01): the real published sample
 // without login. Drafts/premium never resolve here; 404 when none exists.
 Route::get('/sample', [LandingController::class, 'sample'])->name('sample');
 
-// S8 trust pages (scope §6, PUB-02): draft copy labelled as draft;
-// support/terms/privacy show explicit BLOCKED states (scope §25).
-Route::get('/about', [TrustController::class, 'about'])->name('trust.about');
-Route::get('/cooperation', [TrustController::class, 'cooperation'])->name('trust.cooperation');
-Route::get('/faq', [TrustController::class, 'faq'])->name('trust.faq');
-Route::get('/support', [TrustController::class, 'support'])->name('trust.support');
-Route::get('/terms', [TrustController::class, 'terms'])->name('trust.terms');
-Route::get('/privacy', [TrustController::class, 'privacy'])->name('trust.privacy');
-
-// S8 download page (scope §18.2): «هنوز منتشر نشده» until a real build
-// fills the release metadata. /install redirects here (scope §6).
-Route::get('/download', [DownloadController::class, 'index'])->name('download');
-Route::redirect('/install', '/download', 302)->name('install');
 // S8: /plans is an alias for the subscribe page (scope §6).
 Route::redirect('/plans', '/app/subscribe', 302)->name('plans');
 

@@ -8,15 +8,15 @@ test('A2 reader shows only the A2 lesson body and audio', async ({ page }) => {
   await page.goto(A2);
   await expect(page.locator('html')).toHaveAttribute('lang', 'fa');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-  await expect(page.locator('ol.fe-sentences')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('ol.fe-sentences')).toHaveAttribute('dir', 'ltr');
+  await expect(page.locator('article.fe-english-body')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('article.fe-english-body')).toHaveAttribute('dir', 'ltr');
 
-  await expect(page.locator('ol.fe-sentences')).toContainText('On Saturday morning, Sara walks');
-  await expect(page.locator('ol.fe-sentences')).not.toContainText('Sara loves Saturday mornings');
+  await expect(page.locator('article.fe-english-body')).toContainText('On Saturday morning, Sara walks');
+  await expect(page.locator('article.fe-english-body')).not.toContainText('Sara loves Saturday mornings');
 
   const src = await page.locator('#lesson-audio').getAttribute('src');
   expect(src).toContain('/media/lessons/');
-  const bodyAudioRefs = await page.locator('ol.fe-sentences').evaluate((el) => el.innerHTML.includes('/media/lessons/'));
+  const bodyAudioRefs = await page.locator('article.fe-english-body').evaluate((el) => el.innerHTML.includes('/media/lessons/'));
   expect(bodyAudioRefs).toBe(false);
 
   // No autoplay: audio is paused at load.
@@ -30,8 +30,8 @@ test('A2 reader shows only the A2 lesson body and audio', async ({ page }) => {
 
 test('B1 reader shows only the B1 lesson body and audio', async ({ page }) => {
   await page.goto(B1);
-  await expect(page.locator('ol.fe-sentences')).toContainText('Sara loves Saturday mornings');
-  await expect(page.locator('ol.fe-sentences')).not.toContainText('On Saturday morning, Sara walks');
+  await expect(page.locator('article.fe-english-body')).toContainText('Sara loves Saturday mornings');
+  await expect(page.locator('article.fe-english-body')).not.toContainText('On Saturday morning, Sara walks');
 
   const src = await page.locator('#lesson-audio').getAttribute('src');
   expect(src).toContain('/media/lessons/');
@@ -53,8 +53,8 @@ test('switching level loads the other lesson and stops the old audio', async ({ 
 
   const srcB1 = await page.locator('#lesson-audio').getAttribute('src');
   expect(srcB1).not.toBe(srcA2);
-  await expect(page.locator('ol.fe-sentences')).toContainText('Sara loves Saturday mornings');
-  await expect(page.locator('ol.fe-sentences')).not.toContainText('On Saturday morning, Sara walks');
+  await expect(page.locator('article.fe-english-body')).toContainText('Sara loves Saturday mornings');
+  await expect(page.locator('article.fe-english-body')).not.toContainText('On Saturday morning, Sara walks');
 
   // Fresh page: nothing plays without a new user gesture.
   const paused = await page.locator('#lesson-audio').evaluate((a: HTMLAudioElement) => a.paused);

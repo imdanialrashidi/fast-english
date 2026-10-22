@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\PwaController;
-use App\Models\Lesson;
+use App\Http\Middleware\HandleInertiaRequests;
+use App\Support\PublicAssets;
 use Database\Seeders\S1SampleSeeder;
 use Tests\Support\ContentFixtures;
 
@@ -16,12 +16,15 @@ test('learner pages mount the learner shell and public pages the public shell', 
     // Component proves the route; layout binding is asserted on the
     // compiled page modules below (one grep, not one test per page).
     // Header form is directive-based (middleware may order directives).
+    // Guest marketing is observed before actingAs: signed-in visitors
+    // are redirected away from the landing by owner decision.
+    $this->get(route('landing'))->assertOk();
+    $this->get(route('sample'))->assertOk();
+
     $home = $this->actingAs($student)->get(route('app.home'))->assertOk();
     $directives = collect(explode(',', strtolower((string) $home->headers->get('Cache-Control'))))
         ->map(fn ($directive) => trim($directive));
     expect($directives)->toContain('private')->and($directives)->toContain('no-store');
-    $this->get(route('landing'))->assertOk();
-    $this->get(route('sample'))->assertOk();
 });
 
 test('page modules bind exactly one shell each', function () {
@@ -60,14 +63,14 @@ test('inertia protocol responses are private no-store', function () {
 
     // Same asset version as the server sends (else Inertia 409s by
     // design); the X-Inertia header triggers the JSON protocol branch.
-    $version = (string) (new \App\Http\Middleware\HandleInertiaRequests)->version(request());
+    $version = (string) (new HandleInertiaRequests)->version(request());
     $response = $this->actingAs($student)->get(route('today.index'), ['X-Inertia' => 'true', 'X-Inertia-Version' => $version]);
     $response->assertOk();
     expect(strtolower((string) $response->headers->get('Cache-Control')))->toContain('no-store');
 });
 
 test('precache holds no private paths and no dead server css', function () {
-    $paths = (new PwaController)->precacheList();
+    $paths = PublicAssets::precache();
 
     expect($paths)->not->toBeEmpty();
     foreach ($paths as $path) {

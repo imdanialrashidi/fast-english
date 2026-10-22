@@ -11,8 +11,8 @@ import PublicLayout, { publicLayout } from '@/layouts/PublicLayout';
  */
 
 const POINTS = [
-    { icon: <BookOpen size={20} aria-hidden="true" />, text: 'متن کوتاه در سطح خودت، با صوت هماهنگ' },
-    { icon: <Headphones size={20} aria-hidden="true" />, text: 'پخش‌کننده‌ای که جمله‌به‌جمله جلو می‌رود' },
+    { icon: <BookOpen size={20} aria-hidden="true" />, text: 'متن کوتاه در سطح خودت، با صوت همان نسخه' },
+    { icon: <Headphones size={20} aria-hidden="true" />, text: 'پخش‌کننده ساده با سرعت قابل تنظیم' },
     { icon: <Languages size={20} aria-hidden="true" />, text: 'دفترچه واژه با مرور سر موعد' },
 ];
 
@@ -34,7 +34,7 @@ export function AuthFrame({
     const firstError = Object.values(errors)[0] ?? null;
     return (
         <div className="mx-auto grid max-w-[1024px] gap-8 px-4 py-8 lg:grid-cols-[1fr_1.1fr] lg:items-start">
-            <section aria-label="درباره فست اینگلیش" className="grid content-start gap-4 pt-2">
+            <section aria-label="درباره Fast English" className="grid content-start gap-4 pt-2">
                 <Link href="/" aria-label="Fast English" className="inline-flex min-h-11 items-center gap-2 no-underline">
                     <img src="/icons/icon-192.png" alt="" width={34} height={34} className="h-[34px] w-[34px] rounded-[10px]" />
                     <span lang="en" dir="ltr" className="font-en text-xl font-extrabold tracking-tight">

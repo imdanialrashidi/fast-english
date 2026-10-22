@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { ChevronDown, Gauge, Pause, Play, RotateCcw, RotateCw, TriangleAlert } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
-import { formatAudioTime, usePlayer } from '@/lib/player';
+import { formatAudioTime } from '@/lib/audio';
+import { usePlayer } from '@/lib/player';
 import type { SharedProps } from '@/types';
 
 /**
@@ -17,12 +18,13 @@ import type { SharedProps } from '@/types';
  */
 export function AudioPlayer(): React.JSX.Element | null {
     const {
-        audioRef,
+        bindRef,
         track,
         playing,
         time,
         duration,
         rate,
+        fraction,
         hasError,
         expanded,
         setExpanded,
@@ -30,21 +32,17 @@ export function AudioPlayer(): React.JSX.Element | null {
         retrySaveNow,
         toggle,
         seekTo,
+        seekToFraction,
         skipBy,
         cycleRate,
         retry,
     } = usePlayer();
 
-    const ready = Number.isFinite(duration);
-    const fraction = ready && duration > 0 ? Math.min(1, Math.max(0, time / duration)) : 0;
     const rateLabel = `${rate}×`;
     const title = track !== null ? `${track.titleEn} (${track.level})` : 'پخش‌کننده آماده است';
 
     const onSeekInput = (event: React.FormEvent<HTMLInputElement>): void => {
-        const percent = Number(event.currentTarget.value);
-        if (Number.isFinite(duration) && duration > 0) {
-            seekTo((percent / 100) * duration);
-        }
+        seekToFraction(Number(event.currentTarget.value));
     };
 
     // Logged-out session with no bound lesson: no audio machinery at all
@@ -225,7 +223,7 @@ export function AudioPlayer(): React.JSX.Element | null {
         <>
             {bar}
             {/* Stable position: binding a track never remounts this. */}
-            <audio id="lesson-audio" ref={audioRef} preload="metadata" />
+            <audio id="lesson-audio" ref={bindRef} preload="metadata" />
         </>
     );
 }

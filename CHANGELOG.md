@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased — plain reader, Persian app chrome, app-style account (owner 2026-10-21)
+
+- Removed sentence-level audio/text sync: reader, public sample, and landing preview render plain English paragraphs beside the normal player; cue props, highlight/bold rows, click-to-seek, follow-scroll, cue columns/validators, and the staff cue editor are gone.
+- Replaced the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the `Example` field label with Persian chrome; updated the false sentence-sync marketing/SEO copy.
+- Simplified the app shell: no in-app marketing footer, no duplicate signed-in header account CTA, and no duplicate account-page navigation chips.
+- Account is now an app profile screen: identity card, level/goal summary, subscription status with one next action, settings/saved/placement rows, and logout; dates render in Persian (Asia/Tehran) from an ISO server prop.
+- Today drops the duplicated due-words block and repeated level line, and the goal ring now reflects the real `progress_pct`.
+- Reader/sample covers are bounded to 14rem; the sample player is in flow instead of a fixed overlay.
+
+## Unreleased — landing/app separation, download-first landing, account fix
+
+- Landing system is guest-only: `marketing.guest` redirects signed-in users from `/`, trust pages, `/download`, and `/install` to `/app/today`; `/sample` stays public as the in-app free path. The app shell no longer links to marketing pages, and the landing no longer links into `/app`.
+- Landing conversion is download-first; plan interest goes through registration. Featured topics are informational rows, not app links.
+- Server-rendered SEO for landing/download: title, description, canonical, Open Graph, Twitter, and JSON-LD (`WebSite`, `SoftwareApplication`, `FAQPage`) with FAQ copy from one server source.
+- Account page: active subscription shows renewal instead of a first-purchase CTA; expired/revoked states distinguish cleanly; desktop sidebar pill no longer stretches; main padding follows actual player presence; email and daily-goal presentation tightened.
+
 ## Unreleased — DeepWiki MCP replaces Context7
 
 - Replace `@upstash/context7-mcp@4.1.2` stdio MCP with the official DeepWiki remote MCP (`https://mcp.deepwiki.com/mcp`, hidden, deferred `read_wiki_structure`/`read_wiki_contents`/`ask_wiki_question` via `tool_search`). No package install, no API key for public repos; private repos stay out of scope.
