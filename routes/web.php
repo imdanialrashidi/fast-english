@@ -130,6 +130,15 @@ Route::get('/app/today', [TodayController::class, 'index'])
 Route::get('/app/words/review', [VocabularyController::class, 'review'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.review');
+Route::get('/app/words/export', [VocabularyController::class, 'export'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('words.export');
+Route::post('/app/words/import', [VocabularyController::class, 'import'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed', 'throttle:5,1'])
+    ->name('words.import');
+Route::post('/app/words/known', [VocabularyController::class, 'markAllKnown'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('words.known');
 Route::get('/app/words', [VocabularyController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.index');

@@ -115,3 +115,16 @@ M6 verification 2026-10-22 (working tree, uncommitted):
 | `GET /manifest.webmanifest`, `/sw.js`, `/offline`, `/robots.txt`, `/.well-known/assetlinks.json` | `PwaController` | Unchanged controllers; SW allowlist re-audited (add Inertia chunks only if fingerprinted public assets) |
 | `/admin` + Filament resources/pages | Filament + Livewire (internal) | Untouched; learner bundle must not include Filament assets |
 | `/staff/two-factor*`, `/staff/placement/{test}/publish` | Blade + shared action | Untouched; publish still uses `PublishPlacementTest` |
+
+## 12. Follow-up feature slice — 2026-10-22 (owner selection)
+
+Scope: nine owner-selected follow-ups from the release-readiness review; no route/palette/theme rewrite.
+
+- Vocabulary: cloze review presentation; owner-only CSV export/import; bulk «همه را می‌دانم». SRS math and grade endpoint unchanged. `R4VocabularyTest` covers export isolation/formula guard, create/update import, invalid headers, 500-row cap, and bulk isolation.
+- Account: recent payment history (status/plan/snapshot amount/date, no receipt/bank/internal fields) + daily `subscriptions:remind-expiring` command with a `renewal_reminder_sent_at` marker and renewal reset. `S0AccountTest` + `SubscriptionReminderTest` cover the allowlist, one-per-window, skip states, dry-run, and renewal reset. Real SMTP send remains BLOCKED.
+- Player: Media Session metadata/actions for learner and sample players with feature detection; Chromium mock spec proves metadata/handlers/position state. Lock-screen/device behavior remains UNPROVEN.
+- Shell/UI: delayed navigation skeleton; one Persian type scale (`fe-title`/`fe-prose`/`fe-meta`/`fe-bidi`); duplicate shell brand mark removed.
+- SEO: `/sample` in the sitemap while published; canonical without query; description + Article JSON-LD. `S8LandingTest` covers both.
+- Tooling: all 14 pre-existing Pint files formatted; `scripts/verify.sh --template-only` used by `workflow-doctor`; browser CI seeds `S2BrowserSeeder` with sales on and runs reader/landing/PWA/Media-Session/skeleton specs; `scripts/browser-lane.sh` added.
+
+Evidence: Pest 313 passed / 3931 assertions on PostgreSQL; global Pint clean; `npm run typecheck` and `npm run build` clean; full Playwright suite on `fe_browser` (86 tests) with inspected account/cloze/skeleton captures. `scripts/browser-lane.sh start|status|seed` exercised. Independent review status is recorded in the PR evidence.

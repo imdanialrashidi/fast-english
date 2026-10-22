@@ -234,9 +234,11 @@ test('S2-3 logout clears the player and back/forward leaks no first-account data
   await expect(page.locator('body')).toContainText(B.email);
 
   await page.goBack();
+  await page.waitForLoadState('networkidle');
   await expect(page.locator('body')).not.toContainText(A.email);
 
   await page.goForward().catch(() => undefined);
+  await page.waitForLoadState('networkidle');
   await expect(page.locator('body')).not.toContainText(A.email);
-  await expect(page.locator('body')).toContainText(B.email);
+  await expect(page.locator('body')).toContainText(B.email, { timeout: 15_000 });
 });

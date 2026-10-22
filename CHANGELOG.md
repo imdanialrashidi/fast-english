@@ -1,3 +1,13 @@
+## Unreleased — vocabulary tools, renewal reminders, Media Session, skeletons (owner 2026-10-22)
+
+- Vocabulary review now uses a cloze card: the target word is blanked inside its real example until reveal; words without a usable example keep the word-first fallback. SRS scheduling is unchanged.
+- Vocabulary notebook adds owner-only CSV export/import and a two-step «همه را می‌دانم» bulk action. Export is formula-safe and private; import is one transaction, capped at 500 rows, and never touches another learner's words.
+- Account adds a recent payment-history list (status, plan, snapshot amount, date) with no receipt/bank/internal fields. A daily `subscriptions:remind-expiring` command sends one renewal mail per current window; real SMTP delivery remains a launch prerequisite.
+- The persistent learner player and public sample publish Media Session metadata plus play/pause/seek handlers when the browser supports them. Background audio is not promised.
+- In-app navigation shows a delayed skeleton while the next page loads. Learner pages share a Persian type scale and bidi-safe headings; the duplicate shell brand mark is removed.
+- `/sample` joins the sitemap while a published sample exists and ships its own canonical (without query), description, and Article JSON-LD.
+- CI: the 14 pre-existing Pint style failures are fixed; `workflow-doctor` now runs the template-only gate; the browser job seeds `S2BrowserSeeder` with sales on and runs the reader/landing/PWA/Media-Session/skeleton specs. `scripts/browser-lane.sh` documents the local Chromium lane.
+
 # Changelog
 
 ## Unreleased — plain reader, Persian app chrome, app-style account (owner 2026-10-21)

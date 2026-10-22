@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\PaymentRequest;
 use App\Models\User;
+use App\Support\Toman;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
@@ -65,4 +67,33 @@ test('active subscription is presented as active with a renewal state', function
             ->where('subscription.active', true)
             ->where('subscription.state', 'active')
             ->where('openRequest', null));
+});
+
+test('account lists the owner payment history without private fields', function () {
+    $user = ContentFixtures::subscribedStudent();
+    $other = ContentFixtures::subscribedStudent();
+
+    PaymentRequest::factory()->for($user)->create([
+        'status' => PaymentRequest::STATUS_APPROVED,
+        'amount_toman_snapshot' => 100000,
+        'plan_name_snapshot' => 'پلن آزمایشی',
+    ]);
+    PaymentRequest::factory()->for($other)->create([
+        'status' => PaymentRequest::STATUS_REJECTED,
+        'plan_name_snapshot' => 'پلن دیگری',
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('app.account'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Account/Index')
+            ->has('paymentHistory', 1)
+            ->where('paymentHistory.0.status', PaymentRequest::STATUS_APPROVED)
+            ->where('paymentHistory.0.plan_name', 'پلن آزمایشی')
+            ->where('paymentHistory.0.amount_label', Toman::format(100000))
+            ->missing('paymentHistory.0.receipt_path')
+            ->missing('paymentHistory.0.bank_reference')
+            ->missing('paymentHistory.0.sender_last4')
+            ->missing('paymentHistory.0.internal_note'));
 });

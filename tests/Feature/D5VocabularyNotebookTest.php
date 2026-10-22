@@ -4,6 +4,7 @@ use App\Models\Lesson;
 use App\Models\VocabularyWord;
 use App\Support\PlacementLevel;
 use App\Support\Vocabulary;
+use Illuminate\Validation\ValidationException;
 use Tests\Support\ContentFixtures;
 
 // D5 vocabulary notebook (C4) + placement bands (C2 follow-up): the
@@ -49,7 +50,7 @@ test('grade reschedules and refuses non-learning words', function () {
     try {
         Vocabulary::grade($student, $graded['entry']->fresh(), 'good', now());
         $this->fail('Grading a known word should refuse.');
-    } catch (Illuminate\Validation\ValidationException $e) {
+    } catch (ValidationException $e) {
         expect($e->errors())->toHaveKey('word');
     }
 });

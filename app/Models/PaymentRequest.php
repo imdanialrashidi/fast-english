@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Toman;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -112,7 +113,7 @@ class PaymentRequest extends Model
         return [
             'plan_name' => (string) ($this->plan_name_snapshot ?? ''),
             'amount_toman' => (int) ($this->amount_toman_snapshot ?? 0),
-            'amount_label' => \App\Support\Toman::format((int) ($this->amount_toman_snapshot ?? 0)),
+            'amount_label' => Toman::format((int) ($this->amount_toman_snapshot ?? 0)),
             'duration_days' => (int) ($this->duration_days_snapshot ?? 0),
             'card_number' => (string) ($destination['card_number'] ?? ''),
             'holder_name' => (string) ($destination['holder_name'] ?? ''),

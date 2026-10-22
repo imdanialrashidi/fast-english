@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\Lesson;
 use App\Models\VocabularyWord;
 use App\Support\SpacedRepetition;
+use App\Support\Vocabulary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 /**
@@ -102,6 +106,240 @@ class VocabularyController extends Controller
         ]);
     }
 
+    /**
+     * Owner-only CSV export. The file is a private response (global
+     * PrivateNoStore), never a public URL or a cacheable asset. Cells
+     * that start with a spreadsheet formula marker are prefixed with an
+     * apostrophe so an exported word can never execute in Excel/Sheets.
+     */
+    public function export(Request $request)
+    {
+        $user = $request->user();
+        if ($user === null || $user->disabled_at !== null) {
+            abort(403);
+        }
+
+        $words = VocabularyWord::query()
+            ->where('user_id', $user->id)
+            ->with(['lesson:id,topic_id,level', 'topic:id,slug'])
+            ->orderBy('word')
+            ->lazy(200);
+
+        return response()->streamDownload(function () use ($words): void {
+            $out = fopen('php://output', 'w');
+            if ($out === false) {
+                return;
+            }
+            // UTF-8 BOM keeps Persian text readable in Excel.
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['word', 'meaning_fa', 'example_en', 'status', 'due_at', 'lesson_level', 'topic_slug']);
+            foreach ($words as $entry) {
+                fputcsv($out, [
+                    self::csvCell($entry->word),
+                    self::csvCell($entry->meaning_fa),
+                    self::csvCell($entry->example_en),
+                    self::csvCell($entry->status),
+                    $entry->due_at?->toIso8601String() ?? '',
+                    self::csvCell($entry->lesson?->level),
+                    self::csvCell($entry->topic?->slug),
+                ]);
+            }
+            fclose($out);
+        }, 'fast-english-words.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Cache-Control' => 'private, no-store',
+        ]);
+    }
+
+    /**
+     * Owner-only CSV import. The header must contain `word`; meaning and
+     * example are optional. Existing words are updated only with the
+     * non-empty note fields in the file; new words start in learning.
+     * The whole file is one transaction, so a malformed row cannot leave
+     * a half-imported notebook.
+     */
+    public function import(Request $request)
+    {
+        $user = $request->user();
+        if ($user === null || $user->disabled_at !== null) {
+            abort(403);
+        }
+
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:1024'],
+        ]);
+
+        $handle = fopen($request->file('file')->getRealPath(), 'r');
+        if ($handle === false) {
+            throw ValidationException::withMessages(['file' => 'فایل CSV خوانده نشد.']);
+        }
+
+        $header = fgetcsv($handle);
+        if ($header === false) {
+            fclose($handle);
+            throw ValidationException::withMessages(['file' => 'فایل CSV خالی است.']);
+        }
+
+        $columns = [];
+        foreach ($header as $index => $name) {
+            $clean = mb_strtolower(trim((string) $name));
+            if ($index === 0) {
+                $clean = ltrim($clean, "\xEF\xBB\xBF");
+            }
+            $columns[$clean] = $index;
+        }
+        if (! array_key_exists('word', $columns)) {
+            fclose($handle);
+            throw ValidationException::withMessages(['file' => 'ستون word در سرصفحه CSV لازم است.']);
+        }
+
+        $rows = [];
+        $skipped = 0;
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($rows) >= 500) {
+                fclose($handle);
+                throw ValidationException::withMessages(['file' => 'حداکثر ۵۰۰ واژه در هر فایل مجاز است.']);
+            }
+
+            $word = self::csvValue($row, $columns, 'word');
+            if ($word === '') {
+                $skipped++;
+
+                continue;
+            }
+            if (mb_strlen($word) > 120) {
+                $skipped++;
+
+                continue;
+            }
+
+            $rows[] = [
+                'word' => $word,
+                'meaning_fa' => mb_substr(self::csvValue($row, $columns, 'meaning_fa'), 0, 500),
+                'example_en' => mb_substr(self::csvValue($row, $columns, 'example_en'), 0, 500),
+                'lesson_level' => strtoupper(self::csvValue($row, $columns, 'lesson_level')),
+                'topic_slug' => self::csvValue($row, $columns, 'topic_slug'),
+                'status' => self::csvValue($row, $columns, 'status'),
+            ];
+        }
+        fclose($handle);
+
+        if ($rows === []) {
+            throw ValidationException::withMessages(['file' => 'هیچ واژه معتبری در فایل پیدا نشد.']);
+        }
+
+        $created = 0;
+        $updated = 0;
+        DB::transaction(function () use ($user, $rows, &$created, &$updated): void {
+            foreach ($rows as $row) {
+                $lesson = null;
+                if ($row['topic_slug'] !== '' && $row['lesson_level'] !== '') {
+                    $lesson = Lesson::query()
+                        ->where('status', 'published')
+                        ->where('level', $row['lesson_level'])
+                        ->whereHas('topic', fn ($topics) => $topics
+                            ->where('status', 'published')
+                            ->where('slug', $row['topic_slug']))
+                        ->first();
+                }
+
+                $existing = VocabularyWord::query()
+                    ->where('user_id', $user->id)
+                    ->where('word_key', Vocabulary::key($row['word']))
+                    ->first();
+
+                if ($existing === null) {
+                    $entry = Vocabulary::save(
+                        $user,
+                        $row['word'],
+                        $row['meaning_fa'] !== '' ? $row['meaning_fa'] : null,
+                        $row['example_en'] !== '' ? $row['example_en'] : null,
+                        $lesson,
+                        now(),
+                    )['entry'];
+
+                    $restore = [];
+                    if ($lesson !== null) {
+                        $restore['lesson_id'] = $lesson->id;
+                        $restore['topic_id'] = $lesson->topic_id;
+                    }
+                    if (in_array($row['status'], ['learning', 'known'], true)) {
+                        $restore['status'] = $row['status'];
+                    }
+                    if ($restore !== []) {
+                        $entry->forceFill($restore)->save();
+                    }
+                    $created++;
+
+                    continue;
+                }
+
+                $updates = Vocabulary::noteUpdates(
+                    $existing,
+                    $row['meaning_fa'] !== '',
+                    $row['meaning_fa'] !== '' ? $row['meaning_fa'] : null,
+                    $row['example_en'] !== '',
+                    $row['example_en'] !== '' ? $row['example_en'] : null,
+                    in_array($row['status'], ['learning', 'known'], true) ? $row['status'] : null,
+                    now(),
+                );
+                if ($lesson !== null) {
+                    $updates['lesson_id'] = $lesson->id;
+                    $updates['topic_id'] = $lesson->topic_id;
+                }
+                if ($updates !== []) {
+                    $existing->forceFill($updates)->save();
+                    $updated++;
+                }
+            }
+        });
+
+        return response()->json([
+            'created' => $created,
+            'updated' => $updated,
+            'skipped' => $skipped,
+        ])->withHeaders(NoStore::headers());
+    }
+
+    /** Owner-only bulk action: every learning word becomes known. */
+    public function markAllKnown(Request $request)
+    {
+        $user = $request->user();
+        if ($user === null || $user->disabled_at !== null) {
+            abort(403);
+        }
+
+        $count = VocabularyWord::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'learning')
+            ->update(['status' => 'known']);
+
+        return response()->json(['known' => $count])->withHeaders(NoStore::headers());
+    }
+
+    private static function csvCell(?string $value): string
+    {
+        $clean = (string) ($value ?? '');
+
+        return preg_match('/^[=+\-@\t\r]/', $clean) === 1 ? "'".$clean : $clean;
+    }
+
+    /** @param list<string|null> $row @param array<string, int> $columns */
+    private static function csvValue(array $row, array $columns, string $name): string
+    {
+        $index = $columns[$name] ?? null;
+        if ($index === null) {
+            return '';
+        }
+        $value = trim((string) ($row[$index] ?? ''));
+        // Undo the export-side formula guard on re-import.
+        if (preg_match("/^'[=+\-@\t\r]/", $value) === 1) {
+            $value = substr($value, 1);
+        }
+
+        return $value;
+    }
+
     public function store(Request $request)
     {
         $user = $request->user();
@@ -128,7 +366,7 @@ class VocabularyController extends Controller
         }
 
         try {
-            $result = \App\Support\Vocabulary::save(
+            $result = Vocabulary::save(
                 $user,
                 (string) $data['word'],
                 isset($data['meaning_fa']) ? (string) $data['meaning_fa'] : null,
@@ -136,16 +374,16 @@ class VocabularyController extends Controller
                 $lesson,
                 now(),
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(['message' => collect($e->errors())->flatten()->first() ?? 'خطا.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         if (! $result['created']) {
             return response()->json([
                 'message' => 'این واژه قبلاً در دفترچه شما ذخیره شده است.',
                 'id' => $result['existingId'],
-            ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+            ], 422)->withHeaders(NoStore::headers());
         }
 
         $entry = $result['entry'];
@@ -154,7 +392,7 @@ class VocabularyController extends Controller
             'id' => $entry->id,
             'word' => $entry->word,
             'due_at' => $entry->due_at?->toIso8601String(),
-        ], 201)->withHeaders(\App\Http\Responses\NoStore::headers());
+        ], 201)->withHeaders(NoStore::headers());
     }
 
     public function update(Request $request, VocabularyWord $word)
@@ -170,7 +408,7 @@ class VocabularyController extends Controller
             'status' => ['nullable', 'in:learning,known'],
         ]);
 
-        $updates = \App\Support\Vocabulary::noteUpdates(
+        $updates = Vocabulary::noteUpdates(
             $word,
             array_key_exists('meaning_fa', $data),
             array_key_exists('meaning_fa', $data) ? (string) $data['meaning_fa'] : null,
@@ -187,7 +425,7 @@ class VocabularyController extends Controller
             'status' => $word->status,
             'meaning_fa' => $word->meaning_fa,
             'example_en' => $word->example_en,
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
 
     public function destroy(Request $request, VocabularyWord $word)
@@ -199,7 +437,7 @@ class VocabularyController extends Controller
 
         $word->delete();
 
-        return response()->json(['deleted' => true])->withHeaders(\App\Http\Responses\NoStore::headers());
+        return response()->json(['deleted' => true])->withHeaders(NoStore::headers());
     }
 
     public function review(Request $request)
@@ -252,10 +490,10 @@ class VocabularyController extends Controller
         ]);
 
         try {
-            $result = \App\Support\Vocabulary::grade($user, $word, $data['grade'], now());
-        } catch (\Illuminate\Validation\ValidationException $e) {
+            $result = Vocabulary::grade($user, $word, $data['grade'], now());
+        } catch (ValidationException $e) {
             return response()->json(['message' => collect($e->errors())->flatten()->first() ?? 'خطا.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         $entry = $result['entry'];
@@ -266,7 +504,6 @@ class VocabularyController extends Controller
             'interval_days' => $entry->interval_days,
             'repetitions' => $entry->repetitions,
             'remaining' => $result['remaining'],
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
-
 }

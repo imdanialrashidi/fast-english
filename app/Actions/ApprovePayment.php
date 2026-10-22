@@ -111,6 +111,7 @@ final class ApprovePayment
                     'starts_at' => $newStarts,
                     'expires_at' => $newExpires,
                     'revoked_at' => null,
+                    'renewal_reminder_sent_at' => null,
                 ]);
                 $subscription->save();
             } else {
@@ -118,6 +119,7 @@ final class ApprovePayment
                     'starts_at' => $newStarts,
                     'expires_at' => $newExpires,
                     'revoked_at' => null,
+                    'renewal_reminder_sent_at' => null,
                 ]);
                 $subscription->save();
             }
@@ -321,6 +323,7 @@ final class ApprovePayment
                     'starts_at' => $newStarts,
                     'expires_at' => $newExpires,
                     'revoked_at' => null,
+                    'renewal_reminder_sent_at' => null,
                 ]);
                 $subscription->save();
             } else {
@@ -328,6 +331,7 @@ final class ApprovePayment
                     'starts_at' => $newStarts,
                     'expires_at' => $newExpires,
                     'revoked_at' => null,
+                    'renewal_reminder_sent_at' => null,
                 ]);
                 $subscription->save();
             }

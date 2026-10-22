@@ -3,6 +3,7 @@ import { ChevronDown, Gauge, Pause, Play, RotateCcw, RotateCw, TriangleAlert } f
 import { usePage } from '@inertiajs/react';
 import { formatAudioTime } from '@/lib/audio';
 import { usePlayer } from '@/lib/player';
+import { useMediaSession } from '@/lib/media-session';
 import type { SharedProps } from '@/types';
 
 /**
@@ -19,6 +20,7 @@ import type { SharedProps } from '@/types';
 export function AudioPlayer(): React.JSX.Element | null {
     const {
         bindRef,
+        audioRef,
         track,
         playing,
         time,
@@ -37,6 +39,17 @@ export function AudioPlayer(): React.JSX.Element | null {
         cycleRate,
         retry,
     } = usePlayer();
+
+    useMediaSession({
+        title: track?.titleEn ?? null,
+        album: track?.level ?? null,
+        artwork: track?.coverUrl ?? null,
+        audioRef,
+        playing,
+        position: time,
+        duration,
+        rate,
+    });
 
     const rateLabel = `${rate}×`;
     const title = track !== null ? `${track.titleEn} (${track.level})` : 'پخش‌کننده آماده است';

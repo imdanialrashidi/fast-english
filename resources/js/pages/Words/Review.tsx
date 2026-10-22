@@ -41,6 +41,24 @@ const GRADE_SHORTCUTS: Record<string, string> = {
     easy: '4',
 };
 
+/**
+ * Cloze presentation: blank the target word inside its real example
+ * sentence so the learner recalls it from context. The word heading is
+ * hidden until reveal; when no usable example exists the card falls back
+ * to the original word-first shape. This is presentation only — the SRS
+ * schedule and grade endpoint are untouched.
+ */
+function clozeExample(example: string, word: string): string | null {
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    let replaced = false;
+    const blanked = example.replace(new RegExp(`\\b${escaped}\\b`, 'gi'), () => {
+        replaced = true;
+        return '_____';
+    });
+
+    return replaced ? blanked : null;
+}
+
 export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     card,
     remaining,
@@ -49,6 +67,9 @@ export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: Rea
     const [revealed, setRevealed] = React.useState(false);
     const [busy, setBusy] = React.useState(false);
     const [gradeStatus, setGradeStatus] = React.useState('');
+    const cloze = card !== null && card.example_en !== null && card.example_en !== ''
+        ? clozeExample(card.example_en, card.word)
+        : null;
 
     React.useEffect(() => {
         setRevealed(false);
@@ -98,8 +119,8 @@ export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: Rea
             <Head title="مرور واژه‌ها" />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
                 <div>
-                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">مرور واژه‌ها</h1>
-                    <p role="status" className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">
+                    <h1 className="fe-title m-0 text-3xl">مرور واژه‌ها</h1>
+                    <p role="status" className="fe-prose m-0 mt-2 text-[1.0625rem] text-muted">
                         {remaining} واژه برای مرور
                     </p>
                 </div>
@@ -121,11 +142,20 @@ export const WordsReview: FunctionComponent<ReviewProps> & { layout?: (page: Rea
                 ) : (
                     <>
                         <section aria-label="کارت مرور" data-word-id={card.id} className="grid gap-4 rounded-3xl border border-line bg-surface p-6 text-center">
-                            <h2 lang="en" dir="ltr" className="fe-flash-word m-0 text-center font-en text-3xl leading-[1.4] font-extrabold">
-                                {card.word}
-                            </h2>
+                            {!revealed && cloze !== null ? (
+                                <>
+                                    <p className="m-0 text-sm font-bold text-muted">واژه گم‌شده را از جمله پیدا کن</p>
+                                    <p id="flash-cloze" lang="en" dir="ltr" className="m-0 text-center font-en text-xl leading-9 font-bold">
+                                        {cloze}
+                                    </p>
+                                </>
+                            ) : (
+                                <h2 lang="en" dir="ltr" className="fe-flash-word m-0 text-center font-en text-3xl leading-[1.4] font-extrabold">
+                                    {card.word}
+                                </h2>
+                            )}
                             <div id="flash-meaning" hidden={!revealed} className="grid gap-2">
-                                <p dir="auto" className="m-0 text-lg leading-9">
+                                <p dir="auto" className="fe-prose m-0 text-lg">
                                     {card.meaning_fa ?? '—'}
                                 </p>
                                 {card.example_en !== null && card.example_en !== '' && (

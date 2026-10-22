@@ -4,6 +4,7 @@ import {
     ChevronLeft,
     CreditCard,
     GraduationCap,
+    History,
     LogOut,
     Settings as SettingsIcon,
     Sparkles,
@@ -31,6 +32,15 @@ interface RequestSummary {
     url: string;
 }
 
+interface PaymentHistoryRow {
+    id: number;
+    status: string;
+    plan_name: string;
+    amount_label: string;
+    created_at: string | null;
+    url: string;
+}
+
 interface AccountProps extends SharedProps {
     user: {
         name: string;
@@ -45,6 +55,7 @@ interface AccountProps extends SharedProps {
     } | null;
     openRequest: RequestSummary | null;
     latestRequest: RequestSummary | null;
+    paymentHistory: PaymentHistoryRow[];
 }
 
 function statusLabel(status: string): string {
@@ -112,6 +123,7 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
     subscription,
     openRequest,
     latestRequest,
+    paymentHistory,
 }: AccountProps): React.JSX.Element => {
     const logout = (event: React.FormEvent): void => {
         event.preventDefault();
@@ -137,7 +149,7 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                             {initial}
                         </span>
                         <div className="min-w-0">
-                            <h1 className="m-0 truncate text-2xl leading-9 font-extrabold tracking-tight">{user.name}</h1>
+                            <h1 className="fe-title m-0 truncate text-2xl" dir="auto">{user.name}</h1>
                             <p dir="ltr" className="m-0 mt-0.5 truncate text-end font-en text-sm leading-6 text-muted">
                                 {user.email}
                             </p>
@@ -187,16 +199,16 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                     </div>
 
                     {active ? (
-                        <p className="m-0 leading-8">
+                        <p className="fe-prose m-0">
                             اشتراک فعال تا{' '}
                             <span className="font-bold">
                                 {expiresAt ?? 'پایان دوره'}
                             </span>
                         </p>
                     ) : subscription?.state === 'revoked' ? (
-                        <p className="m-0 leading-8 text-muted">اشتراک فعالی وجود ندارد.</p>
+                        <p className="fe-prose m-0 text-muted">اشتراک فعالی وجود ندارد.</p>
                     ) : (
-                        <p className="m-0 leading-8 text-muted">
+                        <p className="fe-prose m-0 text-muted">
                             اشتراک فعالی وجود ندارد.
                             {subscription !== null && expiresAt !== null && (
                                 <>
@@ -208,7 +220,7 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
 
                     {openRequest !== null ? (
                         <>
-                            <p className="m-0 leading-8">
+                            <p className="fe-prose m-0">
                                 درخواست جاری: <span className="font-bold">{statusLabel(openRequest.status)}</span>
                             </p>
                             <p className="m-0">
@@ -224,7 +236,7 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                         <>
                             {latestRequest !== null &&
                                 (latestRequest.status === 'rejected' || latestRequest.status === 'cancelled') && (
-                                    <p className="m-0 leading-8 text-muted">
+                                    <p className="fe-prose m-0 text-muted">
                                         آخرین درخواست: <span className="font-bold">{statusLabel(latestRequest.status)}</span>
                                     </p>
                                 )}
@@ -239,7 +251,7 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                                             تمدید اشتراک
                                         </Link>
                                     </p>
-                                    <p className="m-0 text-sm leading-7 text-muted">تمدید از پایان دوره فعلی ادامه پیدا می‌کند.</p>
+                                    <p className="fe-meta m-0 text-muted">تمدید از پایان دوره فعلی ادامه پیدا می‌کند.</p>
                                 </>
                             ) : (
                                 <p className="m-0">
@@ -253,6 +265,40 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                                 </p>
                             )}
                         </>
+                    )}
+                </section>
+
+                <section aria-label="تاریخچه پرداخت" className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
+                    <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
+                        <History size={20} aria-hidden="true" />
+                        تاریخچه پرداخت
+                    </h2>
+                    {paymentHistory.length === 0 ? (
+                        <p className="fe-prose m-0 text-muted">هنوز درخواست پرداختی ثبت نکرده‌ای.</p>
+                    ) : (
+                        <ul className="m-0 grid list-none divide-y divide-line p-0">
+                            {paymentHistory.map((row) => (
+                                <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+                                    <div className="min-w-0">
+                                        <p className="m-0 font-bold">{row.plan_name}</p>
+                                        <p className="fe-meta m-0 text-muted">
+                                            {row.created_at !== null ? formatDate(row.created_at) : '—'} · {row.amount_label}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="rounded-full bg-canvas px-3 py-1 text-sm font-bold text-muted">
+                                            {statusLabel(row.status)}
+                                        </span>
+                                        <Link
+                                            href={row.url}
+                                            className="inline-flex min-h-11 min-w-11 items-center text-[0.9375rem] text-primary no-underline"
+                                        >
+                                            جزئیات
+                                        </Link>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </section>
 

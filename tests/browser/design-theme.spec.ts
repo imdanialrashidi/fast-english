@@ -129,10 +129,12 @@ test('capture: library, reader, today, words, settings in the permanent light th
   await page.screenshot({ path: 'test-results/browser-shots/design-reader-light-390.png' });
 
   await page.goto('/app/today');
+  await expect(page.getByText('هدف امروز')).toBeVisible();
   await noOverflow(page);
   await page.screenshot({ path: 'test-results/browser-shots/design-today-light-390.png' });
 
   await page.goto('/app/words');
+  await expect(page.getByRole('heading', { name: 'واژه‌ها' })).toBeVisible();
   await noOverflow(page);
   await page.screenshot({ path: 'test-results/browser-shots/design-words-light-390.png' });
 

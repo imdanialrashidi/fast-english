@@ -1,9 +1,9 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, Check, Compass, Inbox, Pencil, Play, RotateCcw, Search, X } from 'lucide-react';
+import { BookOpen, Check, CheckCheck, Compass, Download, Inbox, Pencil, Play, RotateCcw, Search, Upload, X } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
-import { postJson } from '@/lib/http';
+import { csrfToken, postJson } from '@/lib/http';
 import type { PaginationMeta, SharedProps } from '@/types';
 
 /**
@@ -280,6 +280,83 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
     knownCount,
 }: WordsProps): React.JSX.Element => {
     const [status, setStatus] = React.useState('');
+    const [importStatus, setImportStatus] = React.useState('');
+    const [importBusy, setImportBusy] = React.useState(false);
+    const [confirmKnown, setConfirmKnown] = React.useState(false);
+    const [knownBusy, setKnownBusy] = React.useState(false);
+    const [fileName, setFileName] = React.useState('');
+    const importRef = React.useRef<HTMLInputElement | null>(null);
+
+    const reloadWords = (): void => {
+        router.reload({ only: ['words', 'pagination', 'dueCount', 'learningCount', 'knownCount'] });
+    };
+
+    const importCsv = async (event: React.FormEvent): Promise<void> => {
+        event.preventDefault();
+        const file = importRef.current?.files?.[0];
+        if (file === undefined || importBusy) {
+            setImportStatus('یک فایل CSV انتخاب کنید.');
+            return;
+        }
+        setImportBusy(true);
+        setImportStatus('');
+        const form = new FormData();
+        form.append('file', file);
+        try {
+            const response = await fetch('/app/words/import', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': csrfToken(),
+                },
+                body: form,
+            });
+            const data = (await response.json().catch(() => null)) as
+                | { created?: number; updated?: number; skipped?: number; message?: string; errors?: Record<string, string[]> }
+                | null;
+            if (response.ok) {
+                setImportStatus(
+                    `${data?.created ?? 0} واژه تازه، ${data?.updated ?? 0} به‌روزرسانی، ${data?.skipped ?? 0} رد شد.`,
+                );
+                if (importRef.current !== null) {
+                    importRef.current.value = '';
+                }
+                reloadWords();
+            } else {
+                const firstError = data?.errors !== undefined ? Object.values(data.errors).flat()[0] : undefined;
+                setImportStatus(firstError ?? data?.message ?? 'ورود CSV ممکن نشد.');
+            }
+        } catch {
+            setImportStatus('ورود CSV ممکن نشد. اتصال را بررسی کنید.');
+        } finally {
+            setImportBusy(false);
+        }
+    };
+
+    const markAllKnown = async (): Promise<void> => {
+        if (knownBusy) {
+            return;
+        }
+        setKnownBusy(true);
+        setStatus('');
+        try {
+            const response = await postJson('/app/words/known');
+            const data = (await response.json().catch(() => null)) as { known?: number; message?: string } | null;
+            if (response.ok) {
+                setStatus(`${data?.known ?? 0} واژه «می‌دانم» شد.`);
+                setConfirmKnown(false);
+                reloadWords();
+            } else {
+                setStatus(data?.message ?? 'تغییر وضعیت واژه‌ها ممکن نشد.');
+            }
+        } catch {
+            setStatus('تغییر وضعیت واژه‌ها ممکن نشد. اتصال را بررسی کنید.');
+        } finally {
+            setKnownBusy(false);
+        }
+    };
+
     const tabs = [
         { key: 'all', label: 'همه' },
         { key: 'due', label: `موعد امروز (${dueCount})` },
@@ -292,8 +369,92 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
             <Head title="واژه‌ها" />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
                 <div>
-                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">واژه‌ها</h1>
-                    <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.</p>
+                    <h1 className="fe-title m-0 text-3xl">واژه‌ها</h1>
+                    <p className="fe-prose m-0 mt-2 text-[1.0625rem] text-muted">دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.</p>
+                </div>
+
+                <div className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <a
+                            href="/app/words/export"
+                            download
+                            className="inline-flex min-h-11 min-w-11 items-center gap-1.5 rounded-full border border-line bg-canvas px-4 py-2 text-[0.9375rem] text-ink no-underline hover:bg-surface"
+                        >
+                            <Download size={18} aria-hidden="true" />
+                            خروجی CSV
+                        </a>
+                        {learningCount > 0 && (
+                            confirmKnown ? (
+                                <span className="inline-flex flex-wrap items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => void markAllKnown()}
+                                        disabled={knownBusy}
+                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[0.9375rem] font-bold text-surface hover:bg-primary-hover disabled:opacity-60"
+                                    >
+                                        <CheckCheck size={18} aria-hidden="true" />
+                                        بله، همه را می‌دانم
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfirmKnown(false)}
+                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center rounded-full border border-line bg-canvas px-4 py-2 text-[0.9375rem] text-ink hover:bg-surface"
+                                    >
+                                        لغو
+                                    </button>
+                                </span>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setConfirmKnown(true)}
+                                    className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-canvas px-4 py-2 text-[0.9375rem] text-ink hover:bg-surface"
+                                >
+                                    <CheckCheck size={18} aria-hidden="true" />
+                                    همه را می‌دانم
+                                </button>
+                            )
+                        )}
+                    </div>
+                    <form onSubmit={(event) => void importCsv(event)} className="flex flex-col gap-2 border-t border-line pt-3 sm:flex-row sm:items-center">
+                        <label htmlFor="words-import" className="inline-flex min-h-11 items-center gap-1.5 text-[0.9375rem] font-bold">
+                            <Upload size={18} aria-hidden="true" />
+                            ورود از CSV
+                        </label>
+                        <input
+                            ref={importRef}
+                            id="words-import"
+                            name="file"
+                            type="file"
+                            accept=".csv,text/csv"
+                            onChange={(event) => setFileName(event.currentTarget.files?.[0]?.name ?? '')}
+                            className="sr-only"
+                        />
+                        <label
+                            htmlFor="words-import"
+                            className="inline-flex min-h-11 cursor-pointer items-center rounded-full border border-line bg-canvas px-4 py-2 text-[0.9375rem] font-bold text-ink hover:bg-surface"
+                        >
+                            انتخاب فایل CSV
+                        </label>
+                        <span className="min-w-0 flex-1 truncate text-sm text-muted">
+                            {fileName !== '' ? fileName : 'فایلی انتخاب نشده'}
+                        </span>
+                        <button
+                            type="submit"
+                            disabled={importBusy}
+                            className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 font-bold text-surface hover:bg-primary-hover disabled:opacity-60"
+                        >
+                            <Upload size={18} aria-hidden="true" />
+                            {importBusy ? 'در حال بارگذاری…' : 'بارگذاری'}
+                        </button>
+                    </form>
+                    <p className="m-0 text-sm leading-7 text-muted">
+                        ستون‌های word، meaning_fa و example_en. حداکثر ۵۰۰ واژه در هر فایل.
+                    </p>
+                    {importStatus !== '' && (
+                        <p role="status" className="m-0 text-sm leading-7 text-muted">
+                            {importStatus}
+                        </p>
+                    )}
                 </div>
 
                 <nav aria-label="وضعیت واژه‌ها">
@@ -416,11 +577,12 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
                                 <WordCard key={entry.id} entry={entry} onChanged={setStatus} />
                             ))}
                         </ul>
-                        <p id="words-status" role="status" className="m-0 text-sm leading-7 text-muted">
-                            {status}
-                        </p>
                     </>
                 )}
+
+                <p id="words-status" role="status" className="m-0 text-sm leading-7 text-muted">
+                    {status}
+                </p>
 
                 {pagination.last_page > 1 && (
                     <nav aria-label="صفحه‌های واژه‌ها">

@@ -4,6 +4,7 @@ import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
 import { formatAudioTime, useAudioTransport } from '@/lib/audio';
+import { useMediaSession } from '@/lib/media-session';
 import type { LessonPayload, ReadingContent, SharedProps, TopicPayload } from '@/types';
 
 /**
@@ -33,7 +34,18 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
     glossary,
 }: SampleProps): React.JSX.Element => {
     const audio = useAudioTransport({ resetKey: lesson.audio_url });
-    const { bindRef, playing, time, duration, rate, hasError, expanded, setExpanded, fraction, toggle, seekToFraction, skipBy, cycleRate, retry } = audio;
+    const { audioRef, bindRef, playing, time, duration, rate, hasError, expanded, setExpanded, fraction, toggle, seekToFraction, skipBy, cycleRate, retry } = audio;
+
+    useMediaSession({
+        title: lesson.title_en,
+        album: lesson.level,
+        artwork: topic.cover_url,
+        audioRef,
+        playing,
+        position: time,
+        duration,
+        rate,
+    });
 
     return (
         <>

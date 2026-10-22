@@ -6,6 +6,11 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+TEMPLATE_ONLY=0
+if [[ "${1:-}" == "--template-only" ]]; then
+  TEMPLATE_ONLY=1
+fi
+
 fail=0
 note() { printf '%s\n' "$1"; }
 bad() { printf 'FAIL: %s\n' "$1" >&2; fail=1; }
@@ -38,6 +43,10 @@ fi
 
 [[ "$fail" -eq 0 ]] || exit 1
 note "Template self-checks passed."
+
+if [[ "$TEMPLATE_ONLY" -eq 1 ]]; then
+  exit 0
+fi
 
 # 5. Project override wins when the repo defines its own gate.
 if [[ -x scripts/project-verify.sh ]]; then

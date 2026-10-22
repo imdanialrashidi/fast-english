@@ -2,6 +2,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { BookOpen, Compass, House, Languages, User } from 'lucide-react';
 import * as React from 'react';
 import { AudioPlayer } from '@/components/AudioPlayer';
+import { PageSkeleton } from '@/components/PageSkeleton';
 import { PlayerProvider, usePlayerActions, usePlayerTrack } from '@/lib/player';
 import type { SharedProps } from '@/types';
 
@@ -79,6 +80,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     const user = props.auth.user;
     const flash = props.flash;
     const [navigating, setNavigating] = React.useState(false);
+    const [showSkeleton, setShowSkeleton] = React.useState(false);
     const { clearTrack } = usePlayerActions();
     const track = usePlayerTrack();
 
@@ -98,9 +100,21 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     // Honest loading state for Inertia visits: a slim progress hairline
     // under the header while the next page loads (no fake content).
     React.useEffect(() => {
-        const stopStart = router.on('start', () => setNavigating(true));
-        const stopFinish = router.on('finish', () => setNavigating(false));
+        let timer: number | undefined;
+        const start = (): void => {
+            setNavigating(true);
+            window.clearTimeout(timer);
+            timer = window.setTimeout(() => setShowSkeleton(true), 180);
+        };
+        const finish = (): void => {
+            window.clearTimeout(timer);
+            setNavigating(false);
+            setShowSkeleton(false);
+        };
+        const stopStart = router.on('start', start);
+        const stopFinish = router.on('finish', finish);
         return () => {
+            window.clearTimeout(timer);
             stopStart();
             stopFinish();
         };
@@ -192,7 +206,12 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     {/* End-padding clears the fixed player + mobile tabs.
                         No bound track means only the tabs need clearance. */}
                     <main id="fe-content" className={track === null ? 'pb-28 lg:pb-8' : 'pb-64 lg:pb-52'}>
-                        {children}
+                        <div className="relative">
+                            <div aria-hidden={showSkeleton} inert={showSkeleton ? true : undefined} className={showSkeleton ? 'pointer-events-none opacity-0' : ''}>
+                                {children}
+                            </div>
+                            {showSkeleton && <PageSkeleton />}
+                        </div>
                     </main>
                 </div>
             </div>

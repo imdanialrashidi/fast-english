@@ -3,6 +3,7 @@
 use App\Models\Lesson;
 use App\Models\VocabularyWord;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
@@ -197,4 +198,109 @@ test('a concurrent double-submit converges onto the surviving word row', functio
         ->assertJsonPath('id', $surviving->id);
 
     expect(VocabularyWord::where('user_id', $student->id)->count())->toBe(1);
+});
+
+test('CSV export is owner-scoped and formula-safe', function () {
+    $owner = ContentFixtures::subscribedStudent();
+    $other = ContentFixtures::subscribedStudent();
+
+    VocabularyWord::factory()->for($owner)->create([
+        'word' => '=Exportable',
+        'meaning_fa' => 'صادرشدنی',
+        'example_en' => 'An example.',
+    ]);
+    VocabularyWord::factory()->for($owner)->create([
+        'word' => "\t=Tabbed",
+        'meaning_fa' => 'تب',
+        'example_en' => 'An example.',
+    ]);
+    VocabularyWord::factory()->for($other)->create(['word' => 'OtherSecret']);
+
+    $response = $this->actingAs($owner)->get(route('words.export'))->assertOk();
+    $body = $response->streamedContent();
+
+    expect($body)->toContain('word,meaning_fa,example_en')
+        ->and($body)->toContain("'=Exportable")
+        ->and($body)->toContain("'\t=Tabbed")
+        ->and($body)->not->toContain('OtherSecret');
+});
+
+test('CSV import creates and updates only the owner words', function () {
+    $owner = ContentFixtures::subscribedStudent();
+    $other = ContentFixtures::subscribedStudent();
+    VocabularyWord::factory()->for($owner)->create(['word' => 'Existing', 'meaning_fa' => 'قدیمی']);
+    VocabularyWord::factory()->for($other)->create(['word' => 'Existing', 'meaning_fa' => 'دیگری']);
+
+    $csv = "word,meaning_fa,example_en\n"
+        ."Imported,معنی تازه,The imported word appears here.\n"
+        ."Existing,معنی به‌روز,The existing word appears here.\n";
+
+    $this->actingAs($owner)
+        ->post(route('words.import'), ['file' => UploadedFile::fake()->createWithContent('words.csv', $csv)])
+        ->assertOk()
+        ->assertJson(['created' => 1, 'updated' => 1, 'skipped' => 0]);
+
+    expect(VocabularyWord::where('user_id', $owner->id)->count())->toBe(2)
+        ->and(VocabularyWord::where('user_id', $owner->id)->where('word', 'Existing')->value('meaning_fa'))->toBe('معنی به‌روز')
+        ->and(VocabularyWord::where('user_id', $other->id)->where('word', 'Existing')->value('meaning_fa'))->toBe('دیگری');
+});
+
+test('CSV import rejects a missing word header and oversized files', function () {
+    $student = ContentFixtures::subscribedStudent();
+
+    $this->actingAs($student)
+        ->withHeaders(['Accept' => 'application/json'])
+        ->post(route('words.import'), ['file' => UploadedFile::fake()->createWithContent('bad.csv', "name\nx\n")])
+        ->assertStatus(422);
+
+    $rows = "word\n".implode("\n", array_map(fn (int $i) => 'w'.$i, range(1, 501)))."\n";
+    $this->actingAs($student)
+        ->withHeaders(['Accept' => 'application/json'])
+        ->post(route('words.import'), ['file' => UploadedFile::fake()->createWithContent('big.csv', $rows)])
+        ->assertStatus(422);
+});
+
+test('mark all known only changes the owner learning words', function () {
+    $owner = ContentFixtures::subscribedStudent();
+    $other = ContentFixtures::subscribedStudent();
+    $learning = VocabularyWord::factory()->for($owner)->create(['status' => 'learning']);
+    $known = VocabularyWord::factory()->for($owner)->create(['status' => 'known']);
+    $otherWord = VocabularyWord::factory()->for($other)->create(['status' => 'learning']);
+
+    $this->actingAs($owner)
+        ->postJson(route('words.known'))
+        ->assertOk()
+        ->assertJson(['known' => 1]);
+
+    expect($learning->fresh()->status)->toBe('known')
+        ->and($known->fresh()->status)->toBe('known')
+        ->and($otherWord->fresh()->status)->toBe('learning');
+});
+
+test('CSV round trip restores lesson context and known status', function () {
+    $owner = ContentFixtures::subscribedStudent();
+    $other = ContentFixtures::subscribedStudent();
+    $topic = ContentFixtures::publishedTopic(['slug' => 'csv-context']);
+    $lesson = Lesson::factory()->for($topic)->create([
+        'level' => 'A2',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+    VocabularyWord::factory()->for($owner)->create([
+        'word' => 'Roundtrip',
+        'lesson_id' => $lesson->id,
+        'topic_id' => $topic->id,
+        'status' => 'known',
+    ]);
+
+    $csv = $this->actingAs($owner)->get(route('words.export'))->streamedContent();
+    expect($csv)->toContain('Roundtrip')->toContain('csv-context')->toContain('A2')->toContain('known');
+    $this->actingAs($other)
+        ->post(route('words.import'), ['file' => UploadedFile::fake()->createWithContent('words.csv', $csv)])
+        ->assertOk();
+
+    $imported = VocabularyWord::where('user_id', $other->id)->where('word', 'Roundtrip')->firstOrFail();
+    expect((int) $imported->lesson_id)->toBe($lesson->id)
+        ->and((int) $imported->topic_id)->toBe($topic->id)
+        ->and($imported->status)->toBe('known');
 });

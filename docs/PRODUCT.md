@@ -11,6 +11,14 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 - The app shell drops the in-app marketing footer, the duplicate signed-in header account CTA, and the account page's duplicate main-navigation chips.
 - Account becomes an app profile screen: identity, subscription status with one next action, settings list, and logout.
 
+## Owner follow-up 2026-10-22 — vocabulary tools, reminders, player metadata
+
+- Vocabulary keeps the same owner-scoped rows and deterministic SRS, with a cloze presentation, CSV export/import, and a bulk «همه را می‌دانم» action.
+- Account lists recent payment requests (status, plan, snapshot amount) without receipt/bank/internal fields. Renewal reminders are one-per-window; real SMTP remains a launch input.
+- Media Session metadata/controls are published where supported; background audio is still not promised.
+- Learner navigation shows a delayed skeleton, and learner pages share one Persian type scale.
+- `/sample` is indexable while a published sample exists (sitemap, canonical, Article JSON-LD).
+
 ## Product outcome
 
 Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English; final brand, domain ownership, prices, bank destination, legal text, SMTP, signing identity, hosting, staff roster, and content production are launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures.

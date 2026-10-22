@@ -3,6 +3,7 @@ import type { FunctionComponent, ReactNode } from 'react';
 import { ArrowLeft, Clock, Download, Pause, Play, Plus } from 'lucide-react';
 import type { SharedProps, TopicRow } from '@/types';
 import { formatAudioTime, useAudioTransport } from '@/lib/audio';
+import { useMediaSession } from '@/lib/media-session';
 import { publicLayout } from '@/layouts/PublicLayout';
 
 /**
@@ -122,8 +123,19 @@ function SamplePreview({
     fallbackUrl: string;
 }): React.JSX.Element {
     const audio = useAudioTransport({ resetKey: audioUrl ?? '' });
-    const { bindRef, playing, time, duration, rate, hasError, fraction, toggle, cycleRate, retry } = audio;
+    const { audioRef, bindRef, playing, time, duration, rate, hasError, fraction, toggle, cycleRate, retry } = audio;
     const hasAudio = audioUrl !== null;
+
+    useMediaSession({
+        title: sample?.title_en ?? null,
+        album: sample?.level ?? null,
+        artwork: sample?.cover_url ?? null,
+        audioRef,
+        playing,
+        position: time,
+        duration,
+        rate,
+    });
 
     return (
         <section

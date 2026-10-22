@@ -184,3 +184,36 @@ test('landing URL bag never exposes authenticated app destinations', function ()
 
     expect(array_keys($urls))->toBe(['sample', 'register', 'download', 'faq']);
 });
+
+test('sitemap includes the public sample only while one exists', function () {
+    $topic = ContentFixtures::publishedTopic(['slug' => 'sitemap-sample']);
+    Lesson::factory()->for($topic)->create([
+        'level' => 'A2',
+        'status' => 'published',
+        'published_at' => now(),
+        'is_public_sample' => true,
+    ]);
+
+    $body = $this->get(route('sitemap'))->assertOk()->getContent();
+    expect($body)->toContain(config('app.url').'/sample');
+});
+
+test('public sample ships canonical, description, and Article structured data', function () {
+    $topic = ContentFixtures::publishedTopic(['slug' => 'sample-seo', 'summary_public' => 'یک نمونه عمومی.']);
+    Lesson::factory()->for($topic)->create([
+        'level' => 'A2',
+        'status' => 'published',
+        'published_at' => now(),
+        'is_public_sample' => true,
+    ]);
+
+    $html = $this->get(route('sample', ['topic' => $topic->slug, 'level' => 'A2']))
+        ->assertOk()
+        ->getContent();
+
+    expect($html)->toContain('<link rel="canonical" href="'.route('sample').'">')
+        ->and($html)->toContain('<meta name="description"')
+        ->and($html)->toContain('"@type":"Article"')
+        ->and($html)->toContain('"isAccessibleForFree":true')
+        ->and($html)->not->toContain('canonical" href="'.route('sample').'?');
+});

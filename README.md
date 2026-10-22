@@ -83,7 +83,7 @@ npx playwright test m0-inertia --project=chromium
 bash scripts/project-verify.sh
 ```
 
-Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). Requires PostgreSQL reachable and an app server on `:8111` (default `BASE_URL=http://127.0.0.1:8111`); when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)` and the lanes that ran still count.
+Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). The local Chromium lane is documented by `scripts/browser-lane.sh` (`start`, `seed`, `status`, `stop`, `reset`, `test`). Requires PostgreSQL reachable and an app server on `:8111` (default `BASE_URL=http://127.0.0.1:8111`); when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)` and the lanes that ran still count.
 
 Solo default: leave the proven change in the working tree and report its state. Team PR only on explicit request: `node scripts/omp-pr.mjs prepare` before editing, then `deliver --message ... --title ... --body-file .artifacts/omp-pr.md --file <path>...` after verification. No per-task branches, no main writes, no auto-merge. Read-only/local-only work never publishes; `OMP_PR_DELIVERY=off` opts out. See `docs/GIT_POLICY.md`.
 

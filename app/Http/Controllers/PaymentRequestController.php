@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
@@ -57,7 +58,7 @@ class PaymentRequestController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'فروش در حال حاضر فعال نیست.',
-                ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+                ], 422)->withHeaders(NoStore::headers());
             }
 
             return redirect()->route('subscribe.index')->withErrors([
@@ -73,7 +74,7 @@ class PaymentRequestController extends Controller
                 return response()->json([
                     'message' => 'درخواست شامل فیلد غیرمجاز سرور است.',
                     'field' => $key,
-                ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+                ], 422)->withHeaders(NoStore::headers());
             }
         }
 
@@ -93,7 +94,7 @@ class PaymentRequestController extends Controller
         if ($todayCount >= 10) {
             return response()->json([
                 'message' => 'امروز درخواست بیش از حد ثبت شده است. لطفاً فردا تلاش کنید.',
-            ], 429)->withHeaders(\App\Http\Responses\NoStore::headers());
+            ], 429)->withHeaders(NoStore::headers());
         }
 
         // Fast path: an existing open request is returned, never doubled.
@@ -108,13 +109,13 @@ class PaymentRequestController extends Controller
         $plan = Plan::find($data['plan_id']);
         if ($plan === null || ! $plan->is_active) {
             return response()->json(['message' => 'پلن انتخاب‌شده در دسترس نیست.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         $destination = PaymentDestination::where('is_active', true)->first();
         if ($destination === null) {
             return response()->json(['message' => 'مقصد پرداخت در دسترس نیست.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         try {
@@ -235,7 +236,7 @@ class PaymentRequestController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['status' => PaymentRequest::STATUS_CANCELLED])
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         return redirect()
@@ -249,12 +250,11 @@ class PaymentRequestController extends Controller
             return response()->json([
                 'id' => $open->id,
                 'status' => $open->status,
-            ])->withHeaders(\App\Http\Responses\NoStore::headers());
+            ])->withHeaders(NoStore::headers());
         }
 
         return redirect()->route('payments.show', $open);
     }
-
 
     private function isUniqueViolation(QueryException $e): bool
     {

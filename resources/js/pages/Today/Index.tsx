@@ -49,11 +49,11 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
             <Head title="امروز" />
             <div className="mx-auto grid max-w-[680px] gap-6 px-4 py-6">
                 <div>
-                    <p className="m-0 inline-flex items-center gap-1.5 leading-8 text-muted">
+                    <p className="fe-meta fe-bidi m-0 inline-flex items-center gap-1.5 text-muted">
                         <Sun size={20} aria-hidden="true" />
                         سلام، {userName}
                     </p>
-                    <h1 className="m-0 mt-1 text-2xl leading-[1.7] font-extrabold tracking-tight sm:text-3xl">
+                    <h1 className="fe-title m-0 mt-1 text-2xl sm:text-3xl">
                         امروز هم قدمی بزرگ به سمت هدف‌هات برداشتی.
                     </h1>
                 </div>
@@ -94,7 +94,7 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                         </div>
                         {(continueTask.position_seconds !== null ||
                             (continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0)) && (
-                            <p className="m-0 leading-8 text-muted">
+                            <p className="fe-meta m-0 text-muted">
                                 {continueTask.position_seconds !== null && (
                                     <>
                                         ادامه از <span dir="ltr">{formatAudioTime(continueTask.position_seconds)}</span>

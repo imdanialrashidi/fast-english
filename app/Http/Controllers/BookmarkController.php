@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\Bookmark;
 use App\Models\Topic;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class BookmarkController extends Controller
         );
 
         return response()->json(['bookmarked' => true])
-            ->withHeaders(\App\Http\Responses\NoStore::headers());
+            ->withHeaders(NoStore::headers());
     }
 
     public function destroy(Request $request, Topic $topic)
@@ -55,7 +56,6 @@ class BookmarkController extends Controller
             ->delete();
 
         return response()->json(['bookmarked' => false])
-            ->withHeaders(\App\Http\Responses\NoStore::headers());
+            ->withHeaders(NoStore::headers());
     }
-
 }

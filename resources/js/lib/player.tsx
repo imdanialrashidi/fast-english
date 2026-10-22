@@ -29,6 +29,7 @@ export interface ProgressCallbacks {
 
 interface PlayerState {
     track: PlayerTrack | null;
+    audioRef: React.RefObject<HTMLAudioElement | null>;
     bindRef: (element: HTMLAudioElement | null) => void;
     playing: boolean;
     time: number;
@@ -233,6 +234,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
     const state = React.useMemo<PlayerState>(
         () => ({
             track,
+            audioRef,
             bindRef,
             playing: transport.playing,
             time: transport.time,
@@ -246,6 +248,7 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
         }),
         [
             track,
+            audioRef,
             bindRef,
             transport.playing,
             transport.time,

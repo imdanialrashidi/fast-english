@@ -10,6 +10,7 @@ use App\Support\ReadingPayload;
 use App\Support\Toman;
 use App\Support\TopicCard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -214,8 +215,32 @@ class LandingController extends Controller
             ->pluck('level')
             ->all();
 
+        // The sample is public content, so it gets its own crawler
+        // metadata. The canonical deliberately drops ?topic/?level so
+        // every level variant consolidates onto the sample entry.
+        $description = $sample->topic->summary_public;
+        if ($description === null || trim($description) === '') {
+            $description = Str::limit(trim((string) preg_replace('/\s+/u', ' ', $sample->body_en)), 150);
+        }
+
         return Inertia::render('Sample/Show', array_merge(ReadingPayload::for($sample), [
             'sampleLevels' => $sampleLevels,
+            'seo' => [
+                'title' => $sample->title_en.' ('.$sample->level.') — نمونه رایگان Fast English',
+                'description' => $description,
+                'canonical' => route('sample'),
+                'json_ld' => [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'Article',
+                    'headline' => $sample->title_en,
+                    'description' => $description,
+                    'inLanguage' => 'en',
+                    'isAccessibleForFree' => true,
+                    'mainEntityOfPage' => route('sample'),
+                    'author' => ['@type' => 'Organization', 'name' => 'Fast English'],
+                    'publisher' => ['@type' => 'Organization', 'name' => 'Fast English'],
+                ],
+            ],
         ]));
     }
 }

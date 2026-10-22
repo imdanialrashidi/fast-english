@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class LessonProgressController extends Controller
         if (! is_finite($position) || $position < 0 || $position > $lesson->duration_seconds) {
             return response()->json([
                 'message' => 'The position is outside the lesson duration.',
-            ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+            ], 422)->withHeaders(NoStore::headers());
         }
 
         $revision = (int) $data['audio_revision'];
@@ -68,7 +69,7 @@ class LessonProgressController extends Controller
                 'message' => 'Stale audio revision.',
                 'current_revision' => (int) $lesson->audio_revision,
                 'position_seconds' => $currentPosition,
-            ], 409)->withHeaders(\App\Http\Responses\NoStore::headers());
+            ], 409)->withHeaders(NoStore::headers());
         }
 
         $progress = LessonProgress::updateOrCreate(
@@ -86,7 +87,7 @@ class LessonProgressController extends Controller
             'position_seconds' => (float) $progress->position_seconds,
             'audio_revision' => (int) $progress->audio_revision,
             'completed_at' => $progress->completed_at?->toIso8601String(),
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
 
     public function complete(Request $request)
@@ -113,7 +114,7 @@ class LessonProgressController extends Controller
 
         if ((int) $data['audio_revision'] !== (int) $lesson->audio_revision) {
             return response()->json(['message' => 'Stale audio revision.'], 409)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         $existing = LessonProgress::where('user_id', $user->id)
@@ -133,7 +134,7 @@ class LessonProgressController extends Controller
         return response()->json([
             'completed_at' => $progress->completed_at?->toIso8601String(),
             'audio_revision' => (int) $progress->audio_revision,
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
 
     public function reset(Request $request)
@@ -162,7 +163,6 @@ class LessonProgressController extends Controller
             ->update(['completed_at' => null, 'updated_at' => now()]);
 
         return response()->json(['completed_at' => null])
-            ->withHeaders(\App\Http\Responses\NoStore::headers());
+            ->withHeaders(NoStore::headers());
     }
-
 }

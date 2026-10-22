@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\PlacementTest;
+use App\Support\PlacementLevel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ class PlacementTestFactory extends Factory
             'version' => 's7-test-'.$this->faker->unique()->lexify('??????').' (TEST)',
             'status' => PlacementTest::STATUS_DRAFT,
             'is_current' => false,
-            'scoring_rules' => ['note' => 'FIXTURE — not a validated CEFR scale', 'map' => \App\Support\PlacementLevel::fixtureMap()],
+            'scoring_rules' => ['note' => 'FIXTURE — not a validated CEFR scale', 'map' => PlacementLevel::fixtureMap()],
         ];
     }
 }

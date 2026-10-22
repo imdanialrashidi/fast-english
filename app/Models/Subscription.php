@@ -30,6 +30,7 @@ class Subscription extends Model
             'starts_at' => 'datetime',
             'expires_at' => 'datetime',
             'revoked_at' => 'datetime',
+            'renewal_reminder_sent_at' => 'datetime',
         ];
     }
 

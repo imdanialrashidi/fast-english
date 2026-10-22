@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Vocabulary;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,7 +66,7 @@ class VocabularyWord extends Model
     protected static function booted(): void
     {
         static::saving(function (VocabularyWord $entry) {
-            $entry->word_key = \App\Support\Vocabulary::key((string) $entry->word);
+            $entry->word_key = Vocabulary::key((string) $entry->word);
         });
     }
 }

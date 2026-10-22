@@ -680,3 +680,17 @@ Implementation (agent-owned; PROPOSED visual details on top of the owner directi
 - Account page: an active subscription now reads «اشتراک فعال تا …» and offers «تمدید اشتراک» (renewal extends from the current end), never the first-purchase «انتخاب پلن» CTA. Expired/revoked/no-subscription states stay distinct. The profile email gets its own LTR line, daily-goal digits are Persian, the desktop rail is a compact 44px pill (no stretched grid cell), and the main end-padding follows actual track presence so pages without audio no longer reserve a phantom player's height.
 
 Verification: Pest `S0AccountTest`, `S8LandingTest`, `M0InertiaFoundationTest`, and the full suite (306 passed) on PostgreSQL; `npm run typecheck` and `npm run build` clean; Playwright on the `fe_browser` lane with built assets: `s8-landing` 4/4, `s8-download` 2/2, `m0-inertia` 2/2, `design-theme` 8/8 including the new active-account/desktop-rail test. Inspected pixels: landing 390/1440, account 390/1440, download and mobile library/words/reader.
+
+## Follow-up feature slice 2026-10-22 — owner selection
+
+Owner selected the vocabulary, account/player, shell, SEO, and tooling follow-ups from the release-readiness review. No new palette, font, theme, or fabricated content was introduced.
+
+- Vocabulary review uses a cloze card: the target word is blanked inside its real example until reveal; a word without a usable example keeps the word-first fallback. The SRS schedule and grade endpoint are unchanged.
+- Notebook adds an owner-only CSV export (formula-safe, UTF-8 BOM), a 500-row transactional import, and a two-step «همه را می‌دانم» bulk action. The export is a private response, never a public asset.
+- Account adds a recent payment-history list (status, plan, snapshot amount, date) with no receipt/bank/internal fields. `subscriptions:remind-expiring` sends one mail per current window; real SMTP delivery stays a launch prerequisite.
+- The persistent player and public sample publish Media Session metadata and play/pause/seek handlers when supported. Background audio is still not promised.
+- In-app navigation shows a delayed skeleton after 180ms; the previous page remains mounted underneath. Learner pages share `.fe-title` / `.fe-prose` / `.fe-meta` and bidi-safe headings.
+- `/sample` joins the sitemap while a published sample exists, canonicalizes to `/sample` without query, and ships description + Article JSON-LD.
+- CI: 14 pre-existing Pint failures fixed; `workflow-doctor` runs the template-only gate; the browser job seeds `S2BrowserSeeder` with sales on. `scripts/browser-lane.sh` is the documented local lane.
+
+Verification: Pest 313 passed / 3931 assertions on PostgreSQL; global Pint clean; `npm run typecheck` and `npm run build` clean; full Playwright suite on `fe_browser` covers the cloze journey, Media Session wiring, skeleton, CSV/bulk-known feature tests, and the existing journeys. Inspected captures: account history/active 390+1440, cloze 390, skeleton 390, landing/reader/download.

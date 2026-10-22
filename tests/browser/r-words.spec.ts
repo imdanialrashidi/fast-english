@@ -33,24 +33,34 @@ test('R4 notebook: save from reader, persist, review with a grade', async ({ bro
           'X-CSRF-TOKEN': token,
           'X-Requested-With': 'XMLHttpRequest',
         },
-        body: JSON.stringify({ word: args.word, meaning_fa: 'واژه آزمایشی', lesson_id: args.lesson }),
+        body: JSON.stringify({ word: args.word, meaning_fa: 'واژه آزمایشی', example_en: `The ${args.word} appears in this sentence.`, lesson_id: args.lesson }),
       }).then((res) => res.status);
     },
     { word: WORD, lesson: Number(lessonId) },
   );
   expect(saved).toBe(201);
 
-  // Notebook lists the word after reload with its saved meaning.
+  // Notebook lists the word after reload with its saved meaning, plus
+  // the CSV/bulk-known tools.
   await page.goto('/app/words');
+  await expect(page.getByRole('heading', { name: 'واژه‌ها' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'خروجی CSV' })).toBeVisible();
+  await page.screenshot({ path: 'test-results/browser-shots/r-words-tools-390.png' });
   const row = page.locator('div', { has: page.getByText(WORD) }).last();
-  await expect(page.getByText(WORD)).toBeVisible();
+  await expect(page.getByText(WORD, { exact: true })).toBeVisible();
   await expect(row.getByText('واژه آزمایشی')).toBeVisible();
 
-  // Review: the word is due, shows its meaning, and grades forward.
+  // Review: the word is due. Cloze hides it inside its real example,
+  // then reveal restores the word + meaning and grading proceeds.
   await page.goto('/app/words/review');
-  await expect(page.locator('.fe-flash-word')).toHaveText(WORD);
+  await expect(page.locator('#flash-cloze')).toContainText('_____');
+  await expect(page.locator('#flash-cloze')).not.toContainText(WORD);
+  await expect(page.locator('.fe-flash-word')).toHaveCount(0);
+  await page.screenshot({ path: 'test-results/browser-shots/r-words-cloze-390.png' });
   await page.getByRole('button', { name: 'نمایش معنی' }).click();
+  await expect(page.locator('.fe-flash-word')).toHaveText(WORD);
   await expect(page.getByText('واژه آزمایشی')).toBeVisible();
+  await expect(page.getByText(`The ${WORD} appears in this sentence.`)).toBeVisible();
   await page.getByRole('button', { name: 'خوب', exact: true }).click();
   await page.waitForLoadState('load');
   // After a Good grade the word leaves the due queue.

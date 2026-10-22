@@ -53,6 +53,32 @@ body {
     min-height: 100dvh;
 }
 
+/* Owner follow-up 2026-10-22: one Persian type scale for learner pages.
+ * Titles balance, prose keeps a readable measure/leading, meta text and
+ * mixed-direction strings have explicit homes. Utilities still handle
+ * size where a surface needs a different step. */
+.fe-title {
+    font-weight: 800;
+    line-height: 1.45;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+}
+
+.fe-prose {
+    max-width: 68ch;
+    line-height: 1.9;
+    text-wrap: pretty;
+}
+
+.fe-meta {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+}
+
+.fe-bidi {
+    unicode-bidi: plaintext;
+}
+
 /* PWA update notice (S2): brief banner, user-triggered refresh only. */
 #pwa-update {
     position: fixed;
