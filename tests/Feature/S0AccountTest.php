@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
+use Tests\Support\ContentFixtures;
 
 // S0-3 (public slice port, ADR-0002): the display-name rule the retired
 // learner Livewire component enforced (required/string/255, owner-only)
@@ -51,4 +52,17 @@ test('empty display name shows a field error, saves nothing, and shows no succes
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Account/Index')
             ->where('user.name', 'Kept Name'));
+});
+
+test('active subscription is presented as active with a renewal state', function () {
+    $user = ContentFixtures::subscribedStudent();
+
+    $this->actingAs($user)
+        ->get(route('app.account'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Account/Index')
+            ->where('subscription.active', true)
+            ->where('subscription.state', 'active')
+            ->where('openRequest', null));
 });

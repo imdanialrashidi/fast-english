@@ -1,56 +1,32 @@
 import { Head, Link } from '@inertiajs/react';
-import { Bookmark, BookOpen, Check, Clock, Gauge, Headphones, Info, RotateCcw } from 'lucide-react';
+import { Bookmark, BookOpen, Check, Clock, Gauge, Headphones, RotateCcw } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
-import { currentCueIndex } from '@/lib/audio';
 import { deleteJson, postJson } from '@/lib/http';
 import { usePlayer } from '@/lib/player';
-import type { GlossaryEntry, SentenceCue, SharedProps } from '@/types';
+import type { GlossaryEntry, LessonPayload, ReadingContent, SharedProps, TopicPayload } from '@/types';
 
 /**
- * M1 immersive reader (READ-01/02/03): the composed reading environment —
+ * M1 immersive reader (READ-01/02): the composed reading environment —
  * editorial title, bounded cover, level selector, studio player (fixed in
- * the persistent shell), English sentences with real cue sync and a plain
- * fallback, and the active lesson's key words with notebook saves.
+ * the persistent shell), the plain English body, and the active lesson's
+ * key words with notebook saves.
  *
  * Order is fixed: title → meta → cover → level → player → body → words.
  * The level travels in the URL only; browsing never writes
- * preferred_level. Missing audio cues keep a usable plain reader and the
- * lesson stays completable.
+ * preferred_level. The audio plays normally beside the text: no
+ * sentence-level highlight or seek (owner direction, 2026-10-21).
  */
 
-interface ReaderTopic {
-    id: number;
-    slug: string;
-    title_en: string;
-    summary_public: string | null;
-    cover_url: string | null;
-}
-
-interface ReaderLesson {
-    id: number;
-    title_en: string;
-    level: string;
-    estimated_minutes: number;
-    duration_seconds: number;
-    audio_revision: number;
-    audio_url: string;
-}
-
-interface ReaderProps extends SharedProps {
-    topic: ReaderTopic;
-    lesson: ReaderLesson;
+interface ReaderProps extends SharedProps, ReadingContent {
+    topic: TopicPayload;
+    lesson: LessonPayload;
     availableLevels: string[];
     initialPosition: number;
     completed: boolean;
     bookmarked: boolean;
     isGuest: boolean;
-    sentences: string[];
-    paragraphs: string[];
-    cues: SentenceCue[];
-    cuesUsable: boolean;
-    glossary: GlossaryEntry[];
 }
 
 function GlossaryRow({
@@ -132,10 +108,7 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
     completed: completedProp,
     bookmarked: bookmarkedProp,
     isGuest,
-    sentences,
     paragraphs,
-    cues,
-    cuesUsable,
     glossary,
 }: ReaderProps): React.JSX.Element => {
     const player = usePlayer();
@@ -145,7 +118,7 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
     const [vocabStatus, setVocabStatus] = React.useState('');
     const [actionStatus, setActionStatus] = React.useState('');
     const [busyAction, setBusyAction] = React.useState(false);
-    const sentenceRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
+
 
     // Bind the lesson version to the persistent element. Same key on
     // back/forward revisit keeps time and play state untouched.
@@ -159,7 +132,6 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                 level: lesson.level,
                 coverUrl: topic.cover_url,
                 initialPosition,
-                lessonUrl: `/app/topics/${topic.slug}?level=${lesson.level}`,
             },
             {
                 canSave: !isGuest,
@@ -175,31 +147,6 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
         setCompleted(completedProp);
         setBookmarked(bookmarkedProp);
     }, [lesson.id, completedProp, bookmarkedProp]);
-
-    const activeIndex = cuesUsable ? currentCueIndex(cues, player.time) : -1;
-
-    // Follow the playing sentence without stealing the scroll; skipped
-    // entirely under reduced motion.
-    React.useEffect(() => {
-        if (activeIndex < 0 || player.playing === false) {
-            return;
-        }
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            return;
-        }
-        sentenceRefs.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
-    }, [activeIndex, player.playing]);
-
-    const selectSentence = (index: number): void => {
-        const cue = cues[index];
-        if (cue === undefined) {
-            return;
-        }
-        player.seekTo(cue.start_seconds + 0.01);
-        if (!player.playing) {
-            player.toggle();
-        }
-    };
 
     const toggleBookmark = async (): Promise<void> => {
         if (busyAction) {
@@ -296,7 +243,7 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                             alt=""
                             loading="eager"
                             fetchPriority="high"
-                            className="block aspect-video w-full rounded-3xl border border-line bg-canvas object-cover"
+                            className="block h-56 w-full rounded-3xl border border-line bg-canvas object-cover"
                         />
                     )}
                     <nav aria-label="سطح درس" className="grid gap-2">
@@ -404,51 +351,13 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                     )}
                 </div>
 
-                {cuesUsable ? (
-                    <ol lang="en" dir="ltr" aria-label="متن درس با همگام‌سازی صوت" className="fe-sentences m-0 grid list-none gap-1 p-0">
-                        {sentences.map((sentence, index) => {
-                            const cue = cues[index];
-                            const active = index === activeIndex;
-                            return (
-                                <li key={index}>
-                                    <button
-                                        type="button"
-                                        ref={(element) => {
-                                            sentenceRefs.current[index] = element;
-                                        }}
-                                        onClick={() => selectSentence(index)}
-                                        data-index={index}
-                                        data-start={cue?.start_seconds ?? 0}
-                                        data-end={cue?.end_seconds ?? 0}
-                                        aria-current={active ? 'true' : 'false'}
-                                        aria-label={`پخش جمله ${index + 1} از ${sentences.length}`}
-                                        className={
-                                            active
-                                                ? 'fe-sentence block min-h-11 w-full cursor-pointer rounded-xl border border-line border-s-4 border-s-accent-strong bg-canvas px-3 py-2 text-left font-en text-[1.125rem] leading-8'
-                                                : 'fe-sentence block min-h-11 w-full cursor-pointer rounded-xl border border-transparent border-s-4 px-3 py-2 text-left font-en text-[1.125rem] leading-8 hover:bg-surface'
-                                        }
-                                    >
-                                        {sentence}
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ol>
-                ) : (
-                    <>
-                        <article lang="en" dir="ltr" className="fe-english-body grid gap-5">
-                            {paragraphs.map((paragraph, index) => (
-                                <p key={index} className="m-0 text-left font-en text-[1.125rem] leading-8">
-                                    {paragraph}
-                                </p>
-                            ))}
-                        </article>
-                        <p role="note" className="m-0 flex items-start gap-2 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
-                            <Info size={20} aria-hidden="true" />
-                            همگام‌سازی جمله‌به‌جمله برای این نسخه هنوز آماده نیست؛ پخش عادی فعال است و درس بدون مشکل کامل می‌شود.
+                <article lang="en" dir="ltr" className="fe-english-body grid gap-5">
+                    {paragraphs.map((paragraph, index) => (
+                        <p key={index} className="m-0 text-left font-en text-[1.125rem] leading-8">
+                            {paragraph}
                         </p>
-                    </>
-                )}
+                    ))}
+                </article>
 
                 <section aria-label="واژه‌های کلیدی" className="grid gap-1 rounded-3xl border border-line bg-surface px-5 py-2">
                     <h2 className="m-0 flex items-center gap-2 pt-3 pb-1 text-xl leading-8">

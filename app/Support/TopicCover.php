@@ -32,6 +32,15 @@ final class TopicCover
     public const VARIANTS = 6;
 
     /**
+     * Public URL for a stored cover path, or null when no cover exists.
+     * One spelling of the `/storage/` rule for every payload module.
+     */
+    public static function url(?string $path): ?string
+    {
+        return $path !== null && $path !== '' ? '/storage/'.$path : null;
+    }
+
+    /**
      * Deterministic layout variant for a slug (0–5).
      */
     public static function variant(string $slug): int

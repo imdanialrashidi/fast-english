@@ -2,6 +2,7 @@
 
 use App\Models\Lesson;
 use App\Models\Plan;
+use App\Models\User;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
@@ -16,7 +17,7 @@ beforeEach(function () {
 
 test('landing renders fa rtl with metadata, sample link, plans, and no draft label', function () {
     $topic = ContentFixtures::publishedTopic();
-    Lesson::factory()->for($topic)->create([
+    $sample = Lesson::factory()->for($topic)->create([
         'level' => 'A2',
         'status' => 'published',
         'published_at' => now(),
@@ -42,7 +43,15 @@ test('landing renders fa rtl with metadata, sample link, plans, and no draft lab
             // Deep link to the public sample experience + level.
             ->where('sample.reader_url', route('sample', ['topic' => $topic->slug, 'level' => 'A2']))
             ->where('sample.level', 'A2')
-            ->has('sampleSentences')
+            ->has('sampleParagraphs')
+            // The preview plays the public sample's own stream and uses
+            // the server's cue-usability flag (no client re-derivation).
+            ->where('sampleAudioUrl', route('media.lesson.audio', $sample))
+                        // The shared topic-card module owns the featured shape.
+            ->has('featured', fn (AssertableInertia $featured) => $featured
+                ->where('0.slug', $topic->slug)
+                ->missing('0.reader_url')
+                ->etc())
             // Plan names from the database, never amounts (no price claims).
             ->has('plans', fn (AssertableInertia $plans) => $plans
                 ->where('0.name_fa', 'یک‌ماهه آزمایشی (TEST)')
@@ -66,7 +75,8 @@ test('landing without a sample shows the neutral state, never a broken link', fu
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Landing/Index')
             ->where('sample', null)
-            ->where('sampleSentences', [])
+            ->where('sampleParagraphs', [])
+            ->where('sampleAudioUrl', null)
             ->missing('sample.reader_url'));
 });
 
@@ -133,4 +143,44 @@ test('sitemap lists public pages only', function () {
         ->and($body)->not->toContain('/admin')
         ->and($body)->not->toContain('/login')
         ->and($body)->not->toContain('/media');
+});
+
+test('landing ships crawler-ready metadata and FAQ structured data', function () {
+    ContentFixtures::publishedTopic();
+
+    $html = $this->get(route('landing'))->assertOk()->getContent();
+
+    expect($html)->toContain('<meta name="description"')
+        ->and($html)->toContain('property="og:title"')
+        ->and($html)->toContain('property="og:url"')
+        ->and($html)->toContain('application/ld+json')
+        ->and($html)->toContain('FAQPage')
+        ->and($html)->toContain('SoftwareApplication');
+});
+
+test('signed-in visitors are redirected from every marketing page into the app', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    foreach (['landing', 'trust.about', 'trust.cooperation', 'trust.faq', 'trust.support', 'trust.terms', 'trust.privacy', 'download', 'install'] as $route) {
+        $this->get(route($route))->assertRedirect(route('today.index'));
+    }
+
+    // The public sample is deliberately outside the marketing boundary:
+    // the in-app locked state links to it as the free path.
+    $topic = ContentFixtures::publishedTopic();
+    Lesson::factory()->for($topic)->create([
+        'level' => 'A2',
+        'status' => 'published',
+        'published_at' => now(),
+        'is_public_sample' => true,
+    ]);
+    $this->get(route('sample'))->assertOk();
+});
+
+test('landing URL bag never exposes authenticated app destinations', function () {
+    $urls = $this->get(route('landing'))->assertOk()->inertiaProps('urls');
+
+    expect(array_keys($urls))->toBe(['sample', 'register', 'download', 'faq']);
 });

@@ -1,21 +1,52 @@
 import * as React from 'react';
-import type { SentenceCue } from '@/types';
-import { PLAYER_RATES, formatAudioTime } from '@/lib/player';
 
 /**
- * Headless audio adapter shared by the learner reader and the public
- * sample: one owned HTMLAudioElement with the same transport contract —
- * play/pause, seek, ±10s, speed cycle, retry-after-error, cue index, and
- * time strings. The persistent learner player keeps its own element
- * (progress saves + cross-page continuity); the sample uses this hook
- * locally so player fixes land once.
+ * The one audio transport (MEDIA-01/02, READ-01/03).
  *
- * Hook IDs (#lesson-audio, #player-play/seek/speed/back/forward/toggle/
- * error/retry) stay identical in both consumers: the browser media
- * contracts keep holding.
+ * Owns the HTMLAudioElement event wiring, play/pause, seek, skip, rate
+ * cycle, error recovery, retry, and the time/duration state. Two adapters
+ * sit on top of it:
+ *
+ * - the persistent learner player (`lib/player.tsx`) supplies an element
+ *   ref from the shell and progress/completion callbacks;
+ * - the public sample and landing preview (`useAudioTransport` directly)
+ *   own a local element and pass no callbacks.
+ *
+ * The interface is the test surface: the transport hook IDs
+ * (#lesson-audio, #player-play/seek/speed/back/forward/toggle/error/retry)
+ * stay the same in both adapters, so the browser media contracts keep
+ * holding. Text and audio are independent; there is no sentence-level
+ * synchronisation.
  */
-export interface HeadlessAudio {
+
+export const PLAYER_RATES = [1, 1.25, 1.5, 0.75] as const;
+
+export function formatAudioTime(totalSeconds: number): string {
+    if (!Number.isFinite(totalSeconds) || totalSeconds < 0) {
+        return '–:––';
+    }
+    const total = Math.floor(totalSeconds);
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
+/** Lifecycle callbacks; the transport owns the element and its listeners. */
+export interface TransportCallbacks {
+    /** Fired once when an element binds (used by the learner test probe). */
+    onBind?: () => void;
+    /** Fired on pause; progress adapters save here. */
+    onPause?: (audio: HTMLAudioElement) => void;
+    /** Fired while playing (not seeking); progress adapters throttle here. */
+    onTime?: (audio: HTMLAudioElement) => void;
+    /** Fired on the media `ended` event; completion adapters post here. */
+    onEnded?: (audio: HTMLAudioElement) => void;
+    /** Fired on loadedmetadata; resume adapters apply a pending seek here. */
+    onLoadedMetadata?: (audio: HTMLAudioElement) => void;
+}
+
+export interface AudioTransport {
     audioRef: React.RefObject<HTMLAudioElement | null>;
+    /** Callback ref for the owned `<audio>` element. */
+    bindRef: (element: HTMLAudioElement | null) => void;
     playing: boolean;
     time: number;
     duration: number;
@@ -24,63 +55,147 @@ export interface HeadlessAudio {
     expanded: boolean;
     setExpanded: (value: boolean) => void;
     fraction: number;
-    activeIndex: number;
     toggle: () => void;
-    seekTo: (value: number) => void;
+    seekTo: (seconds: number) => void;
+    /** Seek from a 0–100 range input (one mapping for both adapters). */
+    seekToFraction: (percent: number) => void;
     skipBy: (delta: number) => void;
     cycleRate: () => void;
     retry: () => void;
-    /** Element event bindings: spread onto the owned audio element. */
-    bind: {
-        onPlay: () => void;
-        onPause: () => void;
-        onTimeUpdate: (event: React.SyntheticEvent<HTMLAudioElement>) => void;
-        onLoadedMetadata: (event: React.SyntheticEvent<HTMLAudioElement>) => void;
-        onDurationChange: (event: React.SyntheticEvent<HTMLAudioElement>) => void;
-        onError: () => void;
-    };
 }
 
-export function currentCueIndex(cues: SentenceCue[], time: number): number {
-    let active = -1;
-    for (let index = 0; index < cues.length; index += 1) {
-        const cue = cues[index];
-        if (cue !== undefined && time >= cue.start_seconds && time < cue.end_seconds) {
-            active = index;
-        }
-    }
-    if (active === -1 && cues.length > 0) {
-        const last = cues[cues.length - 1];
-        if (last !== undefined && time >= last.end_seconds) {
-            active = cues.length - 1;
-        }
-    }
-    return active;
+export interface TransportOptions extends TransportCallbacks {
+    /**
+     * Element ref supplied by an adapter that also needs to set `src`
+     * imperatively (the persistent learner player). When omitted the
+     * transport owns its ref.
+     */
+    audioRef?: React.RefObject<HTMLAudioElement | null>;
+    /** Reset local time/duration/error state when this identity changes. */
+    resetKey?: string | number | null;
 }
 
-export { formatAudioTime };
-
-export function useHeadlessAudio(audioUrl: string, cues: SentenceCue[], cuesUsable: boolean): HeadlessAudio {
-    const audioRef = React.useRef<HTMLAudioElement | null>(null);
+export function useAudioTransport(options: TransportOptions = {}): AudioTransport {
+    const internalRef = React.useRef<HTMLAudioElement | null>(null);
+    const audioRef = options.audioRef ?? internalRef;
+    const [node, setNode] = React.useState<HTMLAudioElement | null>(null);
     const [playing, setPlaying] = React.useState(false);
     const [time, setTime] = React.useState(0);
     const [duration, setDuration] = React.useState(Number.NaN);
     const [rateIndex, setRateIndex] = React.useState(0);
     const [hasError, setHasError] = React.useState(false);
     const [expanded, setExpanded] = React.useState(false);
+
     const rate = PLAYER_RATES[rateIndex] ?? 1;
+    const rateRef = React.useRef(rate);
+    rateRef.current = rate;
+    const callbacks = React.useRef<TransportCallbacks>(options);
+    React.useEffect(() => {
+        callbacks.current = options;
+    });
 
-    const ready = Number.isFinite(duration);
-    const fraction = ready && duration > 0 ? Math.min(1, Math.max(0, time / duration)) : 0;
-    const activeIndex = cuesUsable ? currentCueIndex(cues, time) : -1;
+    const bindRef = React.useCallback(
+        (element: HTMLAudioElement | null) => {
+            audioRef.current = element;
+            setNode(element);
+        },
+        [audioRef],
+    );
 
-    const toggle = React.useCallback(() => {
+    // One listener set per bound element, regardless of which adapter owns it.
+    React.useEffect(() => {
+        if (node === null) {
+            return;
+        }
+        const audio = node;
+        callbacks.current.onBind?.();
+
+        const onPlay = (): void => setPlaying(true);
+        const onPause = (): void => {
+            setPlaying(false);
+            callbacks.current.onPause?.(audio);
+        };
+        const onTimeUpdate = (): void => {
+            setTime(audio.currentTime);
+            if (!audio.paused && !audio.seeking) {
+                callbacks.current.onTime?.(audio);
+            }
+        };
+        const onLoadedMetadata = (): void => {
+            setDuration(audio.duration);
+            setHasError(false);
+            audio.playbackRate = rateRef.current;
+            callbacks.current.onLoadedMetadata?.(audio);
+        };
+        const onDurationChange = (): void => setDuration(audio.duration);
+        const onEnded = (): void => {
+            setPlaying(false);
+            callbacks.current.onEnded?.(audio);
+        };
+        const onError = (): void => {
+            if (audio.currentSrc === '') {
+                return;
+            }
+            setPlaying(false);
+            setHasError(true);
+            setExpanded(true);
+        };
+
+        audio.addEventListener('play', onPlay);
+        audio.addEventListener('pause', onPause);
+        audio.addEventListener('timeupdate', onTimeUpdate);
+        audio.addEventListener('loadedmetadata', onLoadedMetadata);
+        audio.addEventListener('durationchange', onDurationChange);
+        audio.addEventListener('ended', onEnded);
+        audio.addEventListener('error', onError);
+
+        // A public page mounts its element with `src` already set; the
+        // metadata event can fire before this effect binds. Seed from the
+        // element so duration/time are correct on the first frame.
+        if (audio.readyState >= 1) {
+            setDuration(audio.duration);
+            setTime(audio.currentTime);
+            audio.playbackRate = rateRef.current;
+            callbacks.current.onLoadedMetadata?.(audio);
+        }
+
+        return () => {
+            audio.removeEventListener('play', onPlay);
+            audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('timeupdate', onTimeUpdate);
+            audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+            audio.removeEventListener('durationchange', onDurationChange);
+            audio.removeEventListener('ended', onEnded);
+            audio.removeEventListener('error', onError);
+        };
+    }, [node]);
+
+    // A new lesson/sample version starts clean; the element may keep its
+    // previous bytes until the adapter assigns a new src.
+    const resetKey = options.resetKey ?? null;
+    React.useEffect(() => {
+        setTime(0);
+        setDuration(Number.NaN);
+        setHasError(false);
+    }, [resetKey]);
+
+    React.useEffect(() => {
+        const audio = audioRef.current;
+        if (audio !== null) {
+            audio.playbackRate = rate;
+        }
+    }, [rate, audioRef, node]);
+
+    const toggle = React.useCallback((): void => {
         const audio = audioRef.current;
         if (audio === null) {
             return;
         }
-        if (audio.paused) {
+        if (hasError) {
             setHasError(false);
+            audio.load();
+        }
+        if (audio.paused) {
             void audio.play().catch(() => {
                 setHasError(true);
                 setExpanded(true);
@@ -88,66 +203,66 @@ export function useHeadlessAudio(audioUrl: string, cues: SentenceCue[], cuesUsab
         } else {
             audio.pause();
         }
-    }, []);
+    }, [audioRef, hasError]);
 
-    const seekTo = React.useCallback((value: number) => {
-        const audio = audioRef.current;
-        if (audio === null || !Number.isFinite(audio.duration) || audio.duration <= 0) {
-            return;
-        }
-        audio.currentTime = Math.min(Math.max(0, value), audio.duration);
-        setTime(audio.currentTime);
-    }, []);
+    const seekTo = React.useCallback(
+        (seconds: number): void => {
+            const audio = audioRef.current;
+            if (audio === null || !Number.isFinite(audio.duration) || audio.duration <= 0) {
+                return;
+            }
+            audio.currentTime = Math.min(Math.max(0, seconds), audio.duration);
+            setTime(audio.currentTime);
+        },
+        [audioRef],
+    );
+
+    const seekToFraction = React.useCallback(
+        (percent: number): void => {
+            const audio = audioRef.current;
+            if (audio === null || !Number.isFinite(audio.duration) || audio.duration <= 0) {
+                return;
+            }
+            audio.currentTime = (Math.min(Math.max(0, percent), 100) / 100) * audio.duration;
+            setTime(audio.currentTime);
+        },
+        [audioRef],
+    );
 
     const skipBy = React.useCallback(
-        (delta: number) => {
+        (delta: number): void => {
             const audio = audioRef.current;
             if (audio === null || !Number.isFinite(audio.duration)) {
                 return;
             }
             seekTo(audio.currentTime + delta);
         },
-        [seekTo],
+        [audioRef, seekTo],
     );
 
-    const cycleRate = React.useCallback(() => {
+    const cycleRate = React.useCallback((): void => {
         setRateIndex((previous) => (previous + 1) % PLAYER_RATES.length);
     }, []);
 
-    const retry = React.useCallback(() => {
-        const audio = audioRef.current;
-        setHasError(false);
-        if (audio !== null) {
-            // An errored element never retries the same src without load().
-            audio.load();
-            void audio.play().catch(() => {
-                setHasError(true);
-                setExpanded(true);
-            });
-        }
-    }, []);
-
-    React.useEffect(() => {
+    const retry = React.useCallback((): void => {
         const audio = audioRef.current;
         if (audio === null) {
             return;
         }
-        audio.playbackRate = rate;
-    }, [rate]);
+        setHasError(false);
+        // An errored element never retries the same src without load().
+        audio.load();
+        void audio.play().catch(() => {
+            setHasError(true);
+            setExpanded(true);
+        });
+    }, [audioRef]);
 
-    // Rebinding a new lesson URL resets local state; same URL keeps it.
-    const urlRef = React.useRef(audioUrl);
-    React.useEffect(() => {
-        if (urlRef.current !== audioUrl) {
-            urlRef.current = audioUrl;
-            setTime(0);
-            setDuration(Number.NaN);
-            setHasError(false);
-        }
-    }, [audioUrl]);
+    const fraction = Number.isFinite(duration) && duration > 0 ? Math.min(1, Math.max(0, time / duration)) : 0;
 
     return {
         audioRef,
+        bindRef,
         playing,
         time,
         duration,
@@ -156,22 +271,11 @@ export function useHeadlessAudio(audioUrl: string, cues: SentenceCue[], cuesUsab
         expanded,
         setExpanded,
         fraction,
-        activeIndex,
         toggle,
         seekTo,
+        seekToFraction,
         skipBy,
         cycleRate,
         retry,
-        bind: {
-            onPlay: () => setPlaying(true),
-            onPause: () => setPlaying(false),
-            onTimeUpdate: (event: React.SyntheticEvent<HTMLAudioElement>) => setTime(event.currentTarget.currentTime),
-            onLoadedMetadata: (event: React.SyntheticEvent<HTMLAudioElement>) => setDuration(event.currentTarget.duration),
-            onDurationChange: (event: React.SyntheticEvent<HTMLAudioElement>) => setDuration(event.currentTarget.duration),
-            onError: () => {
-                setHasError(true);
-                setExpanded(true);
-            },
-        },
     };
 }

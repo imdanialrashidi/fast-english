@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Lessons\Schemas;
 
 use App\Actions\PublishLesson;
 use App\Rules\Mp3Signature;
-use App\Support\AudioCues;
 use App\Support\Glossary;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -58,30 +57,6 @@ class LessonForm
                     ->maxItems(Glossary::MAX_ENTRIES)
                     ->default([])
                     ->addActionLabel('Add word')
-                    ->columnSpanFull(),
-                Repeater::make('audio_cues')
-                    ->label('Sentence timing cues (optional, seconds)')
-                    ->schema([
-                        TextInput::make('sentence_index')
-                            ->label('Sentence number (from 0)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('start_seconds')
-                            ->label('Start (seconds)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('end_seconds')
-                            ->label('End (seconds)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0.01),
-                    ])
-                    ->maxItems(AudioCues::MAX_SENTENCES)
-                    ->default([])
-                    ->addActionLabel('Add cue')
-                    ->helperText('Timed against the duration below; cues must number every reader sentence from 0 without overlap and stay within the audio duration. Saved cues pin to the current audio revision — replacing the audio invalidates them in the reader until they are re-timed.')
                     ->columnSpanFull(),
                 FileUpload::make('audio_path')
                     ->label('Audio (MP3, max 30 MB)')

@@ -2,6 +2,7 @@
 
 use App\Models\Lesson;
 use Database\Seeders\S5PaymentFixtureSeeder;
+use Illuminate\Support\Arr;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
@@ -48,7 +49,7 @@ test('inertia protocol response carries the landing component and version', func
     $page = $response->json();
     expect($page['component'])->toBe('Landing/Index');
     expect($page)->toHaveKeys(['component', 'props', 'url', 'version']);
-    expect($page['props'])->toHaveKeys(['auth', 'flash', 'sampleSentences', 'plans', 'urls']);
+    expect($page['props'])->toHaveKeys(['auth', 'flash', 'sampleParagraphs', 'plans', 'urls']);
 
     // A stale asset version forces a full reload instead of JSON.
     $this->get(route('landing'), [
@@ -73,10 +74,12 @@ test('shared props expose only the user allowlist and flash', function () {
             ->where('flash.success', null)
             ->where('flash.error', null));
 
-    // Signed in: exactly id/name/email — never hashes, tokens, or flags.
+    // Signed in: the landing is guest-only now (owner separation), so the
+    // same allowlist is observed on the canonical account page.
     $student = ContentFixtures::student();
-    $props = $this->actingAs($student)
-        ->get(route('landing'))
+    $this->actingAs($student)->get(route('landing'))->assertRedirect(route('today.index'));
+
+    $props = $this->get(route('app.account'))
         ->assertOk()
         ->inertiaProps('auth');
 
@@ -87,23 +90,48 @@ test('shared props expose only the user allowlist and flash', function () {
     ]);
 });
 
-test('landing props never leak premium bodies audio or amounts', function () {
+test('landing props expose only the public sample media and an allowlisted key set', function () {
     $topic = ContentFixtures::publishedTopic();
-    Lesson::factory()->for($topic)->create([
+    $sample = Lesson::factory()->for($topic)->create([
         'level' => 'A2',
         'status' => 'published',
         'published_at' => now(),
         'is_public_sample' => true,
     ]);
 
-    $json = $this->get(route('landing'))->assertOk()->getContent();
+    $props = $this->get(route('landing'))->assertOk()->inertiaProps();
 
-    expect($json)->not->toContain('body_en')
-        ->and($json)->not->toContain('glossary')
-        ->and($json)->not->toContain('audio')
-        ->and($json)->not->toContain('price_toman')
-        ->and($json)->not->toContain('receipt')
-        ->and($json)->not->toContain('password');
+    // The public sample's own stream is the only media URL allowed here.
+    expect($props['sampleAudioUrl'])->toBe(route('media.lesson.audio', $sample))
+        ->and($props['sampleParagraphs'])->not->toBeEmpty();
+
+    // Assert the prop keys, not raw HTML text: the old substring check
+    // could not tell a legitimate public sample URL from a premium leak.
+    $keys = array_keys(Arr::dot($props));
+
+    $audioKeys = array_values(array_filter($keys, fn (string $key) => str_contains(strtolower($key), 'audio')));
+    expect($audioKeys)->toBe(['sampleAudioUrl']);
+
+    foreach ($keys as $key) {
+        foreach (['body_en', 'glossary', 'price_toman', 'amount_toman', 'receipt', 'password', 'internal_note', 'bank_reference', 'sender_last4'] as $needle) {
+            expect(str_contains(strtolower($key), $needle))->toBeFalse("landing prop [{$key}] leaks [{$needle}]");
+        }
+    }
+
+    // The shared topic-card module owns the featured shape.
+    expect(array_keys($props['featured'][0]))->toBe([
+        'slug',
+        'title_en',
+        'cover_url',
+        'category_name',
+        'levels',
+        'first_level',
+        'extra_levels',
+        'minutes',
+    ]);
+
+    // The guest landing never receives an authenticated-app URL.
+    expect($keys)->not->toContain('featured.0.reader_url');
 });
 
 test('unknown inertia route renders the react error page with shared data', function () {

@@ -33,7 +33,7 @@ export const SavedIndex: FunctionComponent<SavedProps> & { layout?: (page: React
                 {topics.length === 0 ? (
                     <div role="status" className="grid justify-items-center gap-2 rounded-3xl border border-line bg-surface px-6 py-12 text-center">
                         <Bookmark size={24} aria-hidden="true" />
-                        <p className="m-0 text-xl font-bold">هنوز مطلبی ذخیره نکرده‌اید.</p>
+                        <p className="m-0 text-xl font-bold">هنوز مطلبی ذخیره نکرده‌ای.</p>
                         <p className="m-0 mt-2">
                             <Link
                                 href="/app"

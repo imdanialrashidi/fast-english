@@ -8,7 +8,8 @@ use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Topic;
 use App\Support\Entitlement;
-use App\Support\Sentences;
+use App\Support\Levels;
+use App\Support\ReadingPayload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -30,10 +31,9 @@ use Inertia\Response;
  * S4 resume travels as data: owner-only, revision-isolated, no autoplay.
  * Guests receive zero and their listening is never saved server-side.
  *
- * R3 sentence cues: only cues timed against the current audio revision
- * are exposed, and only when their count matches the reader sentence
- * split. Otherwise the plain-reader fallback props stay and the lesson
- * remains completable.
+ * The reader renders plain paragraphs plus the normal audio player;
+ * sentence-level highlight/seek was removed by owner direction
+ * (2026-10-21), so cue fields never travel to the page.
  */
 class TopicReaderController extends Controller
 {
@@ -53,7 +53,7 @@ class TopicReaderController extends Controller
         // the matched lesson below is the only full row this page reads.
         $availableLevels = $topic->lessons()
             ->where('status', 'published')
-            ->orderByRaw(\App\Support\Levels::orderExpression())
+            ->orderByRaw(Levels::orderExpression())
             ->pluck('level')
             ->all();
 
@@ -77,15 +77,15 @@ class TopicReaderController extends Controller
 
         // The only lesson row this page renders: every column below is
         // consumed by the gate (status/sample), Reading::prepared
-        // (body/glossary/cues/revision), the resume lookup
-        // (id/revision), or the props (title/level/minutes/duration).
+        // (body/glossary), the resume lookup (id/revision), or the props
+        // (title/level/minutes/duration).
         $lesson = $topic->lessons()
             ->where('status', 'published')
             ->where('level', $requested)
             ->first([
                 'id', 'topic_id', 'level', 'title_en', 'body_en', 'glossary',
-                'audio_cues', 'audio_cues_revision', 'audio_revision',
-                'duration_seconds', 'estimated_minutes', 'is_public_sample', 'status',
+                'audio_revision', 'duration_seconds', 'estimated_minutes',
+                'is_public_sample', 'status',
             ]);
 
         if ($lesson !== null) {
@@ -119,10 +119,7 @@ class TopicReaderController extends Controller
             return $locked;
         }
 
-        $prepared = \App\Support\Reading::prepared($lesson);
-        $sentences = $prepared['sentences'];
-        $cues = $prepared['cues'];
-        $cuesUsable = $prepared['cuesUsable'];
+        $payload = ReadingPayload::for($lesson);
 
         // S4 resume: owner-only, revision-isolated. No user write happens
         // here — the level in the URL never touches preferred_level.
@@ -143,39 +140,13 @@ class TopicReaderController extends Controller
                 ->exists();
         }
 
-        // Plain-reader paragraphs for the no-cue fallback (the split
-        // sentences stay the synced-reader source of truth). Shape owned
-        // by Reading::prepared() above.
-        $paragraphs = $prepared['paragraphs'];
-
-        return Inertia::render('Reader/Show', [
-            'topic' => [
-                'id' => $topic->id,
-                'slug' => $topic->slug,
-                'title_en' => $topic->title_en,
-                'summary_public' => $topic->summary_public,
-                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
-            ],
-            'lesson' => [
-                'id' => $lesson->id,
-                'title_en' => $lesson->title_en,
-                'level' => $lesson->level,
-                'estimated_minutes' => (int) $lesson->estimated_minutes,
-                'duration_seconds' => (int) $lesson->duration_seconds,
-                'audio_revision' => (int) $lesson->audio_revision,
-                'audio_url' => route('media.lesson.audio', $lesson),
-            ],
+        return Inertia::render('Reader/Show', array_merge($payload, [
             'availableLevels' => $availableLevels,
             'initialPosition' => (float) $initialPosition,
             'completed' => $completed,
             'bookmarked' => $bookmarked,
             'isGuest' => $user === null,
-            'sentences' => $sentences,
-            'paragraphs' => $paragraphs,
-            'cues' => $cues,
-            'cuesUsable' => $cuesUsable,
-            'glossary' => $prepared['glossary'],
-        ]);
+        ]));
     }
 
     /**
@@ -192,10 +163,5 @@ class TopicReaderController extends Controller
         }
 
         return null;
-    }
-
-    private function levelOrder(): string
-    {
-        return \App\Support\Levels::orderExpression();
     }
 }

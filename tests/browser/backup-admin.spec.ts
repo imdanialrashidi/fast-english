@@ -23,8 +23,10 @@ test('backup admin: staff creates a one-click backup and sees it listed', async 
     await expect(staff.getByText('No successful backup yet.')).toBeVisible();
 
     // One click: the POST blocks until the verified archive completes.
+    // Match the completed row, not the status flash (both contain
+    // "completed (" after the redirect).
     await staff.getByRole('button', { name: 'Create backup now' }).click();
-    await expect(staff.getByText(/completed \(/)).toBeVisible({ timeout: 420_000 });
+    await expect(staff.getByText('— completed (manual) —')).toBeVisible({ timeout: 420_000 });
 
     // Row shows status/type/date/size/checksum + download + confirmed restore.
     await expect(staff.getByText('— completed (manual) —')).toBeVisible();

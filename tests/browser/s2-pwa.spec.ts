@@ -143,7 +143,7 @@ test('S2-3 offline shows the public page with retry, never premium', async ({ pa
 
   // Retry with the network back loads the real reader.
   await page.locator('#fe-offline-retry').click();
-  await expect(page.locator('ol.fe-sentences')).toContainText('On Saturday morning, Sara walks');
+  await expect(page.locator('article.fe-english-body')).toContainText('On Saturday morning, Sara walks');
 });
 
 test('S2-4 a new service worker never reloads during playback or a dirty form', async ({ page }) => {

@@ -111,7 +111,10 @@ test('speed cycles 1, 1.25, 1.5, 0.75 and applies to the audio element', async (
 
 test('player rests collapsed with an expandable console', async ({ page }) => {
   await page.goto(B1);
-  const bar = page.locator('.fe-playerbar');
+  // Guests are redirected to the public sample; it carries the same
+  // transport controls in an in-flow surface (the fixed learner bar is
+  // covered by s4-persistent/s4-mobile).
+  const bar = page.locator('section[aria-label="پخش‌کننده نمونه"]');
   const toggle = page.locator('#player-toggle');
   await expect(bar).toHaveAttribute('data-expanded', 'false');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');

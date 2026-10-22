@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Actions\PublishLesson;
 use App\Models\Category;
 use App\Models\Topic;
+use App\Support\Levels;
+use App\Support\TopicCard;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,7 +28,7 @@ class TopicLibraryController extends Controller
 {
     public function index(Request $request): Response
     {
-        $level = \App\Support\Levels::valid((string) $request->query('level', ''));
+        $level = Levels::valid((string) $request->query('level', ''));
         $categorySlug = trim((string) $request->query('category', ''));
         $categorySlug = $categorySlug !== '' ? $categorySlug : null;
 
@@ -51,7 +53,7 @@ class TopicLibraryController extends Controller
                 'category',
                 'lessons' => fn ($lessons) => $lessons
                     ->where('status', 'published')
-                    ->orderByRaw(\App\Support\Levels::orderExpression())
+                    ->orderByRaw(Levels::orderExpression())
                     ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('topics.published_at')
@@ -69,17 +71,7 @@ class TopicLibraryController extends Controller
             ->get();
 
         return Inertia::render('Library/Index', [
-            'topics' => $topics->getCollection()->map(fn (Topic $topic) => [
-                'slug' => $topic->slug,
-                'title_en' => $topic->title_en,
-                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
-                'category_name' => $topic->category?->name_fa,
-                'levels' => $topic->lessons->pluck('level')->filter()->values()->all(),
-                'first_level' => $topic->lessons->pluck('level')->filter()->values()->first(),
-                'extra_levels' => max(0, $topic->lessons->pluck('level')->filter()->count() - 1),
-                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
-                'reader_url' => route('reader.show', $topic),
-            ])->all(),
+            'topics' => $topics->getCollection()->map(fn (Topic $topic) => TopicCard::for($topic))->all(),
             'pagination' => [
                 'current_page' => $topics->currentPage(),
                 'last_page' => $topics->lastPage(),
@@ -96,10 +88,5 @@ class TopicLibraryController extends Controller
             'activeQuery' => $query,
             'hasFilters' => $level !== null || $categorySlug !== null || $query !== null,
         ]);
-    }
-
-    private function levelOrder(): string
-    {
-        return \App\Support\Levels::orderExpression();
     }
 }

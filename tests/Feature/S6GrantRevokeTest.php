@@ -4,7 +4,7 @@ use App\Actions\ApprovePayment;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\SubscriptionEvent;
-use App\Support\SubscriptionAccess;
+use App\Support\Entitlement;
 use Carbon\Carbon;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Illuminate\Validation\ValidationException;
@@ -38,11 +38,11 @@ test('manual grant creates a window and writes one event with a reason', functio
         ->and($event->reason)->toBe('support grant (TEST)')
         ->and((int) $event->actor_id)->toBe((int) $this->staff->id);
 
-    expect(SubscriptionAccess::eligible($this->studentA, $this->now))->toBeTrue();
+    expect(Entitlement::active($this->studentA, $this->now))->toBeTrue();
 
     // Isolation: the second student gains nothing.
     expect(Subscription::where('user_id', $this->studentB->id)->exists())->toBeFalse();
-    expect(SubscriptionAccess::eligible($this->studentB, $this->now))->toBeFalse();
+    expect(Entitlement::active($this->studentB, $this->now))->toBeFalse();
 });
 
 test('grant requires a reason and a positive duration', function () {
@@ -88,7 +88,7 @@ test('revoke stops access with no automatic refund and writes one event', functi
         ->and($outcome['event']->source_payment_request_id)->toBeNull()
         ->and($outcome['event']->reason)->toBe('abuse (TEST)');
 
-    expect(SubscriptionAccess::eligible($this->studentA, $revokeAt))->toBeFalse('revoked access stops on the next request');
+    expect(Entitlement::active($this->studentA, $revokeAt))->toBeFalse('revoked access stops on the next request');
 
     // Revoke needs a reason and an existing subscription (negative paths).
     try {
@@ -125,7 +125,7 @@ test('a replayed old approval never reactivates a revoked subscription', functio
     expect($current->revoked_at?->equalTo($revoked->revoked_at))->toBeTrue('revocation survives the replay')
         ->and($current->expires_at->equalTo($revoked->expires_at))->toBeTrue('no extension on replay');
     expect(SubscriptionEvent::where('source_payment_request_id', $pending->id)->count())->toBe(1);
-    expect(SubscriptionAccess::eligible($this->studentA, $this->now->copy()->addDays(4)))->toBeFalse();
+    expect(Entitlement::active($this->studentA, $this->now->copy()->addDays(4)))->toBeFalse();
 });
 
 test('staff cannot grant their own subscription', function () {

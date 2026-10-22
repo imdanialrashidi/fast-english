@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\PwaController;
+use App\Support\PublicAssets;
 use Database\Seeders\S1SampleSeeder;
+use Illuminate\Support\Facades\File;
 use Tests\Support\ContentFixtures;
 
 // S2 PWA shell + TWA association (scope §18). Staging installability itself
@@ -59,7 +60,7 @@ test('service worker is versioned, uncacheable, and allowlist-only', function ()
 });
 
 test('precache allowlist contains only public entries', function () {
-    $paths = (new PwaController)->precacheList();
+    $paths = PublicAssets::precache();
 
     expect($paths)->not->toBeEmpty()
         ->and($paths)->toContain('/offline');
@@ -74,6 +75,33 @@ test('precache allowlist contains only public entries', function () {
 
         foreach (['media', 'livewire', 'admin', 'account', 'receipt', 'progress', 'placement'] as $private) {
             expect(str_contains(strtolower($path), $private))->toBeFalse();
+        }
+    }
+});
+
+test('precache is complete for the shared public-asset allowlist', function () {
+    $allowlist = PublicAssets::allowlist();
+    $manifestPath = public_path('build/manifest.json');
+
+    // The PHP lane is not guaranteed to have frontend assets; the check
+    // runs wherever `npm run build` has produced a manifest.
+    if (! is_file($manifestPath)) {
+        $this->markTestSkipped('Build assets first (npm run build) to verify precache completeness.');
+    }
+
+    $manifest = json_decode((string) File::get($manifestPath), true);
+    expect(is_array($manifest))->toBeTrue();
+
+    $precache = PublicAssets::precache();
+
+    foreach ($allowlist['viteInputs'] as $entry) {
+        $file = $manifest[$entry['path']]['file'] ?? null;
+        expect($file)->not->toBeNull("missing build manifest entry [{$entry['path']}]");
+
+        if ($entry['precache']) {
+            expect($precache)->toContain('/build/'.$file);
+        } else {
+            expect($precache)->not->toContain('/build/'.$file);
         }
     }
 });

@@ -13,10 +13,10 @@ use App\Support\Entitlement;
  *   otherwise unpublished content is a 404 for everyone, including staff.
  * - A published lesson of a published topic is viewable when it is flagged
  *   as the public sample, when the user is active staff (panel preview),
- *   or when the user holds an eligible subscription window
- *   (SubscriptionAccess: not disabled, not revoked, starts_at <= now <
- *   expires_at). Level is content, never a permission: every published
- *   level is allowed to an eligible subscriber.
+ *   or when the user holds an eligible subscription window (Entitlement:
+ *   not disabled, not revoked, starts_at <= now < expires_at). Level is
+ *   content, never a permission: every published level is allowed to an
+ *   eligible subscriber.
  * - Pending grants nothing; expired, revoked, and suspended accounts are
  *   denied on the next request.
  */
@@ -28,14 +28,8 @@ class LessonPolicy
             return true;
         }
 
-        if ($user === null || $user->disabled_at !== null) {
-            return false;
-        }
-
-        if (Entitlement::staff($user)) {
-            return true;
-        }
-
-        return Entitlement::active($user);
+        // One seam for "may this learner see this?": the fresh eligibility
+        // path already folds in the disabled check and the staff bypass.
+        return Entitlement::eligible($user);
     }
 }
