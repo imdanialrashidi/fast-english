@@ -51,6 +51,40 @@ test('pagination returns 12 per page with the correct total', function () {
     $page2 = $this->get('/app?page=2')->assertOk();
     $page2->assertInertia(fn (AssertableInertia $page) => $page
         ->has('topics', 1));
+
+    // A stale deep link clamps to the real last page, not an empty screen.
+    $this->get('/app?page=99')->assertRedirect('/app?page=2');
+});
+
+test('an out-of-range or malformed page redirects with filters intact', function () {
+    $student = ContentFixtures::subscribedStudent();
+
+    for ($i = 1; $i <= 3; $i++) {
+        $topic = ContentFixtures::publishedTopic(['slug' => "s3-clamp-{$i}", 'title_en' => "S3 Clamp {$i}"]);
+        Lesson::factory()->for($topic)->create([
+            'level' => 'B1', 'status' => 'published', 'published_at' => now(),
+        ]);
+    }
+
+    $this->actingAs($student)->get('/app?level=B1&page=9')->assertRedirect('/app?level=B1');
+    $this->actingAs($student)->get('/app?level=B1&page=abc')->assertRedirect('/app?level=B1');
+    $this->actingAs($student)->get('/app?level=B1&page=0')->assertRedirect('/app?level=B1');
+});
+
+test('array query params are treated as absent, never a 500', function () {
+    $student = ContentFixtures::subscribedStudent();
+
+    $this->actingAs($student)
+        ->get('/app?level[]=x&category[]=y&q[]=z')
+        ->assertOk();
+
+    $this->actingAs($student)
+        ->get('/app/words?tab[]=x&q[]=y')
+        ->assertOk();
+
+    // No public sample is seeded in this suite: the neutral 404 is fine;
+    // an array-to-string 500 is not.
+    expect($this->get('/sample?level[]=x&topic[]=y')->status())->toBeIn([200, 404]);
 });
 
 test('the library query count stays constant as topics grow (no N+1)', function () {
@@ -68,6 +102,11 @@ test('the library query count stays constant as topics grow (no N+1)', function 
     };
 
     $build(6, 's3-small');
+
+    // The budget is about app queries, not the session store. The test
+    // env pins the array driver; force it here so a developer .env.testing
+    // with the database driver cannot add a per-request session write.
+    config(['session.driver' => 'array']);
 
     // Paid-only slice: the library needs an active subscription (one
     // constant-cost gate: fresh user + subscription lookup on both legs).

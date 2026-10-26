@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use Illuminate\Http\Request;
@@ -48,11 +49,16 @@ class LessonProgressController extends Controller
         }
 
         $position = (float) $data['position_seconds'];
-        if (! is_finite($position) || $position < 0 || $position > $lesson->duration_seconds) {
+        // Encoders sometimes report a few tenths more than the stored
+        // integer duration; allow one second of rounding but store the
+        // clamped value so the resume position never exceeds the lesson.
+        $maxPosition = (float) $lesson->duration_seconds + 1.0;
+        if (! is_finite($position) || $position < 0 || $position > $maxPosition) {
             return response()->json([
-                'message' => 'The position is outside the lesson duration.',
-            ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+                'message' => 'موقعیت پخش خارج از مدت این درس است.',
+            ], 422)->withHeaders(NoStore::headers());
         }
+        $position = min($position, (float) $lesson->duration_seconds);
 
         $revision = (int) $data['audio_revision'];
         if ($revision !== (int) $lesson->audio_revision) {
@@ -65,10 +71,10 @@ class LessonProgressController extends Controller
                 : 0.0;
 
             return response()->json([
-                'message' => 'Stale audio revision.',
+                'message' => 'نسخهٔ صوت این درس تغییر کرده است؛ موقعیت ذخیره‌شده به‌روز شد.',
                 'current_revision' => (int) $lesson->audio_revision,
                 'position_seconds' => $currentPosition,
-            ], 409)->withHeaders(\App\Http\Responses\NoStore::headers());
+            ], 409)->withHeaders(NoStore::headers());
         }
 
         $progress = LessonProgress::updateOrCreate(
@@ -86,7 +92,7 @@ class LessonProgressController extends Controller
             'position_seconds' => (float) $progress->position_seconds,
             'audio_revision' => (int) $progress->audio_revision,
             'completed_at' => $progress->completed_at?->toIso8601String(),
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
 
     public function complete(Request $request)
@@ -112,8 +118,8 @@ class LessonProgressController extends Controller
         }
 
         if ((int) $data['audio_revision'] !== (int) $lesson->audio_revision) {
-            return response()->json(['message' => 'Stale audio revision.'], 409)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+            return response()->json(['message' => 'نسخهٔ صوت این درس تغییر کرده است؛ موقعیت ذخیره‌شده به‌روز شد.'], 409)
+                ->withHeaders(NoStore::headers());
         }
 
         $existing = LessonProgress::where('user_id', $user->id)
@@ -133,7 +139,7 @@ class LessonProgressController extends Controller
         return response()->json([
             'completed_at' => $progress->completed_at?->toIso8601String(),
             'audio_revision' => (int) $progress->audio_revision,
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
 
     public function reset(Request $request)
@@ -162,7 +168,6 @@ class LessonProgressController extends Controller
             ->update(['completed_at' => null, 'updated_at' => now()]);
 
         return response()->json(['completed_at' => null])
-            ->withHeaders(\App\Http\Responses\NoStore::headers());
+            ->withHeaders(NoStore::headers());
     }
-
 }

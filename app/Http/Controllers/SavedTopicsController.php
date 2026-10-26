@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Topic;
+use App\Support\ClampsPagination;
+use App\Support\Levels;
+use App\Support\TopicCard;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,7 +22,9 @@ use Inertia\Response;
  */
 class SavedTopicsController extends Controller
 {
-    public function index(Request $request): Response
+    use ClampsPagination;
+
+    public function index(Request $request): Response|RedirectResponse
     {
         $user = $request->user();
         if ($user === null || $user->disabled_at !== null) {
@@ -32,6 +38,7 @@ class SavedTopicsController extends Controller
             ->with([
                 'lessons' => fn ($lessons) => $lessons
                     ->where('status', 'published')
+                    ->orderByRaw(Levels::orderExpression())
                     ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('topics.published_at')
@@ -39,21 +46,16 @@ class SavedTopicsController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        if (($redirect = $this->redirectOutOfRangePage($request, $topics)) !== null) {
+            return $redirect;
+        }
+
         // Public-slice Inertia transport (ADR-0002): the same bookmark-
         // scoped query and the same library row shape (metadata only —
         // never bodies, glossaries, or audio). A bookmark never grants
         // access; the reader policy still guards premium opens.
         return Inertia::render('Saved/Index', [
-            'topics' => $topics->getCollection()->map(fn (Topic $topic) => [
-                'slug' => $topic->slug,
-                'title_en' => $topic->title_en,
-                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
-                'levels' => $topic->lessons->pluck('level')->filter()->values()->all(),
-                'first_level' => $topic->lessons->pluck('level')->filter()->values()->first(),
-                'extra_levels' => max(0, $topic->lessons->pluck('level')->filter()->count() - 1),
-                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
-                'reader_url' => route('reader.show', $topic),
-            ])->all(),
+            'topics' => $topics->getCollection()->map(fn (Topic $topic) => TopicCard::for($topic))->all(),
             'pagination' => [
                 'current_page' => $topics->currentPage(),
                 'last_page' => $topics->lastPage(),

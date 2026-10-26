@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Actions\PublishLesson;
 use App\Models\Category;
 use App\Models\Topic;
+use App\Support\ClampsPagination;
+use App\Support\Levels;
+use App\Support\TopicCard;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -24,13 +28,18 @@ use Inertia\Response;
  */
 class TopicLibraryController extends Controller
 {
-    public function index(Request $request): Response
+    use ClampsPagination;
+
+    public function index(Request $request): Response|RedirectResponse
     {
-        $level = \App\Support\Levels::valid((string) $request->query('level', ''));
-        $categorySlug = trim((string) $request->query('category', ''));
+        $levelParam = $request->query('level');
+        $level = is_string($levelParam) ? Levels::valid($levelParam) : null;
+        $categoryParam = $request->query('category');
+        $categorySlug = is_string($categoryParam) ? trim($categoryParam) : '';
         $categorySlug = $categorySlug !== '' ? $categorySlug : null;
 
-        $query = trim((string) $request->query('q', ''));
+        $queryParam = $request->query('q');
+        $query = is_string($queryParam) ? trim($queryParam) : '';
         $query = $query !== '' ? mb_substr($query, 0, 120) : null;
 
         $topics = Topic::query()
@@ -51,13 +60,17 @@ class TopicLibraryController extends Controller
                 'category',
                 'lessons' => fn ($lessons) => $lessons
                     ->where('status', 'published')
-                    ->orderByRaw(\App\Support\Levels::orderExpression())
+                    ->orderByRaw(Levels::orderExpression())
                     ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('topics.published_at')
             ->orderByDesc('topics.id')
             ->paginate(12)
             ->withQueryString();
+
+        if (($redirect = $this->redirectOutOfRangePage($request, $topics)) !== null) {
+            return $redirect;
+        }
 
         // One small query for the category dropdown; constant regardless of
         // the topic count, so the page stays at a fixed query budget.
@@ -69,17 +82,7 @@ class TopicLibraryController extends Controller
             ->get();
 
         return Inertia::render('Library/Index', [
-            'topics' => $topics->getCollection()->map(fn (Topic $topic) => [
-                'slug' => $topic->slug,
-                'title_en' => $topic->title_en,
-                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
-                'category_name' => $topic->category?->name_fa,
-                'levels' => $topic->lessons->pluck('level')->filter()->values()->all(),
-                'first_level' => $topic->lessons->pluck('level')->filter()->values()->first(),
-                'extra_levels' => max(0, $topic->lessons->pluck('level')->filter()->count() - 1),
-                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
-                'reader_url' => route('reader.show', $topic),
-            ])->all(),
+            'topics' => $topics->getCollection()->map(fn (Topic $topic) => TopicCard::for($topic))->all(),
             'pagination' => [
                 'current_page' => $topics->currentPage(),
                 'last_page' => $topics->lastPage(),
@@ -96,10 +99,5 @@ class TopicLibraryController extends Controller
             'activeQuery' => $query,
             'hasFilters' => $level !== null || $categorySlug !== null || $query !== null,
         ]);
-    }
-
-    private function levelOrder(): string
-    {
-        return \App\Support\Levels::orderExpression();
     }
 }

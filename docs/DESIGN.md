@@ -2,6 +2,44 @@
 
 Source: scope §17 (UI/UX), §6 (routes/nav), §7 (flows), §13 (player/progress). Scope §17.1 palette/typography values are **proposals, not owner approval**.
 
+## Owner instruction 2026-10-25 — app-like shell, one lockup, denser discovery
+
+This supersedes the earlier quiet brand header, the mobile monogram/wordmark rule, and the full-width filter card. The palette, permanent-light rule, RTL/LTR split, and one-player contract are unchanged.
+
+- **One brand source.** `Logo/fast_english_app_favicon.png` and `Logo/fastenglish_header_logo.png` are the owner sources; `public/icons/*`, `public/favicon.ico`, and `public/images/brand/fastenglish-header-logo{,-dark}.png` are derived. The navy lockup is used on paper, the warm-paper lockup on the deep footer. No icon-plus-text approximation.
+- **Contextual app bar, no repeated logo.** Each screen renders `ScreenHeader`: sticky 56px, title at the start, one action at the end, and a back chevron on nested screens. Root screens have no logo bar; mobile Today begins with the greeting. The brand remains on landing/login, the PWA/splash icon, and the desktop rail.
+- **Discovery density.** Sticky search under the bar; level/category in a native bottom sheet; active filters as removable chips; result count and a clear link on one line; 16:9 cover at 96px (128px from `sm`), a 2-line English title, one column on mobile and two dense columns from `md`, so the first result sits above the fold.
+- **Pagination.** One shared component on Discover, Saved, and Words: Persian numerals, windowed numbers on desktop, compact «قبلی / صفحه ۲ از ۵ / بعدی» on mobile, `aria-current`, results focus/scroll and a live page announcement after a visit. Server-side clamp redirects out-of-range and malformed `page` values with filters intact.
+- **Notebook.** CSV import is retired. The review CTA is the only primary action; status tabs are one scrollable row; row actions are quiet text controls; a toast confirms success while the inline status remains the accessible source.
+- **Reader.** Back + English title in the bar (the editorial title stays in the page); bookmark near the top; «خواندم»/reset after the glossary with a way back to Discover. No second player.
+- **Shell state.** Real due-word badge on the Words tab (count only, shared prop); PWA install card on Account driven by `beforeinstallprompt` (remembered dismissal; no fake iOS button); first-run level card on Today and a level CTA in Account.
+- **Motion.** `fe-press` 150ms and `fe-enter` 180ms only under `prefers-reduced-motion: no-preference`; no page-transition framework.
+
+## Owner instruction 2026-10-25 — business settings and honest checkout states
+
+- **Plans are server data.** The subscribe page renders Persian plan names, Persian-digit toman amounts, and duration from active plan rows. Staff edit them in Plans; the owner catalog seeder is only an initial/repeatable install.
+- **Unconfigured payment is a calm closed state.** If the active card is the placeholder, the fallback switch is off, or no destination exists, the plan list still shows prices but the CTA reads «پرداخت هنوز فعال نشده» and is disabled; the server refuses creation with the same reason. A placeholder card is never presented as a transfer target.
+- **Gateway controls are prepared, visibly not live.** Business settings stores provider/merchant/sandbox and explains that no driver is registered; it never presents an online gateway as working. Card fallback remains the live method.
+- **Trust pages read as normal public copy.** Terms, privacy, and refund are readable Persian paragraphs; support/cooperation show the supplied channel as a link. No internal workflow badge or invented contact appears.
+
+## Owner instruction 2026-10-25 — no developer copy, shared player console, calmer states
+
+- **No framework or workflow copy reaches a learner.** Validation, auth, throttle, 403/404, and session-expiry failures render Persian text; internal `DRAFT`/`BLOCKED` labels are never shown on public pages. Missing legal/support/release inputs show a calm «هنوز منتشر نشده / به‌زودی» state with no invented contact, legal text, or download claim.
+- **One player surface.** `resources/js/components/AudioConsole.tsx` is the single visual/interaction console for the persistent learner bar and the public sample. Collapsed: play · artwork (≥sm) · EN title + level · elapsed/total · speed · expand, with a top progress line and buffered overlay. Expanded: RTL time labels around the seek fill, `−10s / play / +10s`, live buffering status, and the error/retry blocks. One `#player-play` exists at a time; no duplicate controls.
+- **Player feedback.** Buffering shows a spinner and `aria-busy`; failed progress saves surface in the collapsed bar with retry; expansion increases the content end-padding and lifts the PWA notice so neither is covered.
+- **Loading discipline.** Public visits show a header hairline; learner visits add a skeleton only after 180 ms, skip it for partial reloads, keep it below the player/tabs, and release a hung navigation after 20 s. Search submits through Inertia so audio and SPA state survive.
+- **Truthful state.** Placement answers mark themselves saved per question and gate final submit on the real count; SRS grade buttons stay locked until the next card; destructive reset/cancel/delete are two-step; Today's headline depends on real progress; failures use `role="alert"` + danger styling, not the success/status tone.
+
+## Owner instruction 2026-10-21 — plain reader, Persian chrome, app-like account
+
+This is the current owner direction and supersedes every sentence-cue, English-kicker, and account-navigation rule later in this file.
+
+- **Plain reader:** the learner reader, public sample, and landing preview render normal English paragraphs beside the normal player. No sentence highlight, bold/active row, click-to-seek, cue follow-scroll, or cue-derived copy. Cue columns, validators, staff editor, and cue tests were removed.
+- **Persian chrome:** remove the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the English `Example` field label. English remains only for lesson content, level codes, timestamps, and the brand.
+- **App shell:** remove the in-app marketing footer, the duplicate signed-in header account CTA, and the account page’s duplicate main-navigation chips. The bottom tabs / desktop rail are the only main navigation.
+- **Account:** an app-style profile screen — identity card, level/goal summary, subscription status with exactly one next action, a quiet settings list (settings, saved, placement), and logout. Persian dates and digits; email stays LTR.
+- **Today:** one due-vocabulary action, no duplicate due-words section, no repeated level line, and a real progress ring derived from `progress_pct`.
+
 ## Owner direction (confirmed)
 
 - Calm, professional, adult, readable, editorial; visual focus on text, lesson image, and playback (§17.1).
@@ -637,3 +675,71 @@ No new explicit owner style/color choice was given for this slice, so nothing be
 - Art direction (proposed): real GD/staff covers only (D4 pipeline, hero eager + fetchpriority high, rest lazy, no placeholders, no stock filler); Lucide local icons only (`headphones`/`play`/`compass`/`book-open`/`file-text`/`clock`/`languages`/`circle-check`/`bookmark`/`card`/`info`/`user`/`arrow-left`); no decorative imagery.
 - Motion (proposed): CSS-only — 8 `.fe-reveal` max (hero-copy/hero-preview/how/sample/featured/workflow/benefits/plans; FAQ/final/install static), 180ms entry + ≤200ms press/focus/hover; hero pulse keyframes exist only for `[data-playing=true]` (static preview never sets it, so no permanent animation); `prefers-reduced-motion` kills ALL motion and content renders without JS (opacity 1 default); no autoplay, no floating/blob/blur/grain/backdrop-blur; lab LCP 268ms ≤2.5s, zero pageerrors.
 - Copy (proposed, per no-ai-slop): keep proven strings — «انگلیسی را با داستان‌های کوتاه و صوت هماهنگ یاد بگیر», «هر مطلب یک متن انگلیسی در سطح توست با صوت همان نسخه.», «شروع با نمونه رایگان», «دیدن مطالب», «نمونه بدون ثبت‌نام باز می‌شود.», «پیش‌نمایش روش کار با متن واقعی نمونه — برای شنیدن، نمونه را باز کن.», 3-step how, «یک نمونه واقعی، بدون ثبت‌نام», «تازه‌ترین مطالب», «در دست آماده‌سازی», «بسته واحد ۲۹۹٬۰۰۰ تومان», «پیشنهاد محدود», FAQ 3, «با همان نمونه رایگان شروع کن», «نصب و دانلود»; new strings kept direct — «مسیر روزانه‌ات از پیشرفت واقعی ساخته می‌شود», «برای خواندن و شنیدن واقعی ساخته شده», «باز کردن نسخه وب»; no invented counts/testimonials/claims.
+
+## Landing rebuild 2026-10-21 — owner request: professional, de-slopped, mobile-first
+
+Owner direction (explicit, this turn): fully audit the landing, fix its problems, make it more beautiful and professional, remove its AI-slop character, and make it more responsive on phones. No new palette, font, theme, or fabricated content was requested.
+
+Baseline defects found and fixed:
+- Twelve stacked sections repeated the same three promises (why / how / experience / daily path / sentence notes) and repeated the sample CTA four times and the download CTA five times.
+- Every card used a 40px radius plus shadow; three cards were rotated; every section carried an icon-chip eyebrow. The hero preview showed a fake 38% progress bar and a display-only 1× control.
+- The sample cover rendered a 16:9 image in a 4:5 frame, cropping it to a flat colour band; the featured shelf required sideways scrolling on phones.
+- The header wordmark and nav wrapped at 360px, and three conditionally hidden nav links stayed visible because the base `inline-flex` overrode `hidden`, producing 563px of scroll width at a 390px viewport.
+- The dev server 404ed the self-hosted Vazirmatn files because laravel-vite-plugin disables Vite's publicDir; `vite.config.js` now proxies `/fonts` to `APP_URL` in dev (production already served them from `/public`).
+
+Implementation (agent-owned; PROPOSED details on top of the owner direction):
+- IA: asymmetric hero (copy beside a working sample) → three-step method band → real sample feature → newest topics as divider rows → plans (DB names and durations, or the honest preparing state) → three FAQ rows → closing action. Removed the why/experience/sentence-notes/daily-path/install sections and their duplicated copy.
+- Hero preview is the real product: the sample's own audio stream, its opening paragraphs, play/pause, elapsed/duration, a read-only progress bar, and the real rate cycle (1 → 1.25 → 1.5 → 0.75). No autoplay, no mock controls, retry on error. Sentence-level cues are retired (owner direction 2026-10-21).
+- Form: 12–20px radii, hairline `line` borders, no shadows (the preview is a flat bordered surface), no rotation, gradient, glow, blur, grain, or looping motion. Primary actions use `primary`; `accent-strong` is reserved for progress/accents. English content stays LTR; Persian prose uses Persian digits, player time/rate stay LTR.
+- Chrome: a full-width sticky masthead on `canvas` with a hairline rule replaces the floating pill; a full-bleed ink footer holds the brand and a two-column link grid. Brand wordmark is right-aligned against its monogram and hidden below 350px so login/register never wrap.
+- Responsive: 320/360/390 single column with 16px gutters; method steps recompose from 1 to 3 columns; sample and hero pair at ≥1024; featured rows replace the horizontal shelf; every link/button target is ≥44px; no horizontal scroll at any tested width.
+- Kept browser contracts: H1 text, «شروع با نمونه رایگان», preview label and note, the opening-paragraph preview, «نمونه واقعی» heading, «تازه‌ترین مطالب», both sales lanes, the FAQ question, «صفحه دانلود», and «مشاهده همه پرسش‌ها».
+
+Verification: Playwright at 320/360/390/768/1440 (no overflow, no sub-44px control, no pageerror or 4xx), `s8-landing` 4/4 with the sales lane enabled, `m0-inertia` 2/2, the `m1-journey` landing leg, and a played preview (20s stream, rate cycle, progress bar). Visual inspection covered the mobile hero/footer/plans and desktop hero/method/footer.
+
+## Landing/app boundary + account correction 2026-10-21 — owner request
+
+Owner direction (explicit, this turn): fix the account page; make the landing system fully separate from the app; a signed-in user must not reach the landing; the landing exists for Google discovery and app download. No new palette, font, theme, or fabricated content was requested.
+
+Implementation (agent-owned; PROPOSED visual details on top of the owner direction):
+- `marketing.guest` middleware (`RedirectAuthenticatedToApp`) gates `/`, the trust pages, `/download`, and `/install`. A signed-in request returns to `/app/today`; `/sample` stays outside the boundary because the in-app locked state links to it as the free path. The app shell no longer links to marketing pages: brand and footer point at app surfaces only; the public shell shows a signed-in viewer of `/sample` a «بازگشت به اپ» action and app-local footer links.
+- The landing never links into `/app`: featured topics are informational rows, plan interest goes through registration, and the primary conversion is the download page. Hero and closing actions are «دانلود اپلیکیشن» + the free sample; no link bounces a guest to login.
+- SEO moved server-side: `LandingController` supplies title, description, canonical, and JSON-LD (`WebSite`, `SoftwareApplication`, `FAQPage`); `app.blade.php` renders description/Open Graph/Twitter/JSON-LD before React. The FAQ list has one server source for both the visible accordion and structured data. Download gets its own server-rendered title/description. Page-level `<Head>` keeps the title only — no second client-rendered description meta.
+- Account page: an active subscription now reads «اشتراک فعال تا …» and offers «تمدید اشتراک» (renewal extends from the current end), never the first-purchase «انتخاب پلن» CTA. Expired/revoked/no-subscription states stay distinct. The profile email gets its own LTR line, daily-goal digits are Persian, the desktop rail is a compact 44px pill (no stretched grid cell), and the main end-padding follows actual track presence so pages without audio no longer reserve a phantom player's height.
+
+Verification: Pest `S0AccountTest`, `S8LandingTest`, `M0InertiaFoundationTest`, and the full suite (306 passed) on PostgreSQL; `npm run typecheck` and `npm run build` clean; Playwright on the `fe_browser` lane with built assets: `s8-landing` 4/4, `s8-download` 2/2, `m0-inertia` 2/2, `design-theme` 8/8 including the new active-account/desktop-rail test. Inspected pixels: landing 390/1440, account 390/1440, download and mobile library/words/reader.
+
+## Follow-up feature slice 2026-10-22 — owner selection
+
+Owner selected the vocabulary, account/player, shell, SEO, and tooling follow-ups from the release-readiness review. No new palette, font, theme, or fabricated content was introduced.
+
+- Vocabulary review uses a cloze card: the target word is blanked inside its real example until reveal; a word without a usable example keeps the word-first fallback. The SRS schedule and grade endpoint are unchanged.
+- Notebook adds an owner-only CSV export (formula-safe, UTF-8 BOM), a 500-row transactional import, and a two-step «همه را می‌دانم» bulk action. The export is a private response, never a public asset. **(Export and import both retired 2026-10-25; the bulk action remains.)**
+- Account adds a recent payment-history list (status, plan, snapshot amount, date) with no receipt/bank/internal fields. `subscriptions:remind-expiring` sends one mail per current window; real SMTP delivery stays a launch prerequisite.
+- The persistent player and public sample publish Media Session metadata and play/pause/seek handlers when supported. Background audio is still not promised.
+- In-app navigation shows a delayed skeleton after 180ms; the previous page remains mounted underneath. Learner pages share `.fe-title` / `.fe-prose` / `.fe-meta` and bidi-safe headings.
+- `/sample` joins the sitemap while a published sample exists, canonicalizes to `/sample` without query, and ships description + Article JSON-LD.
+- CI: 14 pre-existing Pint failures fixed; `workflow-doctor` runs the template-only gate; the browser job seeds `S2BrowserSeeder` with sales on. `scripts/browser-lane.sh` is the documented local lane.
+
+Verification: Pest 313 passed / 3931 assertions on PostgreSQL; global Pint clean; `npm run typecheck` and `npm run build` clean; full Playwright suite on `fe_browser` covers the cloze journey, Media Session wiring, skeleton, bulk-known tests, and the existing journeys (historical; CSV import was retired later the same day). Inspected captures: account history/active 390+1440, cloze 390, skeleton 390, landing/reader/download.
+
+## Mobile UI polish 2026-10-23 — owner request: audit the whole app UI and improve mobile beauty/professionalism
+
+Owner direction (explicit, this turn): review the complete app UI, then make it more beautiful, professional, and mobile-appropriate. No new palette, font, theme, or fabricated content was requested; every change uses the canonical `@theme` tokens.
+
+Defects found and fixed:
+- Tablets (640–1023px) had no navigation at all: the tab bar was hidden at 640px but the desktop rail only appeared at 1024px. The four tabs now stay through tablet widths.
+- The player was `position: fixed` inside an already-fixed shell wrapper, so it ignored the app measure and bled edge-to-edge on desktop. The wrapper owns the fixed layer now; the bar is measured with the shell and above the tabs.
+- Account overflowed horizontally at 320px because the unbreakable email set the profile card's min-content width. The identity text now wraps/truncates and the card fits.
+- The PWA update banner covered the bottom tabs/player on mobile. It now sits above the shell chrome and above the player on desktop.
+
+Polish (agent-owned within the contract):
+- Brand lockups are one LTR wordmark (app icon + `Fast English`) in the app, public header/footer, and auth panel; the duplicate auth brand on mobile is gone and the public footer brand returns to the RTL start.
+- Shell: soft `primary/10` active nav pills/icon capsules (desktop rail and mobile tabs), contained desktop player, title truncation reads LTR, narrow-player density (thumbnail/gauge thresholds).
+- Reader: 10rem cover on mobile (full artwork at wider measures, right-aligned with the chrome column), inline level label, primary action first, tighter page rhythm so real text is visible on the first screen.
+- Library: one-row compact search with an icon submit on mobile, compact inline filter groups on a single scrollable line below 640px (wrap above), count/clear row, quieter rows without the stray arrow, borderless level chip.
+- Today: tighter section gap and a heading action instead of a trailing button; recommendation cover chips use the first level; Clock icon for time meta.
+- Words: review action first when due, import tools collapsed behind a native disclosure, tab chips do not wrap text, flat search row.
+- Auth: no autofocus (avoids opening the mobile keyboard), 2px field focus ring replacing the doubled outline, clean login footer links.
+
+Verification (final build): `npm run typecheck` + `npm run build` clean; Playwright on `fe_browser` (`BASE_URL=http://127.0.0.1:8112`): 50 passed across s1-mobile, s3-mobile, s3-library, r-today, m1-journey, s4-mobile, s4-persistent, s1-player, design-theme, r-words, r-reader, s2-pwa. 320px overflow rechecked on account/settings/placement/subscribe/words. Inspected pixels: reader 390/768/1440, library 320/390/768/1440, today 320/390/1440, words 390, account 320/390, login 390, sample/landing header.

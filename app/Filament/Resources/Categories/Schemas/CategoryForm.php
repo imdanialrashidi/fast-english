@@ -18,10 +18,12 @@ class CategoryForm
                     ->maxLength(120),
                 TextInput::make('slug')
                     ->required()
+                    ->alphaDash()
                     ->unique(ignoreRecord: true)
                     ->maxLength(120),
                 TextInput::make('display_order')
                     ->numeric()
+                    ->integer()
                     ->default(0)
                     ->minValue(0),
                 Toggle::make('is_active')

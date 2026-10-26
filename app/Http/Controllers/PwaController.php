@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PublicAssets;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -37,8 +38,8 @@ class PwaController extends Controller
             'display' => 'standalone',
             'start_url' => '/app',
             'scope' => '/',
-            'background_color' => '#f7f5ef',
-            'theme_color' => '#f7f5ef',
+            'background_color' => '#F7F4EE',
+            'theme_color' => '#F7F4EE',
             'icons' => [
                 ['src' => '/icons/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
                 ['src' => '/icons/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
@@ -55,7 +56,7 @@ class PwaController extends Controller
         return response()
             ->view('pwa.service-worker', [
                 'version' => $version,
-                'precache' => $this->precacheList(),
+                'precache' => PublicAssets::precache(),
             ])
             ->withHeaders([
                 'Content-Type' => 'application/javascript; charset=utf-8',
@@ -124,74 +125,8 @@ class PwaController extends Controller
             }
         }
 
-        return (string) config('pwa.sw_version', 's2-v1');
-    }
+        $version = trim((string) config('pwa.sw_version', ''));
 
-    /**
-     * The allowlist: fingerprinted Vite assets, icons, the self-hosted
-     * Vazirmatn font files, the offline page, and the manifest. No HTML
-     * navigations, no Livewire/auth/admin, no media — ever.
-     *
-     * @return list<string>
-     */
-    public function precacheList(): array
-    {
-        $paths = [
-            '/offline',
-            '/manifest.webmanifest',
-            '/icons/icon-192.png',
-            '/icons/icon-512.png',
-            '/icons/icon-maskable-512.png',
-            '/icons/apple-touch-180.png',
-            '/fonts/vazirmatn/vazirmatn-arabic-variable.woff2',
-            '/fonts/vazirmatn/vazirmatn-latin-variable.woff2',
-        ];
-
-        foreach ($this->viteBuiltFiles() as $file) {
-            $paths[] = '/build/'.$file;
-        }
-
-        return array_values(array_unique($paths));
-    }
-
-    /** @return list<string> */
-    private function viteBuiltFiles(): array
-    {
-        $manifestPath = public_path('build/manifest.json');
-        if (! is_file($manifestPath)) {
-            return [];
-        }
-
-        $decoded = json_decode((string) File::get($manifestPath), true);
-        if (! is_array($decoded)) {
-            return [];
-        }
-
-        $wanted = [
-            // Inertia bundle only: the server stylesheet (app.css) stays
-            // a Vite input for staff-2FA/error pages but never enters
-            // the SW precache — Inertia users would cache dead CSS.
-            'resources/css/inertia.css',
-            'resources/js/app.tsx',
-            'resources/js/pwa.js',
-        ];
-
-        $files = [];
-        foreach ($wanted as $input) {
-            $entry = $decoded[$input] ?? null;
-            if (is_array($entry) && isset($entry['file']) && is_string($entry['file'])) {
-                $files[] = $entry['file'];
-            }
-            $css = $entry['css'] ?? [];
-            if (is_array($css)) {
-                foreach ($css as $cssFile) {
-                    if (is_string($cssFile)) {
-                        $files[] = $cssFile;
-                    }
-                }
-            }
-        }
-
-        return array_values(array_unique($files));
+        return $version !== '' ? $version : 's2-v1';
     }
 }

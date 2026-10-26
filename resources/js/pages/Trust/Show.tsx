@@ -1,28 +1,35 @@
 import { Head, Link } from '@inertiajs/react';
-import { CircleAlert, Info } from 'lucide-react';
+import { Info, MessageCircle } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
 import type { SharedProps } from '@/types';
 
 /**
  * Trust pages (PUB-02): about, cooperation, faq, support, terms,
- * privacy. Every page keeps its DRAFT badge; support/terms/privacy and
- * the cooperation contact keep their explicit BLOCKED states. No
- * support channel, legal text, name, or number is invented — the S8
- * placeholder scan runs against these props.
+ * privacy, refund.
+ *
+ * Owner instruction 2026-10-25: public pages never expose internal
+ * workflow labels. Contact channels and legal copy come from staff-editable
+ * settings with config defaults; a missing value renders a calm public
+ * note, never an invented address or claim.
  */
 
-type TrustPage = 'about' | 'cooperation' | 'faq' | 'support' | 'terms' | 'privacy';
+type TrustPage = 'about' | 'cooperation' | 'faq' | 'support' | 'terms' | 'privacy' | 'refund';
+
+interface ContactProps {
+    support_channel: string;
+    support_href: string | null;
+    support_hours: string | null;
+    cooperation_channel: string;
+    cooperation_href: string | null;
+}
 
 interface TrustProps extends SharedProps {
     page: TrustPage;
-    /**
-     * Verbatim server strings: the DRAFT badge and the page's BLOCKED
-     * note (null when the page has prose instead). They travel as props
-     * so the S8 placeholder scan runs against the encoded page.
-     */
-    badge: string;
-    blocked: string | null;
+    /** Public fallback note; null when the page has its own copy. */
+    notice: string | null;
+    contact: ContactProps;
+    legal: string | null;
 }
 
 const TITLES: Record<TrustPage, string> = {
@@ -32,6 +39,7 @@ const TITLES: Record<TrustPage, string> = {
     support: 'پشتیبانی Fast English',
     terms: 'قوانین استفاده',
     privacy: 'حریم خصوصی',
+    refund: 'بازگشت وجه',
 };
 
 const HEADINGS: Record<TrustPage, string> = {
@@ -41,23 +49,79 @@ const HEADINGS: Record<TrustPage, string> = {
     support: 'پشتیبانی',
     terms: 'قوانین استفاده',
     privacy: 'حریم خصوصی',
+    refund: 'بازگشت وجه',
 };
 
-function Blocked({ children }: { children: React.ReactNode }): React.JSX.Element {
+function Notice({ children }: { children: React.ReactNode }): React.JSX.Element {
     return (
         <div role="note" className="grid gap-2 rounded-3xl border border-line bg-surface p-5">
-            <p className="m-0 flex items-center gap-2 font-bold">
-                <CircleAlert size={20} aria-hidden="true" />
-                {children}
+            <p className="m-0 flex items-start gap-2 leading-8">
+                <Info size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-muted" />
+                <span>{children}</span>
             </p>
+        </div>
+    );
+}
+
+function ChannelLink({ channel, href }: { channel: string; href: string | null }): React.JSX.Element {
+    if (href === null) {
+        return <span dir="ltr">{channel}</span>;
+    }
+
+    return (
+        <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            dir="ltr"
+            className="inline-flex min-h-11 items-center gap-1.5 font-bold text-primary"
+        >
+            <MessageCircle size={20} aria-hidden="true" />
+            {channel}
+        </a>
+    );
+}
+
+function withBidiIsolates(text: string): React.ReactNode[] {
+    // A bare @handle inside a Persian paragraph is reordered by the bidi
+    // algorithm («test@»). Keep every handle in its own LTR isolate.
+    return text.split(/(@[A-Za-z0-9_]{3,64})/g).map((part, index) =>
+        part.startsWith('@') ? (
+            <bdi key={index} dir="ltr">
+                {part}
+            </bdi>
+        ) : (
+            part
+        ),
+    );
+}
+
+function LegalBody({ text }: { text: string | null }): React.JSX.Element {
+    if (text === null) {
+        return <Notice>متن این صفحه هنوز منتشر نشده است.</Notice>;
+    }
+
+    const paragraphs = text
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter((paragraph) => paragraph !== '');
+
+    return (
+        <div className="grid gap-4 text-[1.0625rem] leading-9">
+            {paragraphs.map((paragraph, index) => (
+                <p key={index} className="m-0">
+                    {withBidiIsolates(paragraph)}
+                </p>
+            ))}
         </div>
     );
 }
 
 export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     page,
-    badge,
-    blocked,
+    notice,
+    contact,
+    legal,
 }: TrustProps): React.JSX.Element => {
     return (
         <>
@@ -65,10 +129,6 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                 <meta name="description" content={TITLES[page]} />
             </Head>
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <p role="note" className="m-0 inline-flex w-fit items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-bold text-muted">
-                    <Info size={16} aria-hidden="true" />
-                    {badge}
-                </p>
                 <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">{HEADINGS[page]}</h1>
 
                 {page === 'about' && (
@@ -77,24 +137,23 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                             Fast English یک محصول ساده برای خواندن و شنیدن متن‌های کوتاه انگلیسی در سطح مناسب زبان‌آموز است. هر مطلب در
                             چند سطح ارائه می‌شود و صوت هر نسخه دقیقاً همان متن را پوشش می‌دهد.
                         </p>
-                        <p className="m-0 text-muted">این متن پیش‌نویس است و پیش از انتشار عمومی توسط صاحب محصول بازبینی و نهایی می‌شود.</p>
+                        <p className="m-0 text-muted">
+                            نمونهٔ واقعی بدون حساب در دسترس است. برای ادامه، حساب بسازید و پلن را انتخاب کنید.
+                        </p>
                     </div>
                 )}
 
                 {page === 'cooperation' && (
-                    <>
-                        <div className="grid gap-3 text-[1.0625rem] leading-9">
-                            <p className="m-0">
-                                این صفحه شرایط همکاری (تولید محتوا، آموزش و سایر همکاری‌ها) را توضیح می‌دهد. شرایط نهایی هنوز اعلام نشده است.
-                            </p>
-                            <p className="m-0 text-muted">این متن پیش‌نویس است و پیش از انتشار عمومی توسط صاحب محصول بازبینی و نهایی می‌شود.</p>
-                        </div>
-                        {blocked !== null && (
-                            <Blocked>
-                                <span>{blocked}</span>
-                            </Blocked>
-                        )}
-                    </>
+                    <div className="grid gap-4 text-[1.0625rem] leading-9">
+                        <p className="m-0">
+                            برای پیشنهاد تولید محتوا، آموزش یا همکاری دیگر، پیام خود را همراه با نمونهٔ کار و زمینهٔ همکاری به کانال زیر
+                            بفرستید. پاسخ پس از بررسی ارسال می‌شود.
+                        </p>
+                        <p className="m-0">
+                            کانال همکاری: <ChannelLink channel={contact.cooperation_channel} href={contact.cooperation_href} />
+                        </p>
+                        {notice !== null && <Notice>{notice}</Notice>}
+                    </div>
                 )}
 
                 {page === 'faq' && (
@@ -110,6 +169,20 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                             </div>
                         ))}
                         <div className="grid gap-1">
+                            <h2 className="m-0 text-lg leading-8 font-bold">اگر پرداخت مشکل داشت چه کنم؟</h2>
+                            <p className="m-0 leading-8 text-muted">
+                                از صفحهٔ{' '}
+                                <Link href="/support" className="inline-flex min-h-11 items-center text-primary">
+                                    پشتیبانی
+                                </Link>{' '}
+                                پیام بدهید. شرایط بازگشت وجه در صفحهٔ{' '}
+                                <Link href="/refund" className="inline-flex min-h-11 items-center text-primary">
+                                    بازگشت وجه
+                                </Link>{' '}
+                                آمده است.
+                            </p>
+                        </div>
+                        <div className="grid gap-1">
                             <h2 className="m-0 text-lg leading-8 font-bold">فایل نصب اندروید کجاست؟</h2>
                             <p className="m-0 leading-8 text-muted">
                                 وضعیت انتشار فایل نصب در{' '}
@@ -122,22 +195,36 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                     </div>
                 )}
 
-                {page === 'support' && blocked !== null && (
-                    <Blocked>
-                        <span>{blocked}</span>
-                    </Blocked>
+                {page === 'support' && (
+                    <div className="grid gap-4 text-[1.0625rem] leading-9">
+                        <p className="m-0">
+                            برای پیگیری پرداخت، مشکل دسترسی یا پرسش دربارهٔ حساب، از کانال زیر پیام بدهید. شمارهٔ پیگیری یا تصویر رسید
+                            را همراه پیام بفرستید تا بررسی سریع‌تر شود.
+                        </p>
+                        <p className="m-0">
+                            کانال پشتیبانی: <ChannelLink channel={contact.support_channel} href={contact.support_href} />
+                        </p>
+                        {contact.support_hours !== null && <p className="m-0 text-muted">ساعت پاسخ‌گویی: {contact.support_hours}</p>}
+                        {notice !== null && <Notice>{notice}</Notice>}
+                        <p className="m-0">
+                            <Link
+                                href="/faq"
+                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-surface px-5 py-2.5 font-bold text-ink no-underline hover:bg-canvas"
+                            >
+                                دیدن پرسش‌های پرتکرار
+                            </Link>
+                        </p>
+                    </div>
                 )}
 
-                {page === 'terms' && blocked !== null && (
-                    <Blocked>
-                        <span>{blocked}</span>
-                    </Blocked>
-                )}
+                {(page === 'terms' || page === 'privacy' || page === 'refund') && <LegalBody text={legal} />}
 
-                {page === 'privacy' && blocked !== null && (
-                    <Blocked>
-                        <span>{blocked}</span>
-                    </Blocked>
+                {page !== 'faq' && page !== 'support' && (
+                    <p className="m-0">
+                        <Link href="/faq" className="inline-flex min-h-11 items-center text-primary">
+                            پرسش‌های پرتکرار
+                        </Link>
+                    </p>
                 )}
             </div>
         </>

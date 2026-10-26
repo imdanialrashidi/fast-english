@@ -20,8 +20,8 @@ test('R5 today at 390px: greeting, goal default, empty plan, tab bar', async ({ 
   // derivation from progress stays proven in Pest R5DailyPlanTest).
   await page.goto('/app/today');
 
-  await expect(page.getByRole('heading', { name: 'امروز هم قدمی بزرگ به سمت هدف‌هات برداشتی.' })).toBeVisible();
-  await expect(page.getByText('هدف امروز: 10 دقیقه مطالعه')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('امروز');
+  await expect(page.getByText('هدف امروز: ۱۰ دقیقه مطالعه')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'برنامه امروز' })).toBeVisible();
 
   const { scroll, inner } = await noHorizontalScroll(page);

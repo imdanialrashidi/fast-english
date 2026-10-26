@@ -1,0 +1,55 @@
+- generic [active] [ref=f55e1]:
+  - generic [ref=f55e3]:
+    - link "پرش به محتوا" [ref=f55e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f55e5]:
+      - link "Fast English — صفحه اصلی" [ref=f55e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f55e9]: Fast English
+    - main [ref=f55e12]:
+      - generic [ref=f55e15]:
+        - link "حساب" [ref=f55e16] [cursor=pointer]:
+          - /url: /app/account
+        - generic [ref=f55e19]:
+          - heading "تنظیمات" [level=1] [ref=f55e20]
+          - paragraph [ref=f55e21]: نام، سطح و هدف روزانه‌ات را اینجا تنظیم کن.
+        - generic [ref=f55e22]:
+          - paragraph [ref=f55e23]: یادگیری
+          - generic [ref=f55e27]:
+            - generic [ref=f55e28]: نام
+            - textbox "نام" [ref=f55e32]: UI Review
+          - generic [ref=f55e33]:
+            - generic [ref=f55e34]: سطح ترجیحی
+            - combobox "سطح ترجیحی" [ref=f55e35]:
+              - option "انتخاب نشده" [selected]
+              - option "A1"
+              - option "A2"
+              - option "B1"
+              - option "B2"
+              - option "C1"
+              - option "C2"
+          - generic [ref=f55e36]:
+            - generic [ref=f55e37]: هدف روزانه (دقیقه)
+            - combobox "هدف روزانه (دقیقه)" [ref=f55e38]:
+              - option "5 دقیقه"
+              - option "10 دقیقه" [selected]
+              - option "15 دقیقه"
+          - button "ذخیره" [ref=f55e40] [cursor=pointer]
+        - paragraph [ref=f55e43]: تغییر سطح در صفحه مطلب، سطح ترجیحی را تغییر نمی‌دهد. تغییر هدف روزانه، سطح ترجیحی را تغییر نمی‌دهد.
+    - navigation "بخش‌های یادگیری" [ref=f55e46]:
+      - list [ref=f55e47]:
+        - listitem [ref=f55e48]:
+          - link "امروز" [ref=f55e49] [cursor=pointer]:
+            - /url: /app/today
+        - listitem [ref=f55e55]:
+          - link "کشف" [ref=f55e56] [cursor=pointer]:
+            - /url: /app
+        - listitem [ref=f55e62]:
+          - link "واژه‌ها" [ref=f55e63] [cursor=pointer]:
+            - /url: /app/words
+        - listitem [ref=f55e70]:
+          - link "حساب" [ref=f55e71] [cursor=pointer]:
+            - /url: /app/account
+  - status [ref=f55e77]:
+    - generic [ref=f55e78]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f55e79] [cursor=pointer]

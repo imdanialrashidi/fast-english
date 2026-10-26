@@ -49,8 +49,7 @@ test('S4 pre-slice pagination renders and works at 360px with 44px targets', asy
   await page.goto('/app');
   await page.locator('article.fe-card').first().waitFor();
 
-  const countText = await page.getByRole('status').first().textContent();
-  const total = Number(countText?.replace(/[^0-9]/g, '') ?? '0');
+  const total = Number(await page.locator('[data-total]').first().getAttribute('data-total'));
   expect(total).toBeGreaterThanOrEqual(13);
 
   const cardsPage1 = await page.locator('article.fe-card').count();
@@ -71,9 +70,10 @@ test('S4 pre-slice pagination renders and works at 360px with 44px targets', asy
   }
 
   // Page two loads one or more labelled fixtures and keeps no-scroll.
-  const page2 = pagination.first().getByRole('link', { name: '2' });
-  if (await page2.count()) {
-    await page2.first().click();
+  // At 360 the compact paginator exposes «بعدی» rather than number links.
+  const next = pagination.first().getByRole('link', { name: 'صفحه بعدی' });
+  if (await next.count()) {
+    await next.first().click();
     await page.waitForURL('**page=2**');
     await page.locator('article.fe-card').first().waitFor();
     const { scroll, inner } = await page.evaluate(() => ({

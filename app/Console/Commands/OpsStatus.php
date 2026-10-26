@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\DB;
  * - recent errors: production.ERROR log lines in the last 24 h (a proxy
  *   for the recent 5xx count until an access-log counter is wired; the
  *   source is labelled in the output so it is never mistaken for more).
+ *   Production uses LOG_CHANNEL=stderr, so there is no file to read: the
+ *   line then says `unavailable` instead of a misleading 0, and the
+ *   operator reads the container log (Coolify runtime logs).
  *
  * No secret is ever printed: only counts, ages, and byte sizes leave this
  * command. No external alerting service is added (scope: monitoring
@@ -59,17 +62,23 @@ class OpsStatus extends Command
         $this->line('disk_free_human='.$this->humanBytes((int) $freeBytes));
         $this->line('disk_path=storage');
         $this->line('failed_jobs_count='.$failedJobs);
-        $this->line('recent_errors_24h='.$recentErrors.' (source: error log lines)');
+        $this->line($recentErrors === null
+            ? 'recent_errors_24h=unavailable (no file log; read the container/Coolify log)'
+            : 'recent_errors_24h='.$recentErrors.' (source: error log lines)');
         $this->info('ops:status ok');
 
         return self::SUCCESS;
     }
 
-    private function recentErrorCount(): int
+    /**
+     * Error lines in the last 24 h, or null when no file log exists.
+     * A 0 would claim "no errors" while the only log sink is stderr.
+     */
+    private function recentErrorCount(): ?int
     {
         $log = storage_path('logs/laravel.log');
         if (! is_file($log)) {
-            return 0;
+            return null;
         }
 
         $cutoff = time() - 24 * 3600;
@@ -77,7 +86,7 @@ class OpsStatus extends Command
         try {
             $handle = fopen($log, 'r');
             if ($handle === false) {
-                return 0;
+                return null;
             }
             while (($line = fgets($handle)) !== false) {
                 if (! str_contains($line, '.ERROR')) {
@@ -92,7 +101,7 @@ class OpsStatus extends Command
             }
             fclose($handle);
         } catch (\Throwable) {
-            return 0;
+            return null;
         }
 
         return $count;

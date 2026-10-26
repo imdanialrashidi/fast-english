@@ -27,6 +27,11 @@ Conventions / قراردادها:
 
 ## A. Coolify staging deploy / استقرار استیجینگ در Coolify
 
+> Deploy path — مسیر استقرار: the Compose stack (`compose.prod.yml`) replaces
+> A1 (database resource) and A5 (mounts) with one Docker Compose resource
+> (app + PostgreSQL 17 + named volumes). Every other check below still
+> applies. مسیر Compose جای A1 و A5 را می‌گیرد؛ بقیه بررسی‌ها بدون تغییر است.
+
 ### A1. PostgreSQL 17 resource / منبع PostgreSQL 17
 - EN: Create one PostgreSQL 17 service on the Coolify internal network.
   No public port. The application reaches it only via the internal

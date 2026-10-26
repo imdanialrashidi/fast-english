@@ -101,7 +101,7 @@ function s7RaceFixture(string $tag): array
     // happens last).
     $test->forceFill(['status' => PlacementTest::STATUS_PUBLISHED, 'published_at' => now()])->save();
 
-    // Fully answered, all correct → score 20 → C2.
+    // Fully answered, all correct → score 20 → C1 (the test ceiling).
     foreach ($key as $questionId => $correct) {
         PlacementAnswer::on($conn)->forceCreate([
             'attempt_id' => $attempt->id,
@@ -155,7 +155,7 @@ test('parallel submits yield one stored result and one completed row', function 
         $attempt = $rows->first();
         expect($attempt->status)->toBe(PlacementAttempt::STATUS_COMPLETED);
         expect((int) $attempt->score)->toBe(20);
-        expect($attempt->recommended_level)->toBe('C2');
+        expect($attempt->recommended_level)->toBe('C1');
         expect($attempt->completed_at)->not->toBeNull();
 
         expect(PlacementAnswer::on($conn)->where('attempt_id', $attempt->id)->count())->toBe(20);

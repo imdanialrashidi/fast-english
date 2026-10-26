@@ -1,0 +1,76 @@
+- generic [ref=f24e3]:
+  - link "پرش به محتوا" [ref=f24e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f24e5]:
+    - generic [ref=f24e7]:
+      - link "Fast English — صفحه اصلی" [ref=f24e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f24e9]: Fast English
+      - navigation "دسترسی سریع" [ref=f24e11]:
+        - link "حساب" [ref=f24e12] [cursor=pointer]:
+          - /url: /app/account
+  - generic [ref=f24e17]:
+    - main [ref=f24e18]:
+      - generic [ref=f24e19]:
+        - generic [ref=f24e20]:
+          - paragraph [ref=f24e21]: Words
+          - heading "واژه‌ها" [level=1] [ref=f24e22]
+          - paragraph [ref=f24e23]: دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.
+        - navigation "وضعیت واژه‌ها" [ref=f24e24]:
+          - group "وضعیت واژه‌ها" [ref=f24e25]:
+            - link "همه" [ref=f24e26] [cursor=pointer]:
+              - /url: /app/words
+            - link "موعد امروز (1)" [ref=f24e27] [cursor=pointer]:
+              - /url: /app/words?tab=due
+            - link "در حال یادگیری (1)" [ref=f24e28] [cursor=pointer]:
+              - /url: /app/words?tab=learning
+            - link "می‌دانم (0)" [ref=f24e29] [cursor=pointer]:
+              - /url: /app/words?tab=known
+        - search "جست‌وجو در واژه‌ها" [ref=f24e30]:
+          - generic [ref=f24e35]:
+            - searchbox "جست‌وجو در واژه‌ها" [ref=f24e36]
+            - button "جست‌وجو" [ref=f24e37] [cursor=pointer]
+        - paragraph [ref=f24e41]:
+          - link "شروع مرور (1 واژه)" [ref=f24e42] [cursor=pointer]:
+            - /url: /app/words/review
+        - list [ref=f24e45]:
+          - listitem [ref=f24e46]:
+            - generic [ref=f24e47]:
+              - paragraph [ref=f24e48]:
+                - generic [ref=f24e49]: crowded
+                - generic [ref=f24e50]: موعد امروز
+              - paragraph [ref=f24e52]: شلوغ
+              - paragraph [ref=f24e53]: The market is crowded.
+              - paragraph [ref=f24e54]:
+                - link "دیدن در متن اصلی (A1)" [ref=f24e55] [cursor=pointer]:
+                  - /url: http://172.18.0.3:8112/app/topics/morning-market?level=A1
+            - generic [ref=f24e58]:
+              - button "ویرایش" [ref=f24e59] [cursor=pointer]
+              - button "می‌دانم شد" [ref=f24e63] [cursor=pointer]
+              - button "حذف crowded" [ref=f24e66] [cursor=pointer]: حذف
+        - status
+    - contentinfo [ref=f24e70]:
+      - paragraph [ref=f24e71]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت.
+      - navigation "دسترسی سریع اپ" [ref=f24e72]:
+        - link "امروز" [ref=f24e73] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f24e74] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f24e75] [cursor=pointer]:
+          - /url: /app/words
+        - link "تنظیمات" [ref=f24e76] [cursor=pointer]:
+          - /url: /app/account/settings
+  - navigation "بخش‌های یادگیری" [ref=f24e79]:
+    - list [ref=f24e80]:
+      - listitem [ref=f24e81]:
+        - link "امروز" [ref=f24e82] [cursor=pointer]:
+          - /url: /app/today
+      - listitem [ref=f24e87]:
+        - link "کشف" [ref=f24e88] [cursor=pointer]:
+          - /url: /app
+      - listitem [ref=f24e93]:
+        - link "واژه‌ها" [ref=f24e94] [cursor=pointer]:
+          - /url: /app/words
+      - listitem [ref=f24e100]:
+        - link "حساب" [ref=f24e101] [cursor=pointer]:
+          - /url: /app/account

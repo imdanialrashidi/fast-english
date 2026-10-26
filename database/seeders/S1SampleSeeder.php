@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Lesson;
 use App\Models\Topic;
-use App\Support\Sentences;
 use App\Support\TopicCover;
 use App\Support\TopicLicense;
 use Illuminate\Database\Seeder;
@@ -84,43 +83,12 @@ class S1SampleSeeder extends Seeder
                 'body_en' => $bodyEn,
                 'audio_path' => $audioPath,
                 'audio_revision' => 1,
-                'audio_cues' => self::evenCues($bodyEn, $durationSeconds),
-                'audio_cues_revision' => 1,
                 'duration_seconds' => $durationSeconds,
                 'estimated_minutes' => $estimatedMinutes,
                 'is_public_sample' => $isPublicSample,
                 'status' => 'published',
             ]
         );
-    }
-
-    /**
-     * R3 fixture timing: the S1 tones carry no speech, so there is no
-     * real speech timing to record. These evenly-distributed cues exist
-     * only to exercise the synced-reader interaction in the browser lane
-     * (clearly labelled FIXTURE). Production lessons get staff-entered
-     * cues validated against the measured audio duration (AudioCues).
-     *
-     * @return list<array{sentence_index: int, start_seconds: float, end_seconds: float}>
-     */
-    public static function evenCues(string $bodyEn, int $durationSeconds): array
-    {
-        $sentences = Sentences::split($bodyEn);
-        $count = count($sentences);
-        if ($count === 0) {
-            return [];
-        }
-
-        $cues = [];
-        foreach (array_values($sentences) as $index => $sentence) {
-            $cues[] = [
-                'sentence_index' => $index,
-                'start_seconds' => round($index * $durationSeconds / $count, 2),
-                'end_seconds' => round(($index + 1) * $durationSeconds / $count, 2),
-            ];
-        }
-
-        return $cues;
     }
 
     private function a2Body(): string

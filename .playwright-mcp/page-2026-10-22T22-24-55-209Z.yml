@@ -1,0 +1,62 @@
+- generic [active] [ref=f33e1]:
+  - generic [ref=f33e3]:
+    - link "پرش به محتوا" [ref=f33e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f33e5]:
+      - link "Fast English — صفحه اصلی" [ref=f33e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f33e9]: Fast English
+    - main [ref=f33e12]:
+      - generic [ref=f33e15]:
+        - generic [ref=f33e16]:
+          - paragraph [ref=f33e17]:
+            - text: سطح
+            - generic [ref=f33e21]: A2
+            - generic [aria-hidden] [ref=f33e22]: ·
+            - text: حدود 3 دقیقه مطالعه
+          - heading "The City Park" [level=1] [ref=f33e26]
+          - paragraph [ref=f33e27]: A short story about a Saturday morning in the city park, told at two levels.
+          - navigation "سطح درس" [ref=f33e28]:
+            - paragraph [ref=f33e29]: "سطح این مطلب:"
+            - generic [ref=f33e30]:
+              - link "A2" [ref=f33e31] [cursor=pointer]:
+                - /url: /app/topics/city-park?level=A2
+              - link "B1" [ref=f33e33] [cursor=pointer]:
+                - /url: /app/topics/city-park?level=B1
+        - generic [ref=f33e35]:
+          - button "خواندم" [ref=f33e36] [cursor=pointer]
+          - button "ذخیره برای بعد" [ref=f33e39] [cursor=pointer]
+        - article [ref=f33e43]:
+          - paragraph [ref=f33e44]: On Saturday morning, Sara walks to the city park near her home. The air is cool, and the streets are quiet. She carries a small bag with bread, cheese, and a bottle of water. She likes this quiet time before the busy day starts.
+          - paragraph [ref=f33e45]: The park is green and full of life. An old man feeds white birds near the small lake. Two children run after a red ball, and their mother watches them from a wooden bench. Sara sits under a tall tree and eats her breakfast slowly. The birds sing, and a soft wind moves the green leaves above her head.
+          - paragraph [ref=f33e46]: After one hour, she walks around the lake. The water is clean, and she can see small fish near the stones. She says hello to the old man, and he smiles at her. They talk about the warm weather for a few minutes. Then she walks home with a happy heart and plans to come back next week.
+        - region "واژه‌های کلیدی" [ref=f33e47]:
+          - heading "واژه‌های کلیدی" [level=2] [ref=f33e48]
+          - note [ref=f33e51]: برای این درس واژه‌ای ثبت نشده است.
+    - generic [ref=f33e52]:
+      - region "پخش‌کننده صوت درس" [ref=f33e54]:
+        - generic [ref=f33e57]:
+          - button "پخش" [ref=f33e58] [cursor=pointer]
+          - generic [ref=f33e61]:
+            - status [ref=f33e62]: The City Park A2
+            - paragraph [ref=f33e63]: 0:00 / –:––
+          - 'button "سرعت پخش: 1×" [ref=f33e64] [cursor=pointer]':
+            - generic [ref=f33e68]: 1×
+          - button "نمایش کنترل‌های بیشتر" [ref=f33e69] [cursor=pointer]
+      - navigation "بخش‌های یادگیری" [ref=f33e72]:
+        - list [ref=f33e73]:
+          - listitem [ref=f33e74]:
+            - link "امروز" [ref=f33e75] [cursor=pointer]:
+              - /url: /app/today
+          - listitem [ref=f33e81]:
+            - link "کشف" [ref=f33e82] [cursor=pointer]:
+              - /url: /app
+          - listitem [ref=f33e88]:
+            - link "واژه‌ها" [ref=f33e89] [cursor=pointer]:
+              - /url: /app/words
+          - listitem [ref=f33e96]:
+            - link "حساب" [ref=f33e97] [cursor=pointer]:
+              - /url: /app/account
+  - status [ref=f33e103]:
+    - generic [ref=f33e104]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f33e105] [cursor=pointer]

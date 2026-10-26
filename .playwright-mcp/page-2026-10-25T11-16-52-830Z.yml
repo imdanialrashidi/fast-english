@@ -1,0 +1,4 @@
+- generic [ref=f5e2]:
+  - heading "Oops! An Error Occurred" [level=1] [ref=f5e3]
+  - heading "The server returned a \"500 Internal Server Error\"." [level=2] [ref=f5e4]
+  - paragraph [ref=f5e5]: Something is broken. Please let us know what you were doing when this error occurred. We will fix it as soon as possible. Sorry for any inconvenience caused.

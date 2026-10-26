@@ -21,6 +21,7 @@ class TopicForm
             ->components([
                 TextInput::make('slug')
                     ->required()
+                    ->alphaDash()
                     ->unique(ignoreRecord: true)
                     ->maxLength(120),
                 TextInput::make('title_en')
@@ -37,7 +38,7 @@ class TopicForm
                     ->preload()
                     ->createOptionForm([
                         TextInput::make('name_fa')->label('Name (Persian)')->required()->maxLength(120),
-                        TextInput::make('slug')->required()->unique()->maxLength(120),
+                        TextInput::make('slug')->required()->alphaDash()->unique()->maxLength(120),
                     ]),
                 FileUpload::make('cover_path')
                     ->label('Cover (JPEG, PNG, or WebP, max 2 MB)')

@@ -1,0 +1,61 @@
+- generic [ref=f5e91]:
+  - link "پرش به محتوا" [ref=f5e92] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f5e93]:
+    - link "Fast English — صفحه اصلی" [ref=f5e96] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f5e97]: Fast English
+  - generic [ref=f5e98]:
+    - complementary "ناوبری اصلی" [ref=f5e99]:
+      - navigation "بخش‌های یادگیری" [ref=f5e100]:
+        - link "امروز" [ref=f5e101] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f5e105] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f5e109] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f5e114] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f5e118] [cursor=pointer]:
+          - /url: /app/saved
+    - main [ref=f5e122]:
+      - generic [ref=f5e123]:
+        - region "پروفایل" [ref=f5e124]:
+          - generic [ref=f5e125]:
+            - generic [aria-hidden] [ref=f5e126]: S
+            - generic [ref=f5e127]:
+              - heading "Screenshot User" [level=1] [ref=f5e128]
+              - paragraph [ref=f5e129]: shot-ui@example.com
+          - generic [ref=f5e130]:
+            - generic [ref=f5e131]:
+              - term [ref=f5e132]: سطح ترجیحی
+              - definition [ref=f5e136]: انتخاب نشده
+            - generic [ref=f5e137]:
+              - term [ref=f5e138]: هدف روزانه
+              - definition [ref=f5e142]: ۱۰ دقیقه
+        - region "وضعیت پرداخت و اشتراک" [ref=f5e143]:
+          - generic [ref=f5e144]:
+            - heading "اشتراک" [level=2] [ref=f5e145]
+            - generic [ref=f5e148]: فعال
+          - paragraph [ref=f5e149]: اشتراک فعال تا ۲۹ آبان ۱۴۰۵
+          - paragraph [ref=f5e150]:
+            - link "تمدید اشتراک" [ref=f5e151] [cursor=pointer]:
+              - /url: /app/subscribe
+          - paragraph [ref=f5e154]: تمدید از پایان دوره فعلی ادامه پیدا می‌کند.
+        - navigation "تنظیمات حساب" [ref=f5e155]:
+          - link "تنظیمات حساب نام، سطح و هدف روزانه" [ref=f5e156] [cursor=pointer]:
+            - /url: /app/account/settings
+            - generic [ref=f5e161]:
+              - generic [ref=f5e162]: تنظیمات حساب
+              - generic [ref=f5e163]: نام، سطح و هدف روزانه
+          - link "ذخیره‌شده‌ها مطلب‌هایی که برای بعد نگه داشته‌ای" [ref=f5e166] [cursor=pointer]:
+            - /url: /app/saved
+            - generic [ref=f5e170]:
+              - generic [ref=f5e171]: ذخیره‌شده‌ها
+              - generic [ref=f5e172]: مطلب‌هایی که برای بعد نگه داشته‌ای
+          - link "تعیین سطح آزمون اختیاری برای پیدا کردن سطح مناسب" [ref=f5e175] [cursor=pointer]:
+            - /url: /app/placement
+            - generic [ref=f5e180]:
+              - generic [ref=f5e181]: تعیین سطح
+              - generic [ref=f5e182]: آزمون اختیاری برای پیدا کردن سطح مناسب
+        - button "خروج از حساب" [ref=f5e186] [cursor=pointer]

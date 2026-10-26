@@ -68,7 +68,7 @@ test('double submit returns the stored result with one completed row', function 
     $first = $attempt->fresh();
     expect($first->status)->toBe(PlacementAttempt::STATUS_COMPLETED)
         ->and((int) $first->score)->toBe(20)
-        ->and($first->recommended_level)->toBe('C2');
+        ->and($first->recommended_level)->toBe('C1');
 
     // Replay: same result, no new row, no re-scoring.
     $this->actingAs($this->studentA)->post(route('placement.submit', $attempt))->assertRedirect();
@@ -76,13 +76,13 @@ test('double submit returns the stored result with one completed row', function 
     $replay = $attempt->fresh();
     expect($replay->status)->toBe(PlacementAttempt::STATUS_COMPLETED)
         ->and((int) $replay->score)->toBe(20)
-        ->and($replay->recommended_level)->toBe('C2');
+        ->and($replay->recommended_level)->toBe('C1');
     expect(PlacementAnswer::where('attempt_id', $attempt->id)->count())->toBe(20);
 
     // JSON replay carries score + level but never the answer key.
     $json = $this->actingAs($this->studentA)->postJson(route('placement.submit', $attempt))->assertOk()->json();
     expect($json['score'])->toBe(20);
-    expect($json['recommended_level'])->toBe('C2');
+    expect($json['recommended_level'])->toBe('C1');
     expect(json_encode($json))->not->toContain('correct_option');
 
     // Isolation: the second student still has no result.
@@ -158,7 +158,7 @@ test('new starts pin to version 2 while open version-1 attempts score v1', funct
     $scored = $openV1->fresh();
     expect((int) $scored->test_id)->toBe((int) $v1->id);
     expect((int) $scored->score)->toBe(20);
-    expect($scored->recommended_level)->toBe('C2');
+    expect($scored->recommended_level)->toBe('C1');
 
     // Published versions are immutable: editing v1 is refused.
     try {

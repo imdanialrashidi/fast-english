@@ -20,7 +20,7 @@ Binding sequence rules: S2 (early PWA/TWA proof) stays early so APK/media risk i
 | S9 — Pilot + handover | Full path on real devices + recovery | Final criteria PASS; real restore; known residual risks; handover docs | QA-01 + all needs |
 | R1 — Editorial foundations | Ivory/navy/blue/amber tokens + Inter; learner + desktop shell with «امروز/کشف/واژه‌ها/حساب» IA | Tokens own values; S3DesignTest pairs re-measured; shell renders at 360/1440 | Editorial direction |
 | R2 — Landing + Today + Discover | Real-data landing; Today plan/continue/goal/due/recommendations; editorial Discover | Sample without login; tasks open real lessons; one row per topic | PUB-01, LIB-01/02, PLAN-01 |
-| R3 — Immersive reader cues | `audio_cues` + staff editing + synced highlight/seek + fallback | Real cues seek correctly; missing cues stay usable | READ-01/03, MEDIA-01/02 |
+| R3 — Immersive reader (plain after 2026-10-21) | Paragraph reader + normal player; cue metadata and synced highlight/seek retired from the UI | Body/audio isolation; no cue props or sentence rows | READ-01, MEDIA-01/02 |
 | R4 — Vocabulary SRS | Notebook + Again/Hard/Good/Easy scheduling, owner-only | Save/review/reschedule/remove persist; isolation | VOCAB-01 |
 | R5 — Daily path validation | Goal/progress from persisted state; premium/level respected | Incomplete stays incomplete after reload | PLAN-01 |
 

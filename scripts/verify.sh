@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # Canonical verification gate for this repository.
-# Template self-checks first, then the cheapest project lane that applies.
+# DSH workflow self-checks first, then the cheapest project lane that applies.
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
+
+TEMPLATE_ONLY=0
+if [[ "${1:-}" == "--template-only" ]]; then
+  TEMPLATE_ONLY=1
+fi
 
 fail=0
 note() { printf '%s\n' "$1"; }
@@ -15,29 +20,37 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git --no-pager diff --check || bad "git diff --check reported whitespace errors."
 fi
 
-# 2. Every skill needs name + description frontmatter (omp discovery requires description).
-for skill in .omp/skills/*/SKILL.md; do
+# 2. Every project skill needs matching kebab-case name + description frontmatter
+#    (DSH discovery drops a skill whose name or description is invalid).
+for skill in .dsh/skills/*/SKILL.md; do
   [[ -f "$skill" ]] || continue
+  dir="$(basename "$(dirname "$skill")")"
   front="$(sed -n '1,/^---$/p' "$skill" | sed '1d;$d')"
-  grep -Eq '^name: .+' <<<"$front" || bad "$skill is missing frontmatter name."
+  name="$(printf '%s\n' "$front" | sed -n 's/^name:[[:space:]]*//p' | head -n 1 | tr -d "\"'")"
+  [[ -n "$name" ]] || bad "$skill is missing frontmatter name."
+  [[ "$name" == "$dir" ]] || bad "$skill frontmatter name '$name' does not match directory '$dir'."
+  [[ "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || bad "$skill name is not kebab-case."
   grep -Eq '^description: .+' <<<"$front" || bad "$skill is missing frontmatter description."
 done
 
-# 3. Every file command needs a description frontmatter.
-for cmd in .omp/commands/*.md; do
-  [[ -f "$cmd" ]] || continue
-  head -n 5 "$cmd" | grep -Eq '^description: .+' || bad "$cmd is missing frontmatter description."
+# 3. Workflow entry points must exist and be non-empty.
+for file in AGENTS.md docs/WORKFLOW.md docs/REVIEW-POLICY.md docs/QUALITY.md docs/GIT_POLICY.md; do
+  [[ -s "$file" ]] || bad "missing or empty workflow file: $file."
 done
 
-# 4. PR helper must parse.
+# 4. Scoped delivery helper must parse.
 if command -v node >/dev/null 2>&1; then
-  node --check scripts/omp-pr.mjs || bad "scripts/omp-pr.mjs does not parse."
+  node --check scripts/pr-deliver.mjs || bad "scripts/pr-deliver.mjs does not parse."
 else
-  note "SKIP: node not installed; cannot syntax-check scripts/omp-pr.mjs."
+  note "SKIP: node not installed; cannot syntax-check scripts/pr-deliver.mjs."
 fi
 
 [[ "$fail" -eq 0 ]] || exit 1
-note "Template self-checks passed."
+note "Workflow self-checks passed."
+
+if [[ "$TEMPLATE_ONLY" -eq 1 ]]; then
+  exit 0
+fi
 
 # 5. Project override wins when the repo defines its own gate.
 if [[ -x scripts/project-verify.sh ]]; then

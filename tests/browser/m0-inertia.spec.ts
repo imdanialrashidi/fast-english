@@ -41,7 +41,7 @@ test('landing renders the React page with the real sample and one plans state', 
   });
   expect(component).toBe('Landing/Index');
   await expect(page.locator('#app')).not.toBeEmpty();
-  await expect(page.locator('#app')).toContainText('انگلیسی را با داستان‌های کوتاه و صوت هماهنگ یاد بگیر');
+  await expect(page.locator('#app')).toContainText('انگلیسی را با داستان‌های کوتاه بخوان و بشنو');
 
   // Hero: staged real sample with a level deep link (seeded S1 sample).
   // Paid-only slice: the deep link targets the public sample experience.
@@ -50,13 +50,13 @@ test('landing renders the React page with the real sample and one plans state', 
   await expect(sampleLink).toBeVisible();
   expect(await sampleLink.getAttribute('href')).toMatch(/\/sample\?topic=.+&level=[A-C][12]/);
 
-  // Preview copy + one rendered sample sentence.
-  await expect(page.locator('#app')).toContainText('پیش‌نمایش روش کار با متن واقعی');
-  await expect(page.locator('ol[aria-label="سه جمله از نمونه واقعی"] li').first()).not.toBeEmpty();
+  // Preview: real opening paragraph beside the sample audio.
+  await expect(page.locator('#app')).toContainText('بخشی از متن نمونه');
+  await expect(page.locator('section[aria-label="پیش‌نمایش روش یادگیری با نمونه واقعی"] p[lang="en"]').first()).not.toBeEmpty();
 
   // Plans: exactly one of the two sales states renders (one purchase
   // CTA per plan card when sales are on, one preparing panel when off).
-  const ctaCount = await page.getByText('مشاهده پلن‌ها و خرید').count();
+  const ctaCount = await page.getByText('ساخت حساب و خرید').count();
   const prepCount = await page.getByText('در دست آماده‌سازی').count();
   if (prepCount === 1) {
     expect(ctaCount).toBe(0);
@@ -68,7 +68,9 @@ test('landing renders the React page with the real sample and one plans state', 
   // FAQ + final CTA + install links all render.
   await expect(page.locator('#app')).toContainText('بدون اشتراک می‌توانم امتحان کنم؟');
   await expect(page.getByRole('link', { name: 'شروع با نمونه رایگان' }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'صفحه دانلود' }).first()).toBeVisible();
+  // No APK is published in the lane: the download entry names its status
+  // instead of promising an install.
+  await expect(page.getByRole('link', { name: 'وضعیت نسخه اندروید' }).first()).toBeVisible();
 
   expect(pageErrors).toEqual([]);
   expect(badResponses.filter((line) => !line.includes('/storage/'))).toEqual([]);

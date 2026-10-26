@@ -4,6 +4,7 @@ use App\Models\Lesson;
 use App\Models\VocabularyWord;
 use App\Support\PlacementLevel;
 use App\Support\Vocabulary;
+use Illuminate\Validation\ValidationException;
 use Tests\Support\ContentFixtures;
 
 // D5 vocabulary notebook (C4) + placement bands (C2 follow-up): the
@@ -49,7 +50,7 @@ test('grade reschedules and refuses non-learning words', function () {
     try {
         Vocabulary::grade($student, $graded['entry']->fresh(), 'good', now());
         $this->fail('Grading a known word should refuse.');
-    } catch (Illuminate\Validation\ValidationException $e) {
+    } catch (ValidationException $e) {
         expect($e->errors())->toHaveKey('word');
     }
 });
@@ -68,16 +69,15 @@ test('note updates touch only sent keys and reset first review', function () {
     expect($reset['due_at'])->not->toBeNull();
 });
 
-test('placement bands and fixture map agree on every score', function () {
-    $map = PlacementLevel::fixtureMap();
+test('placement bands and map agree on every score', function () {
+    $map = PlacementLevel::map();
 
     expect($map)->toBe([
         'A1' => [0, 3],
         'A2' => [4, 7],
         'B1' => [8, 11],
         'B2' => [12, 15],
-        'C1' => [16, 18],
-        'C2' => [19, 20],
+        'C1' => [16, 20],
     ]);
 
     foreach (range(0, 20) as $score) {

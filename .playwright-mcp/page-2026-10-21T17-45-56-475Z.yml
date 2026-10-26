@@ -1,0 +1,67 @@
+- generic [ref=e91]:
+  - link "پرش به محتوا" [ref=e92] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=e93]:
+    - generic [ref=e95]:
+      - link "Fast English — صفحه اصلی" [ref=e96] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e97]:
+          - generic [ref=e98]: Fast English
+          - generic [ref=e99]: انگلیسی با داستان کوتاه و صوت هماهنگ
+      - navigation "دسترسی سریع" [ref=e100]:
+        - link "حساب" [ref=e101] [cursor=pointer]:
+          - /url: /app/account
+  - generic [ref=e105]:
+    - complementary "ناوبری اصلی" [ref=e106]:
+      - navigation "بخش‌های یادگیری" [ref=e107]:
+        - link "امروز" [ref=e108] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=e112] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=e116] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=e121] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=e125] [cursor=pointer]:
+          - /url: /app/saved
+    - generic [ref=e128]:
+      - main [ref=e129]:
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - heading "حساب" [level=1] [ref=e132]
+            - paragraph [ref=e133]:
+              - text: وارد شده به‌عنوان
+              - generic [ref=e137]: demo@fastenglish.local
+            - paragraph [ref=e138]:
+              - text: Demo Paid ·
+              - generic [ref=e139]: "سطح ترجیحی: انتخاب نشده"
+              - text: "· هدف روزانه: 10 دقیقه"
+          - region "وضعیت پرداخت و اشتراک" [ref=e143]:
+            - heading "اشتراک و پرداخت" [level=2] [ref=e144]
+            - paragraph [ref=e148]: اشتراک فعال تا 2026/11/20 21:15
+            - paragraph [ref=e149]:
+              - link "انتخاب پلن" [ref=e150] [cursor=pointer]:
+                - /url: /app/subscribe
+          - generic [ref=e154]:
+            - link "امروز" [ref=e155] [cursor=pointer]:
+              - /url: /app/today
+            - link "ذخیره‌شده‌ها" [ref=e159] [cursor=pointer]:
+              - /url: /app/saved
+            - link "واژه‌ها" [ref=e162] [cursor=pointer]:
+              - /url: /app/words
+            - link "تنظیمات" [ref=e167] [cursor=pointer]:
+              - /url: /app/account/settings
+            - link "تعیین سطح" [ref=e171] [cursor=pointer]:
+              - /url: /app/placement
+          - button "خروج از حساب" [ref=e176] [cursor=pointer]
+      - contentinfo [ref=e180]:
+        - paragraph [ref=e181]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت.
+        - navigation "پیوندهای اعتماد" [ref=e182]:
+          - link "درباره" [ref=e183] [cursor=pointer]:
+            - /url: /about
+          - link "پرسش‌های پرتکرار" [ref=e184] [cursor=pointer]:
+            - /url: /faq
+          - link "پشتیبانی" [ref=e185] [cursor=pointer]:
+            - /url: /support
+          - link "دانلود" [ref=e186] [cursor=pointer]:
+            - /url: /download

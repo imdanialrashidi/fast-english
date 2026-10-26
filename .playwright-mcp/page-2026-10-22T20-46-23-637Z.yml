@@ -1,0 +1,64 @@
+- generic [ref=f2e92]:
+  - link "پرش به محتوا" [ref=f2e93] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f2e94]:
+    - link "Fast English — صفحه اصلی" [ref=f2e97] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f2e98]: Fast English
+  - main [ref=f2e101]:
+    - generic [ref=f2e104]:
+      - region "پروفایل" [ref=f2e105]:
+        - generic [ref=f2e106]:
+          - generic [aria-hidden] [ref=f2e107]: U
+          - generic [ref=f2e108]:
+            - heading "UI Review" [level=1] [ref=f2e109]
+            - paragraph [ref=f2e110]: ui-review-2026@example.com
+        - generic [ref=f2e111]:
+          - generic [ref=f2e112]:
+            - term [ref=f2e113]: سطح ترجیحی
+            - definition [ref=f2e117]: انتخاب نشده
+          - generic [ref=f2e118]:
+            - term [ref=f2e119]: هدف روزانه
+            - definition [ref=f2e123]: ۱۰ دقیقه
+      - region "وضعیت پرداخت و اشتراک" [ref=f2e124]:
+        - generic [ref=f2e125]:
+          - heading "اشتراک" [level=2] [ref=f2e126]
+          - generic [ref=f2e129]: بدون اشتراک
+        - paragraph [ref=f2e130]: اشتراک فعالی وجود ندارد.
+        - paragraph [ref=f2e131]:
+          - link "انتخاب پلن" [ref=f2e132] [cursor=pointer]:
+            - /url: /app/subscribe
+      - region "تاریخچه پرداخت" [ref=f2e135]:
+        - heading "تاریخچه پرداخت" [level=2] [ref=f2e136]
+        - paragraph [ref=f2e141]: هنوز درخواست پرداختی ثبت نکرده‌ای.
+      - navigation "تنظیمات حساب" [ref=f2e142]:
+        - link "تنظیمات حساب نام، سطح و هدف روزانه" [ref=f2e143] [cursor=pointer]:
+          - /url: /app/account/settings
+          - generic [ref=f2e148]:
+            - generic [ref=f2e149]: تنظیمات حساب
+            - generic [ref=f2e150]: نام، سطح و هدف روزانه
+        - link "ذخیره‌شده‌ها مطلب‌هایی که برای بعد نگه داشته‌ای" [ref=f2e153] [cursor=pointer]:
+          - /url: /app/saved
+          - generic [ref=f2e157]:
+            - generic [ref=f2e158]: ذخیره‌شده‌ها
+            - generic [ref=f2e159]: مطلب‌هایی که برای بعد نگه داشته‌ای
+        - link "تعیین سطح آزمون اختیاری برای پیدا کردن سطح مناسب" [ref=f2e162] [cursor=pointer]:
+          - /url: /app/placement
+          - generic [ref=f2e167]:
+            - generic [ref=f2e168]: تعیین سطح
+            - generic [ref=f2e169]: آزمون اختیاری برای پیدا کردن سطح مناسب
+      - button "خروج از حساب" [ref=f2e173] [cursor=pointer]
+  - navigation "بخش‌های یادگیری" [ref=f2e179]:
+    - list [ref=f2e180]:
+      - listitem [ref=f2e181]:
+        - link "امروز" [ref=f2e182] [cursor=pointer]:
+          - /url: /app/today
+      - listitem [ref=f2e187]:
+        - link "کشف" [ref=f2e188] [cursor=pointer]:
+          - /url: /app
+      - listitem [ref=f2e193]:
+        - link "واژه‌ها" [ref=f2e194] [cursor=pointer]:
+          - /url: /app/words
+      - listitem [ref=f2e200]:
+        - link "حساب" [ref=f2e201] [cursor=pointer]:
+          - /url: /app/account

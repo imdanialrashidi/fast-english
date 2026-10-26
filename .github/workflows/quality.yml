@@ -27,8 +27,8 @@ jobs:
         with:
           node-version: 22.23.2
 
-      - name: Validate template
-        run: bash scripts/verify.sh
+      - name: Validate DSH workflow
+        run: bash scripts/verify.sh --template-only
 
   frontend:
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_DB: testing
           POSTGRES_USER: postgres
@@ -94,6 +94,18 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.23.2
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Prepare environment
         run: |
           cp .env.example .env
@@ -112,7 +124,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_DB: testing
           POSTGRES_USER: postgres
@@ -133,6 +145,7 @@ jobs:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       BASE_URL: http://127.0.0.1:8111
+      SALES_ENABLED: 'true'
 
     steps:
       - name: Checkout
@@ -164,7 +177,7 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-          php artisan migrate --force --seed
+          php artisan migrate --force --seed --seeder=S2BrowserSeeder
 
       - name: Serve the application
         run: |
@@ -172,4 +185,18 @@ jobs:
           for i in $(seq 1 60); do curl -fs http://127.0.0.1:8111/ >/dev/null && break; sleep 1; done
 
       - name: Run migration browser specs (Chromium)
-        run: npx playwright test m0-inertia m1-journey design-theme --project=chromium
+        run: npx playwright test m0-inertia m1-journey design-theme r-reader s8-landing s8-download s2-pwa media-session page-skeleton --project=chromium
+
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The deployable artifact is the image Coolify builds. Without this
+      # job a broken Dockerfile (missing vendor/app in the assets stage on
+      # 2026-10-26) passes every test and fails only at deploy time.
+      - name: Build the production image
+        run: docker build --tag fast-english:ci .

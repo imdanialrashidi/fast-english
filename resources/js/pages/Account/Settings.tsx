@@ -2,6 +2,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { Check, Settings as SettingsIcon, User } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
@@ -44,11 +45,13 @@ export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (pag
     return (
         <>
             <Head title="تنظیمات حساب" />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <div>
-                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">تنظیمات</h1>
-                    <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">نام، سطح و هدف روزانه‌ات را اینجا تنظیم کن.</p>
-                </div>
+            <ScreenHeader
+                title="تنظیمات"
+                width="reading"
+                back={{ href: '/app/account', label: 'بازگشت به حساب' }}
+            />
+            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
+                <p className="m-0 text-[1.0625rem] leading-8 text-muted">نام، سطح و هدف روزانه‌ات را اینجا تنظیم کن.</p>
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-success">

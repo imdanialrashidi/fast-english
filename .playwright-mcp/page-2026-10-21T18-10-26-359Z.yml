@@ -1,0 +1,67 @@
+- generic [ref=f25e3]:
+  - link "پرش به محتوا" [ref=f25e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f25e5]:
+    - generic [ref=f25e7]:
+      - link "Fast English — صفحه اصلی" [ref=f25e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f25e9]: Fast English
+      - navigation "دسترسی سریع" [ref=f25e11]:
+        - link "حساب" [ref=f25e12] [cursor=pointer]:
+          - /url: /app/account
+  - generic [ref=f25e17]:
+    - main [ref=f25e18]:
+      - generic [ref=f25e19]:
+        - generic [ref=f25e20]:
+          - heading "حساب" [level=1] [ref=f25e21]
+          - paragraph [ref=f25e22]:
+            - text: وارد شده به‌عنوان
+            - generic [ref=f25e26]: browser-sub@example.com
+          - paragraph [ref=f25e27]:
+            - text: Browser Sub ·
+            - generic [ref=f25e28]: "سطح ترجیحی: انتخاب نشده"
+            - text: "· هدف روزانه: 10 دقیقه"
+        - region "وضعیت پرداخت و اشتراک" [ref=f25e32]:
+          - heading "اشتراک و پرداخت" [level=2] [ref=f25e33]
+          - paragraph [ref=f25e37]: اشتراک فعال تا 2027/10/21 18:35
+          - paragraph [ref=f25e38]:
+            - link "تمدید اشتراک" [ref=f25e39] [cursor=pointer]:
+              - /url: /app/subscribe
+          - paragraph [ref=f25e43]: تمدید از پایان دوره فعلی ادامه پیدا می‌کند.
+        - generic [ref=f25e44]:
+          - link "امروز" [ref=f25e45] [cursor=pointer]:
+            - /url: /app/today
+          - link "ذخیره‌شده‌ها" [ref=f25e49] [cursor=pointer]:
+            - /url: /app/saved
+          - link "واژه‌ها" [ref=f25e52] [cursor=pointer]:
+            - /url: /app/words
+          - link "تنظیمات" [ref=f25e57] [cursor=pointer]:
+            - /url: /app/account/settings
+          - link "تعیین سطح" [ref=f25e61] [cursor=pointer]:
+            - /url: /app/placement
+        - button "خروج از حساب" [ref=f25e66] [cursor=pointer]
+    - contentinfo [ref=f25e70]:
+      - paragraph [ref=f25e71]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت.
+      - navigation "دسترسی سریع اپ" [ref=f25e72]:
+        - link "امروز" [ref=f25e73] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f25e74] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f25e75] [cursor=pointer]:
+          - /url: /app/words
+        - link "تنظیمات" [ref=f25e76] [cursor=pointer]:
+          - /url: /app/account/settings
+  - navigation "بخش‌های یادگیری" [ref=f25e79]:
+    - list [ref=f25e80]:
+      - listitem [ref=f25e81]:
+        - link "امروز" [ref=f25e82] [cursor=pointer]:
+          - /url: /app/today
+      - listitem [ref=f25e87]:
+        - link "کشف" [ref=f25e88] [cursor=pointer]:
+          - /url: /app
+      - listitem [ref=f25e93]:
+        - link "واژه‌ها" [ref=f25e94] [cursor=pointer]:
+          - /url: /app/words
+      - listitem [ref=f25e100]:
+        - link "حساب" [ref=f25e101] [cursor=pointer]:
+          - /url: /app/account

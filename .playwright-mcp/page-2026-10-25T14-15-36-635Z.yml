@@ -1,0 +1,127 @@
+- generic [active] [ref=f5e1]:
+  - link "Skip to content" [ref=f5e2] [cursor=pointer]:
+    - /url: "#fi-main-content"
+  - navigation "Topbar" [ref=f5e4]:
+    - link "Fast English" [ref=f5e6] [cursor=pointer]:
+      - /url: http://127.0.0.1:8112/admin
+    - generic [ref=f5e8]:
+      - generic [ref=f5e11]:
+        - generic [ref=f5e12]: Global search
+        - searchbox "Global search" [ref=f5e18]
+      - button "User menu" [ref=f5e21] [cursor=pointer]:
+        - img "Avatar of Browser Staff" [ref=f5e22]
+  - generic [ref=f5e23]:
+    - navigation "Sidebar navigation" [ref=f5e26]:
+      - list [ref=f5e27]:
+        - listitem [ref=f5e28]:
+          - list [ref=f5e29]:
+            - listitem [ref=f5e30]:
+              - link "Dashboard" [ref=f5e31] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin
+            - listitem [ref=f5e35]:
+              - link "Placement tests" [ref=f5e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/placement-overview
+            - listitem [ref=f5e38]:
+              - link "Categories" [ref=f5e39] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/categories
+            - listitem [ref=f5e43]:
+              - link "Lessons" [ref=f5e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/lessons
+            - listitem [ref=f5e48]:
+              - link "Payment queue" [ref=f5e49] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/payment-requests
+            - listitem [ref=f5e53]:
+              - link "Topics" [ref=f5e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/topics
+            - listitem [ref=f5e58]:
+              - link "Backups" [ref=f5e59] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/backups
+        - listitem [ref=f5e63]:
+          - generic [ref=f5e64] [cursor=pointer]:
+            - generic [ref=f5e65]: Business
+            - button "Business" [expanded] [ref=f5e66]
+          - list [ref=f5e69]:
+            - listitem [ref=f5e70]:
+              - link "Business settings" [ref=f5e71] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/business-settings
+            - listitem [ref=f5e76]:
+              - link "Plans" [ref=f5e77] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/plans
+    - main [ref=f5e82]:
+      - generic [ref=f5e84]:
+        - heading "Business settings" [level=1] [ref=f5e87]
+        - generic [ref=f5e90]:
+          - generic [ref=f5e91]:
+            - generic [ref=f5e93]:
+              - heading "Contact channels" [level=2] [ref=f5e94]
+              - paragraph [ref=f5e95]: Shown on the public support and cooperation pages. Use @handle, an email address, or an https URL.
+            - generic [ref=f5e98]:
+              - generic [ref=f5e99]:
+                - text: Support channel
+                - textbox "Support channel" [ref=f5e102]: "@test"
+              - generic [ref=f5e103]:
+                - text: Support hours (optional)
+                - textbox "Support hours (optional)" [ref=f5e106]:
+                  - /placeholder: مثلاً شنبه تا پنجشنبه، ۹ تا ۱۸
+              - generic [ref=f5e107]:
+                - text: Cooperation channel
+                - textbox "Cooperation channel" [ref=f5e110]: "@test"
+          - generic [ref=f5e111]:
+            - generic [ref=f5e113]:
+              - heading "Card destination" [level=2] [ref=f5e114]
+              - paragraph [ref=f5e115]: Used for card-to-card checkout. The obvious placeholder keeps checkout disabled until a real 16-digit card and holder/bank are saved.
+            - generic [ref=f5e118]:
+              - generic [ref=f5e119]:
+                - text: Card number (16 digits)
+                - textbox "Card number (16 digits)" [ref=f5e122]: "6037991112345678"
+                - paragraph [ref=f5e123]: "Current value: 6037991112345678. Placeholder: 0000000000000000."
+              - generic [ref=f5e124]:
+                - text: Card holder
+                - textbox "Card holder" [ref=f5e127]: صاحب آزمایشی (TEST)
+              - generic [ref=f5e128]:
+                - text: Bank
+                - textbox "Bank" [ref=f5e131]: بانک آزمایشی (TEST)
+              - generic [ref=f5e132]:
+                - text: Transfer instructions (optional)
+                - textbox "Transfer instructions (optional)" [ref=f5e133]: مبلغ دقیق پلن را کارت‌به‌کارت کنید و رسید را همین‌جا ارسال کنید. (متن آزمایشی — TEST)
+              - generic [ref=f5e134]:
+                - checkbox "Allow card-to-card fallback when a gateway is not active" [checked] [ref=f5e135]
+                - text: Allow card-to-card fallback when a gateway is not active
+          - generic [ref=f5e136]:
+            - generic [ref=f5e138]:
+              - heading "Online gateway (prepared, not live)" [level=2] [ref=f5e139]
+              - paragraph [ref=f5e140]: The provider contract is not implemented yet. These values are stored so the switch can be completed without a schema change; card fallback remains the only live checkout.
+            - generic [ref=f5e142]:
+              - paragraph [ref=f5e143]: No gateway driver is registered. Enabling the switch does not process online payments until the provider driver and callback are implemented.
+              - generic [ref=f5e144]:
+                - generic [ref=f5e145]:
+                  - checkbox "Enable online gateway (requires a registered driver)" [ref=f5e146]
+                  - text: Enable online gateway (requires a registered driver)
+                - generic [ref=f5e147]:
+                  - text: Provider key
+                  - textbox "Provider key" [ref=f5e150]:
+                    - /placeholder: e.g. zarinpal
+                - generic [ref=f5e151]:
+                  - text: Merchant ID
+                  - textbox "Merchant ID" [ref=f5e154]
+                  - paragraph [ref=f5e155]: Do not paste API secrets or private keys here; they belong in the server secret store.
+                - generic [ref=f5e156]:
+                  - checkbox "Use provider sandbox/test mode" [checked] [ref=f5e157]
+                  - text: Use provider sandbox/test mode
+          - generic [ref=f5e158]:
+            - generic [ref=f5e160]:
+              - heading "Public legal copy" [level=2] [ref=f5e161]
+              - paragraph [ref=f5e162]: Rendered as paragraphs on /terms, /privacy, and /refund. Blank lines separate paragraphs. Review with a qualified adviser before launch.
+            - generic [ref=f5e165]:
+              - generic [ref=f5e166]:
+                - text: Terms of use
+                - textbox "Terms of use" [ref=f5e167]: "Fast English خدمتی برای خواندن و شنیدن متن‌های کوتاه انگلیسی است. با ساخت حساب یا خرید اشتراک، این شرایط را می‌پذیرید. ۱. حساب کاربری: برای خرید و ذخیرهٔ پیشرفت به حساب نیاز دارید. اطلاعات حساب باید درست و متعلق به خودتان باشد. مسئولیت حفظ رمز عبور با شماست. ۲. اشتراک و دسترسی: اشتراک پس از تأیید پرداخت فعال می‌شود و دسترسی برای همان مدت اعلام‌شده در پلن ادامه دارد. اشتراک شخصی است و به شخص دیگری منتقل نمی‌شود. ۳. پرداخت: پرداخت فعلی به‌صورت کارت‌به‌کارت انجام می‌شود. مبلغ و شمارهٔ کارت پیش از واریز در صفحهٔ پرداخت نمایش داده می‌شود. پس از واریز، رسید را از همان صفحه ارسال کنید. اشتراک فقط پس از بررسی و تأیید فعال می‌شود. ۴. محتوا و مالکیت: متن‌ها، صوت‌ها، تصاویر و طراحی‌ها متعلق به Fast English یا دارای مجوز هستند. استفادهٔ شخصی مجاز است؛ بازنشر، فروش، دانلود انبوه یا استفادهٔ تجاری بدون اجازه ممنوع است. ۵. استفادهٔ منصفانه: تلاش برای دسترسی غیرمجاز، اخلال در سرویس، اشتراک‌گذاری حساب یا استخراج خودکار محتوا مجاز نیست و می‌تواند به تعلیق حساب منجر شود. ۶. در دسترس بودن: برای پایداری سرویس تلاش می‌شود، اما قطعی موقت، تعمیرات یا اختلال شبکه ممکن است رخ دهد. در صورت اختلال طولانی، از کانال پشتیبانی پیگیری کنید. ۷. تغییر شرایط: اگر این شرایط به‌طور معنادار تغییر کند، نسخهٔ به‌روز از همین صفحه منتشر می‌شود. ادامهٔ استفاده پس از انتشار نسخهٔ جدید به معنای پذیرش آن است. ۸. پشتیبانی: پرسش‌ها و درخواست‌ها را از صفحهٔ پشتیبانی یا کانال @test ارسال کنید. شرایط بازگشت وجه در صفحهٔ «بازگشت وجه» آمده است."
+              - generic [ref=f5e168]:
+                - text: Privacy policy
+                - textbox "Privacy policy" [ref=f5e169]: "Fast English برای ارائهٔ سرویس فقط داده‌هایی را نگه می‌دارد که به آن نیاز دارد. این صفحه توضیح می‌دهد چه داده‌ای جمع می‌شود، چرا، و چگونه نگهداری می‌شود. ۱. داده‌هایی که جمع می‌شود: نام، ایمیل، رمز عبور هش‌شده، سطح و هدف یادگیری، پیشرفت درس‌ها، واژه‌های ذخیره‌شده، درخواست‌های پرداخت، تصویر رسید و اطلاعات لازم برای بررسی آن. ۲. چرا جمع می‌شود: برای ساخت و امنیت حساب، ارائهٔ درس‌ها و پیشرفت، فعال‌سازی اشتراک، بررسی رسید، پشتیبانی و جلوگیری از سوءاستفاده. ۳. نگهداری: داده‌های حساب تا زمان حذف حساب نگه‌داری می‌شود. تصویر رسید و اطلاعات پرداخت فقط برای مدت لازم برای بررسی و پاسخ‌گویی نگه‌داری می‌شود و پس از آن حذف یا بی‌نام می‌شود. داده‌ای که قانون یا نیاز امنیتی نگه‌داری آن را لازم کند، مستثناست. ۴. اشتراک‌گذاری: داده‌های شخصی فروخته نمی‌شود. دسترسی به آن فقط برای کارکنان لازم و سرویس‌دهندگانی است که میزبانی، ایمیل یا پرداخت را انجام می‌دهند و به آن نیاز دارند. ۵. امنیت: رمز عبور به‌صورت هش نگه‌داری می‌شود، دسترسی کارکنان محدود است و رسیدها از مسیر خصوصی ارائه می‌شوند. هیچ روشی امنیت مطلق نیست؛ اگر نشانهٔ دسترسی غیرمجاز دیدید، از کانال پشتیبانی اطلاع دهید. ۶. کوکی و نشست: برای ورود، امنیت فرم‌ها و نگه‌داری نشست از کوکی استفاده می‌شود. حذف کوکی‌های ضروری می‌تواند باعث خروج از حساب شود. ۷. حقوق شما: می‌توانید اطلاعات حساب را اصلاح کنید یا حذف آن را از کانال پشتیبانی بخواهید. درخواست‌های مربوط به داده، پس از بررسی هویت و با رعایت محدودیت‌های قانونی بررسی می‌شود. ۸. تماس: پرسش‌های حریم خصوصی را از صفحهٔ پشتیبانی یا کانال @test بفرستید."
+              - generic [ref=f5e170]:
+                - text: Refund policy
+                - textbox "Refund policy" [ref=f5e171]: "Fast English یک محصول دیجیتال است. به همین دلیل پس از فعال‌شدن دسترسی، بازگشت وجه به‌طور عمومی انجام نمی‌شود؛ اما در موارد زیر درخواست شما بررسی می‌شود: ۱. پرداخت تکراری یا واریز بیش از مبلغ پلن. ۲. پرداخت انجام شده اما اشتراک پس از تأیید فعال نشده است. ۳. اختلال فنی مستمر که دسترسی به محتوا را غیرممکن کرده و از سوی پشتیبانی قابل رفع نبوده است. برای ثبت درخواست، حداکثر ۷ روز پس از پرداخت، شمارهٔ پیگیری یا تصویر رسید و ایمیل حساب را از کانال @test بفرستید. درخواست‌ها پس از بررسی پرداخت و وضعیت دسترسی پاسخ داده می‌شوند. مبلغ تأییدشده به همان کارت یا حسابی که پرداخت از آن انجام شده بازگردانده می‌شود؛ زمان نشست مبلغ به بانک بستگی دارد. اگر اشتراک را پیش از فعال‌شدن دسترسی لغو کنید و پرداخت تأیید شده باشد، درخواست بازگشت وجه در همین چارچوب بررسی می‌شود. این متن جایگزین حقوق قانونی شما نیست و در صورت وجود الزام قانونی، همان الزام رعایت می‌شود."
+          - button "Save settings" [ref=f5e173] [cursor=pointer]
+  - generic:
+    - status

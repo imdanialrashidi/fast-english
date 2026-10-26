@@ -30,7 +30,10 @@
              enables it so the S5/S6 money suites keep their meaning.
              S8 sales-flag tests toggle both states explicitly. -->
         <env name="SALES_ENABLED" value="true"/>
-        <env name="SESSION_DRIVER" value="array"/>
+        <!-- force: a developer .env.testing that sets a database session
+             driver must not leak a per-request session insert into the
+             query-count tests this suite uses for N+1 budgets. -->
+        <env name="SESSION_DRIVER" value="array" force="true"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>

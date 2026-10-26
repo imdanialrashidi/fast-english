@@ -1,0 +1,49 @@
+- generic [active] [ref=f5e1]:
+  - link "Skip to content" [ref=f5e2] [cursor=pointer]:
+    - /url: "#fi-main-content"
+  - navigation "Topbar" [ref=f5e4]:
+    - link "Fast English" [ref=f5e6] [cursor=pointer]:
+      - /url: http://127.0.0.1:8111/admin
+    - generic [ref=f5e8]:
+      - generic [ref=f5e11]:
+        - generic [ref=f5e12]: Global search
+        - searchbox "Global search" [ref=f5e18]
+      - button "User menu" [ref=f5e21] [cursor=pointer]:
+        - img "Avatar of Browser Staff" [ref=f5e22]
+  - generic [ref=f5e23]:
+    - navigation "Sidebar navigation" [ref=f5e26]:
+      - list [ref=f5e27]:
+        - listitem [ref=f5e28]:
+          - list [ref=f5e29]:
+            - listitem [ref=f5e30]:
+              - link "Dashboard" [ref=f5e31] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin
+            - listitem [ref=f5e35]:
+              - link "Placement tests" [ref=f5e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/placement-overview
+            - listitem [ref=f5e38]:
+              - link "Categories" [ref=f5e39] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/categories
+            - listitem [ref=f5e43]:
+              - link "Lessons" [ref=f5e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/lessons
+            - listitem [ref=f5e48]:
+              - link "Payment queue" [ref=f5e49] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/payment-requests
+            - listitem [ref=f5e53]:
+              - link "Topics" [ref=f5e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/topics
+            - listitem [ref=f5e58]:
+              - link "Backups" [ref=f5e59] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/backups
+    - main [ref=f5e64]:
+      - generic [ref=f5e66]:
+        - heading "Dashboard" [level=1] [ref=f5e69]
+        - generic [ref=f5e80]:
+          - img "Avatar of Browser Staff" [ref=f5e81]
+          - generic [ref=f5e82]:
+            - heading "Welcome" [level=2] [ref=f5e83]
+            - paragraph [ref=f5e84]: Browser Staff
+          - button "Sign out" [ref=f5e86] [cursor=pointer]
+  - generic:
+    - status

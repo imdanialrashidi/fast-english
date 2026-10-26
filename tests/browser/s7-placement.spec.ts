@@ -52,22 +52,24 @@ test('S7 flow: start, answer each question, submit once, accept sets level', asy
     await expect(section).toBeVisible();
     await section.locator('input[type="radio"][value="0"]').check();
     await section.getByRole('button', { name: `ذخیره پاسخ سؤال ${position}` }).click();
-    await expect(page.getByText('پاسخ ذخیره شد.')).toBeVisible();
+    await expect(section.getByText('ذخیره شده')).toBeVisible();
   }
   await expect.poll(() => savedCount, 'all 20 answer POSTs landed').toBe(20);
   // All saves target the single pinned attempt (no cross-attempt split).
   expect(saveIds.size).toBe(1);
 
-  // Resume check: reload keeps the selections.
+  // Resume check: reload keeps the selections. Wait for the Inertia page
+  // to mount before counting; an immediate count can race hydration under
+  // a loaded full-suite run.
   await page.reload();
-  const checkedCount = await page.locator('input[type="radio"]:checked').count();
-  expect(checkedCount).toBe(20);
+  await expect(page.getByRole('heading', { name: 'سؤالات تعیین سطح' })).toBeVisible();
+  await expect.poll(() => page.locator('input[type="radio"]:checked').count()).toBe(20);
 
   // Submit once → result with score, suggested level, and disclaimer.
   await page.getByRole('button', { name: 'ثبت نهایی پاسخ‌ها' }).click();
   await page.waitForURL('**/app/placement/result/*');
   await expect(page.getByRole('heading', { name: 'نتیجه تعیین سطح' })).toBeVisible();
-  await expect(page.getByText('نمره: 5 از ۲۰')).toBeVisible();
+  await expect(page.getByText('نمره: ۵ از ۲۰')).toBeVisible();
   await expect(page.getByText('سطح پیشنهادی: A2')).toBeVisible();
   await expect(page.getByText('راهنمای اولیه، بدون گواهی رسمی')).toBeVisible();
   await page.screenshot({ path: 'test-results/browser-shots/s7-result-390.png' });
@@ -77,7 +79,11 @@ test('S7 flow: start, answer each question, submit once, accept sets level', asy
   await expect(page.getByText('سطح ترجیحی ذخیره شد.')).toBeVisible();
 
   await page.goto('/app/account');
-  await expect(page.getByText('سطح ترجیحی: A2')).toBeVisible();
+  // App-profile layout (owner direction 2026-10-21): the level is a
+  // definition-row value under its label, not a colon-joined sentence.
+  const levelRow = page.locator('dl > div').filter({ hasText: 'سطح ترجیحی' });
+  await expect(levelRow).toBeVisible();
+  await expect(levelRow.getByText('A2', { exact: true })).toBeVisible();
   } finally {
     await learnerCtx.close();
   }

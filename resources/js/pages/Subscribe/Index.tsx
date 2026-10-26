@@ -2,6 +2,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { CardSim, Check, CircleAlert, Inbox } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
@@ -22,11 +23,15 @@ interface PlanRow {
 interface SubscribeProps extends SharedProps {
     plans: PlanRow[];
     salesOn: boolean;
+    paymentReady: boolean;
+    paymentNotice: string | null;
 }
 
 export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     plans,
     salesOn,
+    paymentReady,
+    paymentNotice,
 }: SubscribeProps): React.JSX.Element => {
     const { errors, status } = usePage<SharedProps>().props;
     const form = useForm({ plan_id: 0 });
@@ -39,11 +44,13 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
     return (
         <>
             <Head title="انتخاب پلن" />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <div>
-                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">انتخاب پلن</h1>
-                    <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">پلن موردنظر را انتخاب کنید. مبلغ و مشخصات واریز از سمت سرور ثبت می‌شود.</p>
-                </div>
+            <ScreenHeader
+                title="انتخاب پلن"
+                width="reading"
+                back={{ href: '/app/account', label: 'بازگشت به حساب' }}
+            />
+            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
+                <p className="m-0 text-[1.0625rem] leading-8 text-muted">پلن موردنظر را انتخاب کنید. مبلغ و مشخصات واریز از سمت سرور ثبت می‌شود.</p>
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
@@ -63,34 +70,42 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
                         <p className="m-0 text-xl font-bold">در حال حاضر پلن فعالی وجود ندارد. لطفاً بعداً مراجعه کنید.</p>
                     </div>
                 ) : (
-                    <ul className="m-0 grid list-none gap-4 p-0">
-                        {plans.map((plan) => (
-                            <li key={plan.id} className="grid gap-1 rounded-3xl border border-line bg-surface p-5">
-                                <h2 lang="fa" dir="rtl" className="m-0 text-lg leading-8 font-bold">
-                                    {plan.name_fa}
-                                </h2>
-                                <p className="m-0 text-lg font-bold">{plan.price_label}</p>
-                                <p className="m-0 leading-8 text-muted">{plan.duration_days} روز دسترسی پس از تأیید</p>
-                                <p className="m-0 mt-1">
-                                    <button
-                                        type="button"
-                                        disabled={form.processing}
-                                        onClick={() => choose(plan.id)}
-                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface hover:bg-primary-hover disabled:opacity-60"
-                                    >
-                                        <Check size={20} aria-hidden="true" />
-                                        انتخاب این پلن
-                                    </button>
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
+                    <>
+                        {!paymentReady && paymentNotice !== null && (
+                            <p role="status" className="m-0 flex items-start gap-2 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
+                                <CircleAlert size={20} aria-hidden="true" className="mt-0.5 shrink-0" />
+                                {paymentNotice}
+                            </p>
+                        )}
+                        <ul className="m-0 grid list-none gap-4 p-0">
+                            {plans.map((plan) => (
+                                <li key={plan.id} className="grid gap-1 rounded-3xl border border-line bg-surface p-5">
+                                    <h2 lang="fa" dir="rtl" className="m-0 text-lg leading-8 font-bold">
+                                        {plan.name_fa}
+                                    </h2>
+                                    <p className="m-0 text-lg font-bold">{plan.price_label}</p>
+                                    <p className="m-0 leading-8 text-muted">{plan.duration_days} روز دسترسی پس از تأیید</p>
+                                    <p className="m-0 mt-1">
+                                        <button
+                                            type="button"
+                                            disabled={form.processing || !paymentReady}
+                                            onClick={() => choose(plan.id)}
+                                            className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                                        >
+                                            <Check size={20} aria-hidden="true" />
+                                            {paymentReady ? 'انتخاب این پلن' : 'پرداخت هنوز فعال نشده'}
+                                        </button>
+                                    </p>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
                 )}
 
                 {errors.plan_id !== undefined && (
                     <p role="alert" className="m-0 flex items-center gap-2 rounded-2xl border border-line bg-surface px-4 py-3 text-danger">
                         <CircleAlert size={20} aria-hidden="true" />
-                        انتخاب پلن نامعتبر بود. لطفاً دوباره تلاش کنید.
+                        {errors.plan_id}
                     </p>
                 )}
             </div>

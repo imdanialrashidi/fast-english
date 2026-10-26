@@ -1,0 +1,55 @@
+- generic [active] [ref=f40e1]:
+  - generic [ref=f40e3]:
+    - link "پرش به محتوا" [ref=f40e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f40e5]:
+      - link "Fast English — صفحه اصلی" [ref=f40e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f40e9]: Fast English
+    - main [ref=f40e12]:
+      - generic [ref=f40e15]:
+        - generic [ref=f40e16]:
+          - heading "واژه‌ها" [level=1] [ref=f40e17]
+          - paragraph [ref=f40e18]: دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.
+        - generic [ref=f40e19]:
+          - link "خروجی CSV" [ref=f40e21] [cursor=pointer]:
+            - /url: /app/words/export
+          - group [ref=f40e26]:
+            - generic "ورود از CSV" [ref=f40e27] [cursor=pointer]
+        - navigation "وضعیت واژه‌ها" [ref=f40e34]:
+          - group "وضعیت واژه‌ها" [ref=f40e35]:
+            - link "همه" [ref=f40e36] [cursor=pointer]:
+              - /url: /app/words
+            - link "موعد امروز (0)" [ref=f40e37] [cursor=pointer]:
+              - /url: /app/words?tab=due
+            - link "در حال یادگیری (0)" [ref=f40e38] [cursor=pointer]:
+              - /url: /app/words?tab=learning
+            - link "می‌دانم (0)" [ref=f40e39] [cursor=pointer]:
+              - /url: /app/words?tab=known
+        - search "جست‌وجو در واژه‌ها" [ref=f40e40]:
+          - generic [ref=f40e45]:
+            - searchbox "جست‌وجو در واژه‌ها" [ref=f40e46]
+            - button "جست‌وجو" [ref=f40e47] [cursor=pointer]
+        - status [ref=f40e51]:
+          - paragraph [ref=f40e55]: هنوز واژه‌ای ذخیره نکرده‌ای. از صفحه هر درس، واژه‌های کلیدی را ذخیره کن.
+          - paragraph [ref=f40e56]:
+            - link "کشف مطالب" [ref=f40e57] [cursor=pointer]:
+              - /url: /app
+        - status
+    - navigation "بخش‌های یادگیری" [ref=f40e63]:
+      - list [ref=f40e64]:
+        - listitem [ref=f40e65]:
+          - link "امروز" [ref=f40e66] [cursor=pointer]:
+            - /url: /app/today
+        - listitem [ref=f40e72]:
+          - link "کشف" [ref=f40e73] [cursor=pointer]:
+            - /url: /app
+        - listitem [ref=f40e79]:
+          - link "واژه‌ها" [ref=f40e80] [cursor=pointer]:
+            - /url: /app/words
+        - listitem [ref=f40e87]:
+          - link "حساب" [ref=f40e88] [cursor=pointer]:
+            - /url: /app/account
+  - status [ref=f40e94]:
+    - generic [ref=f40e95]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f40e96] [cursor=pointer]

@@ -1,0 +1,28 @@
+- generic [ref=f8e3]:
+  - link "پرش به محتوا" [ref=f8e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f8e5]:
+    - link "Fast English — صفحه اصلی" [ref=f8e8] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f8e9]: Fast English
+  - generic [ref=f8e10]:
+    - complementary "ناوبری اصلی" [ref=f8e11]:
+      - navigation "بخش‌های یادگیری" [ref=f8e12]:
+        - link "امروز" [ref=f8e13] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f8e17] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f8e21] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f8e26] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f8e30] [cursor=pointer]:
+          - /url: /app/saved
+    - main [ref=f8e34]:
+      - generic [ref=f8e35]:
+        - paragraph [ref=f8e36]: "403"
+        - heading "اجازه دسترسی ندارید" [level=1] [ref=f8e37]
+        - paragraph [ref=f8e38]: برای دیدن این صفحه وارد حساب خود شوید یا به صفحه اصلی برگردید.
+        - paragraph [ref=f8e39]:
+          - link "بازگشت به صفحه اصلی" [ref=f8e40] [cursor=pointer]:
+            - /url: /

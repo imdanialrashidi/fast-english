@@ -8,8 +8,14 @@
 set -e
 
 # storage/app/private + storage/app/public are persistent Coolify mounts;
-# ensure the public symlink exists even when mounts hide build-time state.
-php artisan storage:link --force || true
+# ensure the public symlink exists even when a mount hides build-time state.
+# Only create it when it is missing: unconditional `storage:link --force`
+# unlinks first, and the image ships public/ owned by root, so a redeploy
+# logged "symlink(): File exists" at ERROR level on every boot.
+if [ ! -L public/storage ]; then
+    php artisan storage:link 2>/dev/null \
+        || echo "WARN: public/storage is missing and cannot be created (covers will 404); run it as root once." >&2
+fi
 
 # Re-cache config with runtime env (real APP_KEY/DB/MAIL). Route/view/event
 # caches from the build do not contain env and are kept as-is.

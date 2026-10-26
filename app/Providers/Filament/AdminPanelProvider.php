@@ -2,9 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\OperationsOverview;
 use App\Http\Middleware\PrivateNoStore;
 use App\Http\Middleware\RejectDisabledUsers;
 use App\Http\Middleware\RequireStaffTwoFactor;
+use App\Http\Middleware\SetStaffLocale;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,6 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            // Custom admin theme: the default Filament theme does not scan
+            // app Blade views, so the custom pages' utility classes were
+            // missing (narrow textareas, collapsed spacing).
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            // Filament routes are outside the web middleware group, so
+            // the staff English locale boundary must be attached here.
+            ->middleware([SetStaffLocale::class], isPersistent: true)
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -38,9 +47,9 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
+                OperationsOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -62,7 +71,10 @@ class AdminPanelProvider extends PanelProvider
                 RejectDisabledUsers::class,
                 // S8 staff session gate (scope §5): TOTP enforcement +
                 // idle timeout. Order matters: identity first, then gate.
+                // Persistent so Livewire updates on an open panel page
+                // re-check the same gate (an idle/stale session cannot keep
+                // approving or editing after the page loaded).
                 RequireStaffTwoFactor::class,
-            ]);
+            ], isPersistent: true);
     }
 }

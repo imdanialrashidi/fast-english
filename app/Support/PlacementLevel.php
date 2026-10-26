@@ -3,11 +3,21 @@
 namespace App\Support;
 
 /**
- * S7 suggested-level fixture (scope §12): score → suggested level.
+ * Placement suggestion: total score → CEFR entry level.
  *
- * This table is a FIXTURE for the optional placement suggestion — not a
- * validated CEFR scale. Teacher approval of real questions and cut scores
- * is required before any public exam (recorded BLOCKED in the plan).
+ * Design (2026-10-26): twenty receptive items, four per CEFR band, ordered
+ * from A1 to C1. A learner who clears the lower bands is placed at the band
+ * whose items they can still answer; the floor is A1 and the ceiling is C1.
+ *
+ * The ceiling is deliberate: a 20-item multiple-choice test cannot place
+ * C2, which needs productive (speaking/writing) assessment. A perfect score
+ * therefore recommends C1, and the result page says so.
+ *
+ * Bands (one point per item): 0–3 A1 · 4–7 A2 · 8–11 B1 · 12–15 B2 ·
+ * 16–20 C1. The boundaries follow the item distribution, so a learner who
+ * answers the A1 and A2 items but little else lands on B1.
+ *
+ * This is an indicative placement suggestion, not a certified CEFR exam.
  */
 final class PlacementLevel
 {
@@ -21,8 +31,7 @@ final class PlacementLevel
             ['max' => 7, 'level' => 'A2'],
             ['max' => 11, 'level' => 'B1'],
             ['max' => 15, 'level' => 'B2'],
-            ['max' => 18, 'level' => 'C1'],
-            ['max' => 20, 'level' => 'C2'],
+            ['max' => 20, 'level' => 'C1'],
         ];
     }
 
@@ -34,11 +43,11 @@ final class PlacementLevel
             }
         }
 
-        return 'C2';
+        return 'C1';
     }
 
     /** @return array<string, array{int, int}> */
-    public static function fixtureMap(): array
+    public static function map(): array
     {
         $map = [];
         $floor = 0;

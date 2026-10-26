@@ -169,7 +169,12 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
+    // An empty value in the environment (a common copy-paste from
+    // .env.example) must not silently disable the production-safe
+    // default. Only an explicit true/false overrides the env rule.
+    'secure' => env('SESSION_SECURE_COOKIE') !== null && env('SESSION_SECURE_COOKIE') !== ''
+        ? (bool) env('SESSION_SECURE_COOKIE')
+        : env('APP_ENV') === 'production',
 
     /*
     |--------------------------------------------------------------------------

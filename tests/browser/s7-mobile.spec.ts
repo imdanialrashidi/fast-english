@@ -67,7 +67,7 @@ for (const width of [360, 390]) {
       const section = page.locator(`section[aria-label="سؤال ${position}"]`);
       await section.locator('input[type="radio"][value="0"]').check();
       await section.getByRole('button', { name: `ذخیره پاسخ سؤال ${position}` }).click();
-      await expect(page.getByText('پاسخ ذخیره شد.')).toBeVisible();
+      await expect(section.getByText('ذخیره شده')).toBeVisible();
     }
     await expect.poll(() => savedCount, 'all 20 answer POSTs landed').toBe(20);
     await page.getByRole('button', { name: 'ثبت نهایی پاسخ‌ها' }).click();

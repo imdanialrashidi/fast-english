@@ -41,7 +41,7 @@ for (const width of [360, 390]) {
   test(`S4-7 reader at ${width}px: no scroll, mini-player clear, 44px targets`, async ({ sub: page }) => {
     await page.setViewportSize({ width, height: 740 });
     await page.goto(READER);
-    await page.locator('ol.fe-sentences, article.fe-english-body').first().waitFor();
+    await page.locator('article.fe-english-body').first().waitFor();
     await page.locator('#player-toggle').click();
     await expect(page.locator('#player-seek')).toBeVisible();
 
@@ -61,7 +61,7 @@ for (const width of [360, 390]) {
       if (!content || !bar) return null;
       const contentBottom = content.getBoundingClientRect().bottom;
       const barTop = bar.getBoundingClientRect().top;
-      const lastRow = document.querySelector('.fe-glossary-row:last-child, ol.fe-sentences li:last-child, article.fe-english-body p:last-child');
+      const lastRow = document.querySelector('.fe-glossary-row:last-child, article.fe-english-body p:last-child');
       const rowBottom = lastRow ? lastRow.getBoundingClientRect().bottom : contentBottom;
       return { contentBottom, barTop, rowBottom };
     });

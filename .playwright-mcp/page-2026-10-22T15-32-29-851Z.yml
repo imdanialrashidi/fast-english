@@ -1,0 +1,185 @@
+- generic [ref=f9e104]:
+  - link "پرش به محتوا" [ref=f9e105] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=f9e106]:
+    - generic [ref=f9e107]:
+      - link "Fast English — صفحه اصلی" [ref=f9e108] [cursor=pointer]:
+        - /url: /
+        - generic [aria-hidden] [ref=f9e109]: F
+        - generic [ref=f9e110]:
+          - generic [ref=f9e111]: Fast English
+          - generic [ref=f9e112]: خواندن و شنیدن، یک نسخه
+      - navigation "ناوبری عمومی" [ref=f9e113]:
+        - link "نمونه رایگان" [ref=f9e114] [cursor=pointer]:
+          - /url: /sample
+        - link "دانلود" [ref=f9e115] [cursor=pointer]:
+          - /url: /download
+        - link "پرسش‌ها" [ref=f9e116] [cursor=pointer]:
+          - /url: /faq
+        - link "ورود" [ref=f9e117] [cursor=pointer]:
+          - /url: /login
+        - link "ساخت حساب" [ref=f9e118] [cursor=pointer]:
+          - /url: /register
+  - main [ref=f9e120]:
+    - region "معرفی Fast English" [ref=f9e121]:
+      - generic [ref=f9e122]:
+        - generic [ref=f9e123]:
+          - paragraph [ref=f9e124]: خواندن و شنیدن، از یک نسخه
+          - heading "انگلیسی را با داستان‌های کوتاه بخوان و بشنو" [level=1] [ref=f9e126]
+          - paragraph [ref=f9e127]: هر مطلب یک متن کوتاه انگلیسی در سطح توست، با صوت همان نسخه. بخوان و هم‌زمان بشنو، سرعت را تنظیم کن و واژه‌های تازه را برای مرور ذخیره کن.
+          - generic [ref=f9e128]:
+            - link "دانلود اپلیکیشن" [ref=f9e129] [cursor=pointer]:
+              - /url: http://127.0.0.1:8111/download
+            - link "شروع با نمونه رایگان" [ref=f9e133] [cursor=pointer]:
+              - /url: http://127.0.0.1:8111/sample?topic=city-park&level=A2
+          - paragraph [ref=f9e136]: نمونه بدون ثبت‌نام باز می‌شود. وضعیت نسخه اندروید در صفحه دانلود اعلام می‌شود.
+          - generic [ref=f9e137]:
+            - generic [ref=f9e138]: "شش سطح:"
+            - generic [ref=f9e139]:
+              - generic [ref=f9e140]: A1
+              - generic [ref=f9e141]:
+                - text: A2
+                - generic [ref=f9e142]: (سطح نمونه فعلی)
+              - generic [ref=f9e143]: B1
+              - generic [ref=f9e144]: B2
+              - generic [ref=f9e145]: C1
+              - generic [ref=f9e146]: C2
+        - region "پیش‌نمایش روش یادگیری با نمونه واقعی" [ref=f9e147]:
+          - generic [ref=f9e148]:
+            - generic [ref=f9e151]:
+              - generic [ref=f9e152]: The City Park
+              - generic [ref=f9e153]: متن و صوت از یک نسخه
+            - generic [ref=f9e154]: A2
+          - generic [ref=f9e155]:
+            - paragraph [ref=f9e156]: On Saturday morning, Sara walks to the city park near her home. The air is cool, and the streets are quiet. She carries a small bag with bread, cheese, and a bottle of water. She likes this quiet time before the busy day starts.
+            - paragraph [ref=f9e157]: The park is green and full of life. An old man feeds white birds near the small lake. Two children run after a red ball, and their mother watches them from a wooden bench. Sara sits under a tall tree and eats her breakfast slowly. The birds sing, and a soft wind moves the green leaves above her head.
+          - generic [ref=f9e158]:
+            - button "پخش نمونه صوتی" [ref=f9e159] [cursor=pointer]
+            - generic [ref=f9e164]:
+              - generic [ref=f9e165]: 0:00
+              - generic [ref=f9e166]: 0:20
+            - button "تغییر سرعت پخش، اکنون 1 برابر" [ref=f9e167] [cursor=pointer]: 1×
+          - paragraph [ref=f9e168]: بخشی از متن نمونه. برای متن کامل و واژه‌ها، نمونه را باز کن.
+    - region "روش کار" [ref=f9e169]:
+      - generic [ref=f9e170]:
+        - generic [ref=f9e171]:
+          - heading "سه قدم، هر روز" [level=2] [ref=f9e172]
+          - paragraph [ref=f9e173]: لازم نیست همه‌چیز را از اول شروع کنی. هر جلسه از همان سطح و همان جمله‌ای ادامه می‌یابد که مانده بود.
+        - list [ref=f9e174]:
+          - listitem [ref=f9e175]:
+            - paragraph [ref=f9e176]: "01"
+            - heading "مطلب و سطح را انتخاب کن" [level=3] [ref=f9e177]
+            - paragraph [ref=f9e178]: مطالب از A1 تا C2 منتشر می‌شوند و هر موضوع نسخه‌های خودش را دارد. اگر نسخه‌ای آماده نباشد همان پیام را می‌بینی، جایگزین پنهانی وجود ندارد.
+          - listitem [ref=f9e179]:
+            - paragraph [ref=f9e180]: "02"
+            - heading "بخوان و هم‌زمان بشنو" [level=3] [ref=f9e181]
+            - paragraph [ref=f9e182]: متن را بخوان و صوت همان نسخه را پخش کن. سرعت پخش را بین ۰٫۷۵ و ۱٫۵ برابر تنظیم کن و هر جا خواستی ادامه بده.
+          - listitem [ref=f9e183]:
+            - paragraph [ref=f9e184]: "03"
+            - heading "واژه بساز و مرور کن" [level=3] [ref=f9e185]
+            - paragraph [ref=f9e186]: واژه‌های مهم را ذخیره کن؛ کارت‌ها با دوباره، سخت، خوب یا آسان زمان‌بندی می‌شوند و سر موعد برمی‌گردند.
+    - region "نمونه واقعی" [ref=f9e187]:
+      - generic [ref=f9e188]:
+        - paragraph [ref=f9e189]: نمونه رایگان
+        - heading "یک نمونه واقعی، بدون ثبت‌نام" [level=2] [ref=f9e190]
+        - paragraph [ref=f9e191]: The City Park
+        - paragraph [ref=f9e192]:
+          - generic [ref=f9e193]: A2
+          - generic [ref=f9e194]: متن کامل + صوت + واژه‌های کلیدی
+        - paragraph [ref=f9e195]: بدون حساب باز می‌شود؛ همان تجربه‌ای که بعد از اشتراک هر روز داری. کافی است یک جمله را بخوانی و هم‌زمان بشنوی.
+        - link "خواندن و شنیدن نمونه" [ref=f9e196] [cursor=pointer]:
+          - /url: http://127.0.0.1:8111/sample?topic=city-park&level=A2
+      - 'link "باز کردن نمونه: The City Park" [ref=f9e199] [cursor=pointer]':
+        - /url: http://127.0.0.1:8111/sample?topic=city-park&level=A2
+    - region "تازه‌ترین مطالب" [ref=f9e201]:
+      - generic [ref=f9e202]:
+        - generic [ref=f9e203]:
+          - heading "تازه‌ترین مطالب" [level=2] [ref=f9e204]
+          - paragraph [ref=f9e205]: هر مطلب در چند سطح منتشر می‌شود؛ سطح خودت را انتخاب کن و همان نسخه را بخوان و بشنو.
+        - link "دریافت اپ" [ref=f9e206] [cursor=pointer]:
+          - /url: http://127.0.0.1:8111/download
+      - list [ref=f9e210]:
+        - listitem [ref=f9e211]:
+          - generic [ref=f9e215]:
+            - generic [ref=f9e216]: Night Trains
+            - generic [ref=f9e217]:
+              - generic [ref=f9e218]: "نسخه‌ها: B1"
+              - generic [ref=f9e219]: حدود ۴ دقیقه
+        - listitem [ref=f9e223]:
+          - generic [ref=f9e227]:
+            - generic [ref=f9e228]: The City Park
+            - generic [ref=f9e229]:
+              - generic [ref=f9e230]: "نسخه‌ها: A2، B1"
+              - generic [ref=f9e231]: حدود ۷ دقیقه
+        - listitem [ref=f9e235]:
+          - generic [ref=f9e239]:
+            - generic [ref=f9e240]: Rainy Day
+            - generic [ref=f9e241]:
+              - generic [ref=f9e242]: "نسخه‌ها: B1"
+              - generic [ref=f9e243]: حدود ۳ دقیقه
+    - region "پلن‌ها" [ref=f9e247]:
+      - generic [ref=f9e248]:
+        - generic [ref=f9e249]:
+          - heading "پلن‌ها" [level=2] [ref=f9e250]
+          - paragraph [ref=f9e251]: دسترسی پس از تأیید پرداخت فعال می‌شود. تا آن روز، نمونه رایگان همیشه در دسترس است.
+        - generic [ref=f9e252]:
+          - paragraph [ref=f9e253]:
+            - strong [ref=f9e254]: در دست آماده‌سازی
+          - paragraph [ref=f9e255]: فروش هنوز فعال نشده است. بسته واحد ۲۹۹٬۰۰۰ تومان (پیشنهاد محدود) پس از اعلام رسمی قابل خرید خواهد بود.
+    - region "پرسش‌های پرتکرار" [ref=f9e256]:
+      - generic [ref=f9e257]:
+        - heading "پرسش‌های پرتکرار" [level=2] [ref=f9e258]
+        - paragraph [ref=f9e259]: جواب کوتاه سه سؤال اول. بقیه را در صفحه پرسش‌ها بخوان.
+        - paragraph [ref=f9e260]:
+          - link "مشاهده همه پرسش‌ها" [ref=f9e261] [cursor=pointer]:
+            - /url: http://127.0.0.1:8111/faq
+      - generic [ref=f9e264]:
+        - group [ref=f9e265]:
+          - generic "بدون اشتراک می‌توانم امتحان کنم؟" [ref=f9e266] [cursor=pointer]
+          - paragraph [ref=f9e270]: بله. نمونه واقعی همیشه رایگان است و بدون ثبت‌نام باز می‌شود.
+        - group [ref=f9e271]:
+          - generic "سطح‌ها یعنی چه؟" [ref=f9e272] [cursor=pointer]
+        - group [ref=f9e274]:
+          - generic "واژه‌ها چطور مرور می‌شوند؟" [ref=f9e275] [cursor=pointer]
+    - region "شروع" [ref=f9e277]:
+      - generic [ref=f9e278]:
+        - generic [ref=f9e279]:
+          - heading "بدون حساب شروع کن" [level=2] [ref=f9e280]
+          - paragraph [ref=f9e281]: یک نمونه را بخوان و بشنو. برای ادامه، حساب بساز و پلن را انتخاب کن؛ دسترسی پس از تأیید پرداخت فعال می‌شود و پیشرفت، واژه‌ها و برنامه روزانه‌ات ذخیره می‌ماند.
+        - generic [ref=f9e282]:
+          - link "دانلود اپلیکیشن" [ref=f9e283] [cursor=pointer]:
+            - /url: http://127.0.0.1:8111/download
+          - link "شروع با نمونه رایگان" [ref=f9e287] [cursor=pointer]:
+            - /url: http://127.0.0.1:8111/sample?topic=city-park&level=A2
+  - contentinfo [ref=f9e290]:
+    - generic [ref=f9e291]:
+      - generic [ref=f9e292]:
+        - link "Fast English — صفحه اصلی" [ref=f9e293] [cursor=pointer]:
+          - /url: /
+          - generic [aria-hidden] [ref=f9e294]: F
+          - generic [ref=f9e295]:
+            - generic [ref=f9e296]: Fast English
+            - generic [ref=f9e297]: خواندن و شنیدن، یک نسخه
+        - paragraph [ref=f9e298]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+        - paragraph [ref=f9e299]:
+          - link "شروع با نمونه رایگان" [ref=f9e300] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=f9e301] [cursor=pointer]:
+            - /url: /download
+      - navigation "پیوندهای اعتماد" [ref=f9e302]:
+        - paragraph [ref=f9e303]: دسترسی سریع
+        - link "درباره" [ref=f9e304] [cursor=pointer]:
+          - /url: /about
+        - link "همکاری" [ref=f9e305] [cursor=pointer]:
+          - /url: /cooperation
+        - link "پرسش‌های پرتکرار" [ref=f9e306] [cursor=pointer]:
+          - /url: /faq
+        - link "پشتیبانی" [ref=f9e307] [cursor=pointer]:
+          - /url: /support
+        - link "قوانین" [ref=f9e308] [cursor=pointer]:
+          - /url: /terms
+        - link "حریم خصوصی" [ref=f9e309] [cursor=pointer]:
+          - /url: /privacy
+        - link "دانلود" [ref=f9e310] [cursor=pointer]:
+          - /url: /download
+      - paragraph [ref=f9e311]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

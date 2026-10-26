@@ -10,6 +10,13 @@ class ViewPaymentRequest extends ViewRecord
 {
     protected static string $resource = PaymentRequestResource::class;
 
+    public function getTitle(): string
+    {
+        $record = $this->getRecord();
+
+        return 'Payment #'.$record->id.' — '.($record->user?->email ?? 'unknown learner');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

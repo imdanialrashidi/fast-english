@@ -1,0 +1,74 @@
+- generic [ref=f29e3]:
+  - link "پرش به محتوا" [ref=f29e4] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=f29e5]:
+    - generic [ref=f29e6]:
+      - link "Fast English — صفحه اصلی" [ref=f29e7] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f29e8]: Fast English
+      - navigation "ناوبری عمومی" [ref=f29e10]:
+        - link "بازگشت به اپ" [ref=f29e11] [cursor=pointer]:
+          - /url: /app/today
+  - main [ref=f29e13]:
+    - generic [ref=f29e14]:
+      - generic [ref=f29e15]:
+        - paragraph [ref=f29e16]:
+          - text: نمونه رایگان · سطح
+          - generic [ref=f29e20]: A2
+          - generic [aria-hidden] [ref=f29e21]: ·
+          - text: حدود 3 دقیقه مطالعه
+        - heading "The City Park" [level=1] [ref=f29e25]
+        - paragraph [ref=f29e26]: A short story about a Saturday morning in the city park, told at two levels.
+        - navigation "سطح نمونه" [ref=f29e27]:
+          - paragraph [ref=f29e28]: "سطح نمونه:"
+          - generic [ref=f29e29]:
+            - link "A2" [ref=f29e30] [cursor=pointer]:
+              - /url: /sample?topic=city-park&level=A2
+            - link "B1" [ref=f29e32] [cursor=pointer]:
+              - /url: /sample?topic=city-park&level=B1
+      - region "پخش‌کننده نمونه" [ref=f29e34]:
+        - generic [ref=f29e35]:
+          - button "پخش" [ref=f29e36] [cursor=pointer]
+          - generic [ref=f29e39]:
+            - paragraph [ref=f29e40]: The City Park A2
+            - paragraph [ref=f29e41]: 0:00 / 0:20
+          - 'button "سرعت پخش: 1×" [ref=f29e42] [cursor=pointer]':
+            - generic [ref=f29e43]: 1×
+          - button "نمایش کنترل‌های بیشتر" [ref=f29e44] [cursor=pointer]
+      - article [ref=f29e48]:
+        - paragraph [ref=f29e49]: On Saturday morning, Sara walks to the city park near her home. The air is cool, and the streets are quiet. She carries a small bag with bread, cheese, and a bottle of water. She likes this quiet time before the busy day starts.
+        - paragraph [ref=f29e50]: The park is green and full of life. An old man feeds white birds near the small lake. Two children run after a red ball, and their mother watches them from a wooden bench. Sara sits under a tall tree and eats her breakfast slowly. The birds sing, and a soft wind moves the green leaves above her head.
+        - paragraph [ref=f29e51]: After one hour, she walks around the lake. The water is clean, and she can see small fish near the stones. She says hello to the old man, and he smiles at her. They talk about the warm weather for a few minutes. Then she walks home with a happy heart and plans to come back next week.
+      - region "واژه‌های کلیدی نمونه" [ref=f29e52]:
+        - heading "واژه‌های کلیدی" [level=2] [ref=f29e53]
+        - note [ref=f29e56]: برای این نمونه واژه‌ای ثبت نشده است.
+      - region "ادامه یادگیری" [ref=f29e57]:
+        - heading "دوست داشتی؟ ادامه‌اش با اشتراک است" [level=2] [ref=f29e58]
+        - paragraph [ref=f29e59]: حساب بساز، پلن را انتخاب کن و همه مطلب‌ها را در سطح خودت بخوان و بشنو.
+        - paragraph [ref=f29e60]:
+          - link "ساخت حساب" [ref=f29e61] [cursor=pointer]:
+            - /url: /register
+          - link "مشاهده پلن‌ها" [ref=f29e62] [cursor=pointer]:
+            - /url: /app/subscribe
+  - contentinfo [ref=f29e63]:
+    - generic [ref=f29e64]:
+      - generic [ref=f29e65]:
+        - link "Fast English — صفحه اصلی" [ref=f29e66] [cursor=pointer]:
+          - /url: /app/today
+          - generic [ref=f29e67]: Fast English
+        - paragraph [ref=f29e69]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+      - navigation "دسترسی سریع اپ" [ref=f29e70]:
+        - paragraph [ref=f29e71]: دسترسی سریع
+        - link "امروز" [ref=f29e72] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f29e73] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f29e74] [cursor=pointer]:
+          - /url: /app/words
+        - link "ذخیره‌شده‌ها" [ref=f29e75] [cursor=pointer]:
+          - /url: /app/saved
+        - link "حساب" [ref=f29e76] [cursor=pointer]:
+          - /url: /app/account
+        - link "تنظیمات" [ref=f29e77] [cursor=pointer]:
+          - /url: /app/account/settings
+      - paragraph [ref=f29e78]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

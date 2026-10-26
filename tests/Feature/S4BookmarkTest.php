@@ -76,6 +76,10 @@ test('the saved page lists only the user own bookmarks', function () {
     expect($empty->getContent())->not->toContain('S4 Save A');
 });
 
+test('an out-of-range saved page redirects to the first page', function () {
+    $this->actingAs($this->studentA)->get('/app/saved?page=6')->assertRedirect('/app/saved');
+});
+
 test('an archived bookmarked topic disappears from saved while the row persists', function () {
     // Recorded proposal: archived topics vanish from /app/saved (matching
     // the library), the bookmark row persists, republishing restores it.

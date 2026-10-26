@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,9 +35,15 @@ class ThrottleUploads
         if (RateLimiter::tooManyAttempts($key, self::MAX_ATTEMPTS)) {
             $retryAfter = RateLimiter::availableIn($key);
 
-            return response('Too Many Requests.', 429, [
-                'Retry-After' => (string) max($retryAfter, 1),
-            ]);
+            // Throw instead of returning plain text: the shared exception
+            // pipeline answers JSON callers with a Persian message and an
+            // Inertia visit with the Persian 429 page. No raw framework
+            // English reaches the learner.
+            throw new ThrottleRequestsException(
+                'تعداد بارگذاری‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.',
+                null,
+                ['Retry-After' => (string) max($retryAfter, 1)],
+            );
         }
 
         RateLimiter::hit($key, 60);

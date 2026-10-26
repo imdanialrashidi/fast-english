@@ -2,53 +2,69 @@
 
 Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio. One Laravel app, one database, one origin. Learner/public surfaces run Inertia 3 + React 19 + TypeScript + Tailwind 4; staff runs one Filament 5 panel (`/admin`); PostgreSQL is required (no SQLite substitute).
 
-> Workflow (2026-10-14): this repository migrated from the Pi workflow to the [omp production workflow template](https://github.com/imdanialrashidi/omp-production-workflow-template). Workflow files live in `.omp/` (commands, skills, config), `scripts/omp-pr.mjs`, and `scripts/verify.sh`. The Pi launcher (`./p`), `.pi/`, `Dockerfile.pi`, and Pi-only scripts/tests/evals were retired, recoverable in `.artifacts/migration-backup-2026-10-14/` (ignored by git). Product code, product docs, and the Pest/Playwright suites are unchanged.
+> Workflow (2026-10-25): this repository migrated from the omp production workflow to [DSH Workflow](https://github.com/imdanialrashidi/dsh-workflow) v0.1 (commit `93c9281`, verified against DSH `0.2.1-rc.2`). The workflow is project-local: `AGENTS.md` is the entry point, `.dsh/skills/` holds the runtime skills, and `docs/WORKFLOW.md` + `docs/REVIEW-POLICY.md` replace `docs/HARNESS.md`. The prior files are recoverable in `.artifacts/migration-backup-2026-10-25-omp-to-dsh/` (ignored by git); see `docs/adr/0003-dsh-workflow.md`. Product code, product behavior, and the Pest/Playwright suites are unchanged.
 
 ## Workflow
 
-A minimal, evidence-driven workflow for [oh-my-pi (omp)](https://omp.sh). omp already ships LSP, eval runtimes, parallel subagents, browser, search, planning, debugging, memory, and session continuity — this repo adds only what omp does not ship.
+A small, evidence-driven workflow for [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness). It uses DSH's instruction loader, project skill discovery, native tools, permissions, and optional subagents — no plugin, daemon, MCP server, or generated command files.
 
-- `AGENTS.md` — short progressive-disclosure map; the only always-loaded workflow file.
-- `.omp/RULES.md` — sticky hard requirements (delivery scope, secrets, no stubs, run-before-yield).
-- `.omp/commands/` — `/spec`, `/build`, `/review`, `/ship`. No `plan`/`handoff`/`resume` commands: omp ships `/plan` mode and `/handoff` + `/resume` natively.
-- `.omp/skills/` — `quick-fix`, `test-design`, `verify`, plus `no-ai-slop` for prose work. No browser/design/eval skills: omp ships `browser`, `lsp`, `debug`, `web_search`, `eval`, and `task` natively.
-- `docs/` — `HARNESS.md`, `QUALITY.md`, `PRODUCT.md`, `ARCHITECTURE.md`, `DESIGN.md`, `GIT_POLICY.md`, `PLAN.md`, plus scope baseline `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` and durable plans in `docs/exec-plans/active/`.
-- `scripts/omp-pr.mjs` — scoped `ai-changes` → `main` PR helper: explicit files only, secret scan, compare-and-swap push guard.
-- `scripts/verify.sh` — canonical gate: template self-checks, then the repo's cheapest applicable lane.
+- `AGENTS.md` — short progressive-disclosure entry point; the only always-loaded workflow file.
+- `.dsh/skills/` — `quick-fix`, `spec`, `build`, `verify`, `review`, `test-design`, plus `no-ai-slop` for prose work. DSH discovers these at project rank; users invoke them as `/quick-fix`, `/spec`, and so on.
+- `docs/WORKFLOW.md` — decision model, evidence standard, review/repair limits, context rules, DSH integration.
+- `docs/REVIEW-POLICY.md` — finding admissibility, severity, independence, convergence.
+- `docs/QUALITY.md` — acceptance criteria, project invariants, proof map, definition of done.
+- `docs/GIT_POLICY.md` — opt-in scoped delivery; solo work never publishes.
+- `scripts/pr-deliver.mjs` — scoped `ai-changes` → `main` PR helper retained from the prior workflow: explicit files only, secret scan, compare-and-swap push guard. Used only on an explicit delivery request.
+- `scripts/verify.sh` — canonical gate: DSH workflow self-checks, then the repo's cheapest applicable lane.
 - `.github/workflows/quality.yml` — CI runs the gate plus frontend, PHP, and browser lanes.
-
-Retired Pi pieces (not carried over — omp already covers them): provider/model routing and launcher flags, guard/smart-read harness scripts, Playwright MCP and web-search packages, eval harness (`evals/`, `docs/EVALUATION.md`, `docs/RESEARCH.md`), `/plan` + `/handoff` + `/resume` commands, frontend-design skill, `TOOLING_SETUP.md` and sandbox/docker files.
 
 ## Install
 
-Install omp ([docs](https://omp.sh)):
+DSH `0.2.1-rc.2` (or a later verified version) is required:
 
 ```sh
-curl -fsSL https://omp.sh/install | sh
+npx @deepseek-ai/dsh web
 ```
 
-Then open this repository in omp. No packages, no MCP servers, no launcher. Project config in `.omp/` loads automatically.
-
-Authenticate and pick a model:
-
-```text
-/login
-/model
-```
+Open this repository in DSH. No global workflow install, package, MCP server, or launcher is needed: `AGENTS.md` and `.dsh/skills/` load from this checkout. If you also want the upstream workflow in other projects, run its [installer](https://github.com/imdanialrashidi/dsh-workflow) separately; this repository does not modify `$DSH_HOME`.
 
 ## Daily usage
 
 ```text
-/build Implement <accepted outcome> and verify it.
-/spec <feature>        # implementation-ready contract, no code
-/review                # independent evidence-backed verdict
-/ship                  # full gate + scoped ai-changes PR (opt-in team delivery)
-/skill:quick-fix       # obvious low-risk edit, one targeted proof
+/quick-fix Fix <obvious low-risk issue>.
+/spec <feature>          # contract only when requirements are unresolved
+/build <accepted outcome>
+/verify                  # execute and classify the real checks
+/review                  # defect review, no edits during review
+/test-design <behavior>  # design coverage and failure modes
 ```
 
-Native companions: `/plan` for planning, `/advisor` for High-risk second-model review (extra cost), `/handoff` + `/resume` across sessions. Small proven slice beats large unfinished work. An unproven criterion is not passed.
+`subagent` gives a fresh-context reviewer for non-trivial or high-risk changes; `subagent_fork` inherits this conversation and is not independent. Small proven slice beats large unfinished work. An unproven criterion is not passed; a skipped check is not a pass.
 
 Product contracts: `docs/PRODUCT.md`, `docs/DESIGN.md`, `docs/ARCHITECTURE.md`, `docs/QUALITY.md`, `docs/PLAN.md`; baseline `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0; active plans in `docs/exec-plans/active/` (`fast-english-rebuild.md`, `frontend-inertia-migration.md`).
+
+## Deploy (Coolify)
+
+The repository ships a production `Dockerfile` (nginx + php-fpm + scheduler +
+queue in one non-root container), a self-contained Compose stack
+([`compose.prod.yml`](compose.prod.yml): app + PostgreSQL 17 + volumes),
+[`.env.production.example`](.env.production.example) for the env checklist,
+and `docker/release.sh` for the one explicit migration step.
+
+```bash
+scripts/coolify-install.sh --check     # host preflight (ports, RAM, disk, OS)
+sudo scripts/coolify-install.sh --install
+scripts/coolify-env.sh --domain https://<domain> --out /tmp/fe.env
+# Coolify: Project → Docker Compose (Git) → /compose.prod.yml,
+#          domain → app:8080, environment → paste /tmp/fe.env, deploy
+# then in the Coolify app terminal:
+sh /var/www/html/docker/release.sh
+# and from this machine:
+scripts/coolify-smoke.sh https://<domain>
+```
+
+Step-by-step bring-up, mounts, health check, and post-deploy probes:
+[`docs/ops/COOLIFY.md`](docs/ops/COOLIFY.md).
 
 ## Fast English app
 
@@ -83,9 +99,9 @@ npx playwright test m0-inertia --project=chromium
 bash scripts/project-verify.sh
 ```
 
-Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). Requires PostgreSQL reachable and an app server on `:8111` (default `BASE_URL=http://127.0.0.1:8111`); when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)` and the lanes that ran still count.
+Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). The local Chromium lane is documented by `scripts/browser-lane.sh` (`start`, `seed`, `status`, `stop`, `reset`, `test`). Requires PostgreSQL reachable and an app server on `:8111` (default `BASE_URL=http://127.0.0.1:8111`); when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)` and the lanes that ran still count.
 
-Solo default: leave the proven change in the working tree and report its state. Team PR only on explicit request: `node scripts/omp-pr.mjs prepare` before editing, then `deliver --message ... --title ... --body-file .artifacts/omp-pr.md --file <path>...` after verification. No per-task branches, no main writes, no auto-merge. Read-only/local-only work never publishes; `OMP_PR_DELIVERY=off` opts out. See `docs/GIT_POLICY.md`.
+Solo default: leave the proven change in the working tree and report its state. Team PR only on explicit request: `node scripts/pr-deliver.mjs prepare` before editing, then `deliver --message ... --title ... --body-file .artifacts/pr-deliver.md --file <path>...` after verification. No per-task branches, no main writes, no auto-merge. Read-only/local-only work never publishes; `PR_DELIVERY=off` opts out. See `docs/GIT_POLICY.md`.
 
 Contribution and private vulnerability-reporting expectations live in [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 

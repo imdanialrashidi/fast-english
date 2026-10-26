@@ -18,7 +18,8 @@
             <p>Status: {{ $version['status'] }}{{ $version['is_current'] ? ' (current)' : '' }} — {{ $version['question_count'] }} / 20 questions.</p>
 
             @if ($version['status'] !== 'published')
-                <form method="POST" action="{{ route('staff.placement.publish', $version['id']) }}">
+                <form method="POST" action="{{ route('staff.placement.publish', $version['id']) }}"
+                      onsubmit="return confirm('Publish this version and make it current? The previous current version is retired.');">
                     @csrf
                     <x-filament::button type="submit">Publish this version</x-filament::button>
                 </form>

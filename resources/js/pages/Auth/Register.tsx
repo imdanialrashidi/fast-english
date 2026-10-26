@@ -54,7 +54,6 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
                             onChange={(event) => form.setData('name', event.target.value)}
                             required
                             autoComplete="name"
-                            autoFocus
                             aria-describedby={errors.name ? 'name-error' : undefined}
                             className={INPUT_CLASS}
                         />
@@ -90,10 +89,16 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
                             onChange={(event) => form.setData('password', event.target.value)}
                             required
                             autoComplete="new-password"
-                            aria-describedby={errors.password ? 'password-error' : undefined}
+                            aria-describedby={errors.password ? 'password-error' : 'password-hint'}
                             className={INPUT_CLASS}
                         />
-                        <FieldError id="password-error" message={errors.password} />
+                        {errors.password !== undefined ? (
+                            <FieldError id="password-error" message={errors.password} />
+                        ) : (
+                            <p id="password-hint" className="m-0 text-sm leading-7 text-muted">
+                                حداقل ۸ نویسه.
+                            </p>
+                        )}
                     </div>
                     <div className="grid gap-1.5">
                         <label htmlFor="password_confirmation" className="inline-flex items-center gap-1.5 font-bold">

@@ -26,6 +26,9 @@
 
     --font-sans: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
     --font-en: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    /* The only elevation in the learner shell: the floating player. */
+    --shadow-elev: 0 10px 30px rgb(16 27 51 / 0.12);
 }
 
 @font-face {
@@ -53,6 +56,32 @@ body {
     min-height: 100dvh;
 }
 
+/* Owner follow-up 2026-10-22: one Persian type scale for learner pages.
+ * Titles balance, prose keeps a readable measure/leading, meta text and
+ * mixed-direction strings have explicit homes. Utilities still handle
+ * size where a surface needs a different step. */
+.fe-title {
+    font-weight: 800;
+    line-height: 1.45;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+}
+
+.fe-prose {
+    max-width: 68ch;
+    line-height: 1.9;
+    text-wrap: pretty;
+}
+
+.fe-meta {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+}
+
+.fe-bidi {
+    unicode-bidi: plaintext;
+}
+
 /* PWA update notice (S2): brief banner, user-triggered refresh only. */
 #pwa-update {
     position: fixed;
@@ -68,6 +97,39 @@ body {
     border-radius: 1.25rem;
     padding: 0.75rem 1rem;
     font-size: 1rem;
+    /* A transient status notice must not eat clicks on the page below;
+     * its own actions re-enable pointer events. */
+    pointer-events: none;
+}
+
+#pwa-refresh,
+#pwa-dismiss {
+    pointer-events: auto;
+}
+
+/* The learner shell owns the bottom edge (player + tabs). Keep the
+ * transient update notice above that chrome; public pages keep the
+ * default bottom slot. */
+@media (max-width: 1023px) {
+    body:has(.fe-bottomnav) #pwa-update {
+        bottom: calc(env(safe-area-inset-bottom) + 4.5rem);
+    }
+    body:has(.fe-playerbar) #pwa-update {
+        bottom: calc(env(safe-area-inset-bottom) + 9.5rem);
+    }
+    /* The expanded console is much taller than the collapsed bar. */
+    body:has(.fe-playerbar[data-expanded='true']) #pwa-update {
+        bottom: calc(env(safe-area-inset-bottom) + 21.5rem);
+    }
+}
+
+@media (min-width: 1024px) {
+    body:has(.fe-playerbar) #pwa-update {
+        bottom: 6.5rem;
+    }
+    body:has(.fe-playerbar[data-expanded='true']) #pwa-update {
+        bottom: 20rem;
+    }
 }
 
 #pwa-refresh {
@@ -82,10 +144,37 @@ body {
     cursor: pointer;
 }
 
+.fe-pwa-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+}
+
+#pwa-dismiss {
+    min-height: 44px;
+    min-width: 44px;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-surface);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
 /* Visible keyboard focus everywhere: primary on surface (10.47:1). */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
+}
+
+/* Fields already carry a boundary, so the focus ring sits tighter and
+ * changes the boundary itself — one crisp ring instead of a double box. */
+:where(input, select, textarea):focus-visible {
+    outline-width: 2px;
+    outline-offset: 1px;
+    border-color: var(--color-primary);
 }
 
 /* Owner motion rule: subtle transitions only, killed under reduced motion. */
@@ -102,20 +191,21 @@ body {
 /* React fe-* hooks (ported from app.css, mapped onto @theme tokens).
  * Every class below is consumed by a React call site that ships with
  * utility classes but keeps the hook for the layout contract the
- * browser specs pin (fixed player/nav, card ratio, sentence rows,
- * pagination/current states, 16px seek compat probe --fe-seek-pct).
+ * browser specs pin (player/tab clearance, card ratio, pagination/current
+ * states, 16px seek compat probe --fe-seek-pct). The fixed layer is the
+ * AppLayout wrapper, so these children stay in normal flow inside it.
  * Server pages keep their own copy in app.css (public.blade.php). */
+/* The fixed layer is the layout wrapper that stacks the player above the
+ * tabs, so both children stay in normal flow inside it. Keeping the bar
+ * static is also what lets the desktop bar share the app measure instead
+ * of bleeding across the viewport. */
 .fe-playerbar {
-    position: fixed;
-    inset-inline: 0;
-    bottom: calc(68px + env(safe-area-inset-bottom));
+    position: relative;
     z-index: 20;
 }
 
 .fe-bottomnav {
-    position: fixed;
-    inset-inline: 0;
-    bottom: 0;
+    position: relative;
     z-index: 30;
 }
 
@@ -124,29 +214,28 @@ body {
 }
 
 .fe-bottomnav a[aria-current='page'] {
-    color: var(--color-ink);
+    color: var(--color-primary);
     font-weight: 700;
 }
 
-.fe-bottomnav a[aria-current='page'] .fe-icon {
-    color: var(--color-primary);
-}
-
-@media (min-width: 640px) {
-    .fe-bottomnav {
-        display: none;
-    }
-    .fe-playerbar {
-        bottom: 0;
-    }
-}
-
+/* Mobile and tablet share the same four tabs; the desktop rail takes
+ * over at 1024px. Hiding the tabs at 640px used to leave 640–1023px with
+ * no navigation at all. */
 @media (min-width: 1024px) {
     .fe-bottomnav {
         display: none;
     }
     .fe-sidebar {
         display: grid;
+        position: sticky;
+        top: 1rem;
+        align-self: start;
+        align-content: start;
+        gap: 0.25rem;
+        padding: 1rem 0.75rem;
+        background: var(--color-surface);
+        border: 1px solid var(--color-line);
+        border-radius: 1.25rem;
     }
 }
 
@@ -158,7 +247,7 @@ body {
 .fe-seek::-webkit-slider-runnable-track {
     height: 6px;
     border-radius: 999px;
-    background: linear-gradient(to left, var(--color-primary) 0 var(--fe-seek-pct), var(--color-line) var(--fe-seek-pct) 100%);
+    background: linear-gradient(to left, var(--color-accent) 0 var(--fe-seek-pct), var(--color-line) var(--fe-seek-pct) 100%);
 }
 
 .fe-seek::-webkit-slider-thumb {
@@ -181,7 +270,7 @@ body {
 .fe-seek::-moz-range-progress {
     height: 6px;
     border-radius: 999px;
-    background: var(--color-primary);
+    background: var(--color-accent);
 }
 
 .fe-seek::-moz-range-thumb {
@@ -209,40 +298,6 @@ body {
     padding: 0.125rem 0.625rem;
     font-size: 0.875rem;
     font-family: var(--font-en);
-}
-
-.fe-sentences {
-    display: grid;
-    gap: 0.25rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.fe-sentence {
-    width: 100%;
-    min-height: 44px;
-    text-align: start;
-    font-family: var(--font-en);
-    font-size: 18px;
-    line-height: 1.8;
-    color: var(--color-ink);
-    background: transparent;
-    border: 1px solid transparent;
-    border-inline-start-width: 4px;
-    border-radius: 0.75rem;
-    padding: 0.375rem 0.75rem;
-    cursor: pointer;
-}
-
-.fe-sentence:hover {
-    background: var(--color-surface);
-}
-
-.fe-sentence[aria-current='true'] {
-    background: var(--color-surface);
-    border-inline-start-color: var(--color-accent-strong);
-    border-color: var(--color-line);
 }
 
 .fe-english-body {
@@ -294,4 +349,31 @@ body {
     margin: 0;
     color: var(--color-ink);
     overflow-wrap: anywhere;
+}
+
+/* Press feedback and one restrained page enter. Motion is opt-in by the OS:
+   reduced-motion users get none of it. */
+@media (prefers-reduced-motion: no-preference) {
+    .fe-press {
+        transition: transform 150ms ease;
+    }
+
+    .fe-press:active {
+        transform: scale(0.985);
+    }
+
+    .fe-enter {
+        animation: fe-enter 180ms ease-out both;
+    }
+
+    @keyframes fe-enter {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
 }

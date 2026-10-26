@@ -1,7 +1,7 @@
 # Frontend migration to Inertia 3 + React 19 — safe plan
 
-Status: M0–M5 delivered in the working tree (uncommitted); M6 pending.
-Updated: 2026-10-11
+Status: M0–M6 delivered and verified in the working tree (uncommitted); owner direction 2026-10-21 included.
+Updated: 2026-10-22
 
 Binding owner change: `docs/adr/0002-inertia-react-learner-frontend.md` (2026-10-10). It explicitly supersedes the Blade/Livewire/Alpine learner-stack assumptions and the dark-mode approvals listed there; all other scope/contracts/history stay in force.
 
@@ -13,13 +13,13 @@ Non-goals: database replacement; Laravel regeneration; discarding functionality;
 
 ## 2. Observable acceptance criteria with proof required for each
 
-- [ ] A1 — Route inventory complete: every existing public, auth, learner, media, payment, placement, vocabulary, and account route below is assigned a migration strategy (§4). Proof: documentation review of this plan against `routes/web.php` + Fortify routes.
-- [ ] A2 — Backend invariants survive byte-for-byte in behavior (eligibility, level semantics, integer toman, snapshot-before-transfer, one open request, fixed lock order User → PaymentRequest → Subscription, idempotent approve, self-approval ban, revision isolation, Range contract, `private, no-store`, SW allowlist). Proof: existing Pest suites (S0–S8/R3–R5 incl. PostgreSQL race suite) stay green unweakened per slice + targeted prop-absence assertions.
-- [ ] A3 — Filament distinguished and intact: staff panel at `/admin` (content + payment-review resources, placement overview, staff TOTP) works with its internal Livewire isolated; no learner Filament assets; no second learner frontend. Proof: Pest policy/`canAccessPanel` tests + Playwright staff review journey per affected slice.
-- [ ] A4 — Slices are small, testable, reversible with stop/verification points (§7). Proof: per-slice exit evidence (Pint + slice Pest on PostgreSQL + Vite build + affected Playwright) before the next slice starts; obsolete Blade/Livewire removed only after parity.
+- [x] A1 — Route inventory complete: every existing public, auth, learner, media, payment, placement, vocabulary, and account route below is assigned a migration strategy (§4). Proof: documentation review of this plan against `routes/web.php` + Fortify routes.
+- [x] A2 — Backend invariants survive byte-for-byte in behavior (eligibility, level semantics, integer toman, snapshot-before-transfer, one open request, fixed lock order User → PaymentRequest → Subscription, idempotent approve, self-approval ban, revision isolation, Range contract, `private, no-store`, SW allowlist). Proof: existing Pest suites (S0–S8/R3–R5 incl. PostgreSQL race suite) stay green unweakened per slice + targeted prop-absence assertions.
+- [x] A3 — Filament distinguished and intact: staff panel at `/admin` (content + payment-review resources, placement overview, staff TOTP) works with its internal Livewire isolated; no learner Filament assets; no second learner frontend. Proof: Pest policy/`canAccessPanel` tests + Playwright staff review journey per affected slice.
+- [x] A4 — Slices are small, testable, reversible with stop/verification points (§7). Proof: per-slice exit evidence (Pint + slice Pest on PostgreSQL + Vite build + affected Playwright) before the next slice starts; obsolete Blade/Livewire removed only after parity.
 - [x] A5 — Single light theme only, exact palette, no substitution: DESIGN.md Premium editorial hexes (2026-10-10, canonical; ADR-0002 points at DESIGN.md as the single source) own every color; no dark/system code, no `fe-theme`, no appearance radios. Proof: token-ownership structural tests (M0 for inertia.css, S3 light-only for app.css) + re-measured contrast pairs + inspected rendered images (360/390 desktop) in RTL/FA with LTR/EN islands.
-- [ ] A6 — Player/RT L/PWA risks closed: persistent React audio preserves across Inertia navigation, stops on level-switch/logout, single element, no autoplay, retry on network error; RTL/keyboard/focus/zoom/44px/reduced-motion intact; SW caches no private data; Range re-proven on real MP3. Proof: Playwright journeys + cache audit + HTTP Range checks + inspected images.
-- [x] A7 — Planning turn left zero application-code diffs (superseded: M0–M5 implemented after that turn). Proof at the time: `git status` showed only the six docs/plan paths touched by the planning turn.
+- [x] A6 — Player/RT L/PWA risks closed: persistent React audio preserves across Inertia navigation, stops on level-switch/logout, single element, no autoplay, retry on network error; RTL/keyboard/focus/zoom/44px/reduced-motion intact; SW caches no private data; Range re-proven on real MP3. Proof: Playwright journeys + cache audit + HTTP Range checks + inspected images.
+- [x] A7 — Planning turn left zero application-code diffs (superseded: M0–M6 implemented after that turn). Proof at the time: `git status` showed only the six docs/plan paths touched by the planning turn.
 
 ## 3. Confirmed facts, constraints, assumptions, and material unknowns
 
@@ -30,7 +30,7 @@ Material unknowns (build agent must resolve against version-matched official doc
 
 ## 4. Existing patterns/components/contracts to reuse
 
-Reuse as-is: `routes/web.php` paths/names; all `app/Models`, `app/Policies`, `app/Actions` (`ApprovePayment`, `PublishLesson`, `PublishPlacementTest`, `SubmitPlacement`), `app/Support` validators (`AudioCues`, `Glossary`, `SpacedRepetition`, `DailyPlan`, `Toman`, `TopicCover`, `ReceiptImage`), middleware (`PrivateNoStore`, `ThrottleUploads`, `RejectDisabledUsers`, `EnsureStaff`, `RequireStaffTwoFactor`), file controllers (`LessonAudioController`, `PaymentReceiptController`) with Range + `X-Accel-Redirect` docblock; PWA controllers/routes (manifest/SW/offline/robots/assetlinks/sitemap); Fortify wiring + neutral reset responses; Filament resources/pages + staff 2FA + placement-publish action; DB constraints/uniques/checks/indexes; existing Pest suites as the regression oracle (ported, never weakened).
+Reuse as-is: `routes/web.php` paths/names; all `app/Models`, `app/Policies`, `app/Actions` (`ApprovePayment`, `PublishLesson`, `PublishPlacementTest`, `SubmitPlacement`), `app/Support` validators (`Glossary`, `SpacedRepetition`, `DailyPlan`, `Toman`, `TopicCover`, `ReceiptImage`), middleware (`PrivateNoStore`, `ThrottleUploads`, `RejectDisabledUsers`, `EnsureStaff`, `RequireStaffTwoFactor`), file controllers (`LessonAudioController`, `PaymentReceiptController`) with Range + `X-Accel-Redirect` docblock; PWA controllers/routes (manifest/SW/offline/robots/assetlinks/sitemap); Fortify wiring + neutral reset responses; Filament resources/pages + staff 2FA + placement-publish action; DB constraints/uniques/checks/indexes; existing Pest suites as the regression oracle (ported, never weakened).
 
 ## 5. Smallest viable design and relevant data/control flow
 
@@ -76,6 +76,25 @@ Smallest next implementation action (M6, authorized next): run the full gate whe
 
 Smallest first implementation action (M0, authorized next): resolve Inertia 3 + React 19 + TS versions against version-matched official docs for Laravel 13 without touching backend behavior; scaffold the Inertia shell + single-light tokens + session/CSRF proof; migrate login/register/logout/reset pages only; prove with Pest auth/reset on PostgreSQL + Playwright login/logout/refresh + structural no-dark/no-`fe-theme` check; stop before M1. Do not install a starter kit over the repo; do not change routes, models, migrations, policies, or money logic.
 
+## 11. Architecture deepening pass — 2026-10-21 (uncommitted)
+
+Scope: the five candidates from the architecture review; no route, schema, money, or permission change. `GLOSSARY.md` records the domain terms used below.
+
+- Audio transport: `resources/js/lib/audio.ts` owns element events, play/pause, seek, fraction seek, skip, rate cycle, error/retry, and time state. `lib/player.tsx` is the persistent learner adapter (track identity, resume, progress/complete, 409) and the public pages use the same transport with no callbacks. The player context is split into state/actions so `AppLayout` consumes actions only; `lessonUrl` and the duplicate time formatter are gone.
+- Reading surface 2026-10-21: `ReadingSentences` and all cue props were removed by owner direction. `Reading::prepared()` returns plain paragraphs + glossary; reader/sample render `article.fe-english-body`; the landing preview renders opening paragraphs beside the normal player. The `audio_cues` columns, `AudioCues`/`Sentences` helpers, Filament cue repeater, and cue tests were removed in the same cutover.
+- Entitlement: deleted `LearnerAccess` and `SubscriptionAccess`; `LessonPolicy` uses `Entitlement::eligible()` (fresh + staff); the S6 matrices assert `Entitlement::active()` — the same seam production crosses.
+- Payloads: `App\Support\TopicCard` owns the topic-card shape for library, saved, Today, and landing; `ReadingPayload` owns the reader/sample payload and the landing preview slice; `TopicCover::url()` owns the `/storage/` rule. Shared `TopicPayload`/`LessonPayload`/`ReadingContent` types live in `resources/js/types.ts`. The M0 privacy test now asserts prop keys and the single public `sampleAudioUrl` instead of grepping raw HTML for “audio”; the working-tree red test is fixed.
+- Precache: `resources/public-assets.json` is the single allowlist read by `vite.config.js` and `App\Support\PublicAssets`; `PwaController` delegates and a completeness test fails if a `precache: true` input is missing from the build manifest. Also fixed the truncated `/sw.js` fetch listener (pre-existing syntax error), made `swVersion()` fall back to `s2-v1` when `SW_VERSION` is empty, and precache with `credentials: 'omit'` so an install cannot persist a session cookie across logout.
+
+Evidence: Pest 302 passed / 3608 assertions on PostgreSQL (including the direct `D5PayloadsTest` shape tests and the precache completeness test); `npm run typecheck` clean; `npm run build` clean; Pint clean on every changed PHP file (global Pint still flags pre-existing, unrelated style drift, left untouched); Playwright Chromium on the browser lane (`fe_browser` + `.env.browser` + `SALES_ENABLED=true`): 23/23 audio/reader/landing specs, landing 4/4, and 41/42 of the affected regression batch. The one logout/back-forward spec is order-dependent: it passes standalone and in the full `s2-pwa` file (6/6), and its spec already documents the in-flight-response race; no assertion was weakened to obtain green.
+
+M6 verification 2026-10-22 (working tree, uncommitted):
+- Pest 301 passed / 3869 assertions on PostgreSQL; Pint clean on every changed PHP file (global Pint still flags 14 pre-existing unrelated files); `npm run typecheck` and `npm run build` clean.
+- Full Playwright Chromium suite on a localhost secure-context lane (`fe_browser`, built assets, `SALES_ENABLED=true`): 84/84. Three test-contract/race fixes were required and keep the same assertions: `s1-player` targets the public sample's in-flow console; `s7-placement` reads the level definition-row and waits for hydration after reload; `backup-admin` targets the completed row instead of the status flash. The lane also needed its missing `backup-staff@example.com` fixture and clearing a stale `cache_locks` entry from an interrupted local attempt; no product code changed. `s2-pwa` 6/6 includes the allowlist cache audit, offline fallback, update-without-reload, and logout/back-forward isolation.
+- Inspected fresh captures: landing 360/390/full-page and 1440, account active 390/1440, reader 390/1440 + 320 reflow, download 390, library/reader responsive sweep 360–1360, playing state. Contrast and light-only locks stay with `S3DesignTest`/`design-theme`.
+- Independent `reviewer` + `security-reviewer` passes: no unresolved BLOCKER/MAJOR.
+- Lane note: :8111 uses `fe_dev`; the documented browser lane is `fe_browser` with `.env` + `.env.browser`, served on a localhost origin (service workers need a secure context).
+
 ## Appendix — route inventory → migration strategy (from `routes/web.php` + Fortify)
 
 | Route | Current | Strategy |
@@ -96,3 +115,44 @@ Smallest first implementation action (M0, authorized next): resolve Inertia 3 + 
 | `GET /manifest.webmanifest`, `/sw.js`, `/offline`, `/robots.txt`, `/.well-known/assetlinks.json` | `PwaController` | Unchanged controllers; SW allowlist re-audited (add Inertia chunks only if fingerprinted public assets) |
 | `/admin` + Filament resources/pages | Filament + Livewire (internal) | Untouched; learner bundle must not include Filament assets |
 | `/staff/two-factor*`, `/staff/placement/{test}/publish` | Blade + shared action | Untouched; publish still uses `PublishPlacementTest` |
+
+## 12. Follow-up feature slice — 2026-10-22 (owner selection)
+
+Scope: nine owner-selected follow-ups from the release-readiness review; no route/palette/theme rewrite.
+
+- Vocabulary: cloze review presentation; bulk «همه را می‌دانم». SRS math and grade endpoint unchanged. CSV import/export were both retired on 2026-10-25 (§14); `R4VocabularyTest` now covers save/edit/remove, grading, bulk isolation, the retirement 404, and page clamping.
+- Account: recent payment history (status/plan/snapshot amount/date, no receipt/bank/internal fields) + daily `subscriptions:remind-expiring` command with a `renewal_reminder_sent_at` marker and renewal reset. `S0AccountTest` + `SubscriptionReminderTest` cover the allowlist, one-per-window, skip states, dry-run, and renewal reset. Real SMTP send remains BLOCKED.
+- Player: Media Session metadata/actions for learner and sample players with feature detection; Chromium mock spec proves metadata/handlers/position state. Lock-screen/device behavior remains UNPROVEN.
+- Shell/UI: delayed navigation skeleton; one Persian type scale (`fe-title`/`fe-prose`/`fe-meta`/`fe-bidi`); duplicate shell brand mark removed.
+- SEO: `/sample` in the sitemap while published; canonical without query; description + Article JSON-LD. `S8LandingTest` covers both.
+- Tooling: all 14 pre-existing Pint files formatted; `scripts/verify.sh --template-only` used by `workflow-doctor`; browser CI seeds `S2BrowserSeeder` with sales on and runs reader/landing/PWA/Media-Session/skeleton specs; `scripts/browser-lane.sh` added.
+
+Evidence: Pest 313 passed / 3931 assertions on PostgreSQL; global Pint clean; `npm run typecheck` and `npm run build` clean; full Playwright suite on `fe_browser` (86 tests) with inspected account/cloze/skeleton captures. `scripts/browser-lane.sh start|status|seed` exercised. Independent review status is recorded in the PR evidence.
+
+## 13. Review pass — 2026-10-25 (owner request: no developer errors, CSV export removed, player polish)
+
+Scope: a read-only audit of learner-facing code plus the owner-selected fixes. No palette, route family, money rule, or access invariant changed.
+
+- Errors: added `lang/fa/{auth,passwords,validation,pagination}.php`; locale fixed to `fa`; one exception boundary translates JSON validation/auth/throttle/403/404; 419/429/405 map to Persian ErrorPage/Blade states; `ErrorPage` uses a chrome-less shell and the Blade error views are route/Vite-independent. Filament stays English via a staff-path locale middleware (panel routes are outside the web group).
+- CSV: export route/controller/UI/tests removed; the import was retired later the same day (§14); bulk-known remains.
+- Player: single `AudioConsole` shared by the persistent learner bar and `/sample`; buffering/buffered progress, RTL seek/time alignment, one `#player-play` in the DOM, save-failure surface, expansion-aware padding, and PWA-notice clearance. Media Session contract unchanged.
+- Reliability/UX: array query params no longer 500; nginx/PHP upload limits match validated sizes; payment-create failures redirect with field errors for Inertia; placement saves track per-question state and gate submit; SRS grading cannot double-submit; reset/cancel/delete are two-step; search stays in the SPA; skeleton skips partial reloads and times out; public trust copy has no DRAFT/BLOCKED labels; landing CTA follows `Release::published()`; partial-save/stale-progress messages are Persian; tests updated for the new truthful contracts.
+
+Evidence: Pest 318 passed / 3992 assertions (PostgreSQL); `vendor/bin/pint --test` clean (273 files); `npm run typecheck` + `npm run build` clean; full Playwright suite on `fe_browser` (built assets, Persian locale, one worker, zero retries) 86 passed. The reusable lane required test updates for truthful state (per-question placement saved marker, no empty backup history, release-aware download CTA), not product weakening. Inspected captures: player collapsed/expanded at 390, words, library, account, learner 404.
+
+## 14. App-like shell, brand assets, pagination, CSV import retired — 2026-10-25 (owner request)
+
+Scope: one owner-instructed UI/UX pass over the learner shell, Discover, the notebook, the reader, Account/Today, and the PWA affordances. No palette token, access rule, money rule, SRS math, or route family changed.
+
+- Brand: replaced the owner source assets (`Logo/fast_english_app_favicon.png`, `Logo/fastenglish_header_logo.png`) and generated `public/icons/*`, `favicon.ico`, and light/dark header lockups. Landing/login, the PWA/splash, and the desktop rail carry the brand; the mobile brand bar is gone.
+- Shell: `ScreenHeader` (sticky 56px, title, optional back, one action) on Discover, Saved, Words, Account, Reader, Settings, payment, placement, subscribe, locked, not-ready, and review. The Inertia hairline is fixed at the top so a screen without a bar (Today) still shows navigation progress.
+- Discover: sticky search, native `<dialog>` filter sheet (level/category), active-filter chips, count/clear row, compact 16:9 rows (96px cover, 128px from `sm`), one column on mobile and two from `md`. First result now sits above the fold; URL state is unchanged. The Inertia sidebar gained the rail card/sticky rules it was missing.
+- Pagination: shared `Pagination` component (Persian numerals, windowed desktop pages, compact mobile summary, `aria-current`, results focus/scroll + live announcement). `ClampsPagination` redirects out-of-range/malformed `page` values on Discover, Saved, and Words with filters preserved.
+- Notebook: CSV import retired (route, controller, UI state, browser assertion, and three feature tests replaced by a 404-retirement test plus a page-clamp test). Review is the only primary action; tabs are one scrollable row; row actions are quiet text controls; a toast confirms success while `#words-status` stays the accessible source. The Words tab badge reads a shared `due_words` count (one aggregate query, partial reloads include it).
+- Reader: English title + back in the bar; bookmark near the top; «خواندم»/reset after the glossary with a way back to Discover; success toast. No second player and no change to audio binding.
+- Account/Today: level CTA in the profile, first-run level card on Today (`needsLevel`), install card driven by `beforeinstallprompt` with remembered dismissal, Persian digits for counts/minutes. The install event is captured once at app boot (`lib/install.ts`) so an Account visit later in the session still sees it. The lane seeder now creates the `backup-staff@example.com` fixture, so `backup-admin` is reproducible from a clean seed.
+- Query budget: the shared due-words badge adds exactly one constant query per Inertia request; `P004QueryBudgetsTest` moved 7→8 (reader), 14→15 (Today), 7→8 (Words) while keeping the constant-as-data-grows assertion.
+- PWA: manifest background/theme colors now match `#F7F4EE`; apple web-app title/status bar added; offline page palette updated.
+- Motion: `fe-press` (150ms) and `fe-enter` (180ms) only under `prefers-reduced-motion: no-preference`.
+
+Evidence: full Pest suite on `fe_test` (`docker exec --env-file .env.testing`) **321 passed / 4074 assertions**; `P004QueryBudgetsTest` passes with the +1 constant badge query. `vendor/bin/pint --test` 289 files clean; `npm run typecheck` and `npm run build` clean. Full Playwright Chromium suite on the seeded `fe_browser` lane (`BASE_URL=http://127.0.0.1:8112`) **87 passed** in 3.0m, including s3-library/s3-mobile, m1-journey, r-words (due badge + CSV absence), r-today, s2-pwa, s4-persistent/resume/mobile, s5/s6/s7, s8 landing/download/reset, design-theme, pwa-install, and backup-admin. Test-contract updates were minimal and truthful: s4-preslice reads `data-total` and uses the compact next link; s6-queue scopes the reader title to level 2; s4-persistent targets the rail link; design-theme checks the card media instead of the removed cover chip; the lane seeder now creates the `backup-staff` fixture. Inspected captures: login 390, Today 390/1440, Discover 390/1440 + filter sheet, Words 390 (badge/toast), Reader 390, Account 390, landing footer. Residual: iOS install has no in-app button (browser A2HS only); real-device install/offline remains UNPROVEN; the due badge costs one constant query (budgeted).

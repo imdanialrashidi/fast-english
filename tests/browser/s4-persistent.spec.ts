@@ -39,10 +39,11 @@ test('S4-6 audio survives reader to library and back with one listener set', asy
   expect(miniBefore).toContain('The City Park');
   expect(miniBefore).toContain('A2');
 
-  // In-app navigation to the library via the top nav (wire:navigate): the
-  // same audio element keeps playing.
+  // In-app navigation to the library via the desktop rail: the same audio
+  // element keeps playing. Scope to the rail because the reader now also
+  // has a back link with the same words.
   const elementHandle = await page.locator('#lesson-audio').elementHandle();
-  await page.getByRole('link', { name: 'مطالب' }).click();
+  await page.locator('.fe-sidebar').getByRole('link', { name: 'کشف مطالب', exact: true }).click();
   await page.waitForURL('**/app**');
   await expect(page.locator('article.fe-card').first()).toBeVisible();
   const stillPlaying = await page.locator('#lesson-audio').evaluate((a: HTMLAudioElement) => !a.paused);

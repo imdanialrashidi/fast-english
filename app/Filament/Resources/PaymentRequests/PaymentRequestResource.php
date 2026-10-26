@@ -7,7 +7,6 @@ use App\Filament\Resources\PaymentRequests\Pages\ViewPaymentRequest;
 use App\Filament\Resources\PaymentRequests\Tables\PaymentRequestsTable;
 use App\Models\PaymentRequest;
 use App\Support\Entitlement;
-use App\Support\Toman;
 use BackedEnum;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -65,15 +64,85 @@ class PaymentRequestResource extends Resource
                 TextEntry::make('public_reason')->label('Public reason')->placeholder('—'),
                 TextEntry::make('created_at')->label('Opened')->dateTime(),
                 TextEntry::make('reviewed_at')->label('Reviewed at')->dateTime()->placeholder('—'),
-            ]),
+            ])->columns(2),
+
+            // The learner supplies these optional transfer hints so staff
+            // can match the transfer against the destination account. They
+            // stay private to the panel; the learner page never receives
+            // them. Before this section they were write-only.
+            Section::make('Transfer details (learner-supplied, optional)')->components([
+                TextEntry::make('bank_reference')
+                    ->label('Bank reference / tracking code')
+                    ->getStateUsing(fn ($record) => filled($record->bank_reference) ? $record->bank_reference : '—'),
+                TextEntry::make('sender_last4')
+                    ->label('Sender card last 4')
+                    ->getStateUsing(fn ($record) => filled($record->sender_last4) ? $record->sender_last4 : '—'),
+                TextEntry::make('transferred_at')
+                    ->label('Transferred at')
+                    ->getStateUsing(fn ($record) => $record->transferred_at)
+                    ->dateTime()
+                    ->placeholder('—'),
+            ])->columns(3),
+
+            Section::make('Review audit')->components([
+                TextEntry::make('reviewer.name')->label('Reviewed by')->placeholder('—'),
+                TextEntry::make('canceller.name')->label('Cancelled by')->placeholder('—'),
+                TextEntry::make('cancelled_at')->label('Cancelled at')->dateTime()->placeholder('—'),
+                TextEntry::make('internal_note')
+                    ->label('Internal note (staff only)')
+                    ->getStateUsing(fn ($record) => filled($record->internal_note) ? $record->internal_note : '—')
+                    ->columnSpanFull(),
+            ])->columns(3),
+
+            // A reviewer needs the current window before granting or
+            // revoking; the payment snapshot alone says nothing about the
+            // learner's live access.
+            Section::make('Learner subscription (current)')->components([
+                TextEntry::make('subscription_status')
+                    ->label('State')
+                    ->getStateUsing(fn ($record) => $record->user?->subscription?->statusLabel() ?? 'No subscription row'),
+                TextEntry::make('subscription_starts_at')
+                    ->label('Starts at')
+                    ->getStateUsing(fn ($record) => $record->user?->subscription?->starts_at)
+                    ->dateTime()
+                    ->placeholder('—'),
+                TextEntry::make('subscription_expires_at')
+                    ->label('Expires at')
+                    ->getStateUsing(fn ($record) => $record->user?->subscription?->expires_at)
+                    ->dateTime()
+                    ->placeholder('—'),
+                TextEntry::make('subscription_revoked_at')
+                    ->label('Revoked at')
+                    ->getStateUsing(fn ($record) => $record->user?->subscription?->revoked_at)
+                    ->dateTime()
+                    ->placeholder('—'),
+                TextEntry::make('subscription_events_summary')
+                    ->label('Recent subscription events')
+                    ->getStateUsing(fn ($record) => $record->user?->subscriptionEvents()
+                        ->with('actor')
+                        ->orderByDesc('created_at')
+                        ->limit(5)
+                        ->get()
+                        ->map(fn ($event) => $event->created_at->timezone('Asia/Tehran')->format('Y-m-d H:i')
+                            .' · '.$event->type
+                            .($event->actor?->name ? ' · '.$event->actor->name : '')
+                            .($event->duration_days ? ' · '.$event->duration_days.' days' : ''))
+                        ->all() ?: ['No subscription events yet.'])
+                    ->listWithLineBreaks()
+                    ->columnSpanFull(),
+            ])->columns(2),
+
             Section::make('Receipt (private, staff-only)')->components([
                 ImageEntry::make('receipt_image')
                     ->label('Receipt image')
-                    ->getStateUsing(fn ($record) => $record->receipt_path
-                        ? route('payments.receipt.show', $record)
-                        : null)
-                    ->placeholder('No receipt submitted yet.')
+                    ->visible(fn ($record) => $record->receiptAvailable())
+                    ->getStateUsing(fn ($record) => route('payments.receipt.show', $record))
                     ->imageHeight('24rem'),
+                TextEntry::make('receipt_state')
+                    ->label('Receipt')
+                    ->visible(fn ($record) => ! $record->receiptAvailable())
+                    ->getStateUsing(fn ($record) => $record->receiptStateLabel())
+                    ->columnSpanFull(),
             ]),
         ]);
     }

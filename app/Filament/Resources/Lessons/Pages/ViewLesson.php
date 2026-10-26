@@ -13,6 +13,14 @@ class ViewLesson extends ViewRecord
 
     protected static string $resource = LessonResource::class;
 
+    /** Same hidden-attribute bridge as EditLesson (private audio path). */
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['audio_path'] = $this->getRecord()->getRawOriginal('audio_path');
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

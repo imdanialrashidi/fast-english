@@ -1,4 +1,103 @@
+## Unreleased — public placement test, iPhone install guide, launch content (owner 2026-10-26)
+
+- **Real placement test.** `PlacementCatalogSeeder` publishes `placement-2026-10-v1`: 20 four-option fill-in-the-blank items, four per CEFR band (A1–C1), ordered easy to hard, one unambiguous completion each, correct option balanced five times per position. `PlacementLevel` documents the cut scores (0–3 A1, 4–7 A2, 8–11 B1, 12–15 B2, 16–20 C1) and stops at C1 deliberately — 20 receptive items cannot place C2, and the result page says so. The learner no longer sees the fixture version string; the result shows the Persian band label.
+- **iPhone / PWA install guide.** `/install` is now a real public page (it used to redirect to `/download`): Safari «Add to Home Screen», Chrome Android install, desktop install, the Telegram/Instagram in-app-browser note, and what changes after install. Linked from Download, Account (`نصب روی گوشی`), and the public footer; added to the sitemap. Browser proof at 360 and 1440.
+- **No test handle on the public surface.** `@test` support/cooperation and the three legal-copy mentions are replaced by `support@fastenglish.ir`; staff can change the address in Business settings without a deploy.
+- **Deploy docs.** COOLIFY bring-up now includes the idempotent catalog seeds (`PlanCatalogSeeder`, `PlacementCatalogSeeder`); `LAUNCH_INPUTS_FA.md` records placement as supplied and keeps the remaining owner inputs explicit.
+- Evidence: Pest 351 passed / 4,327 assertions; Pint 301 files; typecheck + build PASS; Chromium 89 passed; production image rebuilt; compose stack healthy with both catalogs seeded; `coolify-smoke` 27/27.
+
+## Unreleased — Coolify bring-up package; production image builds and boots (owner 2026-10-26)
+
+- **The production image now builds.** The Vite `assets` stage lacked `vendor/` (the Filament admin theme is a Vite input that `@import`s the framework CSS) and `app/` (its Tailwind `@source` root), so `npm run build` died with `Can't resolve '…/vendor/filament/…/theme.css'`. The stage now runs after `vendor` and copies both; the build produces a 1.05 GB image with the cache-proof lines.
+- **Self-contained production stack.** `compose.prod.yml` runs the app + PostgreSQL 17 + two named app volumes on one private network; `${NAME:?}` variables block a deploy without `APP_KEY`, `DB_PASSWORD`, or `APP_URL`. Proven locally: image build → both services healthy → `release.sh` on an empty database → 25 smoke checks.
+- **`docker/release.sh` no longer aborts on a fresh database.** `migrate:status` exits 1 before the `migrations` table exists, and `set -e` stopped the first release; the status call is now tolerant, while `migrate --force` still fails loudly.
+- **Image permissions.** `RUN chmod -R a+rX` on the application directories, so a checkout made under `umask 077` (0600 files) cannot crash `www-data` with "Permission denied" while `/up` still reports healthy.
+- **`ops:status` stops reporting a false zero.** With `LOG_CHANNEL=stderr` there is no file log; the line is now `recent_errors_24h=unavailable` and points at the container log. New regression test covers the no-file branch.
+- **Deploy scripts.** `scripts/coolify-install.sh` (host preflight + official installer), `scripts/coolify-env.sh` (APP_KEY + DB password written outside the repo), `scripts/coolify-smoke.sh` (25 post-deploy probes). `docs/ops/COOLIFY.md`, README, and `STAGING_CHECKLIST.md` describe the Compose path and the first-release restart.
+- **CI.** PostgreSQL service 16 → 17 in both jobs, plus a new `image` job that runs `docker build`, so a broken Dockerfile fails the PR instead of the deploy.
+- **Browser lane.** `scripts/browser-lane.sh` runs the container as the host uid/gid; a 9-spec run left no root-owned files.
+- Evidence: Pest 345 passed / 4,128 assertions; Pint 297 files; typecheck + Vite build PASS; full Chromium suite 86 passed; production image build PASS; Compose stack healthy; `coolify-smoke` 25/25.
+
+## Unreleased — admin panel completion review (owner 2026-10-26)
+
+- Closed the staff step-up gap: `/staff/placement/*`, `/staff/transfer/*`, and the staff branch of the private receipt route now require a passed TOTP session, and the panel auth middleware is persistent so idle/stale Livewire updates cannot keep approving or editing. Owners keep their receipt route without a staff challenge.
+- Fixed the lesson editor: `audio_path` is re-added to the form fill/view even though the model hides it from array serialization. Staff can edit a title without re-uploading audio, and a typo fix no longer increments `audio_revision` (which would reset learner progress). Added a private staff-only draft audio preview (route + player) so audio can be checked before publishing.
+- Payment queue now shows learner-supplied transfer details (bank reference, sender last 4, transfer time), the internal note, reviewer/canceller audit, the learner's current subscription window + recent events, and a retention/missing-file receipt state instead of a broken image.
+- Added a read-only Users resource (ADM-02) with search/filter, current subscription and recent requests/events, audited suspend/activate actions, and the shared grant/revoke actions. Added `staff:2fa-reset` for lost authenticators; `staff:bootstrap` now refuses to create an account without an explicit password.
+- Filament timestamps now display in Asia/Tehran, a custom admin theme compiles the custom pages' utility classes (full-width legal textareas and normal spacing), the dashboard shows pending/open payments, active subscriptions, published content and a queue shortcut, and list tables eager-load their relationships.
+- Hardened owner settings: Persian/Arabic-Indic card digits are normalized, a card without holder/bank is rejected, settings+destination save in one transaction, topic/category slugs are `alphaDash`, lesson durations are integers, only active staff can be recorded as reviewers, and placement publish asks for confirmation.
+- Learner retention page: after a receipt file is removed by the 90-day policy, the status page no longer renders a dead “view receipt” link.
+- Evidence: full Pest suite 344 passed / 4,126 assertions; Pint PASS; `npm run build` PASS; Chromium admin sweep (dashboard, users, payment record, lesson editor, business settings, data transfer) with no console/page errors. No commit or deploy.
+
+## Unreleased — app-like shell, brand palette, CSV import retired (owner 2026-10-25)
+
+- Replaced the brand set with the owner-supplied palette icon and lockup. Generated `public/icons/*`, a square 16/32/48/64 `favicon.ico` plus dedicated 16/32 PNGs, and light/dark header lockups; the root HTML versions the favicon URLs by file mtime so browsers fetch the new icon instead of a cached one.
+- Removed the repeated mobile brand bar. Each screen now owns a sticky `ScreenHeader` (title, optional back, one action); the brand stays on landing/login, the PWA/splash, and the desktop rail. Reader completion moved after the lesson, with bookmarking still near the top.
+- Rebuilt Discover for density: sticky search, native filter sheet for level/category, removable active-filter chips, compact rows, and two dense columns from `md`. Pagination is one shared component with Persian numerals, windowed pages, results focus/announcement, and a server-side clamp for out-of-range or malformed `page` values on Discover, Saved, and Words.
+- Retired the vocabulary CSV import (`/app/words/import`, controller, UI, browser assertion, and three feature tests). The notebook keeps review, edit/known/remove, and bulk «همه را می‌دانم»; existing words are untouched.
+- Added real shell state: due-word count badge on the Words tab (shared `due_words`, count only; one constant query, P004 budgets updated), first-run level CTA on Account and Today, Chromium install card captured at app boot with remembered dismissal, success toasts (inline status remains the accessible source), and reduced-motion-safe press/enter feedback.
+- PWA polish: manifest background/theme colors now `#F7F4EE`, apple web-app title/status bar, and the offline page uses the current palette.
+- Docs record the owner instruction in `docs/PRODUCT.md` and `docs/DESIGN.md`; the exec plan §14 carries the evidence and residuals.
+
+## Unreleased — DSH workflow replaces omp (owner 2026-10-25)
+
+- Migrated the repository agent workflow to [DSH Workflow](https://github.com/imdanialrashidi/dsh-workflow) v0.1 (commit `93c9281`, verified against DSH `0.2.1-rc.2`). `AGENTS.md` is now the DSH entry point; the workflow skills plus the project's `no-ai-slop` skill live in `.dsh/skills/`; `docs/WORKFLOW.md` and `docs/REVIEW-POLICY.md` replace `docs/HARNESS.md`; `docs/adr/0003-dsh-workflow.md` records the decision and rollback.
+- Retired the omp command files, rules, project config, and the superseded skills under `.omp/`. The previous workflow is recoverable in `.artifacts/migration-backup-2026-10-25-omp-to-dsh/` (ignored by git).
+- Retained the reviewed scoped delivery helper as `scripts/pr-deliver.mjs` (renamed from `scripts/omp-pr.mjs`) with provider-neutral markers, lock/receipt names, and `PR_DELIVERY=off`; its behavior and opt-in `ai-changes` → `main` scope are unchanged.
+- Updated the workflow self-check to validate `.dsh/skills` frontmatter, required workflow documents, and the renamed helper; added `NOT EXECUTED` to the acceptance statuses so skipped checks are not reported as passes.
+- Product code, product behavior, and the Pest/Playwright suites are unchanged.
+
+## Unreleased — owner catalog, card fallback, published trust copy (owner 2026-10-25)
+
+- Added owner-priced plans (399,000 / 957,600 / 3,351,600 toman for 30/90/365 days), a repeatable `PlanCatalogSeeder`, and a staff Plans resource for edits without deploys.
+- Added staff Business settings: support/cooperation channels, card destination and fallback switch, prepared gateway metadata, and editable terms/privacy/refund copy. A fresh destination is an obvious placeholder; checkout stays closed until a real 16-digit card, holder, and bank replace it.
+- Published `/refund` and the supplied legal copy; support/cooperation now link the `@test` channel from settings. Added the page to the public footer and sitemap; domain recorded as `fastenglish.ir`.
+- Added `docs/LAUNCH_INPUTS_FA.md` with received inputs and the remaining SMTP, gateway, content, placement, signing, hosting, and legal-review blockers.
+
+## Unreleased — review pass: Persian errors, shared player console, CSV export removed (owner 2026-10-25)
+
+- Removed the vocabulary CSV export (`/app/words/export`, button, controller response, and tests). The transactional CSV import and the two-step «همه را می‌دانم» action remain; previously exported files still import with the same columns.
+- Added `lang/fa/{auth,passwords,validation,pagination}.php`, fixed the app locale to Persian, and translated JSON validation/auth/throttle/403/404 messages in one exception boundary. 419/429/405 now render Persian pages/ErrorPage states. The Filament staff panel keeps English through a staff-path locale boundary.
+- Rebuilt the player as one shared `AudioConsole` for the persistent learner bar and the public sample: buffering spinner/`aria-busy`, buffered progress overlay, RTL-correct seek/time alignment, one `#player-play` at a time, save-failure surfacing in the collapsed bar, and expansion-aware content padding. The expanded console no longer covers content, and the PWA notice lifts above it.
+- Fixed UX defects found in the review: internal DRAFT/BLOCKED labels removed from public trust pages; landing primary CTA follows the real APK release state; learner skeleton skips partial reloads, stays below the player, and releases after 20 s; library/words search submits through Inertia (audio survives); placement answers track their saved state and gate final submit; SRS grading cannot double-submit; reset/cancel/delete are two-step; sample CTAs follow the session; failure text uses alert/danger styling; Today's headline reflects real progress; guest error pages no longer show learner navigation.
+- Server hardening: array query params no longer 500 (sample/library/words), receipt/audio upload limits in nginx/PHP now match the validated 30 MB/5 MB sizes, payment-create failures return field errors to Inertia instead of a JSON modal, and stale/late progress errors are Persian with a client-side duration clamp.
+
+## Unreleased — mobile UI polish: reader-first density, tablet navigation, shell chrome (2026-10-23)
+
+- Restored navigation on 640–1023px tablets (the tab bar used to disappear before the desktop rail appeared).
+- Contained the persistent player to the app measure on desktop; kept it above the mobile tabs and refined the narrow-screen layout (LTR title truncation, denser controls).
+- Reader: compact mobile cover, inline level selector, primary action first; Library: compact mobile search/filter rows and cleaner topic rows; Today: tighter sections and card meta; Words: review action first, collapsible CSV import, flat search; Account: 320px overflow fixed.
+- Unified the brand lockup across app/public/auth, removed the duplicate mobile auth brand, and fixed footer brand alignment.
+- Auth forms no longer autofocus (mobile keyboard no longer opens on load); field focus uses a single 2px ring.
+- PWA update prompt now sits above the bottom tabs/player instead of covering them.
+
+## Unreleased — vocabulary tools, renewal reminders, Media Session, skeletons (owner 2026-10-22)
+
+- Vocabulary review now uses a cloze card: the target word is blanked inside its real example until reveal; words without a usable example keep the word-first fallback. SRS scheduling is unchanged.
+- Vocabulary notebook adds owner-only CSV export/import and a two-step «همه را می‌دانم» bulk action. Export is formula-safe and private; import is one transaction, capped at 500 rows, and never touches another learner's words.
+- Account adds a recent payment-history list (status, plan, snapshot amount, date) with no receipt/bank/internal fields. A daily `subscriptions:remind-expiring` command sends one renewal mail per current window; real SMTP delivery remains a launch prerequisite.
+- The persistent learner player and public sample publish Media Session metadata plus play/pause/seek handlers when the browser supports them. Background audio is not promised.
+- In-app navigation shows a delayed skeleton while the next page loads. Learner pages share a Persian type scale and bidi-safe headings; the duplicate shell brand mark is removed.
+- `/sample` joins the sitemap while a published sample exists and ships its own canonical (without query), description, and Article JSON-LD.
+- CI: the 14 pre-existing Pint style failures are fixed; `workflow-doctor` now runs the template-only gate; the browser job seeds `S2BrowserSeeder` with sales on and runs the reader/landing/PWA/Media-Session/skeleton specs. `scripts/browser-lane.sh` documents the local Chromium lane.
+
 # Changelog
+
+## Unreleased — plain reader, Persian app chrome, app-style account (owner 2026-10-21)
+
+- Removed sentence-level audio/text sync: reader, public sample, and landing preview render plain English paragraphs beside the normal player; cue props, highlight/bold rows, click-to-seek, follow-scroll, cue columns/validators, and the staff cue editor are gone.
+- Replaced the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the `Example` field label with Persian chrome; updated the false sentence-sync marketing/SEO copy.
+- Simplified the app shell: no in-app marketing footer, no duplicate signed-in header account CTA, and no duplicate account-page navigation chips.
+- Account is now an app profile screen: identity card, level/goal summary, subscription status with one next action, settings/saved/placement rows, and logout; dates render in Persian (Asia/Tehran) from an ISO server prop.
+- Today drops the duplicated due-words block and repeated level line, and the goal ring now reflects the real `progress_pct`.
+- Reader/sample covers are bounded to 14rem; the sample player is in flow instead of a fixed overlay.
+
+## Unreleased — landing/app separation, download-first landing, account fix
+
+- Landing system is guest-only: `marketing.guest` redirects signed-in users from `/`, trust pages, `/download`, and `/install` to `/app/today`; `/sample` stays public as the in-app free path. The app shell no longer links to marketing pages, and the landing no longer links into `/app`.
+- Landing conversion is download-first; plan interest goes through registration. Featured topics are informational rows, not app links.
+- Server-rendered SEO for landing/download: title, description, canonical, Open Graph, Twitter, and JSON-LD (`WebSite`, `SoftwareApplication`, `FAQPage`) with FAQ copy from one server source.
+- Account page: active subscription shows renewal instead of a first-purchase CTA; expired/revoked states distinguish cleanly; desktop sidebar pill no longer stretches; main padding follows actual player presence; email and daily-goal presentation tightened.
 
 ## Unreleased — DeepWiki MCP replaces Context7
 

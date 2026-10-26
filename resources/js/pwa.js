@@ -29,8 +29,20 @@
       }
     });
 
+    const dismiss = document.createElement('button');
+    dismiss.type = 'button';
+    dismiss.id = 'pwa-dismiss';
+    dismiss.setAttribute('aria-label', 'بستن اعلان به‌روزرسانی');
+    dismiss.textContent = '×';
+    dismiss.addEventListener('click', () => bar.remove());
+
+    const actions = document.createElement('span');
+    actions.className = 'fe-pwa-actions';
+    actions.appendChild(button);
+    actions.appendChild(dismiss);
+
     bar.appendChild(message);
-    bar.appendChild(button);
+    bar.appendChild(actions);
     document.body.appendChild(bar);
   }
 

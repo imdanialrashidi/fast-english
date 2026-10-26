@@ -1,0 +1,131 @@
+# Fast English — self-contained production stack: app (nginx + php-fpm +
+# scheduler + queue) and PostgreSQL 17, on one private Compose network.
+#
+# Coolify (recommended path):
+#   Project → New → Docker Compose (Git repository) →
+#   Base Directory: /            Docker Compose Location: /compose.prod.yml
+#   Domains: Add domain → service `app` → https://<your-domain>:8080
+#   Environment: Coolify creates every ${NAME} below as an editable variable.
+#   Variables marked with `:?` block the deploy until they have a value.
+#
+# Local proof (owner machine, no TLS):
+#   docker compose -f compose.prod.yml --env-file /tmp/fe.env up -d --build
+#   docker compose -f compose.prod.yml exec app sh /var/www/html/docker/release.sh
+#
+# Invariants (docs/ops/COOLIFY.md):
+#   - Port 8080 stays internal. Coolify's proxy owns TLS and the HTTPS
+#     redirect; the app trusts X-Forwarded-* only because of that.
+#   - Migrations never run on container start. Run
+#     `sh /var/www/html/docker/release.sh` once per release, after a backup.
+#     On an empty database the queue/scheduler exhaust their retries before
+#     that release, so restart the app once afterwards.
+#   - storage/app/private and storage/app/public are named volumes; Docker
+#     seeds a fresh named volume from the image, so the www-data ownership
+#     the image ships is kept.
+#   - Logs go to stdout/stderr only (Coolify runtime logs). No log volume.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_NAME: "Fast English"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:?set APP_KEY (php artisan key:generate --show)}
+      APP_URL: ${APP_URL:?set APP_URL to the public https origin}
+      APP_FALLBACK_LOCALE: ${APP_FALLBACK_LOCALE:-en}
+      APP_FAKER_LOCALE: ${APP_FAKER_LOCALE:-en_US}
+      APP_MAINTENANCE_DRIVER: file
+
+      # stderr only: production must never write a container-local log file.
+      LOG_CHANNEL: stderr
+      LOG_STACK: stderr
+      LOG_LEVEL: ${LOG_LEVEL:-warning}
+
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_DATABASE: ${DB_DATABASE:-fast_english}
+      DB_USERNAME: ${DB_USERNAME:-fast_english}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD (openssl rand -base64 24)}
+      DB_SSLMODE: ${DB_SSLMODE:-prefer}
+
+      SESSION_DRIVER: database
+      SESSION_LIFETIME: ${SESSION_LIFETIME:-120}
+      SESSION_ENCRYPT: "false"
+      SESSION_SECURE_COOKIE: "true"
+      SESSION_HTTP_ONLY: "true"
+      SESSION_SAME_SITE: lax
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      BROADCAST_CONNECTION: log
+
+      FILESYSTEM_DISK: local
+
+      # Password reset stays disabled until MAIL_MAILER=smtp + a real host.
+      MAIL_MAILER: ${MAIL_MAILER:-log}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-support@fastenglish.ir}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Fast English}
+
+      # Commercial switch: keep false until the launch inputs are real.
+      SALES_ENABLED: ${SALES_ENABLED:-false}
+
+      STAFF_2FA_ENFORCE: ${STAFF_2FA_ENFORCE:-true}
+      STAFF_2FA_IDLE_MINUTES: ${STAFF_2FA_IDLE_MINUTES:-30}
+
+      # Empty means /download shows «هنوز منتشر نشده» — never a dead link.
+      RELEASE_VERSION_NAME: ${RELEASE_VERSION_NAME:-}
+      RELEASE_VERSION_CODE: ${RELEASE_VERSION_CODE:-}
+      RELEASE_DATE: ${RELEASE_DATE:-}
+      RELEASE_SIZE_BYTES: ${RELEASE_SIZE_BYTES:-}
+      RELEASE_SHA256: ${RELEASE_SHA256:-}
+      RELEASE_FILE_URL: ${RELEASE_FILE_URL:-}
+
+      SW_VERSION: ${SW_VERSION:-}
+      TWA_PACKAGE_NAME: ${TWA_PACKAGE_NAME:-}
+      TWA_SHA256_FINGERPRINT: ${TWA_SHA256_FINGERPRINT:-}
+    volumes:
+      - app-private:/var/www/html/storage/app/private
+      - app-public:/var/www/html/storage/app/public
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8080/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    stop_grace_period: 30s
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-fast_english}
+      POSTGRES_USER: ${DB_USERNAME:-fast_english}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD (openssl rand -base64 24)}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    stop_grace_period: 60s
+
+volumes:
+  db-data:
+  app-private:
+  app-public:

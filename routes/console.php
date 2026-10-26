@@ -13,5 +13,5 @@ Artisan::command('inspire', function () {
 // production image. Runs daily; the command itself is idempotent.
 Schedule::command('receipts:retain-reviewed')->daily();
 Schedule::command('receipts:cleanup')->daily();
-// Panel backup retention (scope §19.3: 30-day rotation).
-Schedule::command('backup:prune')->daily();
+// Owner follow-up 2026-10-22: one renewal reminder per current window.
+Schedule::command('subscriptions:remind-expiring')->dailyAt('09:00')->withoutOverlapping()->onOneServer();

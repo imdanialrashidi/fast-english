@@ -1,0 +1,60 @@
+- generic [ref=f4e3]:
+  - link "پرش به محتوا" [ref=f4e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f4e5]:
+    - link "Fast English — صفحه اصلی" [ref=f4e8] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f4e9]: Fast English
+  - generic [ref=f4e10]:
+    - complementary "ناوبری اصلی" [ref=f4e11]:
+      - navigation "بخش‌های یادگیری" [ref=f4e12]:
+        - link "امروز" [ref=f4e13] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f4e17] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f4e21] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f4e26] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f4e30] [cursor=pointer]:
+          - /url: /app/saved
+    - main [ref=f4e34]:
+      - generic [ref=f4e35]:
+        - region "پروفایل" [ref=f4e36]:
+          - generic [ref=f4e37]:
+            - generic [aria-hidden] [ref=f4e38]: T
+            - generic [ref=f4e39]:
+              - heading "Test User" [level=1] [ref=f4e40]
+              - paragraph [ref=f4e41]: test@example.com
+          - generic [ref=f4e42]:
+            - generic [ref=f4e43]:
+              - term [ref=f4e44]: سطح ترجیحی
+              - definition [ref=f4e48]: انتخاب نشده
+            - generic [ref=f4e49]:
+              - term [ref=f4e50]: هدف روزانه
+              - definition [ref=f4e54]: ۱۰ دقیقه
+        - region "وضعیت پرداخت و اشتراک" [ref=f4e55]:
+          - generic [ref=f4e56]:
+            - heading "اشتراک" [level=2] [ref=f4e57]
+            - generic [ref=f4e60]: بدون اشتراک
+          - paragraph [ref=f4e61]: اشتراک فعالی وجود ندارد.
+          - paragraph [ref=f4e62]:
+            - link "انتخاب پلن" [ref=f4e63] [cursor=pointer]:
+              - /url: /app/subscribe
+        - navigation "تنظیمات حساب" [ref=f4e66]:
+          - link "تنظیمات حساب نام، سطح و هدف روزانه" [ref=f4e67] [cursor=pointer]:
+            - /url: /app/account/settings
+            - generic [ref=f4e72]:
+              - generic [ref=f4e73]: تنظیمات حساب
+              - generic [ref=f4e74]: نام، سطح و هدف روزانه
+          - link "ذخیره‌شده‌ها مطلب‌هایی که برای بعد نگه داشته‌ای" [ref=f4e77] [cursor=pointer]:
+            - /url: /app/saved
+            - generic [ref=f4e81]:
+              - generic [ref=f4e82]: ذخیره‌شده‌ها
+              - generic [ref=f4e83]: مطلب‌هایی که برای بعد نگه داشته‌ای
+          - link "تعیین سطح آزمون اختیاری برای پیدا کردن سطح مناسب" [ref=f4e86] [cursor=pointer]:
+            - /url: /app/placement
+            - generic [ref=f4e91]:
+              - generic [ref=f4e92]: تعیین سطح
+              - generic [ref=f4e93]: آزمون اختیاری برای پیدا کردن سطح مناسب
+        - button "خروج از حساب" [ref=f4e97] [cursor=pointer]

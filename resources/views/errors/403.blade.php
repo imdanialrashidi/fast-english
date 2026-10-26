@@ -1,13 +1,9 @@
-@extends('layouts.public')
+@extends('layouts.error')
 
 @section('title', 'دسترسی ندارید')
 
 @section('content')
-<div class="fe-measure">
-    <h1>دسترسی ندارید</h1>
-    <p class="fe-muted">متن کامل این درس نیازمند اشتراک فعال است. نمونه‌های عمومی بدون ورود در دسترس‌اند.</p>
-    @guest
-        <p><a class="fe-level-link" href="{{ route('login') }}">ورود به حساب</a></p>
-    @endguest
-</div>
+<h1>دسترسی ندارید</h1>
+<p>متن کامل این درس نیازمند اشتراک فعال است. نمونه‌های عمومی بدون ورود در دسترس‌اند.</p>
+<p><a class="action" href="/">بازگشت به صفحه اصلی</a></p>
 @endsection

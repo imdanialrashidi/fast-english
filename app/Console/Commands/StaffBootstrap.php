@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 /**
  * S6 staff bootstrap (scope §5): staff accounts come from this controlled
@@ -20,7 +19,7 @@ class StaffBootstrap extends Command
         {email : Email of the staff account}
         {--name= : Display name (defaults to the email local part)}
         {--by= : Who creates this staff account (required, logged)}
-        {--password= : Password for a new account (otherwise a random one is set)}';
+        {--password= : Password for a new account (required when creating)}';
 
     protected $description = 'Create or upgrade a staff account, logging who created it.';
 
@@ -44,9 +43,11 @@ class StaffBootstrap extends Command
         $existing = User::where('email', $email)->first();
 
         if ($existing === null) {
-            $password = (string) $this->option('password');
+            $password = trim((string) $this->option('password'));
             if ($password === '') {
-                $password = Str::random(20);
+                $this->error('A password is required for a new staff account: pass --password. Nothing was created.');
+
+                return 1;
             }
 
             $user = new User;

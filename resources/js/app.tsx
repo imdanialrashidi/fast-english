@@ -1,6 +1,7 @@
 import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import '@/lib/install';
 import type { SharedProps } from '@/types';
 
 /**
@@ -30,5 +31,13 @@ void createInertiaApp<SharedProps>({
             </ErrorBoundary>,
         );
     },
-    title: (title) => (title === '' ? 'Fast English' : `${title} · Fast English`),
+    title: (title) => {
+        const brand = 'Fast English';
+
+        if (title === '') {
+            return brand;
+        }
+
+        return title.includes(brand) ? title : `${title} · ${brand}`;
+    },
 });

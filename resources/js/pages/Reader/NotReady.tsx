@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { BookOpen } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
@@ -26,12 +27,17 @@ export const ReaderNotReady: FunctionComponent<NotReadyProps> & { layout?: (page
     return (
         <>
             <Head title="سطح آماده نیست" />
-            <div className="mx-auto grid max-w-[680px] gap-4 px-4 py-10">
+            <ScreenHeader
+                title="سطح آماده نیست"
+                width="reading"
+                back={{ href: '/app', label: 'بازگشت به کشف مطالب' }}
+            />
+            <div className="mx-auto grid max-w-[680px] gap-4 px-4 py-8">
                 <div role="status" className="grid justify-items-center gap-3 rounded-3xl border border-line bg-surface px-6 py-12 text-center">
                     <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-canvas text-primary">
                         <BookOpen size={28} />
                     </span>
-                    <h1 className="m-0 text-2xl leading-9 font-extrabold">این سطح هنوز آماده نیست</h1>
+                    <h2 className="m-0 text-2xl leading-9 font-extrabold">این سطح هنوز آماده نیست</h2>
                     <p className="m-0 leading-8 text-muted">
                         سطح درخواستی (
                         <span lang="en" dir="ltr" className="font-en font-bold">

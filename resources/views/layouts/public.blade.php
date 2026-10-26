@@ -8,9 +8,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#f7f5ef">
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="apple-touch-icon" href="/icons/apple-touch-180.png">
+    <meta name="theme-color" content="#F7F4EE">
+    <link rel="icon" href="/favicon.ico?v={{ filemtime(public_path('favicon.ico')) }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png?v={{ filemtime(public_path('favicon.ico')) }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png?v={{ filemtime(public_path('favicon.ico')) }}">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-180.png?v={{ filemtime(public_path('favicon.ico')) }}">
     <meta name="description" content="@yield('meta_description', 'Fast English — خواندن و شنیدن متن‌های انگلیسی کوتاه در سطح مناسب')">
     @hasSection('noindex')
         <meta name="robots" content="noindex, nofollow">
@@ -42,6 +44,7 @@
         <a href="{{ route('trust.support') }}">پشتیبانی</a>
         <a href="{{ route('trust.terms') }}">قوانین</a>
         <a href="{{ route('trust.privacy') }}">حریم خصوصی</a>
+        <a href="{{ route('trust.refund') }}">بازگشت وجه</a>
     </nav>
 </footer>
 </body>

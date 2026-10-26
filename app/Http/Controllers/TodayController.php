@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Support\DailyPlan;
+use App\Support\TopicCard;
+use App\Support\TopicCover;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,6 +35,7 @@ class TodayController extends Controller
         // unchanged (R5DailyPlanTest ports, JSON endpoints untouched).
         return Inertia::render('Today/Index', [
             'userName' => (string) $user->name,
+            'needsLevel' => $user->preferred_level === null,
             'plan' => [
                 'goal_minutes' => (int) $plan['goal_minutes'],
                 'learned_minutes' => (int) $plan['learned_minutes'],
@@ -46,22 +49,12 @@ class TodayController extends Controller
                     'done' => (bool) $task['done'],
                     'title_en' => $task['title_en'] ?? null,
                     'level' => $task['level'] ?? null,
-                    'cover_url' => isset($task['cover_path']) && is_string($task['cover_path']) && $task['cover_path'] !== ''
-                        ? '/storage/'.$task['cover_path']
-                        : null,
+                    'cover_url' => TopicCover::url(isset($task['cover_path']) && is_string($task['cover_path']) ? $task['cover_path'] : null),
                     'position_seconds' => isset($task['position_seconds']) ? (float) $task['position_seconds'] : null,
-                    'duration_seconds' => isset($task['duration_seconds']) ? (int) $task['duration_seconds'] : null,
                     'estimated_minutes' => isset($task['estimated_minutes']) ? (int) $task['estimated_minutes'] : null,
                 ], $plan['tasks'])),
             ],
-            'recommendations' => array_values(array_map(fn ($topic) => [
-                'slug' => (string) $topic->slug,
-                'title_en' => (string) $topic->title_en,
-                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
-                'levels' => $topic->lessons->pluck('level')->filter()->values()->all(),
-                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
-                'reader_url' => route('reader.show', $topic),
-            ], $recommendations)),
+            'recommendations' => array_values(array_map(fn ($topic) => TopicCard::for($topic), $recommendations)),
         ]);
     }
 }

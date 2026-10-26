@@ -74,7 +74,7 @@ test('S6 queue: pending first, approve grants premium access', async ({ browser 
 
     // Learner: premium opens after approval.
     await learner.goto('/app/topics/night-trains?level=B1');
-    await expect(learner.getByRole('heading', { name: 'Night Trains' })).toBeVisible();
+    await expect(learner.getByRole('heading', { name: 'Night Trains', level: 2 })).toBeVisible();
   } finally {
     await learnerCtx.close();
     await staffCtx.close();

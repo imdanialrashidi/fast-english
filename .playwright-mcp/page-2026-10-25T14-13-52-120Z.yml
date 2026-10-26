@@ -1,0 +1,67 @@
+- generic [ref=e3]:
+  - link "پرش به محتوا" [ref=e4] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=e5]:
+    - generic [ref=e7]:
+      - link "Fast English — صفحه اصلی" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]:
+          - generic [ref=e10]: Fast English
+          - generic [ref=e11]: خواندن و شنیدن، یک نسخه
+      - navigation "ناوبری عمومی" [ref=e12]:
+        - link "نمونه رایگان" [ref=e13] [cursor=pointer]:
+          - /url: /sample
+        - link "دانلود" [ref=e14] [cursor=pointer]:
+          - /url: /download
+        - link "پرسش‌ها" [ref=e15] [cursor=pointer]:
+          - /url: /faq
+        - link "ورود" [ref=e16] [cursor=pointer]:
+          - /url: /login
+        - link "ساخت حساب" [ref=e17] [cursor=pointer]:
+          - /url: /register
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - heading "بازگشت وجه" [level=1] [ref=e21]
+      - generic [ref=e22]:
+        - paragraph [ref=e23]: "Fast English یک محصول دیجیتال است. به همین دلیل پس از فعال‌شدن دسترسی، بازگشت وجه به‌طور عمومی انجام نمی‌شود؛ اما در موارد زیر درخواست شما بررسی می‌شود:"
+        - paragraph [ref=e24]: ۱. پرداخت تکراری یا واریز بیش از مبلغ پلن.
+        - paragraph [ref=e25]: ۲. پرداخت انجام شده اما اشتراک پس از تأیید فعال نشده است.
+        - paragraph [ref=e26]: ۳. اختلال فنی مستمر که دسترسی به محتوا را غیرممکن کرده و از سوی پشتیبانی قابل رفع نبوده است.
+        - paragraph [ref=e27]: برای ثبت درخواست، حداکثر ۷ روز پس از پرداخت، شمارهٔ پیگیری یا تصویر رسید و ایمیل حساب را از کانال @test بفرستید. درخواست‌ها پس از بررسی پرداخت و وضعیت دسترسی پاسخ داده می‌شوند. مبلغ تأییدشده به همان کارت یا حسابی که پرداخت از آن انجام شده بازگردانده می‌شود؛ زمان نشست مبلغ به بانک بستگی دارد.
+        - paragraph [ref=e28]: اگر اشتراک را پیش از فعال‌شدن دسترسی لغو کنید و پرداخت تأیید شده باشد، درخواست بازگشت وجه در همین چارچوب بررسی می‌شود. این متن جایگزین حقوق قانونی شما نیست و در صورت وجود الزام قانونی، همان الزام رعایت می‌شود.
+      - paragraph [ref=e29]:
+        - link "پرسش‌های پرتکرار" [ref=e30] [cursor=pointer]:
+          - /url: /faq
+  - contentinfo [ref=e31]:
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - link "Fast English — صفحه اصلی" [ref=e34] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e35]:
+            - generic [ref=e36]: Fast English
+            - generic [ref=e37]: خواندن و شنیدن، یک نسخه
+        - paragraph [ref=e38]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+        - paragraph [ref=e39]:
+          - link "شروع با نمونه رایگان" [ref=e40] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=e41] [cursor=pointer]:
+            - /url: /download
+      - navigation "پیوندهای اعتماد" [ref=e42]:
+        - paragraph [ref=e43]: دسترسی سریع
+        - link "درباره" [ref=e44] [cursor=pointer]:
+          - /url: /about
+        - link "همکاری" [ref=e45] [cursor=pointer]:
+          - /url: /cooperation
+        - link "پرسش‌های پرتکرار" [ref=e46] [cursor=pointer]:
+          - /url: /faq
+        - link "پشتیبانی" [ref=e47] [cursor=pointer]:
+          - /url: /support
+        - link "قوانین" [ref=e48] [cursor=pointer]:
+          - /url: /terms
+        - link "حریم خصوصی" [ref=e49] [cursor=pointer]:
+          - /url: /privacy
+        - link "بازگشت وجه" [ref=e50] [cursor=pointer]:
+          - /url: /refund
+        - link "دانلود" [ref=e51] [cursor=pointer]:
+          - /url: /download
+      - paragraph [ref=e52]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

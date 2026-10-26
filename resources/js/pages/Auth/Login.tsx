@@ -95,7 +95,6 @@ export const Login: FunctionComponent<SharedProps> & { layout?: (page: ReactNode
                             onChange={(event) => form.setData('email', event.target.value)}
                             required
                             autoComplete="email"
-                            autoFocus
                             dir="ltr"
                             aria-describedby={errors.email ? 'email-error' : undefined}
                             className="min-h-11 w-full rounded-full border border-field bg-surface px-4 py-2 text-left font-en text-base text-ink"
@@ -123,15 +122,16 @@ export const Login: FunctionComponent<SharedProps> & { layout?: (page: ReactNode
                         ورود
                     </button>
                 </form>
-                <p className="m-0 leading-8 text-muted">
-                    حساب نداری؟{' '}
+                <div className="flex flex-wrap items-center gap-x-2 text-muted">
+                    <span>حساب نداری؟</span>
                     <Link href="/register" className="inline-flex min-h-11 items-center text-primary">
                         ساخت حساب
-                    </Link>{' '}·{' '}
+                    </Link>
+                    <span aria-hidden="true" className="hidden h-1 w-1 rounded-full bg-field sm:block" />
                     <Link href="/forgot-password" className="inline-flex min-h-11 items-center text-primary">
                         رمز را فراموش کرده‌ام
                     </Link>
-                </p>
+                </div>
             </AuthFrame>
         </>
     );

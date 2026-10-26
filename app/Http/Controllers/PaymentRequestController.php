@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
+use App\Support\SiteSettings;
 use App\Support\Toman;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -57,7 +61,7 @@ class PaymentRequestController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'فروش در حال حاضر فعال نیست.',
-                ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+                ], 422)->withHeaders(NoStore::headers());
             }
 
             return redirect()->route('subscribe.index')->withErrors([
@@ -70,10 +74,7 @@ class PaymentRequestController extends Controller
         // Learner-facing messages are Persian (S7 pre-slice 3).
         foreach (self::FORBIDDEN_CREATE_KEYS as $key) {
             if ($request->exists($key)) {
-                return response()->json([
-                    'message' => 'درخواست شامل فیلد غیرمجاز سرور است.',
-                    'field' => $key,
-                ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+                return $this->createFailure($request, 'درخواست شامل فیلد غیرمجاز سرور است.', 422);
             }
         }
 
@@ -91,9 +92,7 @@ class PaymentRequestController extends Controller
             ->where('created_at', '>=', now()->startOfDay())
             ->count();
         if ($todayCount >= 10) {
-            return response()->json([
-                'message' => 'امروز درخواست بیش از حد ثبت شده است. لطفاً فردا تلاش کنید.',
-            ], 429)->withHeaders(\App\Http\Responses\NoStore::headers());
+            return $this->createFailure($request, 'امروز درخواست بیش از حد ثبت شده است. لطفاً فردا تلاش کنید.', 429);
         }
 
         // Fast path: an existing open request is returned, never doubled.
@@ -107,14 +106,12 @@ class PaymentRequestController extends Controller
 
         $plan = Plan::find($data['plan_id']);
         if ($plan === null || ! $plan->is_active) {
-            return response()->json(['message' => 'پلن انتخاب‌شده در دسترس نیست.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+            return $this->createFailure($request, 'پلن انتخاب‌شده در دسترس نیست.');
         }
 
         $destination = PaymentDestination::where('is_active', true)->first();
-        if ($destination === null) {
-            return response()->json(['message' => 'مقصد پرداخت در دسترس نیست.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+        if ($destination === null || ! $destination->isConfigured() || ! SiteSettings::cardFallbackEnabled()) {
+            return $this->createFailure($request, 'روش پرداخت هنوز پیکربندی نشده است. لطفاً بعداً تلاش کنید.');
         }
 
         try {
@@ -185,6 +182,7 @@ class PaymentRequestController extends Controller
         // reaches the client. Shape owned by PaymentRequest::snapshot().
         $fresh = $paymentRequest->fresh();
         $snapshot = $fresh->snapshot();
+        $hasReceipt = $fresh->receiptAvailable();
 
         return Inertia::render('Payments/Show', [
             'request' => [
@@ -197,10 +195,8 @@ class PaymentRequestController extends Controller
                 'holder_name' => $snapshot['holder_name'],
                 'bank_name' => $snapshot['bank_name'],
                 'public_reason' => $fresh->public_reason,
-                'has_receipt' => $fresh->receipt_path !== null && $fresh->receipt_path !== '',
-                'receipt_url' => $fresh->receipt_path !== null && $fresh->receipt_path !== ''
-                    ? route('payments.receipt.show', $fresh)
-                    : null,
+                'has_receipt' => $hasReceipt,
+                'receipt_url' => $hasReceipt ? route('payments.receipt.show', $fresh) : null,
             ],
         ]);
     }
@@ -235,12 +231,28 @@ class PaymentRequestController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['status' => PaymentRequest::STATUS_CANCELLED])
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         return redirect()
             ->route('payments.show', $paymentRequest)
             ->with('status', 'درخواست لغو شد.');
+    }
+
+    /**
+     * One failure shape for both transports: JSON callers get the message,
+     * while an Inertia form post returns to the plan list with a field
+     * error instead of dumping a JSON body into an error modal.
+     *
+     * @return JsonResponse|RedirectResponse
+     */
+    private function createFailure(Request $request, string $message, int $status = 422)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status, NoStore::headers());
+        }
+
+        return redirect()->route('subscribe.index')->withErrors(['plan_id' => $message]);
     }
 
     private function openRedirect(Request $request, PaymentRequest $open)
@@ -249,12 +261,11 @@ class PaymentRequestController extends Controller
             return response()->json([
                 'id' => $open->id,
                 'status' => $open->status,
-            ])->withHeaders(\App\Http\Responses\NoStore::headers());
+            ])->withHeaders(NoStore::headers());
         }
 
         return redirect()->route('payments.show', $open);
     }
-
 
     private function isUniqueViolation(QueryException $e): bool
     {

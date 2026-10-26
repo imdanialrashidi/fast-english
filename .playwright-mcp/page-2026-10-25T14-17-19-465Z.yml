@@ -1,0 +1,51 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e3]:
+    - link "پرش به محتوا" [ref=f9e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f9e5]:
+      - link "Fast English — صفحه اصلی" [ref=f9e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f9e9]: Fast English
+    - generic [ref=f9e10]:
+      - complementary "ناوبری اصلی" [ref=f9e11]:
+        - navigation "بخش‌های یادگیری" [ref=f9e12]:
+          - link "امروز" [ref=f9e13] [cursor=pointer]:
+            - /url: /app/today
+          - link "کشف مطالب" [ref=f9e17] [cursor=pointer]:
+            - /url: /app
+          - link "واژه‌ها" [ref=f9e21] [cursor=pointer]:
+            - /url: /app/words
+          - link "حساب" [ref=f9e26] [cursor=pointer]:
+            - /url: /app/account
+          - link "ذخیره‌شده‌ها" [ref=f9e30] [cursor=pointer]:
+            - /url: /app/saved
+      - main [ref=f9e34]:
+        - generic [ref=f9e37]:
+          - generic [ref=f9e38]:
+            - heading "انتخاب پلن" [level=1] [ref=f9e39]
+            - paragraph [ref=f9e40]: پلن موردنظر را انتخاب کنید. مبلغ و مشخصات واریز از سمت سرور ثبت می‌شود.
+          - status [ref=f9e41]: روش پرداخت هنوز پیکربندی نشده است. شمارهٔ کارت به‌زودی در همین صفحه اعلام می‌شود.
+          - list [ref=f9e44]:
+            - listitem [ref=f9e45]:
+              - heading "یک‌ماهه آزمایشی (TEST)" [level=2] [ref=f9e46]
+              - paragraph [ref=f9e47]: ۱۰۰٬۰۰۰ تومان
+              - paragraph [ref=f9e48]: 30 روز دسترسی پس از تأیید
+              - paragraph [ref=f9e49]:
+                - button "پرداخت هنوز فعال نشده" [disabled] [ref=f9e50]
+            - listitem [ref=f9e53]:
+              - heading "سه‌ماهه آزمایشی (TEST)" [level=2] [ref=f9e54]
+              - paragraph [ref=f9e55]: ۲۵۰٬۰۰۰ تومان
+              - paragraph [ref=f9e56]: 90 روز دسترسی پس از تأیید
+              - paragraph [ref=f9e57]:
+                - button "پرداخت هنوز فعال نشده" [disabled] [ref=f9e58]
+            - listitem [ref=f9e61]:
+              - heading "یک‌ساله آزمایشی (TEST)" [level=2] [ref=f9e62]
+              - paragraph [ref=f9e63]: ۹۰۰٬۰۰۰ تومان
+              - paragraph [ref=f9e64]: 365 روز دسترسی پس از تأیید
+              - paragraph [ref=f9e65]:
+                - button "پرداخت هنوز فعال نشده" [disabled] [ref=f9e66]
+  - status [ref=f9e71]:
+    - generic [ref=f9e72]: نسخه تازه‌ای آماده است.
+    - generic [ref=f9e73]:
+      - button "تازه‌سازی" [ref=f9e74] [cursor=pointer]
+      - button "بستن اعلان به‌روزرسانی" [ref=f9e75] [cursor=pointer]: ×

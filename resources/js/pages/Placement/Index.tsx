@@ -2,6 +2,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FileText, GraduationCap, Play, Settings as SettingsIcon } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
@@ -21,7 +22,8 @@ export const PlacementIndex: FunctionComponent<PlacementIndexProps> & { layout?:
     current,
     openAttempt,
 }: PlacementIndexProps): React.JSX.Element => {
-    const { status } = usePage<SharedProps>().props;
+    const { status, errors } = usePage<SharedProps>().props;
+    const firstError = Object.values(errors)[0] ?? null;
     const form = useForm({});
 
     const start = (event: React.FormEvent): void => {
@@ -32,13 +34,21 @@ export const PlacementIndex: FunctionComponent<PlacementIndexProps> & { layout?:
     return (
         <>
             <Head title="تعیین سطح" />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <div>
-                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">تعیین سطح (اختیاری)</h1>
-                    <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">
-                        آزمون ۲۰ سؤالی، چهارگزینه‌ای. شرکت اختیاری است و نتیجه فقط راهنمای اولیه است.
+            <ScreenHeader
+                title="تعیین سطح (اختیاری)"
+                width="reading"
+                back={{ href: '/app/account', label: 'بازگشت به حساب' }}
+            />
+            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
+                <p className="m-0 text-[1.0625rem] leading-8 text-muted">
+                    آزمون ۲۰ سؤالی، چهارگزینه‌ای. شرکت اختیاری است و نتیجه فقط راهنمای اولیه است.
+                </p>
+
+                {firstError !== null && (
+                    <p role="alert" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-danger">
+                        {firstError}
                     </p>
-                </div>
+                )}
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
@@ -78,8 +88,10 @@ export const PlacementIndex: FunctionComponent<PlacementIndexProps> & { layout?:
                 ) : (
                     <div className="grid justify-items-center gap-2 rounded-3xl border border-line bg-surface px-6 py-12 text-center">
                         <GraduationCap size={24} aria-hidden="true" />
-                        <p className="m-0 text-xl font-bold">نسخه فعال: {current.version}</p>
-                        <p className="m-0 leading-8 text-muted">۲۰ سؤال، هر سؤال یک پاسخ صحیح. پاسخ‌ها تک‌تک ذخیره می‌شوند.</p>
+                        <p className="m-0 text-xl font-bold">آزمون تعیین سطح — ۲۰ سؤال</p>
+                        <p className="m-0 leading-8 text-muted">
+                            در هر سؤال، جای خالی را با گزینهٔ درست کامل کنید. هر سؤال یک پاسخ صحیح دارد و پاسخ‌ها تک‌تک ذخیره می‌شوند.
+                        </p>
                         <form onSubmit={start} className="m-0 mt-2">
                             <button
                                 type="submit"

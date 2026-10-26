@@ -162,6 +162,20 @@ test('position outside the server duration is refused', function () {
     expect(LessonProgress::count())->toBe(0);
 });
 
+test('a sub-second encoder overrun is clamped to the server duration', function () {
+    $duration = (float) $this->a2->duration_seconds;
+
+    $response = $this->actingAs($this->studentA)
+        ->postJson(route('progress.store'), [
+            'lesson_id' => $this->a2->id,
+            'audio_revision' => $this->a2->audio_revision,
+            'position_seconds' => $duration + 0.4,
+        ])
+        ->assertOk();
+
+    expect((float) $response->json('position_seconds'))->toBe($duration);
+});
+
 test('concurrent saves never create duplicate rows', function () {
     foreach ([10, 12, 14] as $position) {
         $this->actingAs($this->studentA)

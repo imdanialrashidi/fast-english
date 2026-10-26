@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentRequest;
 use App\Support\Entitlement;
+use App\Support\Toman;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -34,6 +35,7 @@ class AccountController extends Controller
             ->first();
 
         $subscription = $user->subscription;
+        $subscriptionActive = $subscription !== null && Entitlement::active($user);
 
         // Public-slice Inertia transport (ADR-0002): the same
         // subscription + open/latest request derivation with one clear
@@ -49,6 +51,22 @@ class AccountController extends Controller
             'url' => route('payments.show', $row),
         ] : null;
 
+        // Recent payment history is the learner's own rows only. The
+        // snapshot amount is the one they agreed to; receipt paths,
+        // bank references, sender digits, and internal notes never travel.
+        $paymentHistory = PaymentRequest::where('user_id', $user->id)
+            ->orderByDesc('id')
+            ->limit(10)
+            ->get()
+            ->map(fn (PaymentRequest $row) => [
+                'id' => $row->id,
+                'status' => (string) $row->status,
+                'plan_name' => (string) $row->plan_name_snapshot,
+                'amount_label' => Toman::format((int) $row->amount_toman_snapshot),
+                'created_at' => $row->created_at?->toIso8601String(),
+                'url' => route('payments.show', $row),
+            ])->all();
+
         return Inertia::render('Account/Index', [
             'user' => [
                 'name' => (string) $user->name,
@@ -57,11 +75,19 @@ class AccountController extends Controller
                 'daily_goal_minutes' => (int) ($user->daily_goal_minutes ?? 10),
             ],
             'subscription' => $subscription ? [
-                'active' => Entitlement::active($user),
-                'expires_at' => $subscription->expires_at?->timezone('Asia/Tehran')->format('Y/m/d H:i'),
+                'active' => $subscriptionActive,
+                // Display state, never a permission: active, expired, or
+                // revoked. Access still comes only from Entitlement.
+                'state' => $subscriptionActive
+                    ? 'active'
+                    : ($subscription->revoked_at !== null ? 'revoked' : 'expired'),
+                // ISO instant; the client formats it for Asia/Tehran so
+                // Persian dates and digits are presentation-owned.
+                'expires_at' => $subscription->expires_at?->toIso8601String(),
             ] : null,
             'openRequest' => $mapRequest($openRequest),
             'latestRequest' => $mapRequest($latestRequest),
+            'paymentHistory' => $paymentHistory,
         ]);
     }
 }

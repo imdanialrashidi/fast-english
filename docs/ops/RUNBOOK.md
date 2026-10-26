@@ -20,10 +20,14 @@ Untracked env files hold the real values; `.env.example` lists names only.
    **[tested]** (223 passed in S8)
 4. `php artisan migrate --force` only AFTER a fresh backup (§3).
    **[tested]** (dev-lane migrations, incl. the fe_dev catch-up)
-   S9a: this is the ONE explicit migrate command per release. Migrations
-   NEVER run on container start (Docker ENTRYPOINT runs storage:link +
-   config:cache only; supervisord starts nginx/php-fpm/schedule/queue).
-   **[tested]** (production image entrypoint inspected; no migrate).
+   S9a: this is the ONE explicit migrate command per release, wrapped as
+   `sh /var/www/html/docker/release.sh` (refuses non-production and
+   `APP_DEBUG=true`; `--check` prints `migrate:status` + `ops:status` and
+   changes nothing). Migrations NEVER run on container start (Docker
+   ENTRYPOINT runs `config:cache` + `storage:link` only when the public
+   link is missing; supervisord starts nginx/php-fpm/schedule/queue).
+   **[tested]** (release script: `--check` on the production image,
+   staging and debug refusals; entrypoint guard).
 5. Set production env: `APP_ENV=production`, `APP_DEBUG=false`,
    `SESSION_SECURE_COOKIE=true`, `SALES_ENABLED` stays `false` until the
    commercial inputs (§25) are in, `STAFF_2FA_ENFORCE` defaults ON in
@@ -44,24 +48,39 @@ Untracked env files hold the real values; `.env.example` lists names only.
    (S6 race proof); re-approving after a rollback creates no second event.
    **[tested]** (S6 suite, reused)
 
-## 3. Backup
+## 3. Export and off-site copy
 
-- Nightly: `pg_dump -Fc fe_prod` (custom format) + a filesystem snapshot
-  of the private disk (audio + receipts) + the minimal config needed to
-  restore (env names, not values). **[tested]** (drill command below;
-  scheduling itself is **[untested]**)
-- Drill reference (S8, postgres:17 image, `pg_dump 17.11`):
-  `pg_dump -U <role> -Fc fe_dev -f /tmp/s8-fe-dev.dump` → 78,602 bytes
-  for 2 users + 8 audio lessons. **[tested]**
-- Keep one encrypted copy off the VPS; rotate at most 30 days (scope
-  §19.3 proposal). RPO 24h / RTO 4h are proposals until measured.
+The staff panel (`/admin/data-transfer`) is the owner-facing path: one ZIP
+out, one ZIP in.
+
+- **Export** carries every domain table (content, plans, settings, users,
+  subscriptions, payment records) plus only the files those rows
+  reference (lesson audio, receipts, covers). Orphan files on disk are
+  excluded, so a normal library produces a few MB — the old archive grew
+  to 2.2 GB because it copied every file in `lessons/`. **[tested]**
+- **Import** validates format, Laravel major, migration set, allowlisted
+  paths, and every checksum before touching data; it then writes one
+  automatic pre-import safety copy (only the newest is kept), replaces the
+  rows in a single transaction, and rewrites the managed file directories.
+  **[tested]** (12-test data-transfer suite)
+- Keep one encrypted export copy off the VPS; rotate at most 30 days
+  (scope §19.3 proposal). RPO 24h / RTO 4h are proposals until measured.
   **[untested]**
+- A raw database dump is still the low-level fallback for disaster
+  recovery: `pg_dump -Fc fe_prod`. Drill reference (S8, postgres:17
+  image, `pg_dump 17.11`): `pg_dump -U <role> -Fc fe_dev -f
+  /tmp/s8-fe-dev.dump` → 78,602 bytes for 2 users + 8 audio lessons.
+  **[tested]**
 - `APP_KEY` and the Android keystore are recoverable, stored separately
-  from source with limited access and a named owner. **[untested]**
+  from source with limited access and a named owner. An export never
+  contains either. **[untested]**
 
 ## 4. Restore
 
-1. Create an empty database (e.g. `fe_restore`) and restore:
+1. Preferred: import the panel export ZIP on the target install (staff
+   panel, `/admin/data-transfer`, with the confirmation checkbox). The
+   pre-import safety copy is the undo point. **[tested]**
+   Low-level fallback: create an empty database (e.g. `fe_restore`) and
    `pg_restore -U <superuser> -d fe_restore <dump>`. **[tested]**
 2. Verify, in order: user count matches, one user logs in over HTTP
    (login POST 302 → account 200), one audio file exists with its byte
@@ -89,8 +108,11 @@ Untracked env files hold the real values; `.env.example` lists names only.
 
 - `php artisan ops:status` reports pending-payment count + oldest age +
   stale flag (> 48 h), free disk bytes, failed-jobs count, and the last
-  24 h of error-log lines. Prints counts/ages/bytes only — never secrets.
-  **[tested]** (S8-6)
+  24 h of error-log lines. Production logs to stderr, so when no file log
+  exists the error line says `recent_errors_24h=unavailable` instead of a
+  misleading `0` — read the container log (Coolify runtime logs) in that
+  case. Prints counts/ages/bytes only — never secrets. **[tested]**
+  (S8-6; unavailable line 2026-10-26)
 - `/up` is the framework health page: up/down status only, no secrets,
   versions, or traces. **[tested]** (S8 health assertion)
 - Incident triage: correlate `ops:status` with the log (`LOG_LEVEL`,
@@ -102,3 +124,37 @@ Untracked env files hold the real values; `.env.example` lists names only.
   `staff2fa.idle_minutes`); TOTP recovery codes are single-use hashes —
   lost codes mean re-setup by the account owner, never a stored-code
   lookup. **[tested]** (S8-3)
+
+## 7. Staff administration
+
+- **Users:** `/admin/users` is the staff support surface (ADM-02). It lists
+  learners and staff with their current subscription window, recent payment
+  requests and subscription events. Staff never edit a profile, password,
+  role or expiry by hand.
+- **Suspend/activate:** the user record has explicit actions with a required
+  reason. They set/clear `disabled_at` and append `staff.user.suspend` /
+  `staff.user.activate` to the application log. Suspension does not rewrite
+  the subscription; reactivation restores the same window. Staff cannot
+  suspend themselves. **[tested]** (admin users suite)
+- **Grant/revoke:** use the same actions on the user record or a payment
+  request. Both go through `ApprovePayment` with the same lock order, reason
+  and event audit. **[tested]**
+- **Staff bootstrap:** `staff:bootstrap {email} --by="<owner>" --password="<one-time>"`
+  now requires an explicit password; it never generates an unprintable
+  random secret. The creator is logged. **[tested]**
+- **Lost 2FA:** `staff:2fa-reset {email} --by="<owner>" --reason="<why>"`
+  clears only the TOTP secret/recovery codes/confirm timestamp and logs the
+  recovery (`staff.2fa.reset`); the password is untouched. The account
+  re-enrols on its next panel visit. **[tested]**
+- **Step-up boundary:** `/admin/*` (including Livewire updates), staff
+  placement publish, `/staff/transfer/*`, the staff audio-preview route and
+  the staff branch of the receipt route all require a passed TOTP session.
+  The owner receipt path remains challenge-free. **[tested]**
+- **Times:** the panel displays stored UTC timestamps in Asia/Tehran. Do not
+  add `dateTime()` columns without the global `FilamentTimezone` setting;
+  the regression suite asserts the payment record shows `22:44:23` for a
+  `19:14:23` UTC row. **[tested]**
+- **Retention:** a retained receipt row is still visible in the payment
+  queue, but the panel says the file was removed by the 90-day policy (and
+  the learner status page has no dead link) instead of rendering a broken
+  image. **[tested]**

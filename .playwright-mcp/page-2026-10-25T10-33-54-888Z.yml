@@ -1,0 +1,63 @@
+- generic [ref=f1e91]:
+  - link "پرش به محتوا" [ref=f1e92] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f1e93]:
+    - link "Fast English — صفحه اصلی" [ref=f1e96] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f1e97]: Fast English
+  - generic [ref=f1e98]:
+    - complementary "ناوبری اصلی" [ref=f1e99]:
+      - navigation "بخش‌های یادگیری" [ref=f1e100]:
+        - link "امروز" [ref=f1e101] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f1e105] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f1e109] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f1e114] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f1e118] [cursor=pointer]:
+          - /url: /app/saved
+    - main [ref=f1e122]:
+      - generic [ref=f1e125]:
+        - region "پروفایل" [ref=f1e126]:
+          - generic [ref=f1e127]:
+            - generic [aria-hidden] [ref=f1e128]: T
+            - generic [ref=f1e129]:
+              - heading "Test User" [level=1] [ref=f1e130]
+              - paragraph [ref=f1e131]: test@example.com
+          - generic [ref=f1e132]:
+            - generic [ref=f1e133]:
+              - term [ref=f1e134]: سطح ترجیحی
+              - definition [ref=f1e138]: انتخاب نشده
+            - generic [ref=f1e139]:
+              - term [ref=f1e140]: هدف روزانه
+              - definition [ref=f1e144]: ۱۰ دقیقه
+        - region "وضعیت پرداخت و اشتراک" [ref=f1e145]:
+          - generic [ref=f1e146]:
+            - heading "اشتراک" [level=2] [ref=f1e147]
+            - generic [ref=f1e150]: بدون اشتراک
+          - paragraph [ref=f1e151]: اشتراک فعالی وجود ندارد.
+          - paragraph [ref=f1e152]:
+            - link "انتخاب پلن" [ref=f1e153] [cursor=pointer]:
+              - /url: /app/subscribe
+        - region "تاریخچه پرداخت" [ref=f1e156]:
+          - heading "تاریخچه پرداخت" [level=2] [ref=f1e157]
+          - paragraph [ref=f1e162]: هنوز درخواست پرداختی ثبت نکرده‌ای.
+        - navigation "تنظیمات حساب" [ref=f1e163]:
+          - link "تنظیمات حساب نام، سطح و هدف روزانه" [ref=f1e164] [cursor=pointer]:
+            - /url: /app/account/settings
+            - generic [ref=f1e169]:
+              - generic [ref=f1e170]: تنظیمات حساب
+              - generic [ref=f1e171]: نام، سطح و هدف روزانه
+          - link "ذخیره‌شده‌ها مطلب‌هایی که برای بعد نگه داشته‌ای" [ref=f1e174] [cursor=pointer]:
+            - /url: /app/saved
+            - generic [ref=f1e178]:
+              - generic [ref=f1e179]: ذخیره‌شده‌ها
+              - generic [ref=f1e180]: مطلب‌هایی که برای بعد نگه داشته‌ای
+          - link "تعیین سطح آزمون اختیاری برای پیدا کردن سطح مناسب" [ref=f1e183] [cursor=pointer]:
+            - /url: /app/placement
+            - generic [ref=f1e188]:
+              - generic [ref=f1e189]: تعیین سطح
+              - generic [ref=f1e190]: آزمون اختیاری برای پیدا کردن سطح مناسب
+        - button "خروج از حساب" [ref=f1e194] [cursor=pointer]

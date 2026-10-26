@@ -46,6 +46,18 @@ test('plan tamper and unavailable-plan messages are Persian', function () {
     expect($inactive)->toContain('در دسترس نیست');
 });
 
+test('payment create failures stay in the page, not a JSON modal', function () {
+    $this->actingAs($this->studentA)
+        ->post(route('payments.store'), [
+            'plan_id' => $this->plan->id,
+            'amount_toman_snapshot' => 1,
+        ])
+        ->assertRedirect(route('subscribe.index'))
+        ->assertSessionHasErrors('plan_id');
+
+    expect(PaymentRequest::where('user_id', $this->studentA->id)->count())->toBe(0);
+});
+
 test('receipt validation errors are Persian', function () {
     $this->actingAs($this->studentA)->post(route('payments.store'), ['plan_id' => $this->plan->id]);
     $row = PaymentRequest::where('user_id', $this->studentA->id)->firstOrFail();

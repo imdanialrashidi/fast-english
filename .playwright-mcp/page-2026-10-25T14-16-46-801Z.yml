@@ -1,0 +1,28 @@
+- generic [active] [ref=f7e1]:
+  - main [ref=f7e4]:
+    - generic [ref=f7e6]:
+      - generic [ref=f7e7]:
+        - generic [ref=f7e8]: Fast English
+        - heading "Sign in" [level=1] [ref=f7e9]
+      - generic [ref=f7e13]:
+        - generic [ref=f7e17]:
+          - generic [ref=f7e20]:
+            - generic [ref=f7e24]:
+              - text: Email address
+              - superscript [ref=f7e25]: "*"
+            - generic [ref=f7e26]:
+              - textbox "Email address*" [invalid] [ref=f7e29]: browser-a@example.com
+              - paragraph [ref=f7e63]: These credentials do not match our records.
+          - generic [ref=f7e32]:
+            - generic [ref=f7e36]:
+              - text: Password
+              - superscript [ref=f7e37]: "*"
+            - generic [ref=f7e39]:
+              - textbox "Password*" [ref=f7e41]: password
+              - button "Show password" [ref=f7e44] [cursor=pointer]
+          - generic [ref=f7e53]:
+            - checkbox "Remember me" [ref=f7e54]
+            - generic [ref=f7e55]: Remember me
+        - button "Sign in" [ref=f7e61] [cursor=pointer]
+  - generic:
+    - status

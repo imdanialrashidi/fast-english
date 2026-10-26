@@ -17,7 +17,11 @@ const FE_OFFLINE = '/offline';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(FE_CACHE).then((cache) => cache.addAll(FE_PRECACHE))
+    caches.open(FE_CACHE).then((cache) =>
+      // Public assets only: omit credentials so a precache fetch can never
+      // carry a session cookie or persist a Set-Cookie across logout.
+      cache.addAll(FE_PRECACHE.map((url) => new Request(url, { credentials: 'omit' })))
+    )
   );
 });
 
@@ -67,3 +71,5 @@ self.addEventListener('fetch', (event) => {
   // Network-only default: everything not on the allowlist bypasses all
   // caches. Non-allowlisted requests MUST never enter FE_PRECACHE —
   // pinning them would cache private bytes. Locked by the precache test.
+  event.respondWith(fetch(request));
+});

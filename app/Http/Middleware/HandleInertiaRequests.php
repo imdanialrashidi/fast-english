@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\VocabularyWord;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -58,6 +59,17 @@ class HandleInertiaRequests extends Middleware
             // strings (never secrets). Pages read this prop instead of
             // the Blade session helper; null when no status was flashed.
             'status' => fn () => ($request->hasSession() ? $request->session()->get('status') : null),
+            // The only badge the tab bar shows: the learner's due word count.
+            // A count only, scoped server-side to the session user; guests and
+            // staff without words get 0. Refreshed by the same partial reload
+            // that refreshes the notebook.
+            'due_words' => fn () => $request->hasSession() && $request->user() !== null
+                ? (int) VocabularyWord::query()
+                    ->where('user_id', $request->user()->id)
+                    ->where('status', 'learning')
+                    ->where('due_at', '<=', now())
+                    ->count()
+                : 0,
         ];
     }
 }

@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Plan;
 use App\Models\Topic;
-use App\Support\Sentences;
+use App\Support\Levels;
+use App\Support\ReadingPayload;
+use App\Support\Release;
 use App\Support\Toman;
+use App\Support\TopicCard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,14 +24,37 @@ use Inertia\Response;
  *   toman single-package note is the owner-approved commercial input
  *   (limited-time label, no countdown, no end date). Fixture amounts
  *   never appear on the public landing (no price claims from TEST).
- * - Hero preview stages the real sample (title, level, cover, first three
- *   sentences) with a link into /sample — no mock player, no
- *   fabricated testimonials, counts, ratings, or claims.
+ * - Hero preview stages the real sample (cover, title, level, opening
+ *   paragraph) and plays the sample's own stream with a real transport —
+ *   never a mock player, never autoplay, and no fabricated testimonials,
+ *   counts, ratings, or claims.
  * - Sales switch (config sales.enabled, off by default): when off, the
  *   plan list shows «در دست آماده‌سازی» and no purchase CTA is rendered.
  */
 class LandingController extends Controller
 {
+    /**
+     * Landing FAQ rows. One server source feeds both the visible
+     * accordion and the FAQPage structured data, so SEO copy can never
+     * drift from what a visitor reads.
+     *
+     * @var list<array{q: string, a: string}>
+     */
+    private const FAQS = [
+        [
+            'q' => 'بدون اشتراک می‌توانم امتحان کنم؟',
+            'a' => 'بله. نمونه واقعی همیشه رایگان است و بدون ثبت‌نام باز می‌شود.',
+        ],
+        [
+            'q' => 'سطح‌ها یعنی چه؟',
+            'a' => 'شش سطح از A1 تا C2. هر مطلب نسخه خودش را در هر سطح دارد و متن و صوت همیشه از یک نسخه‌اند.',
+        ],
+        [
+            'q' => 'واژه‌ها چطور مرور می‌شوند؟',
+            'a' => 'هر واژه‌ای که ذخیره کنی سر موعد با کارت مرور برمی‌گردد؛ دوباره، سخت، خوب یا آسان را خودت ثبت می‌کنی.',
+        ],
+    ];
+
     public function index(Request $request): Response
     {
         $plans = Plan::query()
@@ -50,9 +77,10 @@ class LandingController extends Controller
             ->whereHas('lessons', fn ($lessons) => $lessons->where('status', 'published'))
             ->with(['lessons' => fn ($lessons) => $lessons
                 // Cards read only level + estimated_minutes; the FK stays
-                // so lessons still match their topics.
+                // so lessons still match their topics. Levels travel in
+                // CEFR order, the same order the library uses.
                 ->where('status', 'published')
-                ->orderBy('id')
+                ->orderByRaw(Levels::orderExpression())
                 ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])
             ->orderByDesc('published_at')
@@ -60,45 +88,78 @@ class LandingController extends Controller
             ->limit(3)
             ->get();
 
+        // The hero preview plays the same public sample the /sample page
+        // serves. ReadingPayload owns the opening-paragraph slice and the
+        // sample's own stream URL.
+        $preview = ReadingPayload::preview($sample);
+
         // M0 Inertia transport (ADR-0002): the same gating and the same
         // fields as the Blade landing. Props are an allowlist — never
-        // bodies, glossaries, audio URLs, amounts, or private paths.
-        return Inertia::render('Landing/Index', [
-            'sample' => $sample ? [
-                'title_en' => $sample->title_en,
-                'level' => $sample->level,
-                'duration_seconds' => $sample->duration_seconds,
-                'cover_url' => $sample->topic->cover_path
-                    ? '/storage/'.$sample->topic->cover_path
-                    : null,
-                'reader_url' => route('sample', ['topic' => $sample->topic->slug, 'level' => $sample->level]),
-            ] : null,
-            'sampleSentences' => $sample ? $this->previewSentences($sample->body_en) : [],
-            'featured' => $featured->map(fn (Topic $topic) => [
-                'title_en' => $topic->title_en,
-                'url' => route('reader.show', $topic),
-                'cover_url' => $topic->cover_path ? '/storage/'.$topic->cover_path : null,
-                'first_level' => $topic->lessons->pluck('level')->filter()->values()->first(),
-                'extra_levels' => max(0, $topic->lessons->pluck('level')->filter()->count() - 1),
-                'levels_fa' => $topic->lessons->pluck('level')->filter()->values()->implode('، '),
-                'minutes' => (int) $topic->lessons->sum('estimated_minutes'),
-            ])->all(),
+        // bodies, glossaries, amounts, or private paths. The only audio
+        // URL is the public sample's own stream, which /sample already
+        // serves to guests.
+        return Inertia::render('Landing/Index', array_merge($preview, [
+            'featured' => $featured->map(fn (Topic $topic) => TopicCard::preview($topic))->all(),
             'plans' => $plans->map(fn (Plan $plan) => [
                 'id' => $plan->id,
                 'name_fa' => $plan->name_fa,
                 'duration_days' => $plan->duration_days,
             ])->all(),
+            'faqs' => self::FAQS,
             'salesOn' => (bool) config('sales.enabled', false),
             'singlePackageLabel' => Toman::format(299000),
+            // The hero's primary action follows reality: while no real APK
+            // exists, the sample is primary and /download is informational.
+            'releasePublished' => Release::published(),
+            // Guest-only funnel: the landing never links into the
+            // authenticated app. Plan interest goes through registration;
+            // the primary conversion is the download page.
             'urls' => [
                 'sample' => route('sample'),
-                'library' => route('app.home'),
-                'subscribe' => route('subscribe.index'),
                 'register' => route('register'),
                 'download' => route('download'),
                 'faq' => route('trust.faq'),
             ],
-        ]);
+            // Server-rendered in app.blade.php so crawlers see the title,
+            // description, Open Graph tags, and JSON-LD before React runs.
+            'seo' => [
+                'title' => 'Fast English — انگلیسی را با داستان کوتاه بخوان و بشنو',
+                'description' => 'Fast English — متن‌های کوتاه انگلیسی در سطح A1 تا C2 با صوت همان نسخه؛ بخوان و بشنو، سرعت را تنظیم کن و واژه بساز.',
+                'canonical' => route('landing'),
+                'json_ld' => [
+                    '@context' => 'https://schema.org',
+                    '@graph' => [
+                        [
+                            '@type' => 'WebSite',
+                            '@id' => route('landing').'#website',
+                            'url' => route('landing'),
+                            'name' => 'Fast English',
+                            'inLanguage' => 'fa-IR',
+                        ],
+                        [
+                            '@type' => 'SoftwareApplication',
+                            'name' => 'Fast English',
+                            'applicationCategory' => 'EducationalApplication',
+                            'operatingSystem' => 'Android',
+                            'inLanguage' => 'fa-IR',
+                            'description' => 'یادگیری انگلیسی با متن‌های کوتاه و صوت همراه آن در شش سطح A1 تا C2.',
+                            'url' => route('download'),
+                        ],
+                        [
+                            '@type' => 'FAQPage',
+                            'mainEntity' => array_map(fn (array $faq) => [
+                                '@type' => 'Question',
+                                'name' => $faq['q'],
+                                'acceptedAnswer' => [
+                                    '@type' => 'Answer',
+                                    'text' => $faq['a'],
+                                ],
+                            ], self::FAQS),
+                        ],
+                    ],
+                ],
+            ],
+        ]));
     }
 
     /**
@@ -127,8 +188,10 @@ class LandingController extends Controller
             abort(404);
         }
 
-        $topicSlug = trim((string) $request->query('topic', ''));
-        $level = strtoupper(trim((string) $request->query('level', '')));
+        $topicParam = $request->query('topic');
+        $topicSlug = is_string($topicParam) ? trim($topicParam) : '';
+        $levelParam = $request->query('level');
+        $level = is_string($levelParam) ? strtoupper(trim($levelParam)) : '';
 
         $sample = $first;
         if ($topicSlug !== '' || $level !== '') {
@@ -158,73 +221,32 @@ class LandingController extends Controller
             ->pluck('level')
             ->all();
 
-        $prepared = \App\Support\Reading::prepared($sample);
-        $sentences = $prepared['sentences'];
-        $cues = $prepared['cues'];
-        $cuesUsable = $prepared['cuesUsable'];
-        $paragraphs = $prepared['paragraphs'];
+        // The sample is public content, so it gets its own crawler
+        // metadata. The canonical deliberately drops ?topic/?level so
+        // every level variant consolidates onto the sample entry.
+        $description = $sample->topic->summary_public;
+        if ($description === null || trim($description) === '') {
+            $description = Str::limit(trim((string) preg_replace('/\s+/u', ' ', $sample->body_en)), 150);
+        }
 
-        return Inertia::render('Sample/Show', [
-            'topic' => [
-                'slug' => $sample->topic->slug,
-                'title_en' => $sample->topic->title_en,
-                'summary_public' => $sample->topic->summary_public,
-                'cover_url' => $sample->topic->cover_path ? '/storage/'.$sample->topic->cover_path : null,
-            ],
-            'lesson' => [
-                'id' => $sample->id,
-                'title_en' => $sample->title_en,
-                'level' => $sample->level,
-                'estimated_minutes' => (int) $sample->estimated_minutes,
-                'duration_seconds' => (int) $sample->duration_seconds,
-                'audio_revision' => (int) $sample->audio_revision,
-                'audio_url' => route('media.lesson.audio', $sample),
-            ],
+        return Inertia::render('Sample/Show', array_merge(ReadingPayload::for($sample), [
             'sampleLevels' => $sampleLevels,
-            'sentences' => $sentences,
-            'paragraphs' => $paragraphs,
-            'cues' => $cues,
-            'cuesUsable' => $cuesUsable,
-            'glossary' => $prepared['glossary'],
-        ]);
-    }
-
-    /**
-     * First three real sentences of the sample body for the hero
-     * preview. Splits on sentence boundaries so lines end cleanly;
-     * falls back to paragraphs. Real lesson text only — never
-     * placeholder copy.
-     *
-     * @return list<string>
-     */
-    private function previewSentences(string $body): array
-    {
-        $chunks = preg_split('/(?<=[.!?])\s+/', $body) ?: [];
-        $sentences = [];
-        foreach ($chunks as $chunk) {
-            $line = trim((string) $chunk);
-            if ($line === '') {
-                continue;
-            }
-            $sentences[] = $line;
-            if (count($sentences) === 3) {
-                break;
-            }
-        }
-        if (count($sentences) < 3) {
-            $paragraphs = preg_split('/\R{2,}|\R/', $body) ?: [];
-            foreach ($paragraphs as $paragraph) {
-                $line = trim((string) $paragraph);
-                if ($line === '' || in_array($line, $sentences, true)) {
-                    continue;
-                }
-                $sentences[] = mb_strimwidth($line, 0, 140, '…');
-                if (count($sentences) === 3) {
-                    break;
-                }
-            }
-        }
-
-        return $sentences;
+            'seo' => [
+                'title' => $sample->title_en.' ('.$sample->level.') — نمونه رایگان Fast English',
+                'description' => $description,
+                'canonical' => route('sample'),
+                'json_ld' => [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'Article',
+                    'headline' => $sample->title_en,
+                    'description' => $description,
+                    'inLanguage' => 'en',
+                    'isAccessibleForFree' => true,
+                    'mainEntityOfPage' => route('sample'),
+                    'author' => ['@type' => 'Organization', 'name' => 'Fast English'],
+                    'publisher' => ['@type' => 'Organization', 'name' => 'Fast English'],
+                ],
+            ],
+        ]));
     }
 }

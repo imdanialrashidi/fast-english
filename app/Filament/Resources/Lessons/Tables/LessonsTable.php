@@ -17,6 +17,7 @@ class LessonsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('topic'))
             ->columns([
                 TextColumn::make('topic.title_en')
                     ->label('Topic')

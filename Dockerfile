@@ -3,22 +3,18 @@
 # (Dockerfile.pi removed; recoverable in .artifacts/migration-backup-2026-10-14/).
 #
 # Stages:
-#  1. assets: Node 22.23.2 builds Vite assets.
-#  2. vendor: Composer installs --no-dev --optimize-autoloader on PHP 8.4.26.
+#  1. vendor: Composer installs --no-dev --optimize-autoloader on PHP 8.4.26.
+#  2. assets: Node 22.23.2 builds Vite assets. It needs `vendor/` and
+#     `app/`: the Filament admin theme is a Vite input that @imports the
+#     framework's shipped CSS, and its Tailwind @source globs scan
+#     `app/Filament`. Without both the production build fails (or silently
+#     ships an admin theme missing app classes).
 #  3. runtime: PHP 8.4.26 + pdo_pgsql/gd/exif/intl/opcache + nginx +
 #     supervisord (nginx, php-fpm, schedule:work, queue:work).
 # Migrations NEVER run on container start; release runs one explicit
 # `php artisan migrate --force` after a backup (RUNBOOK section 1).
 
-# --- 1. Vite assets (pinned Node) ---
-FROM node:22.23.2 AS assets
-WORKDIR /app
-COPY package.json package-lock.json vite.config.js ./
-COPY resources ./resources
-COPY public ./public
-RUN npm ci --ignore-scripts && npm run build
-
-# --- 2. PHP vendor (pinned PHP CLI + Composer) ---
+# --- 1. PHP vendor (pinned PHP CLI + Composer) ---
 FROM php:8.4.26-cli-bookworm AS vendor
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip libpq-dev libicu-dev libpng-dev libjpeg-dev libwebp-dev libzip-dev \
@@ -29,6 +25,20 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
+
+# --- 2. Vite assets (pinned Node) ---
+FROM node:22.23.2 AS assets
+WORKDIR /app
+COPY package.json package-lock.json vite.config.js ./
+COPY resources ./resources
+# Tailwind @source roots inside the Filament admin theme.
+COPY app ./app
+COPY public ./public
+# The Filament theme.css is a Vite input and @imports this shipped CSS.
+# vendor/ is excluded from the build context, so take the already-installed
+# tree from the vendor stage (stage order matters: vendor is built first).
+COPY --from=vendor /app/vendor ./vendor
+RUN npm ci --ignore-scripts && npm run build
 
 # --- 3. Runtime (pinned PHP-FPM) ---
 FROM php:8.4.26-fpm-bookworm
@@ -74,8 +84,8 @@ RUN chmod +x /usr/local/bin/s9a-entrypoint.sh \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views \
     && mkdir -p /var/log/nginx /var/log/supervisor /tmp/nginx-body /tmp/nginx-proxy /tmp/nginx-fastcgi /tmp/nginx-uwsgi /tmp/nginx-scgi \
     && chown -R www-data:www-data storage bootstrap/cache public/build /tmp/nginx-body /tmp/nginx-proxy /tmp/nginx-fastcgi /tmp/nginx-uwsgi /tmp/nginx-scgi \
-    && chown -R www-data:www-data storage bootstrap/cache public/build \
     && chown -R www-data:www-data /var/log/nginx \
+    && chmod -R a+rX app bootstrap config database lang public resources routes \
     && chmod -R 775 storage bootstrap/cache
 
 # Production defaults (Coolify overrides with real values at runtime).

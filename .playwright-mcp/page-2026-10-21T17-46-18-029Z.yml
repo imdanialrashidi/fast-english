@@ -1,0 +1,82 @@
+- generic [ref=f2e3]:
+  - link "پرش به محتوا" [ref=f2e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f2e5]:
+    - generic [ref=f2e7]:
+      - link "Fast English — صفحه اصلی" [ref=f2e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f2e9]:
+          - generic [ref=f2e10]: Fast English
+          - generic [ref=f2e11]: انگلیسی با داستان کوتاه و صوت هماهنگ
+      - navigation "دسترسی سریع" [ref=f2e12]:
+        - link "حساب" [ref=f2e13] [cursor=pointer]:
+          - /url: /app/account
+  - generic [ref=f2e17]:
+    - complementary "ناوبری اصلی" [ref=f2e18]:
+      - navigation "بخش‌های یادگیری" [ref=f2e19]:
+        - link "امروز" [ref=f2e20] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f2e24] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f2e28] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f2e33] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f2e37] [cursor=pointer]:
+          - /url: /app/saved
+    - generic [ref=f2e40]:
+      - main [ref=f2e41]:
+        - generic [ref=f2e42]:
+          - generic [ref=f2e43]:
+            - paragraph [ref=f2e44]:
+              - text: سطح
+              - generic [ref=f2e48]: B1
+              - generic [aria-hidden] [ref=f2e49]: ·
+              - text: حدود 4 دقیقه مطالعه
+            - heading "Night Trains" [level=1] [ref=f2e53]
+            - paragraph [ref=f2e54]: A B1 story about an overnight train journey. Full text requires a subscription.
+            - navigation "سطح درس" [ref=f2e55]:
+              - paragraph [ref=f2e56]: "سطح این مطلب:"
+              - link "B1" [ref=f2e58] [cursor=pointer]:
+                - /url: /app/topics/night-trains?level=B1
+          - generic [ref=f2e60]:
+            - button "ذخیره برای بعد" [ref=f2e61] [cursor=pointer]
+            - button "خواندم" [ref=f2e65] [cursor=pointer]
+          - list "متن درس با همگام‌سازی صوت" [ref=f2e68]:
+            - listitem [ref=f2e69]:
+              - button "پخش جمله 1 از 7" [ref=f2e70] [cursor=pointer]: The night train left the station at eleven, and Leila watched the city lights grow thin behind the window.
+            - listitem [ref=f2e71]:
+              - button "پخش جمله 2 از 7" [ref=f2e72] [cursor=pointer]: She shared the small sleeping car with an elderly woman who offered her tea from a metal cup and asked where she was going with such a large suitcase.
+            - listitem [ref=f2e73]:
+              - button "پخش جمله 3 از 7" [ref=f2e74] [cursor=pointer]: Leila explained that she was travelling to her brother's wedding in the north, a journey of almost nine hours through mountains and quiet villages.
+            - listitem [ref=f2e75]:
+              - button "پخش جمله 4 از 7" [ref=f2e76] [cursor=pointer]: The rhythmic sound of the wheels soon mixed with the quiet voices of other passengers, and the gentle movement of the train made her feel strangely safe, like a child in a moving cradle.
+            - listitem [ref=f2e77]:
+              - button "پخش جمله 5 از 7" [ref=f2e78] [cursor=pointer]: When she woke up, pale morning light was filling the car, and green hills were passing slowly outside.
+            - listitem [ref=f2e79]:
+              - button "پخش جمله 6 از 7" [ref=f2e80] [cursor=pointer]: The elderly woman was gone, but a small paper bag of dates waited on her seat with a short note of good wishes.
+            - listitem [ref=f2e81]:
+              - button "پخش جمله 7 از 7" [ref=f2e82] [cursor=pointer]: Leila smiled, realising that some journeys give you far more than just a destination.
+          - region "واژه‌های کلیدی" [ref=f2e83]:
+            - heading "واژه‌های کلیدی" [level=2] [ref=f2e84]
+            - note [ref=f2e87]: برای این درس واژه‌ای ثبت نشده است.
+      - contentinfo [ref=f2e88]:
+        - paragraph [ref=f2e89]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت.
+        - navigation "پیوندهای اعتماد" [ref=f2e90]:
+          - link "درباره" [ref=f2e91] [cursor=pointer]:
+            - /url: /about
+          - link "پرسش‌های پرتکرار" [ref=f2e92] [cursor=pointer]:
+            - /url: /faq
+          - link "پشتیبانی" [ref=f2e93] [cursor=pointer]:
+            - /url: /support
+          - link "دانلود" [ref=f2e94] [cursor=pointer]:
+            - /url: /download
+  - region "پخش‌کننده صوت درس" [ref=f2e97]:
+    - generic [ref=f2e100]:
+      - button "توقف" [active] [ref=f2e116] [cursor=pointer]
+      - generic [ref=f2e104]:
+        - status [ref=f2e105]: Night Trains B1
+        - paragraph [ref=f2e106]: 0:05 / 0:30
+      - 'button "سرعت پخش: 1×" [ref=f2e107] [cursor=pointer]':
+        - generic [ref=f2e111]: 1×
+      - button "نمایش کنترل‌های بیشتر" [ref=f2e112] [cursor=pointer]

@@ -14,6 +14,20 @@ class EditLesson extends EditRecord
 
     protected static string $resource = LessonResource::class;
 
+    /**
+     * Lesson hides audio_path from array/JSON serialization (private media
+     * path). Filament fills the form from attributesToArray(), so without
+     * this hook every edit looks like it has no audio and is blocked by the
+     * required FileUpload; re-uploading would bump audio_revision and reset
+     * learner progress. Re-add the raw path for the staff form/view only.
+     */
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['audio_path'] = $this->getRecord()->getRawOriginal('audio_path');
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -1379,48 +1379,6 @@ body[data-player-expanded='true'] .fe-main-pad {
     color: var(--fe-text);
 }
 
-/* Sentence-level reading: selectable rows, amber-free in the blue theme —
-   the playing sentence carries the accent bar plus aria-current text. */
-.fe-sentences {
-    display: grid;
-    gap: 0.25rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.fe-sentence {
-    width: 100%;
-    text-align: start;
-    font-family: var(--fe-font-en);
-    font-size: 18px;
-    line-height: 1.8;
-    color: var(--fe-text);
-    background: transparent;
-    border: 1px solid transparent;
-    border-inline-start-width: 4px;
-    border-radius: 0.75rem;
-    padding: 0.375rem 0.75rem;
-    cursor: pointer;
-    min-height: 44px;
-    transition: background-color 160ms ease, border-color 160ms ease;
-}
-
-.fe-sentence:hover {
-    background: var(--fe-surface);
-}
-
-.fe-sentence:focus-visible {
-    outline: 3px solid var(--fe-primary);
-    outline-offset: 2px;
-}
-
-.fe-sentence[aria-current='true'] {
-    background: var(--fe-surface);
-    border-inline-start-color: var(--fe-accent);
-    border-color: var(--fe-border);
-}
-
 /* Auth: deliberate two-part composition, same product, no gradient card. */
 .fe-auth {
     display: grid;

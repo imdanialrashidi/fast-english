@@ -2,6 +2,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { CardSim, Check, CircleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
@@ -52,6 +53,7 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
     const { errors, status } = usePage<SharedProps>().props;
     const receiptForm = useForm({ receipt: null as File | null, bank_reference: '', sender_last4: '', transferred_at: '' });
     const cancelForm = useForm({});
+    const [confirmCancel, setConfirmCancel] = React.useState(false);
 
     const submitReceipt = (event: React.FormEvent): void => {
         event.preventDefault();
@@ -66,8 +68,12 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
     return (
         <>
             <Head title="درخواست پرداخت" />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">درخواست پرداخت</h1>
+            <ScreenHeader
+                title="درخواست پرداخت"
+                width="reading"
+                back={{ href: '/app/account', label: 'بازگشت به حساب' }}
+            />
+            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
@@ -188,15 +194,35 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                                 </button>
                             </div>
                         </form>
-                        <form onSubmit={cancel}>
-                            <button
-                                type="submit"
-                                disabled={cancelForm.processing}
-                                className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-ink hover:bg-canvas disabled:opacity-60"
-                            >
-                                <X size={20} aria-hidden="true" />
-                                لغو این درخواست
-                            </button>
+                        <form onSubmit={cancel} className="flex flex-wrap items-center gap-2">
+                            {confirmCancel ? (
+                                <>
+                                    <button
+                                        type="submit"
+                                        disabled={cancelForm.processing}
+                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full bg-danger px-4 py-2 font-bold text-surface hover:opacity-90 disabled:opacity-60"
+                                    >
+                                        <X size={20} aria-hidden="true" />
+                                        بله، درخواست لغو شود
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfirmCancel(false)}
+                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center rounded-full border border-line bg-surface px-4 py-2 text-ink hover:bg-canvas"
+                                    >
+                                        بازگشت
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setConfirmCancel(true)}
+                                    className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-ink hover:bg-canvas"
+                                >
+                                    <X size={20} aria-hidden="true" />
+                                    لغو این درخواست
+                                </button>
+                            )}
                         </form>
                     </section>
                 )}

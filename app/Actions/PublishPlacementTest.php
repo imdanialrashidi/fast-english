@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
  * per version, one published current at a time, published versions and
  * their questions immutable.
  *
- * - createDraft(version): new draft row with the FIXTURE scoring map.
+ * - createDraft(version): new draft row with the indicative scoring map.
  * - addQuestion(test, position, prompt, options, correct): validates the
  *   four-option shape; refused on published versions (model guard).
  * - publish(test): requires exactly 20 questions at positions 1–20, each
@@ -37,8 +37,8 @@ final class PublishPlacementTest
             'status' => PlacementTest::STATUS_DRAFT,
             'is_current' => false,
             'scoring_rules' => [
-                'map' => PlacementLevel::fixtureMap(),
-                'note' => 'FIXTURE — not a validated CEFR scale',
+                'map' => PlacementLevel::map(),
+                'note' => 'indicative placement, A1–C1; not a certified CEFR exam',
             ],
         ]);
         $test->save();

@@ -61,6 +61,23 @@ test('empty queue reports none without stale flag', function () {
         ->and($output)->toContain('pending_stale=no');
 });
 
+test('error counter is unavailable, not zero, when no file log exists', function () {
+    // Production logs to stderr: storage/logs/laravel.log does not exist.
+    // Reporting 0 there would claim "no errors" while nothing was read.
+    $tmp = sys_get_temp_dir().'/fe-ops-'.getmypid().'-'.uniqid();
+    mkdir($tmp, 0777, true);
+    $original = app()->storagePath();
+    app()->useStoragePath($tmp);
+
+    try {
+        expect(Artisan::call('ops:status'))->toBe(0);
+        expect(Artisan::output())->toContain('recent_errors_24h=unavailable');
+    } finally {
+        app()->useStoragePath($original);
+        @rmdir($tmp);
+    }
+});
+
 test('health endpoint exposes no details', function () {
     $body = $this->get('/up')->assertOk()->getContent();
 

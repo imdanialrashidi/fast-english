@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\SubmitPlacement;
+use App\Http\Responses\NoStore;
 use App\Models\PlacementAnswer;
 use App\Models\PlacementAttempt;
 use App\Models\PlacementQuestion;
@@ -75,7 +76,7 @@ class PlacementController extends Controller
         if ($current === null) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'آزمون در حال حاضر در دست آماده‌سازی است.'], 422)
-                    ->withHeaders(\App\Http\Responses\NoStore::headers());
+                    ->withHeaders(NoStore::headers());
             }
 
             return redirect()->route('placement.index')->with('status', 'آزمون در حال حاضر در دست آماده‌سازی است.');
@@ -96,7 +97,7 @@ class PlacementController extends Controller
         if ($last !== null && $last->started_at !== null && $last->started_at->greaterThan(now()->subDay())) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'شروع تازه تا ۲۴ ساعت پس از آخرین شروع مجاز نیست.'], 429)
-                    ->withHeaders(\App\Http\Responses\NoStore::headers());
+                    ->withHeaders(NoStore::headers());
             }
 
             return redirect()->route('placement.index')->with('status', 'شروع تازه تا ۲۴ ساعت پس از آخرین شروع مجاز نیست.');
@@ -201,7 +202,6 @@ class PlacementController extends Controller
             'selected' => collect($selected)->mapWithKeys(fn ($option, $questionId) => [
                 (string) $questionId => (int) $option,
             ])->all(),
-            'answeredCount' => count($selected),
             'totalCount' => $questions->count(),
         ]);
     }
@@ -234,7 +234,7 @@ class PlacementController extends Controller
         if ($question === null || (int) $question->test_id !== (int) $attempt->test_id) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'سؤال متعلق به این آزمون نیست.'], 422)
-                    ->withHeaders(\App\Http\Responses\NoStore::headers());
+                    ->withHeaders(NoStore::headers());
             }
 
             return redirect()->route('placement.show', $attempt)->with('status', 'سؤال متعلق به این آزمون نیست.');
@@ -271,7 +271,7 @@ class PlacementController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['id' => $attempt->id, 'status' => $attempt->status])
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         return redirect()->route('placement.show', $attempt)->with('status', 'پاسخ ذخیره شد.');
@@ -295,10 +295,12 @@ class PlacementController extends Controller
         } catch (ValidationException $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => collect($e->errors())->flatten()->implode(' ')], 422)
-                    ->withHeaders(\App\Http\Responses\NoStore::headers());
+                    ->withHeaders(NoStore::headers());
             }
 
-            abort(422, collect($e->errors())->flatten()->implode(' '));
+            return redirect()
+                ->route('placement.show', $attempt)
+                ->withErrors($e->errors());
         }
 
         /** @var PlacementAttempt $fresh */
@@ -310,7 +312,7 @@ class PlacementController extends Controller
                 'status' => $fresh->status,
                 'score' => $fresh->score,
                 'recommended_level' => $fresh->recommended_level,
-            ])->withHeaders(\App\Http\Responses\NoStore::headers());
+            ])->withHeaders(NoStore::headers());
         }
 
         return redirect()->route('placement.result', $fresh);
@@ -363,7 +365,7 @@ class PlacementController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json(['preferred_level' => $user->preferred_level])
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         return redirect()->route('placement.result', $attempt)->with('status', 'سطح ترجیحی ذخیره شد.');
@@ -381,12 +383,11 @@ class PlacementController extends Controller
     {
         if ($request->expectsJson()) {
             return response()->json(['id' => $attempt->id, 'status' => $attempt->status])
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         return redirect()->route('placement.show', $attempt);
     }
-
 
     private function isUniqueViolation(QueryException $e): bool
     {

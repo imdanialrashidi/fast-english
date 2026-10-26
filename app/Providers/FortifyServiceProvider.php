@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\NeutralPasswordResetLinkResponse;
 use App\Models\User;
+use App\Support\SmtpStatus;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -56,10 +57,13 @@ class FortifyServiceProvider extends ServiceProvider
         // protocol automatically.
         Fortify::loginView(fn () => Inertia::render('Auth/Login'));
         Fortify::registerView(fn () => Inertia::render('Auth/Register'));
-        Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword'));
+        Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword', [
+            'resetDisabled' => SmtpStatus::isPasswordResetDisabled(),
+        ]));
         Fortify::resetPasswordView(fn ($request) => Inertia::render('Auth/ResetPassword', [
             'token' => (string) $request->route('token'),
             'email' => (string) ($request->input('email') ?? ''),
+            'resetDisabled' => SmtpStatus::isPasswordResetDisabled(),
         ]));
 
         // Disabled accounts get the same generic error as bad credentials.

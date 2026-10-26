@@ -1,14 +1,11 @@
-:root[data-theme="light"] {
-  --text: #0e171b;
-  --background: #f5f9fa;
-  --primary: #4f95b5;
-  --secondary: #a3c9dc;
-  --accent: #6eaecf;
-}
-:root[data-theme="dark"] {
-  --text: #e4edf1;
-  --background: #05090a;
-  --primary: #4a90b0;
-  --secondary: #23495c;
-  --accent: #307191;
-}
+Fast English — brand palette (owner assets, 2026-10-25)
+
+Logo navy      #1D3B81
+Logo teal      #0D8F8A
+App ink        #101B33
+App paper      #F7F4EE
+App surface    #FFFFFF
+
+The learner app's semantic tokens live in resources/css/inertia.css
+(--color-primary #1F3B82, --color-accent #0E8F8A). The logo colors are the
+owner-supplied artwork values and stay unchanged.

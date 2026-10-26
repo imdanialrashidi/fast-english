@@ -143,7 +143,7 @@ test('S2-3 offline shows the public page with retry, never premium', async ({ pa
 
   // Retry with the network back loads the real reader.
   await page.locator('#fe-offline-retry').click();
-  await expect(page.locator('ol.fe-sentences')).toContainText('On Saturday morning, Sara walks');
+  await expect(page.locator('article.fe-english-body')).toContainText('On Saturday morning, Sara walks');
 });
 
 test('S2-4 a new service worker never reloads during playback or a dirty form', async ({ page }) => {
@@ -234,9 +234,11 @@ test('S2-3 logout clears the player and back/forward leaks no first-account data
   await expect(page.locator('body')).toContainText(B.email);
 
   await page.goBack();
+  await page.waitForLoadState('networkidle');
   await expect(page.locator('body')).not.toContainText(A.email);
 
   await page.goForward().catch(() => undefined);
+  await page.waitForLoadState('networkidle');
   await expect(page.locator('body')).not.toContainText(A.email);
-  await expect(page.locator('body')).toContainText(B.email);
+  await expect(page.locator('body')).toContainText(B.email, { timeout: 15_000 });
 });

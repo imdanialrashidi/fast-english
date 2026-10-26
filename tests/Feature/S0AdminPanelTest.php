@@ -3,7 +3,9 @@
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Lessons\LessonResource;
 use App\Filament\Resources\PaymentRequests\PaymentRequestResource;
+use App\Filament\Resources\Plans\PlanResource;
 use App\Filament\Resources\Topics\TopicResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Schema;
@@ -35,9 +37,12 @@ test('suspended staff cannot use the admin panel', function () {
 // resources (Category/Topic/Lesson). S5 added the payment TABLES
 // (plans/destinations/requests) with no financial Filament resources.
 // S6 adds the staff payment queue (PaymentRequestResource, scope §21 —
-// financial resources arrive with S5/S6) plus the subscriptions tables.
-// Subscriptions are managed only through review actions: no resource
-// exposes a free-text expires_at editor.
+// financial resources arrive with S5/S6). The owner catalog (2026-10-25)
+// adds the Plans resource so prices are editable without a deploy.
+// The admin review adds a read-only Users resource for support/suspension
+// and the audited grant/revoke actions (ADM-02). Subscriptions are still
+// managed only through those actions: no resource exposes a free-text
+// expires_at editor.
 test('admin panel exposes only content resources and no persisted fake data', function () {
     $staff = User::factory()->create(['is_staff' => true]);
     $this->actingAs($staff);
@@ -49,7 +54,9 @@ test('admin panel exposes only content resources and no persisted fake data', fu
         CategoryResource::class,
         LessonResource::class,
         PaymentRequestResource::class,
+        PlanResource::class,
         TopicResource::class,
+        UserResource::class,
     ]);
 
     foreach (['subscriptions', 'subscription_events', 'plans', 'payment_destinations', 'payment_requests'] as $table) {

@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountSettingsController;
-use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\DataTransferController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LessonAudioController;
 use App\Http\Controllers\LessonProgressController;
@@ -24,28 +25,42 @@ use App\Http\Controllers\TrustController;
 use App\Http\Controllers\VocabularyController;
 use Illuminate\Support\Facades\Route;
 
-// S8 landing (scope §6, PUB-01): short Persian page with the promise,
-// the real sample link, how it works, the DB plan list, install and
-// download links, and the FAQ link.
-Route::get('/', [LandingController::class, 'index'])->name('landing');
+// Owner requirement (2026-10-21): the landing system is a guest-only
+// marketing surface for search and download. Signed-in learners never
+// see the public shell; middleware sends them back into /app. The public
+// sample stays outside this group because the in-app locked state links
+// to it as the free path.
+Route::middleware('marketing.guest')->group(function () {
+    // S8 landing (scope §6, PUB-01): short Persian page with the promise,
+    // the real sample link, how it works, the DB plan list, install and
+    // download links, and the FAQ link.
+    Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+    // S8 trust pages (scope §6, PUB-02): public Persian copy. Contact
+    // channels and legal text are owner-editable settings; missing values
+    // fall back to a calm public note (never DRAFT/BLOCKED labels).
+    Route::get('/about', [TrustController::class, 'about'])->name('trust.about');
+    Route::get('/cooperation', [TrustController::class, 'cooperation'])->name('trust.cooperation');
+    Route::get('/faq', [TrustController::class, 'faq'])->name('trust.faq');
+    Route::get('/support', [TrustController::class, 'support'])->name('trust.support');
+    Route::get('/terms', [TrustController::class, 'terms'])->name('trust.terms');
+    Route::get('/privacy', [TrustController::class, 'privacy'])->name('trust.privacy');
+    Route::get('/refund', [TrustController::class, 'refund'])->name('trust.refund');
+
+    // S8 download page (scope §18.2): «هنوز منتشر نشده» until a real build
+    // fills the release metadata.
+    Route::get('/download', [DownloadController::class, 'index'])->name('download');
+});
+
+// Install guide (owner 2026-10-26): public for guests and signed-in
+// learners. iPhone Safari never fires `beforeinstallprompt`, and the
+// Account screen links here, so it stays outside marketing.guest.
+Route::get('/install', [InstallController::class, 'index'])->name('install');
 
 // Public sample entry (scope §6, PUB-01/AC-01): the real published sample
 // without login. Drafts/premium never resolve here; 404 when none exists.
 Route::get('/sample', [LandingController::class, 'sample'])->name('sample');
 
-// S8 trust pages (scope §6, PUB-02): draft copy labelled as draft;
-// support/terms/privacy show explicit BLOCKED states (scope §25).
-Route::get('/about', [TrustController::class, 'about'])->name('trust.about');
-Route::get('/cooperation', [TrustController::class, 'cooperation'])->name('trust.cooperation');
-Route::get('/faq', [TrustController::class, 'faq'])->name('trust.faq');
-Route::get('/support', [TrustController::class, 'support'])->name('trust.support');
-Route::get('/terms', [TrustController::class, 'terms'])->name('trust.terms');
-Route::get('/privacy', [TrustController::class, 'privacy'])->name('trust.privacy');
-
-// S8 download page (scope §18.2): «هنوز منتشر نشده» until a real build
-// fills the release metadata. /install redirects here (scope §6).
-Route::get('/download', [DownloadController::class, 'index'])->name('download');
-Route::redirect('/install', '/download', 302)->name('install');
 // S8: /plans is an alias for the subscribe page (scope §6).
 Route::redirect('/plans', '/app/subscribe', 302)->name('plans');
 
@@ -54,6 +69,8 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 // S8 staff TOTP (scope §5): staff-only (403 for students). The challenge
 // POSTs carry a tight throttle: six-digit codes must not be guessable.
+// These setup/challenge routes are deliberately outside the step-up gate;
+// everything else under /staff requires a passed staff session.
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/two-factor', [StaffTwoFactorController::class, 'setup'])->name('staff.twofactor.setup');
     Route::post('/staff/two-factor', [StaffTwoFactorController::class, 'start'])->name('staff.twofactor.start');
@@ -61,18 +78,27 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/two-factor/challenge', [StaffTwoFactorController::class, 'challenge'])->name('staff.twofactor.challenge');
     Route::post('/staff/two-factor/challenge', [StaffTwoFactorController::class, 'verifyChallenge'])->middleware('throttle:10,1')->name('staff.twofactor.verify');
     Route::post('/staff/two-factor/disable', [StaffTwoFactorController::class, 'disable'])->name('staff.twofactor.disable');
+});
+
+// Privileged staff operations: identity + TOTP/idle gate. These live
+// outside the Filament panel, so the panel auth middleware does not cover
+// them; without this group a stolen staff password could export the
+// database or fetch receipts while 2FA is enforced.
+Route::middleware(['auth', 'staff', 'staff.2fa'])->group(function () {
     // S8 placement management (scope §5): publish through the same shared
     // action the placement:publish CLI uses.
     Route::post('/staff/placement/{test}/publish', [StaffPlacementController::class, 'publish'])->name('staff.placement.publish');
-    // Panel-based one-click backup & restore (OPS-01): staff-only,
-    // private no-store. The Filament Backups page posts here so every
-    // destructive step has an HTTP-testable server-side boundary.
-    Route::post('/staff/backups', [BackupController::class, 'store'])->middleware('throttle:6,1')->name('staff.backups.store');
-    Route::post('/staff/backups/upload', [BackupController::class, 'upload'])->middleware('throttle:6,1')->name('staff.backups.upload');
-    Route::get('/staff/backups/{backup}', [BackupController::class, 'show'])->name('staff.backups.status');
-    Route::get('/staff/backups/{backup}/download', [BackupController::class, 'download'])->name('staff.backups.download');
-    Route::delete('/staff/backups/{backup}', [BackupController::class, 'destroy'])->name('staff.backups.destroy');
-    Route::post('/staff/backups/{backup}/restore', [BackupController::class, 'restore'])->middleware('throttle:6,1')->name('staff.backups.restore');
+    // Panel import/export (OPS-01): staff-only, private no-store. One ZIP
+    // out (database + referenced files), one ZIP in (validated, replaces
+    // data). The Filament page posts here so the destructive step has an
+    // HTTP-testable server-side boundary.
+    Route::get('/staff/transfer/export', [DataTransferController::class, 'export'])->middleware('throttle:6,1')->name('staff.transfer.export');
+    Route::post('/staff/transfer/import', [DataTransferController::class, 'import'])->middleware('throttle:3,1')->name('staff.transfer.import');
+    Route::get('/staff/transfer/safety', [DataTransferController::class, 'safety'])->name('staff.transfer.safety');
+    // Staff draft/published audio preview for the panel. Same private
+    // bytes/Range contract as the learner route, but no publication gate
+    // and an explicit staff step-up.
+    Route::get('/staff/lessons/{lesson}/audio', [LessonAudioController::class, 'preview'])->name('staff.lesson.audio');
 });
 
 // S2 PWA shell + TWA association (scope §18). The static public/robots.txt
@@ -122,6 +148,9 @@ Route::get('/app/today', [TodayController::class, 'index'])
 Route::get('/app/words/review', [VocabularyController::class, 'review'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.review');
+Route::post('/app/words/known', [VocabularyController::class, 'markAllKnown'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('words.known');
 Route::get('/app/words', [VocabularyController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('words.index');
@@ -189,7 +218,7 @@ Route::post('/app/payments/{paymentRequest}/receipt', [PaymentReceiptController:
     ->middleware(['auth', 'reject.disabled'])
     ->name('payments.receipt.store');
 Route::get('/media/payment-requests/{paymentRequest}/receipt', [PaymentReceiptController::class, 'show'])
-    ->middleware(['auth', 'reject.disabled'])
+    ->middleware(['auth', 'reject.disabled', 'staff.2fa.if_staff'])
     ->name('payments.receipt.show');
 
 // S7 optional placement (scope §6, §12): pinned attempts, per-question

@@ -1,0 +1,7 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+/* Admin-only Tailwind scan. The default Filament theme does not see app
+   Blade views, which left the custom pages' grid/w-full classes unstyled
+   (235px textareas, collapsed section spacing). */
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';

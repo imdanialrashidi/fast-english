@@ -1,8 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
-import { BookOpen, Check, Compass, Headphones, Languages, Play, Sun } from 'lucide-react';
+import { ArrowLeft, BookOpen, Check, Clock, Compass, GraduationCap, Languages, Play, Sun } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
-import type { SharedProps } from '@/types';
+import { formatAudioTime } from '@/lib/audio';
+import type { SharedProps, TopicRow } from '@/types';
 
 /**
  * Today — «امروز» (PLAN-01): greeting, Continue Learning, today's plan,
@@ -10,6 +11,10 @@ import type { SharedProps } from '@/types';
  * from persisted state (the DailyPlan props) — never stored, never a
  * self-toggling button. Incomplete stays incomplete after reload.
  */
+
+function fa(value: number): string {
+    return value.toLocaleString('fa-IR');
+}
 
 interface PlanTask {
     key: string;
@@ -21,21 +26,12 @@ interface PlanTask {
     level: string | null;
     cover_url: string | null;
     position_seconds: number | null;
-    duration_seconds: number | null;
     estimated_minutes: number | null;
-}
-
-interface Recommendation {
-    slug: string;
-    title_en: string;
-    cover_url: string | null;
-    levels: string[];
-    minutes: number;
-    reader_url: string;
 }
 
 interface TodayProps extends SharedProps {
     userName: string;
+    needsLevel: boolean;
     plan: {
         goal_minutes: number;
         learned_minutes: number;
@@ -43,16 +39,12 @@ interface TodayProps extends SharedProps {
         due_words: number;
         tasks: PlanTask[];
     };
-    recommendations: Recommendation[];
-}
-
-function clock(totalSeconds: number): string {
-    const total = Math.max(0, Math.floor(totalSeconds));
-    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+    recommendations: TopicRow[];
 }
 
 export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     userName,
+    needsLevel,
     plan,
     recommendations,
 }: TodayProps): React.JSX.Element => {
@@ -63,17 +55,43 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
             <Head title="امروز" />
             <div className="mx-auto grid max-w-[680px] gap-6 px-4 py-6">
                 <div>
-                    <p lang="en" dir="ltr" className="m-0 font-en text-sm font-bold tracking-[0.18em] text-accent-strong uppercase">
-                        Today
-                    </p>
-                    <p className="m-0 mt-1 inline-flex items-center gap-1.5 leading-8 text-muted">
+                    <p className="fe-meta fe-bidi m-0 inline-flex items-center gap-1.5 text-muted">
                         <Sun size={20} aria-hidden="true" />
                         سلام، {userName}
                     </p>
-                    <h1 className="m-0 mt-1 text-2xl leading-[1.7] font-extrabold tracking-tight sm:text-3xl">
-                        امروز هم قدمی بزرگ به سمت هدف‌هات برداشتی.
+                    <h1 className="fe-title m-0 mt-1 text-2xl sm:text-3xl">
+                        {plan.learned_minutes > 0
+                            ? 'امروز هم قدمی به سمت هدف‌هات برداشتی.'
+                            : 'امروز از کجا شروع می‌کنیم؟'}
                     </h1>
                 </div>
+
+                {needsLevel && (
+                    <section aria-label="انتخاب سطح" className="grid gap-3 rounded-3xl border border-primary/30 bg-primary/5 p-5">
+                        <p className="m-0 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                            <GraduationCap size={18} aria-hidden="true" />
+                            یک قدم کوتاه
+                        </p>
+                        <p className="m-0 text-lg leading-8 font-bold">سطح ترجیحی‌ات را انتخاب کن</p>
+                        <p className="m-0 text-sm leading-7 text-muted">
+                            یک آزمون ۲۰ سؤالی یا انتخاب دستی. هر مطلب سطح خودش را دارد و بعداً هم می‌توانی تغییر بدهی.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <Link
+                                href="/app/placement"
+                                className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-surface no-underline hover:bg-primary-hover"
+                            >
+                                تعیین سطح
+                            </Link>
+                            <Link
+                                href="/app/account/settings"
+                                className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-surface px-5 py-2 text-sm font-bold text-ink no-underline hover:bg-canvas"
+                            >
+                                انتخاب دستی
+                            </Link>
+                        </div>
+                    </section>
+                )}
 
                 {continueTask !== null && (
                     <section aria-label="ادامه یادگیری" className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
@@ -109,21 +127,22 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                                 )}
                             </div>
                         </div>
-                        <p className="m-0 leading-8 text-muted">
-                            سطح{' '}
-                            <span lang="en" dir="ltr" className="font-en font-bold">
-                                {continueTask.level ?? ''}
-                            </span>
-                            {continueTask.position_seconds !== null && continueTask.duration_seconds !== null && (
-                                <>
-                                    {' '}· ادامه از <span dir="ltr">{clock(continueTask.position_seconds)}</span> از{' '}
-                                    <span dir="ltr">{clock(continueTask.duration_seconds)}</span>
-                                </>
-                            )}
-                            {continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0 && (
-                                <> · حدود {continueTask.estimated_minutes} دقیقه</>
-                            )}
-                        </p>
+                        {(continueTask.position_seconds !== null ||
+                            (continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0)) && (
+                            <p className="fe-meta m-0 text-muted">
+                                {continueTask.position_seconds !== null && (
+                                    <>
+                                        ادامه از <span dir="ltr">{formatAudioTime(continueTask.position_seconds)}</span>
+                                    </>
+                                )}
+                                {continueTask.position_seconds !== null && continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0 && (
+                                    <> · </>
+                                )}
+                                {continueTask.estimated_minutes !== null && continueTask.estimated_minutes > 0 && (
+                                    <>حدود {fa(continueTask.estimated_minutes)} دقیقه</>
+                                )}
+                            </p>
+                        )}
                         <p className="m-0">
                             <Link
                                 href={continueTask.url}
@@ -194,21 +213,37 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
 
                 <section
                     aria-label="هدف امروز"
-                    className="grid gap-4 rounded-3xl border border-line bg-surface p-5 sm:grid-cols-[auto_1fr] sm:items-center"
+                    className="grid grid-cols-[auto_1fr] items-center gap-4 rounded-3xl border border-line bg-surface p-5"
                 >
                     <div
                         role="img"
                         aria-label={`پیشرفت امروز: ${plan.progress_pct} درصد`}
-                        className="inline-flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-line"
-                        style={{ borderTopColor: 'var(--color-accent-strong)' }}
+                        className="relative inline-flex h-20 w-20 shrink-0 items-center justify-center"
                     >
-                        <span dir="ltr" className="font-en text-sm font-bold tabular-nums">
-                            {plan.learned_minutes}/{plan.goal_minutes}
+                        <svg viewBox="0 0 100 100" aria-hidden="true" className="absolute inset-0 h-full w-full">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--color-line)" strokeWidth="8" />
+                            {plan.progress_pct > 0 && (
+                                <circle
+                                    cx="50"
+                                    cy="50"
+                                    r="42"
+                                    fill="none"
+                                    stroke="var(--color-accent-strong)"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    pathLength={100}
+                                    strokeDasharray={`${Math.min(100, plan.progress_pct)} 100`}
+                                    transform="rotate(-90 50 50)"
+                                />
+                            )}
+                        </svg>
+                        <span dir="ltr" className="font-en text-xs font-bold tabular-nums">
+                            {fa(plan.learned_minutes)}/{fa(plan.goal_minutes)}
                         </span>
                     </div>
                     <div>
-                        <h2 className="m-0 text-lg leading-8">هدف امروز: {plan.goal_minutes} دقیقه مطالعه</h2>
-                        <p className="m-0 mt-1 leading-8 text-muted">{plan.learned_minutes} دقیقه از برنامه امروز انجام شده.</p>
+                        <h2 className="m-0 text-base leading-8 sm:text-lg">هدف امروز: {fa(plan.goal_minutes)} دقیقه مطالعه</h2>
+                        <p className="m-0 mt-1 leading-8 text-muted">{fa(plan.learned_minutes)} دقیقه از برنامه امروز انجام شده.</p>
                         {plan.due_words > 0 && (
                             <p className="m-0 mt-2">
                                 <Link
@@ -216,37 +251,28 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                                     className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2 font-bold text-ink no-underline hover:bg-surface"
                                 >
                                     <Languages size={20} aria-hidden="true" />
-                                    مرور {plan.due_words} واژه
+                                    مرور {fa(plan.due_words)} واژه
                                 </Link>
                             </p>
                         )}
                     </div>
                 </section>
 
-                {plan.due_words > 0 && (
-                    <section aria-label="واژه‌های امروز" className="grid gap-2 rounded-3xl border border-line bg-surface p-5">
-                        <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
-                            <Languages size={20} aria-hidden="true" />
-                            {plan.due_words} واژه برای مرور امروز
-                        </h2>
-                        <p className="m-0">
-                            <Link
-                                href="/app/words/review"
-                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                            >
-                                <Play size={20} aria-hidden="true" />
-                                شروع مرور
-                            </Link>
-                        </p>
-                    </section>
-                )}
-
                 {recommendations.length > 0 && (
                     <section aria-label="مطالب پیشنهادی" className="grid gap-3">
-                        <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
-                            <Compass size={20} aria-hidden="true" />
-                            مطالب پیشنهادی
-                        </h2>
+                        <div className="flex items-center justify-between gap-3">
+                            <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
+                                <Compass size={20} aria-hidden="true" />
+                                مطالب پیشنهادی
+                            </h2>
+                            <Link
+                                href="/app"
+                                className="inline-flex min-h-11 min-w-11 shrink-0 items-center gap-1 rounded-full px-2 text-sm font-bold text-primary no-underline hover:bg-primary/5"
+                            >
+                                مشاهده همه
+                                <ArrowLeft size={16} aria-hidden="true" />
+                            </Link>
+                        </div>
                         <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
                             {recommendations.map((topic) => (
                                 <li key={topic.slug}>
@@ -260,14 +286,25 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                                                         <img src="/icons/icon-192.png" alt="" width={56} height={56} loading="lazy" className="block h-14 w-14 rounded-[14px]" />
                                                     </span>
                                                 )}
+                                                {topic.levels.length > 0 && (
+                                                    <span aria-hidden="true" className="absolute start-3 top-3 inline-flex">
+                                                        <span
+                                                            lang="en"
+                                                            dir="ltr"
+                                                            className="fe-chip inline-flex items-center rounded-full border border-line bg-surface px-2.5 py-0.5 font-en text-xs font-bold"
+                                                        >
+                                                            {topic.levels[0]}
+                                                        </span>
+                                                    </span>
+                                                )}
                                             </span>
                                             <span className="grid gap-1 px-4 pt-3 pb-4">
                                                 <h3 lang="en" dir="ltr" className="m-0 text-left font-en text-lg leading-7 font-bold">
                                                     {topic.title_en}
                                                 </h3>
-                                                <span className="inline-flex items-center gap-1.5 text-[0.9375rem] text-muted">
-                                                    <Headphones size={16} aria-hidden="true" />
-                                                    حدود {topic.minutes} دقیقه مطالعه
+                                                <span className="inline-flex flex-wrap items-center gap-1.5 text-[0.9375rem] text-muted">
+                                                    <Clock size={16} aria-hidden="true" />
+                                                    حدود {fa(topic.minutes)} دقیقه مطالعه
                                                     {topic.levels.length > 0 && (
                                                         <span lang="en" dir="ltr" className="font-en">
                                                             {' '}· {topic.levels.join('، ')}
@@ -280,14 +317,6 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                                 </li>
                             ))}
                         </ul>
-                        <p className="m-0">
-                            <Link
-                                href="/app"
-                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-ink no-underline hover:bg-canvas"
-                            >
-                                مشاهده همه
-                            </Link>
-                        </p>
                     </section>
                 )}
             </div>

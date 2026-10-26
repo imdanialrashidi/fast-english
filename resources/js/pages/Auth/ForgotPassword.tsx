@@ -11,7 +11,14 @@ import type { SharedProps } from '@/types';
  * account oracle) — the message renders from the shared status prop.
  */
 
-export const ForgotPassword: FunctionComponent<SharedProps> & { layout?: (page: ReactNode) => ReactNode } = (): React.JSX.Element => {
+interface ForgotPasswordProps extends SharedProps {
+    /** Production without SMTP: the POST is neutral, so do not promise mail. */
+    resetDisabled: boolean;
+}
+
+export const ForgotPassword: FunctionComponent<ForgotPasswordProps> & { layout?: (page: ReactNode) => ReactNode } = ({
+    resetDisabled,
+}: ForgotPasswordProps): React.JSX.Element => {
     const { errors, status } = usePage<SharedProps>().props;
     const form = useForm({ email: '' });
 
@@ -28,10 +35,26 @@ export const ForgotPassword: FunctionComponent<SharedProps> & { layout?: (page: 
             <AuthFrame
                 title="رمزت یادت رفته؟ پیوند تازه می‌فرستیم."
                 heading="بازیابی رمز عبور"
-                lede="نشانی ایمیل حساب خود را وارد کنید. اگر حسابی با این ایمیل وجود داشته باشد، پیوند بازیابی ارسال می‌شود."
+                lede={
+                    resetDisabled
+                        ? 'بازیابی رمز از طریق ایمیل هنوز فعال نشده است.'
+                        : 'نشانی ایمیل حساب خود را وارد کنید. اگر حسابی با این ایمیل وجود داشته باشد، پیوند بازیابی ارسال می‌شود.'
+                }
                 errors={errors}
                 status={status}
             >
+                {resetDisabled ? (
+                    <div role="status" className="grid gap-2 rounded-2xl border border-line bg-surface p-4 leading-8">
+                        <p className="m-0 font-bold">ارسال ایمیل بازیابی در حال حاضر فعال نیست.</p>
+                        <p className="m-0 text-muted">
+                            برای کمک به{' '}
+                            <Link href="/support" className="inline-flex min-h-11 items-center text-primary">
+                                صفحهٔ پشتیبانی
+                            </Link>{' '}
+                            برو.
+                        </p>
+                    </div>
+                ) : (
                 <form onSubmit={submit} className="grid gap-4" noValidate>
                     <div className="grid gap-1.5">
                         <label htmlFor="email" className="inline-flex items-center gap-1.5 font-bold">
@@ -45,10 +68,15 @@ export const ForgotPassword: FunctionComponent<SharedProps> & { layout?: (page: 
                             onChange={(event) => form.setData('email', event.target.value)}
                             required
                             autoComplete="email"
-                            autoFocus
                             dir="ltr"
+                            aria-describedby={errors.email ? 'email-error' : undefined}
                             className="min-h-11 w-full rounded-full border border-field bg-surface px-4 py-2 text-left font-en text-base text-ink"
                         />
+                        {errors.email !== undefined && (
+                            <p id="email-error" role="alert" className="m-0 text-sm leading-7 text-danger">
+                                {errors.email}
+                            </p>
+                        )}
                     </div>
                     <button
                         type="submit"
@@ -59,6 +87,7 @@ export const ForgotPassword: FunctionComponent<SharedProps> & { layout?: (page: 
                         ارسال پیوند بازیابی
                     </button>
                 </form>
+                )}
                 <p className="m-0 leading-8 text-muted">
                     <Link href="/login" className="inline-flex min-h-11 items-center text-primary">
                         بازگشت به ورود

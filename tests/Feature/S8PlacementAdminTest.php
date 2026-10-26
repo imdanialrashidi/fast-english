@@ -18,10 +18,16 @@ beforeEach(function () {
 });
 
 test('staff sees versions with the answer key on the panel page', function () {
+    $draft = PublishPlacementTest::createDraft('s8-admin-confirm');
+    foreach (range(1, 20) as $position) {
+        PublishPlacementTest::addQuestion($draft, $position, "S8 FIXTURE prompt {$position} (TEST)", ['aa', 'bb', 'cc', 'dd'], $position % 4);
+    }
+
     $html = $this->actingAs($this->staffA)->get('/admin/placement-overview')->assertOk()->getContent();
 
     expect($html)->toContain('s7-fixture-v1')
-        ->and($html)->toContain('(correct)');
+        ->and($html)->toContain('(correct)')
+        ->and($html)->toContain('confirm(');
 });
 
 test('student is refused the panel page and the publish route', function () {

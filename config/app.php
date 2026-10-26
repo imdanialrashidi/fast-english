@@ -78,7 +78,10 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    // The learner/public product is Persian-only; the Filament staff panel
+    // pins English per request (SetStaffLocale). Keeping this fixed means a
+    // misconfigured APP_LOCALE can never show framework English to learners.
+    'locale' => 'fa',
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

@@ -30,16 +30,18 @@ test('S3-7 library at 360px: no scroll, kept aspect ratio, reachable controls', 
   expect(box!.width / box!.height).toBeGreaterThan(1.68);
   expect(box!.width / box!.height).toBeLessThan(1.88);
 
+  await page.getByRole('button', { name: /فیلترها/ }).click();
   for (const group of ['سطح', 'دسته']) {
     const target = page.getByRole('group', { name: group });
     await expect(target).toBeVisible();
-    // Every pill link in the group meets the 44px target rule.
-    for (const link of await target.getByRole('link').all()) {
-      const box = await link.boundingBox();
+    // Every filter button in the group meets the 44px target rule.
+    for (const button of await target.getByRole('button').all()) {
+      const box = await button.boundingBox();
       if (!box) continue;
       expect(box.height).toBeGreaterThanOrEqual(44);
     }
   }
+  await page.getByRole('button', { name: 'بستن فیلترها' }).click();
   const search = page.getByLabel('جست‌وجو در عنوان');
   const searchBox = await search.boundingBox();
   expect(searchBox).not.toBeNull();
@@ -76,8 +78,10 @@ test('S3-7 library at 320px reflows without losing controls', async ({ sub: page
   const { scroll, inner } = await noHorizontalScroll(page);
   expect(scroll).toBeLessThanOrEqual(inner);
 
+  await page.getByRole('button', { name: /فیلترها/ }).click();
   await expect(page.getByRole('group', { name: 'سطح' })).toBeVisible();
   await expect(page.getByRole('group', { name: 'دسته' })).toBeVisible();
+  await page.getByRole('button', { name: 'بستن فیلترها' }).click();
   await expect(page.getByLabel('جست‌وجو در عنوان')).toBeVisible();
   await expect(page.getByRole('button', { name: 'جست‌وجو' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Morning Market' })).toBeVisible();

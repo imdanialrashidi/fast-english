@@ -62,9 +62,11 @@ test('S3-4 empty result explains itself and the reset restores the list', async 
 test('S3-4 filter state survives UI change, reload, and back navigation', async ({ sub: page }) => {
   await page.goto('/app');
 
-  // Premium pill filters are links carrying the same GET params: clicking
-  // a level pill navigates to the filtered URL (back/forward compatible).
-  await page.getByRole('group', { name: 'سطح' }).getByRole('link', { name: 'B1', exact: true }).click();
+  // The filter sheet applies level/category to the URL, so back/forward
+  // still restore the same filtered state.
+  await page.getByRole('button', { name: /فیلترها/ }).click();
+  await page.getByRole('group', { name: 'سطح' }).getByRole('button', { name: 'B1', exact: true }).click();
+  await page.getByRole('button', { name: 'اعمال فیلترها' }).click();
   await expect(page).toHaveURL(/level=B1/);
   // city-park (B1), night-trains (B1), rainy-day (B1 sample).
   await expect(page.locator('article.fe-card')).toHaveCount(3);

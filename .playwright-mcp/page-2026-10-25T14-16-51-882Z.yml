@@ -1,0 +1,90 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e3]:
+    - link "پرش به محتوا" [ref=f8e4] [cursor=pointer]:
+      - /url: "#fe-public-content"
+    - banner [ref=f8e5]:
+      - generic [ref=f8e7]:
+        - link "Fast English — صفحه اصلی" [ref=f8e8] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f8e9]:
+            - generic [ref=f8e10]: Fast English
+            - generic [ref=f8e11]: خواندن و شنیدن، یک نسخه
+        - navigation "ناوبری عمومی" [ref=f8e12]:
+          - link "نمونه رایگان" [ref=f8e13] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=f8e14] [cursor=pointer]:
+            - /url: /download
+          - link "پرسش‌ها" [ref=f8e15] [cursor=pointer]:
+            - /url: /faq
+          - link "ورود" [ref=f8e16] [cursor=pointer]:
+            - /url: /login
+          - link "ساخت حساب" [ref=f8e17] [cursor=pointer]:
+            - /url: /register
+    - main [ref=f8e19]:
+      - generic [ref=f8e20]:
+        - region "درباره Fast English" [ref=f8e21]:
+          - link "Fast English" [ref=f8e22] [cursor=pointer]:
+            - /url: /
+          - heading "با یک متن کوتاه انگلیسی، امروز را شروع کن." [level=1] [ref=f8e24]
+          - list [ref=f8e25]:
+            - listitem [ref=f8e26]: متن کوتاه در سطح خودت، با صوت همان نسخه
+            - listitem [ref=f8e30]: پخش‌کننده ساده با سرعت قابل تنظیم
+            - listitem [ref=f8e34]: دفترچه واژه با مرور سر موعد
+        - region "ورود به حساب" [ref=f8e40]:
+          - generic [ref=f8e41]:
+            - heading "ورود به حساب" [level=2] [ref=f8e42]
+            - paragraph [ref=f8e43]: ایمیل و رمز عبورت را وارد کن تا به درس‌هایت برسی.
+          - generic [ref=f8e44]:
+            - generic [ref=f8e45]:
+              - generic [ref=f8e46]: ایمیل
+              - textbox "ایمیل" [ref=f8e50]
+            - generic [ref=f8e51]:
+              - generic [ref=f8e52]: رمز عبور
+              - generic [ref=f8e56]:
+                - textbox "رمز عبور" [ref=f8e57]
+                - button "نمایش رمز عبور" [ref=f8e58] [cursor=pointer]
+            - button "ورود" [ref=f8e62] [cursor=pointer]
+          - generic [ref=f8e66]:
+            - generic [ref=f8e67]: حساب نداری؟
+            - link "ساخت حساب" [ref=f8e68] [cursor=pointer]:
+              - /url: /register
+            - link "رمز را فراموش کرده‌ام" [ref=f8e70] [cursor=pointer]:
+              - /url: /forgot-password
+    - contentinfo [ref=f8e71]:
+      - generic [ref=f8e72]:
+        - generic [ref=f8e73]:
+          - link "Fast English — صفحه اصلی" [ref=f8e74] [cursor=pointer]:
+            - /url: /
+            - generic [ref=f8e75]:
+              - generic [ref=f8e76]: Fast English
+              - generic [ref=f8e77]: خواندن و شنیدن، یک نسخه
+          - paragraph [ref=f8e78]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+          - paragraph [ref=f8e79]:
+            - link "شروع با نمونه رایگان" [ref=f8e80] [cursor=pointer]:
+              - /url: /sample
+            - link "دانلود" [ref=f8e81] [cursor=pointer]:
+              - /url: /download
+        - navigation "پیوندهای اعتماد" [ref=f8e82]:
+          - paragraph [ref=f8e83]: دسترسی سریع
+          - link "درباره" [ref=f8e84] [cursor=pointer]:
+            - /url: /about
+          - link "همکاری" [ref=f8e85] [cursor=pointer]:
+            - /url: /cooperation
+          - link "پرسش‌های پرتکرار" [ref=f8e86] [cursor=pointer]:
+            - /url: /faq
+          - link "پشتیبانی" [ref=f8e87] [cursor=pointer]:
+            - /url: /support
+          - link "قوانین" [ref=f8e88] [cursor=pointer]:
+            - /url: /terms
+          - link "حریم خصوصی" [ref=f8e89] [cursor=pointer]:
+            - /url: /privacy
+          - link "بازگشت وجه" [ref=f8e90] [cursor=pointer]:
+            - /url: /refund
+          - link "دانلود" [ref=f8e91] [cursor=pointer]:
+            - /url: /download
+        - paragraph [ref=f8e92]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.
+  - status [ref=f8e93]:
+    - generic [ref=f8e94]: نسخه تازه‌ای آماده است.
+    - generic [ref=f8e95]:
+      - button "تازه‌سازی" [ref=f8e96] [cursor=pointer]
+      - button "بستن اعلان به‌روزرسانی" [ref=f8e97] [cursor=pointer]: ×

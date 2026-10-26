@@ -1,0 +1,19 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e3]:
+    - banner [ref=f10e4]:
+      - link "Fast English — صفحه اصلی" [ref=f10e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f10e7]: Fast English
+    - main [ref=f10e8]:
+      - generic [ref=f10e9]:
+        - paragraph [ref=f10e10]: "403"
+        - heading "اجازه دسترسی ندارید" [level=1] [ref=f10e11]
+        - paragraph [ref=f10e12]: برای دیدن این صفحه وارد حساب خود شوید یا به صفحه اصلی برگردید.
+        - paragraph [ref=f10e13]:
+          - link "بازگشت به برنامه" [ref=f10e14] [cursor=pointer]:
+            - /url: /app/today
+  - status [ref=f10e15]:
+    - generic [ref=f10e16]: نسخه تازه‌ای آماده است.
+    - generic [ref=f10e17]:
+      - button "تازه‌سازی" [ref=f10e18] [cursor=pointer]
+      - button "بستن اعلان به‌روزرسانی" [ref=f10e19] [cursor=pointer]: ×

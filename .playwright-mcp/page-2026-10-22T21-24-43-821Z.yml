@@ -1,0 +1,75 @@
+- generic [ref=f16e3]:
+  - link "پرش به محتوا" [ref=f16e4] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=f16e5]:
+    - generic [ref=f16e6]:
+      - link "Fast English — صفحه اصلی" [ref=f16e7] [cursor=pointer]:
+        - /url: /
+        - generic [aria-hidden] [ref=f16e8]: F
+        - generic [ref=f16e9]: Fast English
+      - navigation "ناوبری عمومی" [ref=f16e11]:
+        - link "ورود" [ref=f16e12] [cursor=pointer]:
+          - /url: /login
+        - link "ساخت حساب" [ref=f16e13] [cursor=pointer]:
+          - /url: /register
+  - main [ref=f16e15]:
+    - generic [ref=f16e16]:
+      - region "درباره Fast English" [ref=f16e17]:
+        - link "Fast English" [ref=f16e18] [cursor=pointer]:
+          - /url: /
+        - heading "با یک متن کوتاه انگلیسی، امروز را شروع کن." [level=1] [ref=f16e20]
+        - list [ref=f16e21]:
+          - listitem [ref=f16e22]: متن کوتاه در سطح خودت، با صوت همان نسخه
+          - listitem [ref=f16e26]: پخش‌کننده ساده با سرعت قابل تنظیم
+          - listitem [ref=f16e30]: دفترچه واژه با مرور سر موعد
+      - region "ورود به حساب" [ref=f16e36]:
+        - generic [ref=f16e37]:
+          - heading "ورود به حساب" [level=2] [ref=f16e38]
+          - paragraph [ref=f16e39]: ایمیل و رمز عبورت را وارد کن تا به درس‌هایت برسی.
+        - generic [ref=f16e40]:
+          - generic [ref=f16e41]:
+            - generic [ref=f16e42]: ایمیل
+            - textbox "ایمیل" [active] [ref=f16e46]
+          - generic [ref=f16e47]:
+            - generic [ref=f16e48]: رمز عبور
+            - generic [ref=f16e52]:
+              - textbox "رمز عبور" [ref=f16e53]
+              - button "نمایش رمز عبور" [ref=f16e54] [cursor=pointer]
+          - button "ورود" [ref=f16e58] [cursor=pointer]
+        - paragraph [ref=f16e62]:
+          - text: حساب نداری؟
+          - link "ساخت حساب" [ref=f16e63] [cursor=pointer]:
+            - /url: /register
+          - text: ·
+          - link "رمز را فراموش کرده‌ام" [ref=f16e64] [cursor=pointer]:
+            - /url: /forgot-password
+  - contentinfo [ref=f16e65]:
+    - generic [ref=f16e66]:
+      - generic [ref=f16e67]:
+        - link "Fast English — صفحه اصلی" [ref=f16e68] [cursor=pointer]:
+          - /url: /
+          - generic [aria-hidden] [ref=f16e69]: F
+          - generic [ref=f16e70]: Fast English
+        - paragraph [ref=f16e72]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+        - paragraph [ref=f16e73]:
+          - link "شروع با نمونه رایگان" [ref=f16e74] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=f16e75] [cursor=pointer]:
+            - /url: /download
+      - navigation "پیوندهای اعتماد" [ref=f16e76]:
+        - paragraph [ref=f16e77]: دسترسی سریع
+        - link "درباره" [ref=f16e78] [cursor=pointer]:
+          - /url: /about
+        - link "همکاری" [ref=f16e79] [cursor=pointer]:
+          - /url: /cooperation
+        - link "پرسش‌های پرتکرار" [ref=f16e80] [cursor=pointer]:
+          - /url: /faq
+        - link "پشتیبانی" [ref=f16e81] [cursor=pointer]:
+          - /url: /support
+        - link "قوانین" [ref=f16e82] [cursor=pointer]:
+          - /url: /terms
+        - link "حریم خصوصی" [ref=f16e83] [cursor=pointer]:
+          - /url: /privacy
+        - link "دانلود" [ref=f16e84] [cursor=pointer]:
+          - /url: /download
+      - paragraph [ref=f16e85]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

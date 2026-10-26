@@ -4,25 +4,75 @@ Source baseline: `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0 (2026-10-07). It is 
 
 Authority order: latest explicit owner instruction → accepted slice contract → scope + recorded fresh decisions → repository docs. Conflicting behaviors are never both planned as valid (see conflict log in the active exec plan).
 
+## Owner instruction 2026-10-25 — app-like shell, one brand lockup, pagination
+
+- **One owner-supplied brand set.** The supplied app icon and header lockup are the sources (`Logo/fast_english_app_favicon.png`, `Logo/fastenglish_header_logo.png`); `public/icons/*`, `public/favicon.ico`, and `public/images/brand/*` are derived from them. The light lockup sits on paper, the warm-paper lockup on the deep footer. The old icon-plus-text approximation is gone.
+- **The learner app does not repeat the logo.** Root screens use a contextual `ScreenHeader` (title + at most one action); nested screens add a back affordance. The brand appears on landing/login, the PWA icon/splash, and the desktop rail only; the mobile brand bar is retired.
+- **One paginator, server-clamped.** Discover, Saved, and Words share one component. An out-of-range or malformed `page` redirects to the nearest valid page with the same filters; a page change focuses and scrolls to the results and is announced; page numbers are Persian.
+- **Discovery is app-dense.** Sticky search, a filter sheet for level/category, removable active-filter chips, and compact rows put the first result above the fold. The URL remains the source of browsing state.
+- **CSV is fully retired.** Both export and import are gone (2026-10-25). Words are saved from a lesson or edited in the notebook; the bulk «همه را می‌دانم» action remains, and existing rows are untouched.
+- **Reader completion moved after the reading surface.** Bookmarking stays near the top; «خواندم» and reset live after the lesson and glossary, followed by the way back to Discover.
+- **The shell carries real state.** The Words tab shows the learner's real due-word count; Account exposes a level CTA, Today a first-run level card; Chromium gets an event-driven install card with remembered dismissal; successful mutations raise a visual toast while the inline status stays the accessible source.
+- **Motion stays optional.** Press/enter feedback is 150–180 ms and only under `prefers-reduced-motion: no-preference`.
+
+## Owner instruction 2026-10-25 — catalog, card fallback, published trust copy
+
+- **Prices:** 30 days = 399,000 toman; 90 days = 20% off (957,600); 365 days = 30% off (3,351,600). Plan names are duration-based. `PlanCatalogSeeder` installs/updates them by stable slug; the staff Plans resource edits them without a deploy.
+- **Domain:** `fastenglish.ir`. Support and cooperation channel: `@test`. Support hours remain unset until the owner supplies them.
+- **Card-to-card remains the live checkout.** Staff can replace the active destination and edit transfer instructions in Business settings. A fresh environment gets an obvious placeholder card; checkout is blocked until a real 16-digit card, holder, and bank replace it. The fallback switch can close card payments without a deploy.
+- **Online gateway infrastructure is prepared, not claimed live.** Provider/merchant/sandbox fields and a driver map exist, but no provider driver is registered and no online charge is performed. When the owner chooses a provider, implement the driver and callback, then switch the flow.
+- **Trust copy is published.** Terms, privacy, and refund are staff-editable Persian paragraphs with config defaults; `/refund` was added to the public pages, footer, and sitemap. The owner still needs a qualified review before launch.
+- **Sales stay off by default.** `SALES_ENABLED=true` only after the real card (or a live gateway), final legal review, and the remaining launch inputs in `docs/LAUNCH_INPUTS_FA.md`.
+
+## Owner instruction 2026-10-25 — review pass: no developer errors, CSV export removed, player polish
+
+- **CSV export is retired.** The export route, button, download response, and its tests were removed. The transactional import was retired later the same day (see the app-shell instruction above); the bulk «همه را می‌دانم» action remains.
+- **Learner errors are Persian end to end.** `lang/fa/{auth,passwords,validation,pagination}.php` own the framework copy; the app locale is fixed to `fa`; JSON validation/auth/throttle/403/404 messages are translated once in the exception pipeline; 419/429/405 render Persian pages/ErrorPage states.
+- **Public pages never expose internal workflow labels.** The trust pages dropped `DRAFT`/`BLOCKED` badges and public-facing internal notes; missing legal/support text renders a calm «هنوز منتشر نشده / به‌زودی» state with no invented contact or legal text. Landing's primary action follows reality: while no APK is published, the sample is primary and download is informational.
+- **Player is one shared console** (`AudioConsole`) for the persistent learner bar and the public sample: buffering indicator, buffered progress, one seek/skip/speed interaction model, RTL-correct time alignment, save-failure surfacing, and expansion-aware content clearance. No autoplay; one audio element; Media Session unchanged.
+- **UI review fixes:** expanded player no longer covers content or the PWA notice; the navigation skeleton is skipped for partial reloads, sits below the player, and releases after 20 s; library/words search uses Inertia (playback survives); placement save state is truthful and final submit stays gated on all answers; SRS grading cannot double-submit; destructive reset/cancel/delete actions are two-step; sample CTAs follow the session; failure text is styled/announced as errors; Today's headline reflects real progress.
+
+## Owner instruction 2026-10-21 — plain reader, Persian app chrome
+
+- READ-03 sentence-level sync is retired: the reader, public sample, and landing preview render plain English paragraphs beside the normal audio player. Text never highlights, bolds, auto-scrolls, or seeks by sentence. The cue columns, validators, staff editor, and cue tests were removed in the same cutover.
+- Learner chrome is Persian; the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the English `Example` field label are removed.
+- The app shell drops the in-app marketing footer, the duplicate signed-in header account CTA, and the account page's duplicate main-navigation chips.
+- Account becomes an app profile screen: identity, subscription status with one next action, settings list, and logout.
+
+## Owner follow-up 2026-10-22 — vocabulary tools, reminders, player metadata
+
+- Vocabulary keeps the same owner-scoped rows and deterministic SRS, with a cloze presentation and a bulk «همه را می‌دانم» action. CSV import and export are both retired (2026-10-25).
+- Account lists recent payment requests (status, plan, snapshot amount) without receipt/bank/internal fields. Renewal reminders are one-per-window; real SMTP remains a launch input.
+- Media Session metadata/controls are published where supported; background audio is still not promised.
+- Learner navigation shows a delayed skeleton, and learner pages share one Persian type scale.
+- `/sample` is indexable while a published sample exists (sitemap, canonical, Article JSON-LD).
+
 ## Product outcome
 
-Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English; final brand, domain ownership, prices, bank destination, legal text, SMTP, signing identity, hosting, staff roster, and content production are launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures.
+Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English. Prices, domain, contact channels, and standard legal copy were supplied on 2026-10-25; final brand assets, real card/gateway credentials, SMTP, signing identity, hosting, staff roster, and content production remain launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures; `docs/LAUNCH_INPUTS_FA.md` tracks what is still missing.
 
-Reference domain in scope documents: `fastenglishpodcast.com` — ownership/access to be verified before launch (§25). The checkout is a working rebuild-in-progress: domain models, shared Actions, policies, and private media controllers exist, the learner surface is Inertia post-M0–M5 with the M6 regression pending, and staff runs in Filament. See the stage map in `docs/PLAN.md` and the active migration plan in `docs/exec-plans/active/frontend-inertia-migration.md`.
+Reference domain: `fastenglish.ir` (owner instruction 2026-10-25; supersedes the scope's earlier reference domain). Ownership/DNS verification remains a launch check (§25). The checkout is a working rebuild-in-progress: domain models, shared Actions, policies, and private media controllers exist, the learner surface is Inertia post-M0–M5 with the M6 regression pending, and staff runs in Filament. See the stage map in `docs/PLAN.md` and the active migration plan in `docs/exec-plans/active/frontend-inertia-migration.md`.
+
+## Admin operations (2026-10-26)
+
+- `/admin/users` completes ADM-02: staff can search every learner/staff account, inspect the current subscription and recent payment/event history, suspend or reactivate with a required reason (logged), and use the shared audited grant/revoke actions. Profile fields, passwords, roles and expiry dates remain non-editable.
+- Every privileged staff surface requires the TOTP gate: `/admin` (including Livewire updates), placement publish, import/export, staff audio preview, and the staff branch of the private receipt route. The owner receipt path stays challenge-free. Lost-authenticator recovery is the audited `staff:2fa-reset` CLI; `staff:bootstrap` requires an explicit password.
+- The panel displays UTC storage in Asia/Tehran. The payment record exposes learner-supplied transfer hints, internal notes, reviewer/canceller audit, current subscription/events and the retention/missing-file receipt state; the lesson editor preserves the hidden private audio path, offers a draft audio preview, and never bumps `audio_revision` on a title/body-only edit.
+- Owner settings normalize Persian/Arabic-Indic card digits, reject a card without holder/bank, and save settings+destination atomically. Topic/category slugs are `alphaDash`; only active staff can be recorded as content reviewers; placement publish is confirmation-gated.
 
 ## Scoped requirements by ID (scope §3)
 
 | ID | Requirement | Observable output |
 |---|---|---|
 | PUB-01 | Public intro | Value proposition, real sample, plans, install, support |
-| PUB-02 | Trust pages | About, cooperation, FAQ, terms, privacy with real approved text |
+| PUB-02 | Trust pages | About, cooperation, FAQ, support, terms, privacy, refund with owner-editable text and a real contact channel |
 | AUTH-01 | Account | Sign-up (name/email/password), login, logout |
 | AUTH-02 | Recovery + session | Reset via real SMTP; valid session after refresh |
 | LIB-01 | Topic list | Newest topics, one result per topic, pagination |
 | LIB-02 | Find content | Level/category filter + simple title search |
 | READ-01 | Lesson page | Level selector, English body, audio of the same lesson version |
 | READ-02 | Key words | Small per-lesson glossary, no dictionary service |
-| READ-03 | Sentence audio cues | Staff-maintained sentence start/end times per audio revision; reader highlights the playing sentence and seeks on select; usable fallback when cues absent |
+| READ-03 | Sentence audio cues (RETIRED 2026-10-21) | Owner removed sentence-level sync. Reader/sample/landing render plain paragraphs with the normal player; cue storage and editor were removed too. |
 | VOCAB-01 | Vocabulary notebook + SRS | Save lesson words with meaning/example/context; Again/Hard/Good/Easy review with deterministic next-review scheduling; due/learning/known states; owner-only |
 | PLAN-01 | Daily learning path | 5/10/15-minute goal with tasks (continue lesson, listen, review due words, next lesson) derived from persisted progress; respects level and premium access |
 | MEDIA-01 | Player | Play/pause, seek, ±10s, speed |
@@ -31,7 +81,7 @@ Reference domain in scope documents: `fastenglishpodcast.com` — ownership/acce
 | SAVE-01 | Saved | Topic bookmark + removal |
 | LEVEL-01 | Preferred level | Explicit default-level change, independent of placement |
 | PLACE-01 | Placement test | 20 questions, server marking, informal suggestion (optional) |
-| PAY-01 | Payment request | Plan/amount/destination snapshot before transfer; private receipt |
+| PAY-01 | Payment request | Plan/amount/destination snapshot before transfer; private receipt; card-to-card is the live method and placeholder destinations block checkout |
 | PAY-02 | Payment status | Status view, rejection reason, new request |
 | PAY-03 | Staff review | Approve/reject with history and transactional effect |
 | SUB-01 | Access | Active subscription, renewal, expiry, controlled revoke |
@@ -59,7 +109,7 @@ A level is a **content attribute, not an access permission** (scope §8). All pu
 
 ## Non-goals (scope §4 — binding, as amended 2026-10-09)
 
-Bank gateway/bank API, auto/OCR receipt verification, SMS OTP, native iOS, store publishing, offline download of paid content, push, AI tutor, speaking, runtime AI/TTS, full lesson translation, word-level alignment, public import pipeline, chart dashboard, streaks/leaderboards/achievements, algorithmic recommender, coupons, affiliates, multi-teacher, multi-locale UI. Sentence-level cues (READ-03), the vocabulary notebook with simple SRS (VOCAB-01), and the daily learning path (PLAN-01) are IN scope since the 2026-10-09 owner request below. No standalone stats page (progress lives on lesson + Today/continue surfaces). Cooperation/support start as info pages/links; no internal CRM/ticketing. Items enter only via explicit scope change + new acceptance criteria.
+Bank gateway/bank API, auto/OCR receipt verification, SMS OTP, native iOS, store publishing, offline download of paid content, push, AI tutor, speaking, runtime AI/TTS, full lesson translation, word-level alignment, public import pipeline, chart dashboard, streaks/leaderboards/achievements, algorithmic recommender, coupons, affiliates, multi-teacher, multi-locale UI. Sentence-level cues (READ-03) were retired by the 2026-10-21 owner instruction; the vocabulary notebook with simple SRS (VOCAB-01) and the daily learning path (PLAN-01) remain IN scope since the 2026-10-09 owner request below. No standalone stats page (progress lives on lesson + Today/continue surfaces). Cooperation/support start as info pages/links; no internal CRM/ticketing. Items enter only via explicit scope change + new acceptance criteria.
 
 ## Owner-approved amendments 2026-10-09 (authoritative per scope §0; save-only, no behavior built this turn)
 
@@ -69,7 +119,7 @@ Bank gateway/bank API, auto/OCR receipt verification, SMS OTP, native iOS, store
 4. Every published topic shows a real cover: default generated abstract cover (GD, deterministic from slug, no baked text); staff may upload licensed photos each with a license record (source, license name, date checked, usage notes); no runtime third-party fetch. Reason: owner forbids empty placeholders; provenance must be auditable.
 5. Amber replaces the navy/blue identity from scope §17.1 (primary `#1D4ED8`, primary-hover `#1E40AF`) with the Night Studio amber scale (dark `#F5A524`, light `#B45309`, sepia `#92400E`); navy/blue is no longer the identity. Owner-approved on 2026-10-09 by owner direction. Reason: owner direction requires a distinctive polished palette with a warm amber signal for play/progress.
 6. Soft Day light theme (owner Softly inspiration, 2026-10-09) replaces the Night Studio light table and the §17.1 proposal values in code for learner app surfaces (canvas `#FDFCF8`, coral `#FFB7B2`/`#FF9E99`, text `#292524`, muted `#78716C`); sage `#E8EFE8` recorded for landing; perf-heavy effects excluded; landing markup untouched. Owner-approved on 2026-10-09 by owner direction. Reason: owner wants the Softly look in the app without the perf cost.
-7. Editorial redesign + three learning features into v1 (owner request 2026-10-09): (a) premium editorial visual identity from the supplied reference (warm ivory canvas, deep navy text, blue primary actions, warm amber accent; Vazirmatn Persian + Inter English; landing, Today «امروز», Discover «کشف مطالب», immersive reader, vocabulary «واژه‌ها», calm account, desktop sidebar + mobile four-tab nav «امروز/کشف/واژه‌ها/حساب»); (b) sentence-level immersive reading with real validated timing data and fallback (READ-03); (c) personal vocabulary notebook with deterministic Again/Hard/Good/Easy SRS (VOCAB-01); (d) personalized daily learning path with 5/10/15-minute goals derived from persisted progress (PLAN-01). Removes `flashcards/SRS` and `word-by-word highlight` from the §4 exclusion above in this narrow sense only: sentence-level sync is required, word-level alignment stays excluded; no third-party dictionary/translation/transcription/TTS API; streaks/leaderboards/achievements stay excluded. Reason: owner explicitly approved these three scope extensions and the reference visual direction.
+7. Editorial redesign + three learning features into v1 (owner request 2026-10-09): (a) premium editorial visual identity from the supplied reference (warm ivory canvas, deep navy text, blue primary actions, warm amber accent; Vazirmatn Persian + Inter English; landing, Today «امروز», Discover «کشف مطالب», immersive reader, vocabulary «واژه‌ها», calm account, desktop sidebar + mobile four-tab nav «امروز/کشف/واژه‌ها/حساب»); (b) sentence-level immersive reading with real validated timing data and fallback (READ-03 — retired by the 2026-10-21 owner instruction); (c) personal vocabulary notebook with deterministic Again/Hard/Good/Easy SRS (VOCAB-01); (d) personalized daily learning path with 5/10/15-minute goals derived from persisted progress (PLAN-01). Removes `flashcards/SRS` and `word-by-word highlight` from the §4 exclusion above in this narrow sense only: sentence-level sync is required, word-level alignment stays excluded; no third-party dictionary/translation/transcription/TTS API; streaks/leaderboards/achievements stay excluded. Reason: owner explicitly approved these three scope extensions and the reference visual direction.
 
 ## Owner-approved frontend migration 2026-10-10 (M0–M5 delivered 2026-10-11; M6 pending — authoritative per scope §0; history above preserved, not rewritten)
 

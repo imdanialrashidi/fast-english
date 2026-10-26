@@ -1,0 +1,51 @@
+- generic [ref=f26e3]:
+  - link "پرش به محتوا" [ref=f26e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f26e5]:
+    - link "Fast English — صفحه اصلی" [ref=f26e8] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f26e9]: Fast English
+  - main [ref=f26e12]:
+    - generic [ref=f26e15]:
+      - generic [ref=f26e16]:
+        - heading "واژه‌ها" [level=1] [ref=f26e17]
+        - paragraph [ref=f26e18]: دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.
+      - generic [ref=f26e19]:
+        - link "خروجی CSV" [ref=f26e21] [cursor=pointer]:
+          - /url: /app/words/export
+        - group [ref=f26e26]:
+          - generic "ورود از CSV" [ref=f26e27] [cursor=pointer]
+      - navigation "وضعیت واژه‌ها" [ref=f26e34]:
+        - group "وضعیت واژه‌ها" [ref=f26e35]:
+          - link "همه" [ref=f26e36] [cursor=pointer]:
+            - /url: /app/words
+          - link "موعد امروز (0)" [ref=f26e37] [cursor=pointer]:
+            - /url: /app/words?tab=due
+          - link "در حال یادگیری (0)" [ref=f26e38] [cursor=pointer]:
+            - /url: /app/words?tab=learning
+          - link "می‌دانم (0)" [ref=f26e39] [cursor=pointer]:
+            - /url: /app/words?tab=known
+      - search "جست‌وجو در واژه‌ها" [ref=f26e40]:
+        - generic [ref=f26e45]:
+          - searchbox "جست‌وجو در واژه‌ها" [ref=f26e46]
+          - button "جست‌وجو" [ref=f26e47] [cursor=pointer]
+      - status [ref=f26e51]:
+        - paragraph [ref=f26e55]: هنوز واژه‌ای ذخیره نکرده‌ای. از صفحه هر درس، واژه‌های کلیدی را ذخیره کن.
+        - paragraph [ref=f26e56]:
+          - link "کشف مطالب" [ref=f26e57] [cursor=pointer]:
+            - /url: /app
+      - status
+  - navigation "بخش‌های یادگیری" [ref=f26e63]:
+    - list [ref=f26e64]:
+      - listitem [ref=f26e65]:
+        - link "امروز" [ref=f26e66] [cursor=pointer]:
+          - /url: /app/today
+      - listitem [ref=f26e72]:
+        - link "کشف" [ref=f26e73] [cursor=pointer]:
+          - /url: /app
+      - listitem [ref=f26e79]:
+        - link "واژه‌ها" [ref=f26e80] [cursor=pointer]:
+          - /url: /app/words
+      - listitem [ref=f26e87]:
+        - link "حساب" [ref=f26e88] [cursor=pointer]:
+          - /url: /app/account

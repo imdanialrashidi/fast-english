@@ -50,8 +50,9 @@ test('the reader query count stays constant as sibling lessons grow', function (
     DB::disableQueryLog();
 
     // Fixed: a levels pluck plus the single column-scoped lesson row, so
-    // siblings 2 -> 6 change nothing. Fixed app queries: 7.
-    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(7);
+    // siblings 2 -> 6 change nothing. Fixed app queries: 8 (7 core + the
+    // constant shared due-words badge query added 2026-10-25).
+    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(8);
 });
 
 test('today stays constant as words and completed lessons grow', function () {
@@ -102,8 +103,9 @@ test('today stays constant as words and completed lessons grow', function () {
     // minutes come from one joined sum — neither moves as completions
     // (1 -> 4) or words (1 -> 7) grow. Four completions at 4 minutes
     // each; no word was reviewed today, so the review bonus is 0.
-    // Pre-fix ran 17 app queries; fixed: 14.
-    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(14);
+    // Pre-fix ran 17 app queries; fixed: 15 (14 core + the constant shared
+    // due-words badge query added 2026-10-25).
+    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(15);
     expect($response->inertiaProps()['plan']['learned_minutes'])->toBe(16);
 });
 
@@ -143,8 +145,9 @@ test('the words index stays constant as the notebook grows', function () {
 
     // Fixed: the word page + total + two constrained eagers + one grouped
     // count row — constant at any notebook size. Pre-fix ran 9 (three
-    // separate count queries); fixed: 7.
-    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(7);
+    // separate count queries); fixed: 8 (7 core + the constant shared
+    // due-words badge query added 2026-10-25).
+    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(8);
     expect($smallResponse->inertiaProps()['dueCount'])->toBe(3);
     expect($largeResponse->inertiaProps()['dueCount'])->toBe(26);
     expect($largeResponse->inertiaProps()['learningCount'])->toBe(26);

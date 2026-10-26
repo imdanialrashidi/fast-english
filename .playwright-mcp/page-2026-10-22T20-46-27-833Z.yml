@@ -1,0 +1,36 @@
+- generic [ref=f3e3]:
+  - link "پرش به محتوا" [ref=f3e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f3e5]:
+    - link "Fast English — صفحه اصلی" [ref=f3e8] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f3e9]: Fast English
+  - main [ref=f3e12]:
+    - generic [ref=f3e15]:
+      - region "نیاز به اشتراک" [ref=f3e16]:
+        - paragraph [aria-hidden] [ref=f3e17]
+        - heading "برای ادامه، اشتراک فعال لازم است" [level=1] [ref=f3e21]
+        - paragraph [ref=f3e22]: اشتراک فعالی روی حسابت نیست — یا هنوز خرید نکرده‌ای، یا درخواستت در صف بررسی است، یا اشتراکت تمام شده. وضعیتت را ببین و ادامه بده.
+        - paragraph [ref=f3e23]:
+          - link "مشاهده پلن‌ها و خرید" [ref=f3e24] [cursor=pointer]:
+            - /url: http://127.0.0.1:8111/app/subscribe
+      - region "نمونه رایگان" [ref=f3e25]:
+        - heading "هنوز مطمئن نیستی؟" [level=2] [ref=f3e26]
+        - paragraph [ref=f3e29]: نمونه واقعی همیشه رایگان است و بدون اشتراک باز می‌شود.
+        - paragraph [ref=f3e30]:
+          - link "شنیدن نمونه رایگان" [ref=f3e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8111/sample
+  - navigation "بخش‌های یادگیری" [ref=f3e36]:
+    - list [ref=f3e37]:
+      - listitem [ref=f3e38]:
+        - link "امروز" [ref=f3e39] [cursor=pointer]:
+          - /url: /app/today
+      - listitem [ref=f3e44]:
+        - link "کشف" [ref=f3e45] [cursor=pointer]:
+          - /url: /app
+      - listitem [ref=f3e50]:
+        - link "واژه‌ها" [ref=f3e51] [cursor=pointer]:
+          - /url: /app/words
+      - listitem [ref=f3e57]:
+        - link "حساب" [ref=f3e58] [cursor=pointer]:
+          - /url: /app/account

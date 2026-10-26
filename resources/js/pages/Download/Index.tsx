@@ -1,5 +1,5 @@
-import { Head } from '@inertiajs/react';
-import { Download as DownloadIcon, Info } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Download as DownloadIcon, Play, Smartphone } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
 import type { SharedProps } from '@/types';
@@ -29,22 +29,51 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
 }: DownloadProps): React.JSX.Element => {
     return (
         <>
-            <Head title="دانلود Fast English">
-                <meta name="description" content="دانلود Fast English — فایل نصب اندروید" />
-            </Head>
+            <Head title="دانلود Fast English" />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <p role="note" className="m-0 inline-flex w-fit items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-bold text-muted">
-                    <Info size={16} aria-hidden="true" />
-                    پیش‌نویس — DRAFT — نیازمند بازبینی صاحب محصول
-                </p>
-                <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">دانلود</h1>
+                <div className="grid gap-2">
+                    <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">دانلود</h1>
+                    <p className="m-0 leading-8 text-muted">
+                        نسخه اندروید Fast English از همین صفحه منتشر می‌شود. تا آماده‌شدن فایل نصب، نمونه واقعی بدون حساب در دسترس است.
+                    </p>
+                </div>
+
+                <div className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
+                    <p className="m-0 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                        <Smartphone size={18} aria-hidden="true" />
+                        بدون فروشگاه برنامه
+                    </p>
+                    <p className="m-0 text-lg leading-8 font-bold">Fast English را روی گوشی نصب کنید</p>
+                    <p className="m-0 text-sm leading-7 text-muted">
+                        روی iPhone، iPad و اندروید می‌توانید سایت را به صفحهٔ اصلی اضافه کنید و مثل یک اپ باز کنید؛ بدون فایل نصب و بدون
+                        تعویض حساب.
+                    </p>
+                    <p className="m-0">
+                        <Link
+                            href="/install"
+                            className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                        >
+                            <Smartphone size={20} aria-hidden="true" />
+                            راهنمای نصب روی گوشی
+                        </Link>
+                    </p>
+                </div>
 
                 {!published ? (
-                    <div role="status" className="grid gap-2 rounded-3xl border border-line bg-surface p-6">
+                    <div role="status" className="grid gap-3 rounded-3xl border border-line bg-surface p-6">
                         <p className="m-0 text-xl font-bold">فایل نصب هنوز منتشر نشده</p>
                         <p className="m-0 leading-8 text-muted">
                             نسخه اندروید هنوز آماده انتشار نیست. مشخصات نسخه (نسخه، کد نسخه، تاریخ، حجم و SHA-256) تنها پس از ساخت واقعی اعلام
                             می‌شود.
+                        </p>
+                        <p className="m-0">
+                            <Link
+                                href="/sample"
+                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                            >
+                                <Play size={20} aria-hidden="true" />
+                                شروع با نمونه رایگان
+                            </Link>
                         </p>
                     </div>
                 ) : (

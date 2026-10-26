@@ -1,0 +1,60 @@
+- generic [ref=f2e91]:
+  - link "پرش به محتوا" [ref=f2e92] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f2e93]:
+    - link "Fast English — صفحه اصلی" [ref=f2e96] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f2e97]: Fast English
+  - generic [ref=f2e98]:
+    - complementary "ناوبری اصلی" [ref=f2e99]:
+      - navigation "بخش‌های یادگیری" [ref=f2e100]:
+        - link "امروز" [ref=f2e101] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f2e105] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f2e109] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f2e114] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f2e118] [cursor=pointer]:
+          - /url: /app/saved
+    - main [ref=f2e122]:
+      - generic [ref=f2e123]:
+        - region "پروفایل" [ref=f2e124]:
+          - generic [ref=f2e125]:
+            - generic [aria-hidden] [ref=f2e126]: T
+            - generic [ref=f2e127]:
+              - heading "Test User" [level=1] [ref=f2e128]
+              - paragraph [ref=f2e129]: test@example.com
+          - generic [ref=f2e130]:
+            - generic [ref=f2e131]:
+              - term [ref=f2e132]: سطح ترجیحی
+              - definition [ref=f2e136]: انتخاب نشده
+            - generic [ref=f2e137]:
+              - term [ref=f2e138]: هدف روزانه
+              - definition [ref=f2e142]: ۱۰ دقیقه
+        - region "وضعیت پرداخت و اشتراک" [ref=f2e143]:
+          - generic [ref=f2e144]:
+            - heading "اشتراک" [level=2] [ref=f2e145]
+            - generic [ref=f2e148]: بدون اشتراک
+          - paragraph [ref=f2e149]: اشتراک فعالی وجود ندارد.
+          - paragraph [ref=f2e150]:
+            - link "انتخاب پلن" [ref=f2e151] [cursor=pointer]:
+              - /url: /app/subscribe
+        - navigation "تنظیمات حساب" [ref=f2e154]:
+          - link "تنظیمات حساب نام، سطح و هدف روزانه" [ref=f2e155] [cursor=pointer]:
+            - /url: /app/account/settings
+            - generic [ref=f2e160]:
+              - generic [ref=f2e161]: تنظیمات حساب
+              - generic [ref=f2e162]: نام، سطح و هدف روزانه
+          - link "ذخیره‌شده‌ها مطلب‌هایی که برای بعد نگه داشته‌ای" [ref=f2e165] [cursor=pointer]:
+            - /url: /app/saved
+            - generic [ref=f2e169]:
+              - generic [ref=f2e170]: ذخیره‌شده‌ها
+              - generic [ref=f2e171]: مطلب‌هایی که برای بعد نگه داشته‌ای
+          - link "تعیین سطح آزمون اختیاری برای پیدا کردن سطح مناسب" [ref=f2e174] [cursor=pointer]:
+            - /url: /app/placement
+            - generic [ref=f2e179]:
+              - generic [ref=f2e180]: تعیین سطح
+              - generic [ref=f2e181]: آزمون اختیاری برای پیدا کردن سطح مناسب
+        - button "خروج از حساب" [ref=f2e185] [cursor=pointer]

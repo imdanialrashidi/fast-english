@@ -1,0 +1,70 @@
+- generic [ref=f63e3]:
+  - link "پرش به محتوا" [ref=f63e4] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=f63e5]:
+    - generic [ref=f63e6]:
+      - link "Fast English — صفحه اصلی" [ref=f63e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f63e8]: Fast English
+      - navigation "ناوبری عمومی" [ref=f63e10]:
+        - link "ورود" [ref=f63e11] [cursor=pointer]:
+          - /url: /login
+        - link "ساخت حساب" [ref=f63e12] [cursor=pointer]:
+          - /url: /register
+  - main [ref=f63e14]:
+    - generic [ref=f63e15]:
+      - region "درباره Fast English" [ref=f63e16]:
+        - heading "با یک متن کوتاه انگلیسی، امروز را شروع کن." [level=1] [ref=f63e17]
+        - list [ref=f63e18]:
+          - listitem [ref=f63e19]: متن کوتاه در سطح خودت، با صوت همان نسخه
+          - listitem [ref=f63e23]: پخش‌کننده ساده با سرعت قابل تنظیم
+          - listitem [ref=f63e27]: دفترچه واژه با مرور سر موعد
+      - region "ورود به حساب" [ref=f63e33]:
+        - generic [ref=f63e34]:
+          - heading "ورود به حساب" [level=2] [ref=f63e35]
+          - paragraph [ref=f63e36]: ایمیل و رمز عبورت را وارد کن تا به درس‌هایت برسی.
+        - generic [ref=f63e37]:
+          - generic [ref=f63e38]:
+            - generic [ref=f63e39]: ایمیل
+            - textbox "ایمیل" [active] [ref=f63e43]
+          - generic [ref=f63e44]:
+            - generic [ref=f63e45]: رمز عبور
+            - generic [ref=f63e49]:
+              - textbox "رمز عبور" [ref=f63e50]
+              - button "نمایش رمز عبور" [ref=f63e51] [cursor=pointer]
+          - button "ورود" [ref=f63e55] [cursor=pointer]
+        - generic [ref=f63e59]:
+          - generic [ref=f63e60]: حساب نداری؟
+          - link "ساخت حساب" [ref=f63e61] [cursor=pointer]:
+            - /url: /register
+          - link "رمز را فراموش کرده‌ام" [ref=f63e62] [cursor=pointer]:
+            - /url: /forgot-password
+  - contentinfo [ref=f63e63]:
+    - generic [ref=f63e64]:
+      - generic [ref=f63e65]:
+        - link "Fast English — صفحه اصلی" [ref=f63e66] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f63e67]: Fast English
+        - paragraph [ref=f63e69]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+        - paragraph [ref=f63e70]:
+          - link "شروع با نمونه رایگان" [ref=f63e71] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=f63e72] [cursor=pointer]:
+            - /url: /download
+      - navigation "پیوندهای اعتماد" [ref=f63e73]:
+        - paragraph [ref=f63e74]: دسترسی سریع
+        - link "درباره" [ref=f63e75] [cursor=pointer]:
+          - /url: /about
+        - link "همکاری" [ref=f63e76] [cursor=pointer]:
+          - /url: /cooperation
+        - link "پرسش‌های پرتکرار" [ref=f63e77] [cursor=pointer]:
+          - /url: /faq
+        - link "پشتیبانی" [ref=f63e78] [cursor=pointer]:
+          - /url: /support
+        - link "قوانین" [ref=f63e79] [cursor=pointer]:
+          - /url: /terms
+        - link "حریم خصوصی" [ref=f63e80] [cursor=pointer]:
+          - /url: /privacy
+        - link "دانلود" [ref=f63e81] [cursor=pointer]:
+          - /url: /download
+      - paragraph [ref=f63e82]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

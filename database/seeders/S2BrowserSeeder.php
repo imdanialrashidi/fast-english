@@ -55,7 +55,10 @@ class S2BrowserSeeder extends Seeder
      */
     public const BROWSER_STAFF_EMAIL = 'browser-staff@example.com';
 
-    /** Test-only password for the two local browser accounts. */
+    /** S9: the older admin journey's staff fixture (same TEST-ONLY password). */
+    public const BACKUP_STAFF_EMAIL = 'backup-staff@example.com';
+
+    /** Test-only password for every local browser-lane account. */
     public const BROWSER_PASSWORD = 'password';
 
     public function run(): void
@@ -94,6 +97,11 @@ class S2BrowserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => self::BROWSER_STAFF_EMAIL],
             ['name' => 'Browser Staff', 'password' => self::BROWSER_PASSWORD, 'is_staff' => true]
+        );
+
+        User::updateOrCreate(
+            ['email' => self::BACKUP_STAFF_EMAIL],
+            ['name' => 'Backup Staff', 'password' => self::BROWSER_PASSWORD, 'is_staff' => true]
         );
 
         // Paid-only lane: one subscribed learner (TEST-ONLY, 365-day

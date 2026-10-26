@@ -1,8 +1,8 @@
 <?php
 
+use App\Actions\ApprovePayment;
 use App\Models\Subscription;
 use App\Support\Entitlement;
-use Carbon\Carbon;
 use Tests\Support\ContentFixtures;
 
 // D5 entitlement gate (C1): the interface is the test surface. One
@@ -53,7 +53,7 @@ test('eligible takes effect on next request after grant (freshness)', function (
     expect(Entitlement::eligible($student))->toBeFalse();
 
     $staff = ContentFixtures::staff();
-    App\Actions\ApprovePayment::grant($student->id, $staff, 30, 'd5 freshness (TEST)');
+    ApprovePayment::grant($student->id, $staff, 30, 'd5 freshness (TEST)');
 
     // The stale in-memory instance still passes because eligible()
     // re-queries — approvals take effect on the next request.

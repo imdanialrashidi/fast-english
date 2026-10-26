@@ -1,0 +1,180 @@
+- generic [ref=f6e1]:
+  - link "Skip to content" [ref=f6e2] [cursor=pointer]:
+    - /url: "#fi-main-content"
+  - navigation "Topbar" [ref=f6e4]:
+    - link "Fast English" [ref=f6e6] [cursor=pointer]:
+      - /url: http://127.0.0.1:8112/admin
+    - generic [ref=f6e8]:
+      - generic [ref=f6e11]:
+        - generic [ref=f6e12]: Global search
+        - searchbox "Global search" [ref=f6e18]
+      - generic [ref=f6e19]:
+        - button "User menu" [expanded] [active] [ref=f6e21] [cursor=pointer]:
+          - img "Avatar of Browser Staff" [ref=f6e22]
+        - menu "User menu" [ref=f6e246]:
+          - generic [ref=f6e247]: Browser Staff
+          - group [ref=f6e251]:
+            - group "Theme" [ref=f6e252]:
+              - menuitemradio "Enable light theme" [ref=f6e253] [cursor=pointer]
+              - menuitemradio "Enable dark theme" [ref=f6e256] [cursor=pointer]
+              - menuitemradio "Enable system theme" [checked] [ref=f6e259] [cursor=pointer]
+          - group [ref=f6e262]:
+            - menuitem "Sign out" [ref=f6e264] [cursor=pointer]
+  - generic [ref=f6e23]:
+    - navigation "Sidebar navigation" [ref=f6e26]:
+      - list [ref=f6e27]:
+        - listitem [ref=f6e28]:
+          - list [ref=f6e29]:
+            - listitem [ref=f6e30]:
+              - link "Dashboard" [ref=f6e31] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin
+            - listitem [ref=f6e35]:
+              - link "Placement tests" [ref=f6e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/placement-overview
+            - listitem [ref=f6e38]:
+              - link "Categories" [ref=f6e39] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/categories
+            - listitem [ref=f6e43]:
+              - link "Lessons" [ref=f6e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/lessons
+            - listitem [ref=f6e48]:
+              - link "Payment queue" [ref=f6e49] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/payment-requests
+            - listitem [ref=f6e53]:
+              - link "Topics" [ref=f6e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/topics
+            - listitem [ref=f6e58]:
+              - link "Backups" [ref=f6e59] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/backups
+        - listitem [ref=f6e63]:
+          - generic [ref=f6e64] [cursor=pointer]:
+            - generic [ref=f6e65]: Business
+            - button "Business" [expanded] [ref=f6e66]
+          - list [ref=f6e69]:
+            - listitem [ref=f6e70]:
+              - link "Business settings" [ref=f6e71] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/business-settings
+            - listitem [ref=f6e76]:
+              - link "Plans" [ref=f6e77] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/plans
+    - main [ref=f6e82]:
+      - generic [ref=f6e84]:
+        - generic [ref=f6e85]:
+          - generic [ref=f6e86]:
+            - navigation "Breadcrumb" [ref=f6e87]:
+              - list [ref=f6e88]:
+                - listitem [ref=f6e89]:
+                  - link "Plans" [ref=f6e90] [cursor=pointer]:
+                    - /url: http://127.0.0.1:8112/admin/plans
+                - listitem [ref=f6e91]:
+                  - generic [ref=f6e94]: List
+            - heading "Plans" [level=1] [ref=f6e95]
+          - link "New plan" [ref=f6e98] [cursor=pointer]:
+            - /url: http://127.0.0.1:8112/admin/plans/create
+        - generic [ref=f6e106]:
+          - generic [ref=f6e110]:
+            - generic [ref=f6e111]: Search
+            - searchbox "Search" [ref=f6e117]
+          - generic [ref=f6e118]:
+            - status [ref=f6e119]: 3 results
+            - status [ref=f6e120]: Loading...
+            - table "plans" [ref=f6e121]:
+              - rowgroup [ref=f6e122]:
+                - row [ref=f6e123]:
+                  - columnheader "Name" [ref=f6e124]
+                  - columnheader "Slug" [ref=f6e125]
+                  - columnheader [ref=f6e126]:
+                    - button "Price" [ref=f6e127] [cursor=pointer]
+                  - columnheader [ref=f6e130]:
+                    - button "Days" [ref=f6e131] [cursor=pointer]
+                  - columnheader [ref=f6e134]:
+                    - button "Order" [ref=f6e135] [cursor=pointer]
+                  - columnheader "Active" [ref=f6e138]
+                  - columnheader "Requests" [ref=f6e139]
+                  - columnheader "Action" [ref=f6e140]
+              - rowgroup [ref=f6e141]:
+                - row [ref=f6e142]:
+                  - cell [ref=f6e143]:
+                    - link "یک‌ماهه آزمایشی (TEST)" [ref=f6e144] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e146]:
+                    - link "s5-test-30" [ref=f6e147] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e149]:
+                    - link "۱۰۰٬۰۰۰ تومان" [ref=f6e150] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e152]:
+                    - link "30" [ref=f6e153] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e155]:
+                    - link "1" [ref=f6e156] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e158]:
+                    - link "Yes" [ref=f6e159] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e164]:
+                    - link "273" [ref=f6e165] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                  - cell [ref=f6e167]:
+                    - link "Edit" [ref=f6e169] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/1/edit
+                - row [ref=f6e174]:
+                  - cell [ref=f6e175]:
+                    - link "سه‌ماهه آزمایشی (TEST)" [ref=f6e176] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e178]:
+                    - link "s5-test-90" [ref=f6e179] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e181]:
+                    - link "۲۵۰٬۰۰۰ تومان" [ref=f6e182] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e184]:
+                    - link "90" [ref=f6e185] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e187]:
+                    - link "2" [ref=f6e188] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e190]:
+                    - link "Yes" [ref=f6e191] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e196]:
+                    - link "0" [ref=f6e197] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                  - cell [ref=f6e199]:
+                    - link "Edit" [ref=f6e201] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/2/edit
+                - row [ref=f6e206]:
+                  - cell [ref=f6e207]:
+                    - link "یک‌ساله آزمایشی (TEST)" [ref=f6e208] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e210]:
+                    - link "s5-test-365" [ref=f6e211] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e213]:
+                    - link "۹۰۰٬۰۰۰ تومان" [ref=f6e214] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e216]:
+                    - link "365" [ref=f6e217] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e219]:
+                    - link "3" [ref=f6e220] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e222]:
+                    - link "Yes" [ref=f6e223] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e228]:
+                    - link "0" [ref=f6e229] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+                  - cell [ref=f6e231]:
+                    - link "Edit" [ref=f6e233] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8112/admin/plans/3/edit
+          - navigation "Pagination navigation" [ref=f6e238]:
+            - generic [ref=f6e241]:
+              - generic [ref=f6e242]: Per page
+              - combobox "Per page" [ref=f6e245]:
+                - option "5"
+                - option "10" [selected]
+                - option "25"
+                - option "50"
+  - generic:
+    - status

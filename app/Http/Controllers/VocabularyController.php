@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\Lesson;
 use App\Models\VocabularyWord;
+use App\Support\ClampsPagination;
 use App\Support\SpacedRepetition;
+use App\Support\Vocabulary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 /**
@@ -21,6 +25,8 @@ use Inertia\Inertia;
  */
 class VocabularyController extends Controller
 {
+    use ClampsPagination;
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -28,9 +34,11 @@ class VocabularyController extends Controller
             abort(403);
         }
 
-        $tab = (string) $request->query('tab', 'all');
+        $tabParam = $request->query('tab');
+        $tab = is_string($tabParam) ? $tabParam : 'all';
         $tab = in_array($tab, ['all', 'due', 'learning', 'known'], true) ? $tab : 'all';
-        $query = trim((string) $request->query('q', ''));
+        $queryParam = $request->query('q');
+        $query = is_string($queryParam) ? trim($queryParam) : '';
         $query = $query !== '' ? mb_substr($query, 0, 120) : null;
 
         // The props below read only lesson.level + topic.slug off these
@@ -49,6 +57,10 @@ class VocabularyController extends Controller
             ->orderByDesc('id')
             ->paginate(20)
             ->withQueryString();
+
+        if (($redirect = $this->redirectOutOfRangePage($request, $words)) !== null) {
+            return $redirect;
+        }
 
         // One grouped query for all three tab badges: the due badge needs
         // its due_at scope, which a plain status group cannot express, so
@@ -102,6 +114,22 @@ class VocabularyController extends Controller
         ]);
     }
 
+    /** Owner-only bulk action: every learning word becomes known. */
+    public function markAllKnown(Request $request)
+    {
+        $user = $request->user();
+        if ($user === null || $user->disabled_at !== null) {
+            abort(403);
+        }
+
+        $count = VocabularyWord::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'learning')
+            ->update(['status' => 'known']);
+
+        return response()->json(['known' => $count])->withHeaders(NoStore::headers());
+    }
+
     public function store(Request $request)
     {
         $user = $request->user();
@@ -128,7 +156,7 @@ class VocabularyController extends Controller
         }
 
         try {
-            $result = \App\Support\Vocabulary::save(
+            $result = Vocabulary::save(
                 $user,
                 (string) $data['word'],
                 isset($data['meaning_fa']) ? (string) $data['meaning_fa'] : null,
@@ -136,16 +164,16 @@ class VocabularyController extends Controller
                 $lesson,
                 now(),
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(['message' => collect($e->errors())->flatten()->first() ?? 'خطا.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         if (! $result['created']) {
             return response()->json([
                 'message' => 'این واژه قبلاً در دفترچه شما ذخیره شده است.',
                 'id' => $result['existingId'],
-            ], 422)->withHeaders(\App\Http\Responses\NoStore::headers());
+            ], 422)->withHeaders(NoStore::headers());
         }
 
         $entry = $result['entry'];
@@ -154,7 +182,7 @@ class VocabularyController extends Controller
             'id' => $entry->id,
             'word' => $entry->word,
             'due_at' => $entry->due_at?->toIso8601String(),
-        ], 201)->withHeaders(\App\Http\Responses\NoStore::headers());
+        ], 201)->withHeaders(NoStore::headers());
     }
 
     public function update(Request $request, VocabularyWord $word)
@@ -170,7 +198,7 @@ class VocabularyController extends Controller
             'status' => ['nullable', 'in:learning,known'],
         ]);
 
-        $updates = \App\Support\Vocabulary::noteUpdates(
+        $updates = Vocabulary::noteUpdates(
             $word,
             array_key_exists('meaning_fa', $data),
             array_key_exists('meaning_fa', $data) ? (string) $data['meaning_fa'] : null,
@@ -187,7 +215,7 @@ class VocabularyController extends Controller
             'status' => $word->status,
             'meaning_fa' => $word->meaning_fa,
             'example_en' => $word->example_en,
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
 
     public function destroy(Request $request, VocabularyWord $word)
@@ -199,7 +227,7 @@ class VocabularyController extends Controller
 
         $word->delete();
 
-        return response()->json(['deleted' => true])->withHeaders(\App\Http\Responses\NoStore::headers());
+        return response()->json(['deleted' => true])->withHeaders(NoStore::headers());
     }
 
     public function review(Request $request)
@@ -252,10 +280,10 @@ class VocabularyController extends Controller
         ]);
 
         try {
-            $result = \App\Support\Vocabulary::grade($user, $word, $data['grade'], now());
-        } catch (\Illuminate\Validation\ValidationException $e) {
+            $result = Vocabulary::grade($user, $word, $data['grade'], now());
+        } catch (ValidationException $e) {
             return response()->json(['message' => collect($e->errors())->flatten()->first() ?? 'خطا.'], 422)
-                ->withHeaders(\App\Http\Responses\NoStore::headers());
+                ->withHeaders(NoStore::headers());
         }
 
         $entry = $result['entry'];
@@ -266,7 +294,6 @@ class VocabularyController extends Controller
             'interval_days' => $entry->interval_days,
             'repetitions' => $entry->repetitions,
             'remaining' => $result['remaining'],
-        ])->withHeaders(\App\Http\Responses\NoStore::headers());
+        ])->withHeaders(NoStore::headers());
     }
-
 }

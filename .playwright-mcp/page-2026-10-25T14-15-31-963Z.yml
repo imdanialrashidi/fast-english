@@ -1,0 +1,60 @@
+- generic [active] [ref=f4e1]:
+  - link "Skip to content" [ref=f4e2] [cursor=pointer]:
+    - /url: "#fi-main-content"
+  - navigation "Topbar" [ref=f4e4]:
+    - link "Fast English" [ref=f4e6] [cursor=pointer]:
+      - /url: http://127.0.0.1:8112/admin
+    - generic [ref=f4e8]:
+      - generic [ref=f4e11]:
+        - generic [ref=f4e12]: Global search
+        - searchbox "Global search" [ref=f4e18]
+      - button "User menu" [ref=f4e21] [cursor=pointer]:
+        - img "Avatar of Browser Staff" [ref=f4e22]
+  - generic [ref=f4e23]:
+    - navigation "Sidebar navigation" [ref=f4e26]:
+      - list [ref=f4e27]:
+        - listitem [ref=f4e28]:
+          - list [ref=f4e29]:
+            - listitem [ref=f4e30]:
+              - link "Dashboard" [ref=f4e31] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin
+            - listitem [ref=f4e35]:
+              - link "Placement tests" [ref=f4e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/placement-overview
+            - listitem [ref=f4e38]:
+              - link "Categories" [ref=f4e39] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/categories
+            - listitem [ref=f4e43]:
+              - link "Lessons" [ref=f4e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/lessons
+            - listitem [ref=f4e48]:
+              - link "Payment queue" [ref=f4e49] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/payment-requests
+            - listitem [ref=f4e53]:
+              - link "Topics" [ref=f4e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/topics
+            - listitem [ref=f4e58]:
+              - link "Backups" [ref=f4e59] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/backups
+        - listitem [ref=f4e63]:
+          - generic [ref=f4e64] [cursor=pointer]:
+            - generic [ref=f4e65]: Business
+            - button "Business" [expanded] [ref=f4e66]
+          - list [ref=f4e69]:
+            - listitem [ref=f4e70]:
+              - link "Business settings" [ref=f4e71] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/business-settings
+            - listitem [ref=f4e76]:
+              - link "Plans" [ref=f4e77] [cursor=pointer]:
+                - /url: http://127.0.0.1:8112/admin/plans
+    - main [ref=f4e82]:
+      - generic [ref=f4e84]:
+        - heading "Dashboard" [level=1] [ref=f4e87]
+        - generic [ref=f4e98]:
+          - img "Avatar of Browser Staff" [ref=f4e99]
+          - generic [ref=f4e100]:
+            - heading "Welcome" [level=2] [ref=f4e101]
+            - paragraph [ref=f4e102]: Browser Staff
+          - button "Sign out" [ref=f4e104] [cursor=pointer]
+  - generic:
+    - status

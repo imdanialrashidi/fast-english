@@ -54,5 +54,5 @@ Rules:
 - Record outcomes and pointers to evidence instead.
 - Do not mark acceptance complete without proof.
 - Preserve unresolved hypotheses as hypotheses, not facts.
-- Update the plan before `/handoff` or a deliberate context reset.
+- Update the plan before a deliberate context reset or new session.
 - The working tree and actual tests remain authoritative if the plan becomes stale.

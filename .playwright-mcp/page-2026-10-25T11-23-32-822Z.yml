@@ -1,0 +1,67 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e3]:
+    - link "پرش به محتوا" [ref=f8e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f8e5]:
+      - link "Fast English — صفحه اصلی" [ref=f8e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f8e9]: Fast English
+    - main [ref=f8e12]:
+      - generic [ref=f8e15]:
+        - generic [ref=f8e16]:
+          - heading "واژه‌ها" [level=1] [ref=f8e17]
+          - paragraph [ref=f8e18]: دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.
+        - paragraph [ref=f8e19]:
+          - link "شروع مرور (1 واژه)" [ref=f8e20] [cursor=pointer]:
+            - /url: /app/words/review
+        - generic [ref=f8e23]:
+          - button "همه را می‌دانم" [ref=f8e25] [cursor=pointer]
+          - group [ref=f8e30]:
+            - generic "ورود از CSV" [ref=f8e31] [cursor=pointer]
+        - navigation "وضعیت واژه‌ها" [ref=f8e38]:
+          - group "وضعیت واژه‌ها" [ref=f8e39]:
+            - link "همه" [ref=f8e40] [cursor=pointer]:
+              - /url: /app/words
+            - link "موعد امروز (1)" [ref=f8e41] [cursor=pointer]:
+              - /url: /app/words?tab=due
+            - link "در حال یادگیری (1)" [ref=f8e42] [cursor=pointer]:
+              - /url: /app/words?tab=learning
+            - link "می‌دانم (0)" [ref=f8e43] [cursor=pointer]:
+              - /url: /app/words?tab=known
+        - search "جست‌وجو در واژه‌ها" [ref=f8e44]:
+          - generic [ref=f8e49]:
+            - searchbox "جست‌وجو در واژه‌ها" [ref=f8e50]
+            - button "جست‌وجو" [ref=f8e51] [cursor=pointer]
+        - list [ref=f8e55]:
+          - listitem [ref=f8e56]:
+            - generic [ref=f8e57]:
+              - paragraph [ref=f8e58]:
+                - generic [ref=f8e59]: crowded
+                - generic [ref=f8e60]: موعد امروز
+              - paragraph [ref=f8e62]: شلوغ
+              - paragraph [ref=f8e63]: The market is crowded.
+              - paragraph [ref=f8e64]:
+                - link "دیدن در متن اصلی (A1)" [ref=f8e65] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8112/app/topics/morning-market?level=A1
+            - generic [ref=f8e68]:
+              - button "ویرایش" [ref=f8e69] [cursor=pointer]
+              - button "می‌دانم شد" [ref=f8e73] [cursor=pointer]
+              - button "حذف crowded" [ref=f8e76] [cursor=pointer]: حذف
+        - status
+    - navigation "بخش‌های یادگیری" [ref=f8e82]:
+      - list [ref=f8e83]:
+        - listitem [ref=f8e84]:
+          - link "امروز" [ref=f8e85] [cursor=pointer]:
+            - /url: /app/today
+        - listitem [ref=f8e91]:
+          - link "کشف" [ref=f8e92] [cursor=pointer]:
+            - /url: /app
+        - listitem [ref=f8e98]:
+          - link "واژه‌ها" [ref=f8e99] [cursor=pointer]:
+            - /url: /app/words
+        - listitem [ref=f8e106]:
+          - link "حساب" [ref=f8e107] [cursor=pointer]:
+            - /url: /app/account
+  - status [ref=f8e113]:
+    - generic [ref=f8e114]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f8e115] [cursor=pointer]

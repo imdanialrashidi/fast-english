@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Support\Toman;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * S5 payment request (scope §10, §14): server-owned snapshot + state.
@@ -93,6 +95,47 @@ class PaymentRequest extends Model
         return $this->belongsTo(PaymentDestination::class, 'destination_id');
     }
 
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function canceller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
+    }
+
+    /**
+     * Whether the staff panel can actually render the receipt bytes.
+     * Retained rows keep receipt_path as an audit reference but lose the
+     * file; fixtures/ops can also have a missing file. The panel must say
+     * so instead of rendering a broken image.
+     */
+    public function receiptAvailable(): bool
+    {
+        if ($this->receipt_deleted_at !== null) {
+            return false;
+        }
+
+        $path = trim((string) $this->receipt_path);
+
+        return $path !== '' && Storage::disk('local')->exists($path);
+    }
+
+    public function receiptStateLabel(): string
+    {
+        if ($this->receipt_deleted_at !== null) {
+            return 'Receipt file removed by 90-day retention on '
+                .$this->receipt_deleted_at->timezone('Asia/Tehran')->format('Y-m-d H:i');
+        }
+
+        if (trim((string) $this->receipt_path) === '') {
+            return 'No receipt submitted yet.';
+        }
+
+        return 'Receipt file is missing on disk; the row still references it.';
+    }
+
     public function isOpen(): bool
     {
         return in_array($this->status, self::OPEN_STATUSES, true);
@@ -112,7 +155,7 @@ class PaymentRequest extends Model
         return [
             'plan_name' => (string) ($this->plan_name_snapshot ?? ''),
             'amount_toman' => (int) ($this->amount_toman_snapshot ?? 0),
-            'amount_label' => \App\Support\Toman::format((int) ($this->amount_toman_snapshot ?? 0)),
+            'amount_label' => Toman::format((int) ($this->amount_toman_snapshot ?? 0)),
             'duration_days' => (int) ($this->duration_days_snapshot ?? 0),
             'card_number' => (string) ($destination['card_number'] ?? ''),
             'holder_name' => (string) ($destination['holder_name'] ?? ''),

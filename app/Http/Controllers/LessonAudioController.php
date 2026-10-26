@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lesson;
+use App\Support\Entitlement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -35,7 +36,29 @@ class LessonAudioController extends Controller
             abort(403);
         }
 
-        $path = Storage::disk('local')->path($lesson->audio_path);
+        return $this->serve($request, $lesson);
+    }
+
+    /**
+     * Staff panel preview: same private bytes and Range contract as the
+     * learner route, but draft/archived lessons are allowed because the
+     * editor must be able to check the audio before publishing. The route
+     * itself carries `auth + staff + staff.2fa`; the staff check is kept
+     * here as defence in depth so the controller cannot be reused as a
+     * public draft-audio path.
+     */
+    public function preview(Request $request, Lesson $lesson): Response
+    {
+        if (! Entitlement::staff($request->user())) {
+            abort(403);
+        }
+
+        return $this->serve($request, $lesson);
+    }
+
+    private function serve(Request $request, Lesson $lesson): Response
+    {
+        $path = Storage::disk('local')->path((string) $lesson->audio_path);
         if (! is_file($path)) {
             abort(404);
         }

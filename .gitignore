@@ -5,6 +5,7 @@
 !.env.example
 !.env.testing.example
 !.env.browser.example
+!.env.production.example
 *.pem
 *.key
 *.p12
@@ -16,9 +17,8 @@
 docs/private/**
 !docs/private/.gitkeep
 
-# OMP local runtime (project config in .omp/ is tracked; nothing local to ignore).
-# The Pi workflow retired 2026-10-14 (see .artifacts/migration-backup-2026-10-14/);
-# its former .pi/ runtime entries were removed here.
+# DSH workflow (AGENTS.md and project skills in .dsh/skills/ are tracked; nothing local to ignore).
+# The omp workflow retired 2026-10-25 (see .artifacts/migration-backup-2026-10-25-omp-to-dsh/).
 
 # Dependencies and environments
 node_modules/

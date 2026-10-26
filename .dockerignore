@@ -25,3 +25,22 @@ storage/pail
 playwright-report
 coverage
 .artifacts
+
+# Repository/tooling material the runtime never reads. Keeping it out of the
+# image removes internal docs and workflow files from production and shrinks
+# the build context Coolify uploads.
+.dsh
+.github
+docs
+plans
+Logo
+mock-up-for-inspiration
+.playwright-mcp
+landing.png
+landing-dev.png
+AGENTS.md
+CHANGELOG.md
+CONTRIBUTING.md
+GLOSSARY.md
+README.md
+SECURITY.md

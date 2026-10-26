@@ -1,0 +1,99 @@
+- generic [ref=e3]:
+  - link "پرش به محتوا" [ref=e4] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=e5]:
+    - generic [ref=e7]:
+      - link "Fast English — صفحه اصلی" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]:
+          - generic [ref=e10]: Fast English
+          - generic [ref=e11]: خواندن و شنیدن، یک نسخه
+      - navigation "ناوبری عمومی" [ref=e12]:
+        - link "نمونه رایگان" [ref=e13] [cursor=pointer]:
+          - /url: /sample
+        - link "دانلود" [ref=e14] [cursor=pointer]:
+          - /url: /download
+        - link "پرسش‌ها" [ref=e15] [cursor=pointer]:
+          - /url: /faq
+        - link "ورود" [ref=e16] [cursor=pointer]:
+          - /url: /login
+        - link "ساخت حساب" [ref=e17] [cursor=pointer]:
+          - /url: /register
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - paragraph [ref=e22]:
+          - text: نمونه رایگان · سطح
+          - generic [ref=e26]: A2
+          - generic [aria-hidden] [ref=e27]: ·
+          - text: حدود 3 دقیقه مطالعه
+        - heading "The City Park" [level=1] [ref=e31]
+        - paragraph [ref=e32]: A short story about a Saturday morning in the city park, told at two levels.
+        - navigation "سطح نمونه" [ref=e33]:
+          - paragraph [ref=e34]: "سطح نمونه:"
+          - generic [ref=e35]:
+            - link "A2" [ref=e36] [cursor=pointer]:
+              - /url: /sample?topic=city-park&level=A2
+            - link "B1" [ref=e38] [cursor=pointer]:
+              - /url: /sample?topic=city-park&level=B1
+      - region "پخش‌کننده نمونه" [ref=e40]:
+        - generic [ref=e43]:
+          - button "پخش" [ref=e44] [cursor=pointer]
+          - generic [ref=e47]:
+            - status [ref=e48]:
+              - generic [ref=e49]: The City Park
+              - generic [ref=e50]: A2
+            - paragraph [ref=e51]:
+              - generic [ref=e52]: 0:00
+              - generic [aria-hidden] [ref=e53]: /
+              - generic [ref=e54]: –:––
+          - 'button "سرعت پخش: 1×" [ref=e55] [cursor=pointer]':
+            - generic [ref=e59]: 1×
+          - button "نمایش کنترل‌های بیشتر" [ref=e60] [cursor=pointer]
+        - generic [ref=e63]: ۰ درصد از صوت پخش شده است.
+      - article [ref=e64]:
+        - paragraph [ref=e65]: On Saturday morning, Sara walks to the city park near her home. The air is cool, and the streets are quiet. She carries a small bag with bread, cheese, and a bottle of water. She likes this quiet time before the busy day starts.
+        - paragraph [ref=e66]: The park is green and full of life. An old man feeds white birds near the small lake. Two children run after a red ball, and their mother watches them from a wooden bench. Sara sits under a tall tree and eats her breakfast slowly. The birds sing, and a soft wind moves the green leaves above her head.
+        - paragraph [ref=e67]: After one hour, she walks around the lake. The water is clean, and she can see small fish near the stones. She says hello to the old man, and he smiles at her. They talk about the warm weather for a few minutes. Then she walks home with a happy heart and plans to come back next week.
+      - region "واژه‌های کلیدی نمونه" [ref=e68]:
+        - heading "واژه‌های کلیدی" [level=2] [ref=e69]
+        - note [ref=e72]: برای این نمونه واژه‌ای ثبت نشده است.
+      - region "ادامه یادگیری" [ref=e73]:
+        - heading "دوست داشتی؟ ادامه‌اش با اشتراک است" [level=2] [ref=e74]
+        - paragraph [ref=e75]: حساب بساز، پلن را انتخاب کن و همهٔ مطلب‌ها را در سطح خودت بخوان و بشنو.
+        - paragraph [ref=e76]:
+          - link "ساخت حساب" [ref=e77] [cursor=pointer]:
+            - /url: /register
+          - link "ورود به حساب" [ref=e78] [cursor=pointer]:
+            - /url: /login
+  - contentinfo [ref=e79]:
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - link "Fast English — صفحه اصلی" [ref=e82] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e83]:
+            - generic [ref=e84]: Fast English
+            - generic [ref=e85]: خواندن و شنیدن، یک نسخه
+        - paragraph [ref=e86]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+        - paragraph [ref=e87]:
+          - link "شروع با نمونه رایگان" [ref=e88] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=e89] [cursor=pointer]:
+            - /url: /download
+      - navigation "پیوندهای اعتماد" [ref=e90]:
+        - paragraph [ref=e91]: دسترسی سریع
+        - link "درباره" [ref=e92] [cursor=pointer]:
+          - /url: /about
+        - link "همکاری" [ref=e93] [cursor=pointer]:
+          - /url: /cooperation
+        - link "پرسش‌های پرتکرار" [ref=e94] [cursor=pointer]:
+          - /url: /faq
+        - link "پشتیبانی" [ref=e95] [cursor=pointer]:
+          - /url: /support
+        - link "قوانین" [ref=e96] [cursor=pointer]:
+          - /url: /terms
+        - link "حریم خصوصی" [ref=e97] [cursor=pointer]:
+          - /url: /privacy
+        - link "دانلود" [ref=e98] [cursor=pointer]:
+          - /url: /download
+      - paragraph [ref=e99]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

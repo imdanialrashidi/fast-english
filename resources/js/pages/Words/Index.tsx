@@ -1,7 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, Check, Compass, Inbox, Pencil, Play, RotateCcw, Search, X } from 'lucide-react';
+import { BookOpen, Check, CheckCheck, Compass, Inbox, Pencil, Play, RotateCcw, Search, X } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { Pagination } from '@/components/Pagination';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { Toast } from '@/components/Toast';
 import AppLayout from '@/layouts/AppLayout';
 import { postJson } from '@/lib/http';
 import type { PaginationMeta, SharedProps } from '@/types';
@@ -52,15 +55,16 @@ async function mutateWord(
     }
 }
 
-function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: string) => void }): React.JSX.Element {
+function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: string, ok: boolean) => void }): React.JSX.Element {
     const [editing, setEditing] = React.useState(false);
     const [meaning, setMeaning] = React.useState(entry.meaning_fa ?? '');
     const [example, setExample] = React.useState(entry.example_en ?? '');
     const [busy, setBusy] = React.useState(false);
+    const [confirmRemove, setConfirmRemove] = React.useState(false);
     const [formStatus, setFormStatus] = React.useState('');
 
     const reload = (): void => {
-        router.reload({ only: ['words', 'pagination', 'dueCount', 'learningCount', 'knownCount'] });
+        router.reload({ only: ['words', 'pagination', 'dueCount', 'learningCount', 'knownCount', 'due_words'] });
     };
 
     const save = async (event: React.FormEvent): Promise<void> => {
@@ -74,7 +78,7 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
         if (result.ok) {
             setEditing(false);
             setFormStatus('');
-            onChanged('تغییرات واژه ذخیره شد.');
+            onChanged('تغییرات واژه ذخیره شد.', true);
             reload();
         } else {
             setFormStatus(result.message);
@@ -90,10 +94,10 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
         const result = await mutateWord(entry.id, 'PATCH', { status: target });
         setBusy(false);
         if (result.ok) {
-            onChanged(target === 'known' ? 'واژه «می‌دانم» شد.' : 'واژه به یادگیری برگشت.');
+            onChanged(target === 'known' ? 'واژه «می‌دانم» شد.' : 'واژه به یادگیری برگشت.', true);
             reload();
         } else {
-            onChanged(result.message);
+            onChanged(result.message, false);
         }
     };
 
@@ -105,10 +109,10 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
         const result = await mutateWord(entry.id, 'DELETE');
         setBusy(false);
         if (result.ok) {
-            onChanged('واژه حذف شد.');
+            onChanged('واژه حذف شد.', true);
             reload();
         } else {
-            onChanged(result.message);
+            onChanged(result.message, false);
         }
     };
 
@@ -156,15 +160,16 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
                     </p>
                 )}
             </div>
-            <div className="flex flex-wrap gap-2">
+            {/* Quiet row actions: one text line, not three bordered pills. */}
+            <div className="flex flex-wrap items-center gap-1">
                 <button
                     type="button"
                     onClick={() => setEditing(!editing)}
                     aria-expanded={editing ? 'true' : 'false'}
                     aria-controls={`words-edit-${entry.id}`}
-                    className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-[0.9375rem] text-ink hover:bg-canvas"
+                    className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full px-2 text-sm text-muted hover:bg-canvas hover:text-ink"
                 >
-                    <Pencil size={20} aria-hidden="true" />
+                    <Pencil size={16} aria-hidden="true" />
                     ویرایش
                 </button>
                 {entry.status === 'learning' ? (
@@ -172,9 +177,9 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
                         type="button"
                         onClick={() => void toggleKnown()}
                         disabled={busy}
-                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-[0.9375rem] text-ink hover:bg-canvas disabled:opacity-60"
+                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full px-2 text-sm text-muted hover:bg-canvas hover:text-ink disabled:opacity-60"
                     >
-                        <Check size={20} aria-hidden="true" />
+                        <Check size={16} aria-hidden="true" />
                         می‌دانم شد
                     </button>
                 ) : (
@@ -182,22 +187,43 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
                         type="button"
                         onClick={() => void toggleKnown()}
                         disabled={busy}
-                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-[0.9375rem] text-ink hover:bg-canvas disabled:opacity-60"
+                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full px-2 text-sm text-muted hover:bg-canvas hover:text-ink disabled:opacity-60"
                     >
-                        <RotateCcw size={20} aria-hidden="true" />
-                        برگردان به یادگیری
+                        <RotateCcw size={16} aria-hidden="true" />
+                        برگردان
                     </button>
                 )}
-                <button
-                    type="button"
-                    onClick={() => void remove()}
-                    disabled={busy}
-                    aria-label={`حذف ${entry.word}`}
-                    className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-[0.9375rem] text-danger hover:bg-canvas disabled:opacity-60"
-                >
-                    <X size={20} aria-hidden="true" />
-                    حذف
-                </button>
+                {confirmRemove ? (
+                    <span className="inline-flex items-center gap-1">
+                        <button
+                            type="button"
+                            onClick={() => void remove()}
+                            disabled={busy}
+                            aria-label={`حذف قطعی ${entry.word}`}
+                            className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-danger px-3 text-sm font-bold text-surface hover:opacity-90 disabled:opacity-60"
+                        >
+                            <X size={16} aria-hidden="true" />
+                            بله، حذف
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setConfirmRemove(false)}
+                            className="inline-flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm text-muted hover:bg-canvas hover:text-ink"
+                        >
+                            لغو
+                        </button>
+                    </span>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => setConfirmRemove(true)}
+                        aria-label={`حذف ${entry.word}`}
+                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full px-2 text-sm text-danger hover:bg-canvas"
+                    >
+                        <X size={16} aria-hidden="true" />
+                        حذف
+                    </button>
+                )}
             </div>
             <form id={`words-edit-${entry.id}`} data-word-id={entry.id} hidden={!editing} onSubmit={(event) => void save(event)} className="grid gap-3 rounded-2xl border border-line bg-canvas p-4">
                 <div className="grid gap-1.5">
@@ -216,7 +242,7 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
                 </div>
                 <div className="grid gap-1.5">
                     <label htmlFor={`words-example-${entry.id}`} className="font-bold">
-                        <span lang="en" dir="ltr" className="font-en">Example</span> — جمله نمونه انگلیسی
+                        نمونه جمله انگلیسی
                     </label>
                     <input
                         id={`words-example-${entry.id}`}
@@ -251,6 +277,10 @@ function WordCard({ entry, onChanged }: { entry: WordRow; onChanged: (message: s
     );
 }
 
+function faCount(value: number): string {
+    return value.toLocaleString('fa-IR');
+}
+
 function wordsHref(tab: string, query: string | null, page?: number): string {
     const params = new URLSearchParams();
     if (tab !== 'all') {
@@ -280,88 +310,78 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
     knownCount,
 }: WordsProps): React.JSX.Element => {
     const [status, setStatus] = React.useState('');
+    const [statusOk, setStatusOk] = React.useState(true);
+    const [toast, setToast] = React.useState('');
+    const [confirmKnown, setConfirmKnown] = React.useState(false);
+    const [knownBusy, setKnownBusy] = React.useState(false);
+
+    const reloadWords = (): void => {
+        router.reload({ only: ['words', 'pagination', 'dueCount', 'learningCount', 'knownCount', 'due_words'] });
+    };
+
+    const markAllKnown = async (): Promise<void> => {
+        if (knownBusy) {
+            return;
+        }
+        setKnownBusy(true);
+        setStatus('');
+        try {
+            const response = await postJson('/app/words/known');
+            const data = (await response.json().catch(() => null)) as { known?: number; message?: string } | null;
+            if (response.ok) {
+                setStatus(`${faCount(data?.known ?? 0)} واژه «می‌دانم» شد.`);
+                setStatusOk(true);
+                setToast(`${faCount(data?.known ?? 0)} واژه «می‌دانم» شد.`);
+                setConfirmKnown(false);
+                reloadWords();
+            } else {
+                setStatus(data?.message ?? 'تغییر وضعیت واژه‌ها ممکن نشد.');
+                setStatusOk(false);
+            }
+        } catch {
+            setStatus('تغییر وضعیت واژه‌ها ممکن نشد. اتصال را بررسی کنید.');
+            setStatusOk(false);
+        } finally {
+            setKnownBusy(false);
+        }
+    };
+
+    const handleWordChanged = (message: string, ok: boolean): void => {
+        setStatus(message);
+        setStatusOk(ok);
+        if (ok) {
+            setToast(message);
+        }
+    };
+
+    const submitSearch = (event: React.FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const q = String(data.get('q') ?? '').trim();
+        router.get(wordsHref(tab, q === '' ? null : q), {}, { preserveState: true, preserveScroll: true });
+    };
+
     const tabs = [
-        { key: 'all', label: 'همه' },
-        { key: 'due', label: `موعد امروز (${dueCount})` },
-        { key: 'learning', label: `در حال یادگیری (${learningCount})` },
-        { key: 'known', label: `می‌دانم (${knownCount})` },
+        { key: 'all', label: 'همه', ariaLabel: 'همه واژه‌ها' },
+        { key: 'due', label: `موعد (${faCount(dueCount)})`, ariaLabel: `موعد امروز (${faCount(dueCount)})` },
+        { key: 'learning', label: `یادگیری (${faCount(learningCount)})`, ariaLabel: `در حال یادگیری (${faCount(learningCount)})` },
+        { key: 'known', label: `می‌دانم (${faCount(knownCount)})`, ariaLabel: `می‌دانم (${faCount(knownCount)})` },
     ];
 
     return (
         <>
             <Head title="واژه‌ها" />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
-                <div>
-                    <p lang="en" dir="ltr" className="m-0 font-en text-sm font-bold tracking-[0.18em] text-accent-strong uppercase">
-                        Words
-                    </p>
-                    <h1 className="m-0 mt-1 text-3xl leading-[1.6] font-extrabold tracking-tight">واژه‌ها</h1>
-                    <p className="m-0 mt-2 text-[1.0625rem] leading-8 text-muted">دفترچه واژه‌های خودت — از درس‌ها ذخیره کن، سر موعد مرور کن.</p>
-                </div>
-
-                <nav aria-label="وضعیت واژه‌ها">
-                    <div role="group" aria-label="وضعیت واژه‌ها" className="flex flex-wrap gap-2">
-                        {tabs.map((item) => (
-                            <Link
-                                key={item.key}
-                                href={tabHref(item.key, activeQuery)}
-                                aria-current={tab === item.key ? 'page' : undefined}
-                                className={
-                                    tab === item.key
-                                        ? 'inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-4 py-2 font-bold text-surface no-underline'
-                                        : 'inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-surface px-4 py-2 text-ink no-underline hover:bg-canvas'
-                                }
-                            >
-                                {item.label}
-                            </Link>
-                        ))}
-                    </div>
-                </nav>
-
-                <form method="get" action="/app/words" role="search" aria-label="جست‌وجو در واژه‌ها" className="grid gap-2 rounded-3xl border border-line bg-surface p-5">
-                    <input type="hidden" name="tab" value={tab} />
-                    <label htmlFor="words-q" className="inline-flex items-center gap-1.5 font-bold">
-                        <Search size={16} aria-hidden="true" />
-                        جست‌وجو در واژه‌ها
-                    </label>
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                        <input
-                            id="words-q"
-                            name="q"
-                            type="search"
-                            defaultValue={activeQuery ?? ''}
-                            autoComplete="off"
-                            className="min-h-11 w-full min-w-0 flex-1 rounded-full border border-field bg-surface px-4 py-2 text-base text-ink"
-                        />
-                        <button
-                            type="submit"
-                            className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-2 font-bold text-surface hover:bg-primary-hover"
-                        >
-                            <Search size={20} aria-hidden="true" />
-                            جست‌وجو
-                        </button>
-                    </div>
-                    {activeQuery !== null && activeQuery !== '' && (
-                        <p className="m-0">
-                            <Link
-                                href={tab === 'all' ? '/app/words' : `/app/words?tab=${tab}`}
-                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2 text-ink no-underline hover:bg-surface"
-                            >
-                                <X size={20} aria-hidden="true" />
-                                پاک کردن جست‌وجو
-                            </Link>
-                        </p>
-                    )}
-                </form>
-
+            <ScreenHeader title="واژه‌ها" width="reading" />
+            <Toast message={toast} onClose={() => setToast('')} />
+            <div className="mx-auto grid max-w-[680px] gap-4 px-4 py-5">
                 {dueCount > 0 ? (
                     <p className="m-0">
                         <Link
                             href="/app/words/review"
-                            className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover sm:w-fit"
                         >
                             <Play size={20} aria-hidden="true" />
-                            شروع مرور ({dueCount} واژه)
+                            شروع مرور ({faCount(dueCount)} واژه)
                         </Link>
                     </p>
                 ) : (
@@ -370,6 +390,104 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
                     )
                 )}
 
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p role="status" aria-live="polite" data-total={pagination.total} className="m-0 text-sm text-muted">
+                        {faCount(pagination.total)} واژه
+                    </p>
+                    {learningCount > 0 && (
+                        <div className="flex flex-wrap items-center gap-2">
+                            {confirmKnown ? (
+                                <span className="inline-flex flex-wrap items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => void markAllKnown()}
+                                        disabled={knownBusy}
+                                        className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 text-sm font-bold text-surface hover:bg-primary-hover disabled:opacity-60"
+                                    >
+                                        <CheckCheck size={16} aria-hidden="true" />
+                                        بله، همه را می‌دانم
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfirmKnown(false)}
+                                        className="inline-flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm text-muted hover:bg-canvas hover:text-ink"
+                                    >
+                                        لغو
+                                    </button>
+                                </span>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setConfirmKnown(true)}
+                                    className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1.5 rounded-full px-2 text-sm text-muted hover:bg-canvas hover:text-ink"
+                                >
+                                    <CheckCheck size={16} aria-hidden="true" />
+                                    همه را می‌دانم
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                <nav aria-label="وضعیت واژه‌ها" className="-mx-4 overflow-x-auto px-4">
+                    <div role="group" aria-label="وضعیت واژه‌ها" className="flex w-max min-w-full gap-2 pb-1">
+                        {tabs.map((item) => (
+                            <Link
+                                key={item.key}
+                                href={tabHref(item.key, activeQuery)}
+                                aria-label={item.ariaLabel}
+                                aria-current={tab === item.key ? 'page' : undefined}
+                                className={
+                                    tab === item.key
+                                        ? 'inline-flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap rounded-full bg-primary px-3 py-2 text-sm font-bold text-surface no-underline'
+                                        : 'inline-flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap rounded-full border border-line bg-surface px-3 py-2 text-sm text-ink no-underline hover:bg-canvas'
+                                }
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                    </div>
+                </nav>
+
+                <form onSubmit={submitSearch} role="search" aria-label="جست‌وجوی واژه‌ها" className="flex items-center gap-2">
+                    <label htmlFor="words-q" className="sr-only">
+                        جست‌وجو در واژه‌ها
+                    </label>
+                    <input
+                        key={activeQuery ?? ''}
+                        id="words-q"
+                        name="q"
+                        type="search"
+                        defaultValue={activeQuery ?? ''}
+                        placeholder="جست‌وجو در واژه‌ها"
+                        autoComplete="off"
+                        className="min-h-11 w-full min-w-0 flex-1 rounded-full border border-field bg-surface px-4 py-2 text-base text-ink placeholder:text-muted"
+                    />
+                    <button
+                        type="submit"
+                        aria-label="جست‌وجو"
+                        className="inline-flex h-11 min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-3 font-bold text-surface hover:bg-primary-hover sm:px-5"
+                    >
+                        <Search size={18} aria-hidden="true" />
+                        <span className="hidden text-sm sm:inline">جست‌وجو</span>
+                    </button>
+                </form>
+                {activeQuery !== null && activeQuery !== '' && (
+                    <Link
+                        href={tab === 'all' ? '/app/words' : `/app/words?tab=${tab}`}
+                        className="inline-flex min-h-9 w-fit items-center gap-1.5 rounded-full px-2 text-sm font-bold text-muted no-underline hover:text-ink"
+                    >
+                        <X size={16} aria-hidden="true" />
+                        پاک کردن جست‌وجو
+                    </Link>
+                )}
+
+                <section
+                    id="words-results"
+                    tabIndex={-1}
+                    aria-label="فهرست واژه‌ها"
+                    className="scroll-mt-24 outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                >
                 {words.length === 0 ? (
                     <div role="status" className="grid justify-items-center gap-2 rounded-3xl border border-line bg-surface px-6 py-12 text-center">
                         <Inbox size={24} aria-hidden="true" />
@@ -395,11 +513,14 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
                         ) : tab === 'known' ? (
                             <>
                                 <p className="m-0 text-xl font-bold">هنوز واژه‌ای را «می‌دانم» نکرده‌ای.</p>
-                                <p className="m-0 leading-8 text-muted">از تب «در حال یادگیری» یک واژه را «می‌دانم» کن.</p>
+                                <p className="m-0 leading-8 text-muted">از تب «یادگیری» یک واژه را «می‌دانم» کن.</p>
                             </>
                         ) : (
                             <>
-                                <p className="m-0 text-xl font-bold">هنوز واژه‌ای ذخیره نکرده‌ای. از صفحه هر درس، واژه‌های کلیدی را ذخیره کن.</p>
+                                <p className="m-0 text-lg leading-8 font-bold">هنوز واژه‌ای ذخیره نکرده‌ای.</p>
+                                <p className="m-0 max-w-[30ch] leading-8 text-muted">
+                                    از هر درس، واژه‌های کلیدی را ذخیره کن تا اینجا مرور شوند.
+                                </p>
                                 <p className="m-0 mt-2">
                                     <Link
                                         href="/app"
@@ -413,42 +534,28 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
                         )}
                     </div>
                 ) : (
-                    <>
-                        <ul className="m-0 grid list-none divide-y divide-line rounded-3xl border border-line bg-surface px-5 p-0">
-                            {words.map((entry) => (
-                                <WordCard key={entry.id} entry={entry} onChanged={setStatus} />
-                            ))}
-                        </ul>
-                        <p id="words-status" role="status" className="m-0 text-sm leading-7 text-muted">
-                            {status}
-                        </p>
-                    </>
+                    <ul className="m-0 grid list-none divide-y divide-line rounded-3xl border border-line bg-surface px-5 p-0">
+                        {words.map((entry) => (
+                            <WordCard key={entry.id} entry={entry} onChanged={handleWordChanged} />
+                        ))}
+                    </ul>
                 )}
+                </section>
 
-                {pagination.last_page > 1 && (
-                    <nav aria-label="صفحه‌های واژه‌ها">
-                        <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0">
-                            {Array.from({ length: pagination.last_page }, (_, index) => index + 1).map((page) => (
-                                <li key={page}>
-                                    <Link
-                                        href={wordsHref(tab, activeQuery, page)}
-                                        aria-label={`صفحه ${page}`}
-                                        aria-current={page === pagination.current_page ? 'page' : undefined}
-                                        className={
-                                            page === pagination.current_page
-                                                ? 'inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-primary px-4 py-2 font-en font-bold text-surface no-underline'
-                                                : 'inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-line bg-surface px-4 py-2 font-en text-ink no-underline hover:bg-canvas'
-                                        }
-                                    >
-                                        <span lang="en" dir="ltr">
-                                            {page}
-                                        </span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-                )}
+                <p
+                    id="words-status"
+                    role={statusOk ? 'status' : 'alert'}
+                    className={statusOk ? 'm-0 text-sm leading-7 text-muted' : 'm-0 text-sm leading-7 text-danger'}
+                >
+                    {status}
+                </p>
+
+                <Pagination
+                    pagination={pagination}
+                    hrefFor={(page) => wordsHref(tab, activeQuery, page)}
+                    label="صفحه‌های واژه‌ها"
+                    resultsId="words-results"
+                />
             </div>
         </>
     );

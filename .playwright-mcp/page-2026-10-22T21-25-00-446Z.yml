@@ -1,0 +1,85 @@
+- generic [ref=f17e3]:
+  - link "پرش به محتوا" [ref=f17e4] [cursor=pointer]:
+    - /url: "#fe-public-content"
+  - banner [ref=f17e5]:
+    - generic [ref=f17e6]:
+      - link "Fast English — صفحه اصلی" [ref=f17e7] [cursor=pointer]:
+        - /url: /
+        - generic [aria-hidden] [ref=f17e8]: F
+        - generic [ref=f17e9]: Fast English
+      - navigation "ناوبری عمومی" [ref=f17e11]:
+        - link "ورود" [ref=f17e12] [cursor=pointer]:
+          - /url: /login
+        - link "ساخت حساب" [ref=f17e13] [cursor=pointer]:
+          - /url: /register
+  - main [ref=f17e15]:
+    - generic [ref=f17e16]:
+      - generic [ref=f17e17]:
+        - paragraph [ref=f17e18]:
+          - text: نمونه رایگان · سطح
+          - generic [ref=f17e22]: A2
+          - generic [aria-hidden] [ref=f17e23]: ·
+          - text: حدود 3 دقیقه مطالعه
+        - heading "The City Park" [level=1] [ref=f17e27]
+        - paragraph [ref=f17e28]: A short story about a Saturday morning in the city park, told at two levels.
+        - navigation "سطح نمونه" [ref=f17e29]:
+          - paragraph [ref=f17e30]: "سطح نمونه:"
+          - generic [ref=f17e31]:
+            - link "A2" [ref=f17e32] [cursor=pointer]:
+              - /url: /sample?topic=city-park&level=A2
+            - link "B1" [ref=f17e34] [cursor=pointer]:
+              - /url: /sample?topic=city-park&level=B1
+      - region "پخش‌کننده نمونه" [ref=f17e36]:
+        - generic [ref=f17e37]:
+          - button "پخش" [ref=f17e38] [cursor=pointer]
+          - generic [ref=f17e41]:
+            - paragraph [ref=f17e42]: The City Park A2
+            - paragraph [ref=f17e43]: 0:00 / –:––
+          - 'button "سرعت پخش: 1×" [ref=f17e44] [cursor=pointer]':
+            - generic [ref=f17e45]: 1×
+          - button "نمایش کنترل‌های بیشتر" [ref=f17e46] [cursor=pointer]
+      - article [ref=f17e50]:
+        - paragraph [ref=f17e51]: On Saturday morning, Sara walks to the city park near her home. The air is cool, and the streets are quiet. She carries a small bag with bread, cheese, and a bottle of water. She likes this quiet time before the busy day starts.
+        - paragraph [ref=f17e52]: The park is green and full of life. An old man feeds white birds near the small lake. Two children run after a red ball, and their mother watches them from a wooden bench. Sara sits under a tall tree and eats her breakfast slowly. The birds sing, and a soft wind moves the green leaves above her head.
+        - paragraph [ref=f17e53]: After one hour, she walks around the lake. The water is clean, and she can see small fish near the stones. She says hello to the old man, and he smiles at her. They talk about the warm weather for a few minutes. Then she walks home with a happy heart and plans to come back next week.
+      - region "واژه‌های کلیدی نمونه" [ref=f17e54]:
+        - heading "واژه‌های کلیدی" [level=2] [ref=f17e55]
+        - note [ref=f17e58]: برای این نمونه واژه‌ای ثبت نشده است.
+      - region "ادامه یادگیری" [ref=f17e59]:
+        - heading "دوست داشتی؟ ادامه‌اش با اشتراک است" [level=2] [ref=f17e60]
+        - paragraph [ref=f17e61]: حساب بساز، پلن را انتخاب کن و همه مطلب‌ها را در سطح خودت بخوان و بشنو.
+        - paragraph [ref=f17e62]:
+          - link "ساخت حساب" [ref=f17e63] [cursor=pointer]:
+            - /url: /register
+          - link "مشاهده پلن‌ها" [ref=f17e64] [cursor=pointer]:
+            - /url: /app/subscribe
+  - contentinfo [ref=f17e65]:
+    - generic [ref=f17e66]:
+      - generic [ref=f17e67]:
+        - link "Fast English — صفحه اصلی" [ref=f17e68] [cursor=pointer]:
+          - /url: /
+          - generic [aria-hidden] [ref=f17e69]: F
+          - generic [ref=f17e70]: Fast English
+        - paragraph [ref=f17e72]: Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+        - paragraph [ref=f17e73]:
+          - link "شروع با نمونه رایگان" [ref=f17e74] [cursor=pointer]:
+            - /url: /sample
+          - link "دانلود" [ref=f17e75] [cursor=pointer]:
+            - /url: /download
+      - navigation "پیوندهای اعتماد" [ref=f17e76]:
+        - paragraph [ref=f17e77]: دسترسی سریع
+        - link "درباره" [ref=f17e78] [cursor=pointer]:
+          - /url: /about
+        - link "همکاری" [ref=f17e79] [cursor=pointer]:
+          - /url: /cooperation
+        - link "پرسش‌های پرتکرار" [ref=f17e80] [cursor=pointer]:
+          - /url: /faq
+        - link "پشتیبانی" [ref=f17e81] [cursor=pointer]:
+          - /url: /support
+        - link "قوانین" [ref=f17e82] [cursor=pointer]:
+          - /url: /terms
+        - link "حریم خصوصی" [ref=f17e83] [cursor=pointer]:
+          - /url: /privacy
+        - link "دانلود" [ref=f17e84] [cursor=pointer]:
+          - /url: /download
+      - paragraph [ref=f17e85]: Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.

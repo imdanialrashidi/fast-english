@@ -24,6 +24,8 @@ export interface SharedProps extends InertiaPageProps {
      * session helper showed.
      */
     status: string | null;
+    /** Due vocabulary count for the tab badge; 0 for guests. */
+    due_words: number;
 }
 
 /** Page-specific URL bags are declared at their page (Landing only). */
@@ -44,7 +46,6 @@ export interface PlayerTrack {
     coverUrl: string | null;
     /** Server-confirmed resume position for this revision; applied once. */
     initialPosition: number;
-    lessonUrl: string;
 }
 
 /** M1 library row: metadata only — never bodies, glossaries, or audio. */
@@ -74,8 +75,37 @@ export interface GlossaryEntry {
     example_en: string | null;
 }
 
-/** M1 sentence cue interval, timed against the current audio revision. */
-export interface SentenceCue {
-    start_seconds: number;
-    end_seconds: number;
+/**
+ * Shared reading payload (App\Support\ReadingPayload): the topic/lesson
+ * allowlist and Reading::prepared content used by the learner reader and
+ * the public sample. Page-specific state is added by the controller.
+ */
+export interface TopicPayload {
+    id: number;
+    slug: string;
+    title_en: string;
+    summary_public: string | null;
+    cover_url: string | null;
+}
+
+export interface LessonPayload {
+    id: number;
+    title_en: string;
+    level: string;
+    estimated_minutes: number;
+    duration_seconds: number;
+    audio_revision: number;
+    audio_url: string;
+}
+
+export interface ReadingContent {
+    paragraphs: string[];
+    glossary: GlossaryEntry[];
+}
+
+declare global {
+    interface Window {
+        /** Browser-test probe: the persistent audio element bound once. */
+        __fePlayerBound?: boolean;
+    }
 }

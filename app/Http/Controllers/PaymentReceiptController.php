@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\NoStore;
 use App\Models\PaymentRequest;
 use App\Support\ReceiptImage;
 use Illuminate\Http\Request;
@@ -59,7 +60,7 @@ class PaymentReceiptController extends Controller
                 return response()->json([
                     'id' => $paymentRequest->id,
                     'status' => $paymentRequest->status,
-                ])->withHeaders(\App\Http\Responses\NoStore::headers());
+                ])->withHeaders(NoStore::headers());
             }
 
             return redirect()->route('payments.show', $paymentRequest);
@@ -144,7 +145,7 @@ class PaymentReceiptController extends Controller
             return response()->json([
                 'id' => $fresh->id,
                 'status' => $fresh->status,
-            ])->withHeaders(\App\Http\Responses\NoStore::headers());
+            ])->withHeaders(NoStore::headers());
         }
 
         return redirect()
@@ -206,5 +207,4 @@ class PaymentReceiptController extends Controller
             ? $mime
             : 'application/octet-stream';
     }
-
 }

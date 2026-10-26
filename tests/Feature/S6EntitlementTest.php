@@ -3,7 +3,7 @@
 use App\Actions\ApprovePayment;
 use App\Models\Lesson;
 use App\Models\Plan;
-use App\Support\SubscriptionAccess;
+use App\Support\Entitlement;
 use Carbon\Carbon;
 use Database\Seeders\S1SampleSeeder;
 use Database\Seeders\S5PaymentFixtureSeeder;
@@ -46,7 +46,7 @@ test('no subscription means no premium page, audio, or progress', function () {
 test('pending grants nothing but approval opens every published level', function () {
     $pending = S6Payments::pendingRequest($this, $this->studentA, $this->plan);
 
-    expect(SubscriptionAccess::eligible($this->studentA->fresh(), $this->now))->toBeFalse();
+    expect(Entitlement::active($this->studentA->fresh(), $this->now))->toBeFalse();
     $this->actingAs($this->studentA)->get(route('reader.show', ['topic' => 'night-trains', 'level' => 'B1']))->assertForbidden();
     $this->actingAs($this->studentA)->get(route('media.lesson.audio', $this->premium))->assertForbidden();
 

@@ -1,0 +1,200 @@
+- generic [active] [ref=f24e1]:
+  - generic [ref=f24e3]:
+    - link "پرش به محتوا" [ref=f24e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f24e5]:
+      - link "Fast English — صفحه اصلی" [ref=f24e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f24e9]: Fast English
+    - main [ref=f24e12]:
+      - generic [ref=f24e15]:
+        - generic [ref=f24e16]:
+          - heading "کشف مطالب" [level=1] [ref=f24e17]
+          - paragraph [ref=f24e18]: یک مطلب کوتاه در سطح خودت پیدا کن — هر موضوع یک‌بار، با سطح‌های موجودش.
+        - search "جست‌وجو و فیلتر مطالب" [ref=f24e19]:
+          - generic [ref=f24e20]:
+            - generic [ref=f24e21]: جست‌وجو در عنوان
+            - generic [ref=f24e25]:
+              - searchbox "جست‌وجو در عنوان" [ref=f24e26]
+              - button "جست‌وجو" [ref=f24e27] [cursor=pointer]
+          - generic [ref=f24e31]:
+            - paragraph [ref=f24e32]: سطح
+            - group "سطح" [ref=f24e33]:
+              - link "همه" [ref=f24e34] [cursor=pointer]:
+                - /url: /app
+              - link "A1" [ref=f24e35] [cursor=pointer]:
+                - /url: /app?level=A1
+              - link "A2" [ref=f24e37] [cursor=pointer]:
+                - /url: /app?level=A2
+              - link "B1" [ref=f24e39] [cursor=pointer]:
+                - /url: /app?level=B1
+              - link "B2" [ref=f24e41] [cursor=pointer]:
+                - /url: /app?level=B2
+              - link "C1" [ref=f24e43] [cursor=pointer]:
+                - /url: /app?level=C1
+              - link "C2" [ref=f24e45] [cursor=pointer]:
+                - /url: /app?level=C2
+          - generic [ref=f24e47]:
+            - paragraph [ref=f24e48]: دسته
+            - group "دسته" [ref=f24e49]:
+              - link "همه دسته‌ها" [ref=f24e50] [cursor=pointer]:
+                - /url: /app
+              - link "داستان‌ها" [ref=f24e51] [cursor=pointer]:
+                - /url: /app?category=story
+              - link "زندگی روزمره" [ref=f24e52] [cursor=pointer]:
+                - /url: /app?category=everyday
+        - status [ref=f24e54]: 16 مطلب
+        - list [ref=f24e55]:
+          - listitem [ref=f24e56]:
+            - article [ref=f24e57]:
+              - link "Night Trains" [ref=f24e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/night-trains
+                - generic [ref=f24e59]: B1
+                - generic [ref=f24e62]:
+                  - heading "Night Trains" [level=2] [ref=f24e63]
+                  - generic [ref=f24e64]:
+                    - text: حدود 4 دقیقه مطالعه
+                    - generic [ref=f24e68]: "— سطح‌ها: B1"
+          - listitem [ref=f24e69]:
+            - article [ref=f24e70]:
+              - link "The City Park" [ref=f24e71] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/city-park
+                - generic [ref=f24e72]: A2 · +1
+                - generic [ref=f24e75]:
+                  - heading "The City Park" [level=2] [ref=f24e76]
+                  - generic [ref=f24e77]:
+                    - text: حدود 7 دقیقه مطالعه
+                    - generic [ref=f24e81]: "— سطح‌ها: A2، B1"
+          - listitem [ref=f24e82]:
+            - article [ref=f24e83]:
+              - link "Rainy Day" [ref=f24e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/rainy-day
+                - generic [ref=f24e85]: B1
+                - generic [ref=f24e88]:
+                  - heading "Rainy Day" [level=2] [ref=f24e89]
+                  - generic [ref=f24e90]:
+                    - text: حدود 3 دقیقه مطالعه
+                    - generic [ref=f24e94]: "— سطح‌ها: B1"
+                  - generic [ref=f24e95]: داستان‌ها
+          - listitem [ref=f24e96]:
+            - article [ref=f24e97]:
+              - link "Morning Market" [ref=f24e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/morning-market
+                - generic [ref=f24e99]: A1 · +1
+                - generic [ref=f24e102]:
+                  - heading "Morning Market" [level=2] [ref=f24e103]
+                  - generic [ref=f24e104]:
+                    - text: حدود 6 دقیقه مطالعه
+                    - generic [ref=f24e108]: "— سطح‌ها: A1، B2"
+                  - generic [ref=f24e109]: زندگی روزمره
+          - listitem [ref=f24e110]:
+            - article [ref=f24e111]:
+              - link "S4 Paginate 1" [ref=f24e112] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-01
+                - generic [ref=f24e113]: A1
+                - generic [ref=f24e116]:
+                  - heading "S4 Paginate 1" [level=2] [ref=f24e117]
+                  - generic [ref=f24e118]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e122]: "— سطح‌ها: A1"
+          - listitem [ref=f24e123]:
+            - article [ref=f24e124]:
+              - link "S4 Paginate 2" [ref=f24e125] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-02
+                - generic [ref=f24e126]: A1
+                - generic [ref=f24e129]:
+                  - heading "S4 Paginate 2" [level=2] [ref=f24e130]
+                  - generic [ref=f24e131]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e135]: "— سطح‌ها: A1"
+          - listitem [ref=f24e136]:
+            - article [ref=f24e137]:
+              - link "S4 Paginate 3" [ref=f24e138] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-03
+                - generic [ref=f24e139]: A1
+                - generic [ref=f24e142]:
+                  - heading "S4 Paginate 3" [level=2] [ref=f24e143]
+                  - generic [ref=f24e144]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e148]: "— سطح‌ها: A1"
+          - listitem [ref=f24e149]:
+            - article [ref=f24e150]:
+              - link "S4 Paginate 4" [ref=f24e151] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-04
+                - generic [ref=f24e152]: A1
+                - generic [ref=f24e155]:
+                  - heading "S4 Paginate 4" [level=2] [ref=f24e156]
+                  - generic [ref=f24e157]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e161]: "— سطح‌ها: A1"
+          - listitem [ref=f24e162]:
+            - article [ref=f24e163]:
+              - link "S4 Paginate 5" [ref=f24e164] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-05
+                - generic [ref=f24e165]: A1
+                - generic [ref=f24e168]:
+                  - heading "S4 Paginate 5" [level=2] [ref=f24e169]
+                  - generic [ref=f24e170]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e174]: "— سطح‌ها: A1"
+          - listitem [ref=f24e175]:
+            - article [ref=f24e176]:
+              - link "S4 Paginate 6" [ref=f24e177] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-06
+                - generic [ref=f24e178]: A1
+                - generic [ref=f24e181]:
+                  - heading "S4 Paginate 6" [level=2] [ref=f24e182]
+                  - generic [ref=f24e183]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e187]: "— سطح‌ها: A1"
+          - listitem [ref=f24e188]:
+            - article [ref=f24e189]:
+              - link "S4 Paginate 7" [ref=f24e190] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-07
+                - generic [ref=f24e191]: A1
+                - generic [ref=f24e194]:
+                  - heading "S4 Paginate 7" [level=2] [ref=f24e195]
+                  - generic [ref=f24e196]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e200]: "— سطح‌ها: A1"
+          - listitem [ref=f24e201]:
+            - article [ref=f24e202]:
+              - link "S4 Paginate 8" [ref=f24e203] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/app/topics/s4-paginate-08
+                - generic [ref=f24e204]: A1
+                - generic [ref=f24e207]:
+                  - heading "S4 Paginate 8" [level=2] [ref=f24e208]
+                  - generic [ref=f24e209]:
+                    - text: حدود 2 دقیقه مطالعه
+                    - generic [ref=f24e213]: "— سطح‌ها: A1"
+        - navigation "صفحه‌های مطالب" [ref=f24e214]:
+          - list [ref=f24e215]:
+            - listitem [ref=f24e216]:
+              - link "صفحه 1" [ref=f24e217] [cursor=pointer]:
+                - /url: /app
+                - generic [ref=f24e218]: "1"
+            - listitem [ref=f24e219]:
+              - link "صفحه 2" [ref=f24e220] [cursor=pointer]:
+                - /url: /app?page=2
+                - generic [ref=f24e221]: "2"
+            - listitem [ref=f24e222]:
+              - link "صفحه بعدی" [ref=f24e223] [cursor=pointer]:
+                - /url: /app?page=2
+                - text: بعدی
+    - navigation "بخش‌های یادگیری" [ref=f24e228]:
+      - list [ref=f24e229]:
+        - listitem [ref=f24e230]:
+          - link "امروز" [ref=f24e231] [cursor=pointer]:
+            - /url: /app/today
+        - listitem [ref=f24e237]:
+          - link "کشف" [ref=f24e238] [cursor=pointer]:
+            - /url: /app
+        - listitem [ref=f24e244]:
+          - link "واژه‌ها" [ref=f24e245] [cursor=pointer]:
+            - /url: /app/words
+        - listitem [ref=f24e252]:
+          - link "حساب" [ref=f24e253] [cursor=pointer]:
+            - /url: /app/account
+  - status [ref=f24e259]:
+    - generic [ref=f24e260]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f24e261] [cursor=pointer]

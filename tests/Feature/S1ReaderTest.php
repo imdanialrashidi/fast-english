@@ -40,8 +40,8 @@ test('anonymous visitor reads the A2 sample lesson with only its body and audio'
         ->where('topic.slug', 'city-park'));
 
     $props = $response->inertiaProps();
-    expect(implode("\n", $props['sentences']))->toContain('On Saturday morning, Sara walks')
-        ->and(implode("\n", $props['sentences']))->not->toContain('Sara loves Saturday mornings')
+    expect(implode("\n", $props['paragraphs']))->toContain('On Saturday morning, Sara walks')
+        ->and(implode("\n", $props['paragraphs']))->not->toContain('Sara loves Saturday mornings')
         ->and($response->getContent())->not->toContain(route('media.lesson.audio', $this->b1, false));
 
     // The B1 lesson's body and audio are absent: no cross-level mixing.
@@ -60,8 +60,8 @@ test('anonymous visitor reads the B1 sample lesson with only its body and audio'
         ->where('lesson.audio_url', $b1Audio));
 
     $props = $response->inertiaProps();
-    expect(implode("\n", $props['sentences']))->toContain('Sara loves Saturday mornings')
-        ->and(implode("\n", $props['sentences']))->not->toContain('On Saturday morning, Sara walks');
+    expect(implode("\n", $props['paragraphs']))->toContain('Sara loves Saturday mornings')
+        ->and(implode("\n", $props['paragraphs']))->not->toContain('On Saturday morning, Sara walks');
 
     $response->assertSee('Sara loves Saturday mornings');
     $response->assertDontSee('On Saturday morning, Sara walks');
@@ -130,6 +130,6 @@ test('two users see the same public sample without leaking each other', function
         ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
     $followed = $this->followRedirects($redirect)->assertOk();
     $props = $followed->inertiaProps();
-    expect(implode("\n", $props['sentences']))->toContain('On Saturday morning, Sara walks')
+    expect(implode("\n", $props['paragraphs']))->toContain('On Saturday morning, Sara walks')
         ->and($followed->getContent())->not->toContain('student-b@example.com');
 });

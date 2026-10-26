@@ -198,3 +198,19 @@ test('a concurrent double-submit converges onto the surviving word row', functio
 
     expect(VocabularyWord::where('user_id', $student->id)->count())->toBe(1);
 });
+
+test('CSV import is retired', function () {
+    $student = ContentFixtures::subscribedStudent();
+
+    $this->actingAs($student)
+        ->withHeaders(['Accept' => 'application/json'])
+        ->post('/app/words/import')
+        ->assertNotFound();
+});
+
+test('an out-of-range notebook page redirects to the first page', function () {
+    $student = ContentFixtures::subscribedStudent();
+
+    $this->actingAs($student)->get('/app/words?tab=learning&page=7')
+        ->assertRedirect('/app/words?tab=learning');
+});

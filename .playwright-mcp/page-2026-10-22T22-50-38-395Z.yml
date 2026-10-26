@@ -1,0 +1,80 @@
+- generic [active] [ref=f42e1]:
+  - generic [ref=f42e3]:
+    - link "پرش به محتوا" [ref=f42e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f42e5]:
+      - link "Fast English — صفحه اصلی" [ref=f42e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f42e9]: Fast English
+    - main [ref=f42e12]:
+      - generic [ref=f42e15]:
+        - generic [ref=f42e16]:
+          - paragraph [ref=f42e17]: سلام، UI Review
+          - heading "امروز هم قدمی بزرگ به سمت هدف‌هات برداشتی." [level=1] [ref=f42e24]
+        - region "برنامه امروز" [ref=f42e25]:
+          - heading "برنامه امروز" [level=2] [ref=f42e26]
+          - list [ref=f42e29]:
+            - listitem [ref=f42e30]:
+              - generic [ref=f42e32]:
+                - link "درس بعدی" [ref=f42e33] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8111/app/topics/s4-paginate-12?level=A1
+                - text: S4 Paginate 12 (A1)
+        - region "هدف امروز" [ref=f42e34]:
+          - 'img "پیشرفت امروز: 0 درصد" [ref=f42e35]':
+            - generic [ref=f42e38]: 0/10
+          - generic [ref=f42e39]:
+            - 'heading "هدف امروز: 10 دقیقه مطالعه" [level=2] [ref=f42e40]'
+            - paragraph [ref=f42e41]: 0 دقیقه از برنامه امروز انجام شده.
+        - region "مطالب پیشنهادی" [ref=f42e42]:
+          - generic [ref=f42e43]:
+            - heading "مطالب پیشنهادی" [level=2] [ref=f42e44]
+            - link "مشاهده همه" [ref=f42e48] [cursor=pointer]:
+              - /url: /app
+          - list [ref=f42e51]:
+            - listitem [ref=f42e52]:
+              - article [ref=f42e53]:
+                - link "Night Trains" [ref=f42e54] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8111/app/topics/night-trains
+                  - generic [ref=f42e55]: B1
+                  - generic [ref=f42e58]:
+                    - heading "Night Trains" [level=3] [ref=f42e59]
+                    - generic [ref=f42e60]:
+                      - text: حدود 4 دقیقه مطالعه
+                      - generic [ref=f42e64]: · B1
+            - listitem [ref=f42e65]:
+              - article [ref=f42e66]:
+                - link "The City Park" [ref=f42e67] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8111/app/topics/city-park
+                  - generic [ref=f42e68]: A2
+                  - generic [ref=f42e71]:
+                    - heading "The City Park" [level=3] [ref=f42e72]
+                    - generic [ref=f42e73]:
+                      - text: حدود 7 دقیقه مطالعه
+                      - generic [ref=f42e77]: · A2، B1
+            - listitem [ref=f42e78]:
+              - article [ref=f42e79]:
+                - link "Rainy Day" [ref=f42e80] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8111/app/topics/rainy-day
+                  - generic [ref=f42e81]: B1
+                  - generic [ref=f42e84]:
+                    - heading "Rainy Day" [level=3] [ref=f42e85]
+                    - generic [ref=f42e86]:
+                      - text: حدود 3 دقیقه مطالعه
+                      - generic [ref=f42e90]: · B1
+    - navigation "بخش‌های یادگیری" [ref=f42e93]:
+      - list [ref=f42e94]:
+        - listitem [ref=f42e95]:
+          - link "امروز" [ref=f42e96] [cursor=pointer]:
+            - /url: /app/today
+        - listitem [ref=f42e102]:
+          - link "کشف" [ref=f42e103] [cursor=pointer]:
+            - /url: /app
+        - listitem [ref=f42e109]:
+          - link "واژه‌ها" [ref=f42e110] [cursor=pointer]:
+            - /url: /app/words
+        - listitem [ref=f42e117]:
+          - link "حساب" [ref=f42e118] [cursor=pointer]:
+            - /url: /app/account
+  - status [ref=f42e124]:
+    - generic [ref=f42e125]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f42e126] [cursor=pointer]

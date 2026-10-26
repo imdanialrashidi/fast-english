@@ -11,6 +11,7 @@ use Illuminate\Config\Repository;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S9a production guards (scope sections 16, 19, 25): staging may run
@@ -66,6 +67,13 @@ test('production without smtp disables reset with neutral response', function ()
     expect(SmtpStatus::isPasswordResetDisabled())->toBeTrue();
 
     $student = ContentFixtures::student();
+
+    $this->get(route('password.request'))->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('Auth/ForgotPassword')
+        ->where('resetDisabled', true));
+    $this->get(route('password.reset', ['token' => 'token', 'email' => $student->email]))->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
+        ->component('Auth/ResetPassword')
+        ->where('resetDisabled', true));
     $message = 'اگر حسابی با این ایمیل وجود داشته باشد، پیوند بازیابی ارسال شد.';
 
     $this->post(route('password.email'), ['email' => $student->email])

@@ -1,0 +1,33 @@
+- generic [active] [ref=f57e1]:
+  - generic [ref=f57e3]:
+    - link "پرش به محتوا" [ref=f57e4] [cursor=pointer]:
+      - /url: "#fe-content"
+    - banner [ref=f57e5]:
+      - link "Fast English — صفحه اصلی" [ref=f57e8] [cursor=pointer]:
+        - /url: /app/today
+        - generic [ref=f57e9]: Fast English
+    - main [ref=f57e12]:
+      - generic [ref=f57e15]:
+        - generic [ref=f57e16]:
+          - heading "انتخاب پلن" [level=1] [ref=f57e17]
+          - paragraph [ref=f57e18]: پلن موردنظر را انتخاب کنید. مبلغ و مشخصات واریز از سمت سرور ثبت می‌شود.
+        - status [ref=f57e19]:
+          - paragraph [ref=f57e23]: در دست آماده‌سازی
+          - paragraph [ref=f57e24]: فروش هنوز فعال نشده است. پلن‌ها پس از اعلام رسمی قابل خرید خواهند بود.
+    - navigation "بخش‌های یادگیری" [ref=f57e27]:
+      - list [ref=f57e28]:
+        - listitem [ref=f57e29]:
+          - link "امروز" [ref=f57e30] [cursor=pointer]:
+            - /url: /app/today
+        - listitem [ref=f57e36]:
+          - link "کشف" [ref=f57e37] [cursor=pointer]:
+            - /url: /app
+        - listitem [ref=f57e43]:
+          - link "واژه‌ها" [ref=f57e44] [cursor=pointer]:
+            - /url: /app/words
+        - listitem [ref=f57e51]:
+          - link "حساب" [ref=f57e52] [cursor=pointer]:
+            - /url: /app/account
+  - status [ref=f57e58]:
+    - generic [ref=f57e59]: نسخه تازه‌ای آماده است.
+    - button "تازه‌سازی" [ref=f57e60] [cursor=pointer]

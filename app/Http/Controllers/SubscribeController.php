@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Support\PaymentMethods;
 use App\Support\Toman;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -39,10 +40,13 @@ class SubscribeController extends Controller
                 ->get()
             : collect();
 
+        $paymentReady = PaymentMethods::cardCheckoutReady();
+
         // Public-slice Inertia transport (ADR-0002): the same plan list
         // with the same sales switch. Plan choice posts the plan ID only;
         // snapshot/ownership rules in PaymentRequestController are
-        // unchanged.
+        // unchanged. A placeholder destination keeps the buttons closed
+        // and explains why, instead of promising a working checkout.
         return Inertia::render('Subscribe/Index', [
             'plans' => $plans->map(fn (Plan $plan) => [
                 'id' => $plan->id,
@@ -51,6 +55,10 @@ class SubscribeController extends Controller
                 'duration_days' => (int) $plan->duration_days,
             ])->all(),
             'salesOn' => $salesOn,
+            'paymentReady' => $paymentReady,
+            'paymentNotice' => $paymentReady
+                ? null
+                : 'روش پرداخت هنوز پیکربندی نشده است. شمارهٔ کارت به‌زودی در همین صفحه اعلام می‌شود.',
         ]);
     }
 }

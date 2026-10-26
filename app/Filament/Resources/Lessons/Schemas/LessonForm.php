@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Lessons\Schemas;
 
 use App\Actions\PublishLesson;
+use App\Rules\ActiveStaffReviewer;
 use App\Rules\Mp3Signature;
-use App\Support\AudioCues;
 use App\Support\Glossary;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -14,7 +14,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -59,30 +61,6 @@ class LessonForm
                     ->default([])
                     ->addActionLabel('Add word')
                     ->columnSpanFull(),
-                Repeater::make('audio_cues')
-                    ->label('Sentence timing cues (optional, seconds)')
-                    ->schema([
-                        TextInput::make('sentence_index')
-                            ->label('Sentence number (from 0)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('start_seconds')
-                            ->label('Start (seconds)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('end_seconds')
-                            ->label('End (seconds)')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0.01),
-                    ])
-                    ->maxItems(AudioCues::MAX_SENTENCES)
-                    ->default([])
-                    ->addActionLabel('Add cue')
-                    ->helperText('Timed against the duration below; cues must number every reader sentence from 0 without overlap and stay within the audio duration. Saved cues pin to the current audio revision — replacing the audio invalidates them in the reader until they are re-timed.')
-                    ->columnSpanFull(),
                 FileUpload::make('audio_path')
                     ->label('Audio (MP3, max 30 MB)')
                     ->disk('local')
@@ -93,25 +71,42 @@ class LessonForm
                         fn (TemporaryUploadedFile $file): string => (string) Str::ulid().'.mp3'
                     )
                     ->helperText('Stored on the private disk; replacing it increments the audio revision.')
+                    ->previewable(false)
                     ->required(),
+                ViewField::make('audio_preview')
+                    ->label('Audio preview')
+                    ->view('filament.forms.lesson-audio-preview')
+                    ->visible(fn ($record) => $record !== null && filled($record->audio_path))
+                    ->dehydrated(false)
+                    ->columnSpanFull(),
                 TextInput::make('duration_seconds')
                     ->label('Duration (seconds)')
                     ->required()
                     ->numeric()
+                    ->integer()
                     ->minValue(1),
                 TextInput::make('estimated_minutes')
                     ->label('Study time (minutes)')
                     ->required()
                     ->numeric()
+                    ->integer()
                     ->minValue(1),
                 Toggle::make('is_public_sample')
                     ->label('Public sample'),
                 Select::make('reviewed_by')
                     ->label('Reviewer')
-                    ->relationship('reviewer', 'name')
+                    ->relationship(
+                        'reviewer',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->where('is_staff', true)
+                            ->whereNull('disabled_at'),
+                    )
                     ->searchable()
                     ->preload()
-                    ->helperText('Content review is required before publishing.'),
+                    ->default(fn () => auth()->id())
+                    ->rules([new ActiveStaffReviewer])
+                    ->helperText('Content review is required before publishing; only active staff can review.'),
                 DateTimePicker::make('reviewed_at')
                     ->label('Reviewed at'),
                 Placeholder::make('status')

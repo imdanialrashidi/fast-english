@@ -1,0 +1,49 @@
+- generic [active] [ref=f11e1]:
+  - link "Skip to content" [ref=f11e2] [cursor=pointer]:
+    - /url: "#fi-main-content"
+  - navigation "Topbar" [ref=f11e4]:
+    - link "Fast English" [ref=f11e6] [cursor=pointer]:
+      - /url: http://127.0.0.1:8111/admin
+    - generic [ref=f11e8]:
+      - generic [ref=f11e11]:
+        - generic [ref=f11e12]: Global search
+        - searchbox "Global search" [ref=f11e18]
+      - button "User menu" [ref=f11e21] [cursor=pointer]:
+        - img "Avatar of S3 Fixture Reviewer" [ref=f11e22]
+  - generic [ref=f11e23]:
+    - navigation "Sidebar navigation" [ref=f11e26]:
+      - list [ref=f11e27]:
+        - listitem [ref=f11e28]:
+          - list [ref=f11e29]:
+            - listitem [ref=f11e30]:
+              - link "Dashboard" [ref=f11e31] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin
+            - listitem [ref=f11e35]:
+              - link "Placement tests" [ref=f11e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/placement-overview
+            - listitem [ref=f11e38]:
+              - link "Categories" [ref=f11e39] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/categories
+            - listitem [ref=f11e43]:
+              - link "Lessons" [ref=f11e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/lessons
+            - listitem [ref=f11e48]:
+              - link "Payment queue" [ref=f11e49] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/payment-requests
+            - listitem [ref=f11e53]:
+              - link "Topics" [ref=f11e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/topics
+            - listitem [ref=f11e58]:
+              - link "Backups" [ref=f11e59] [cursor=pointer]:
+                - /url: http://127.0.0.1:8111/admin/backups
+    - main [ref=f11e64]:
+      - generic [ref=f11e66]:
+        - heading "Dashboard" [level=1] [ref=f11e69]
+        - generic [ref=f11e80]:
+          - img "Avatar of S3 Fixture Reviewer" [ref=f11e81]
+          - generic [ref=f11e82]:
+            - heading "Welcome" [level=2] [ref=f11e83]
+            - paragraph [ref=f11e84]: S3 Fixture Reviewer
+          - button "Sign out" [ref=f11e86] [cursor=pointer]
+  - generic:
+    - status

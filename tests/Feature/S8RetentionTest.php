@@ -2,6 +2,7 @@
 
 use App\Models\PaymentRequest;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S8-8 (retention, scope §19.3): an old reviewed receipt loses its FILE,
@@ -42,8 +43,15 @@ test('an old reviewed receipt is removed but its row remains', function () {
         ->and($fresh->amount_toman_snapshot)->toBe($row->amount_toman_snapshot)
         ->and($fresh->status)->toBe(PaymentRequest::STATUS_APPROVED);
 
-    // The owner's receipt route now 404s instead of serving bytes.
+    // The owner's receipt route now 404s instead of serving bytes, and
+    // the status page no longer renders a dead receipt link.
     $this->actingAs($this->userA)->get(route('payments.receipt.show', $fresh))->assertNotFound();
+    $this->actingAs($this->userA)
+        ->get(route('payments.show', $fresh))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('request.receipt_url', null)
+            ->where('request.has_receipt', false));
 });
 
 test('pending and recent receipts are never touched', function () {

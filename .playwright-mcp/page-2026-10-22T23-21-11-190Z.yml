@@ -1,0 +1,56 @@
+- generic [ref=f60e3]:
+  - link "پرش به محتوا" [ref=f60e4] [cursor=pointer]:
+    - /url: "#fe-content"
+  - banner [ref=f60e5]:
+    - link "Fast English — صفحه اصلی" [ref=f60e8] [cursor=pointer]:
+      - /url: /app/today
+      - generic [ref=f60e9]: Fast English
+  - generic [ref=f60e10]:
+    - complementary "ناوبری اصلی" [ref=f60e11]:
+      - navigation "بخش‌های یادگیری" [ref=f60e12]:
+        - link "امروز" [ref=f60e13] [cursor=pointer]:
+          - /url: /app/today
+        - link "کشف مطالب" [ref=f60e17] [cursor=pointer]:
+          - /url: /app
+        - link "واژه‌ها" [ref=f60e21] [cursor=pointer]:
+          - /url: /app/words
+        - link "حساب" [ref=f60e26] [cursor=pointer]:
+          - /url: /app/account
+        - link "ذخیره‌شده‌ها" [ref=f60e30] [cursor=pointer]:
+          - /url: /app/saved
+    - main [ref=f60e34]:
+      - generic [ref=f60e37]:
+        - generic [ref=f60e38]:
+          - paragraph [ref=f60e39]:
+            - text: سطح
+            - generic [ref=f60e43]: A2
+            - generic [aria-hidden] [ref=f60e44]: ·
+            - text: حدود 3 دقیقه مطالعه
+          - heading "The City Park" [level=1] [ref=f60e48]
+          - paragraph [ref=f60e49]: A short story about a Saturday morning in the city park, told at two levels.
+          - navigation "سطح درس" [ref=f60e50]:
+            - paragraph [ref=f60e51]: "سطح این مطلب:"
+            - generic [ref=f60e52]:
+              - link "A2" [ref=f60e53] [cursor=pointer]:
+                - /url: /app/topics/city-park?level=A2
+              - link "B1" [ref=f60e55] [cursor=pointer]:
+                - /url: /app/topics/city-park?level=B1
+        - generic [ref=f60e57]:
+          - button "خواندم" [ref=f60e58] [cursor=pointer]
+          - button "ذخیره برای بعد" [ref=f60e61] [cursor=pointer]
+        - article [ref=f60e65]:
+          - paragraph [ref=f60e66]: On Saturday morning, Sara walks to the city park near her home. The air is cool, and the streets are quiet. She carries a small bag with bread, cheese, and a bottle of water. She likes this quiet time before the busy day starts.
+          - paragraph [ref=f60e67]: The park is green and full of life. An old man feeds white birds near the small lake. Two children run after a red ball, and their mother watches them from a wooden bench. Sara sits under a tall tree and eats her breakfast slowly. The birds sing, and a soft wind moves the green leaves above her head.
+          - paragraph [ref=f60e68]: After one hour, she walks around the lake. The water is clean, and she can see small fish near the stones. She says hello to the old man, and he smiles at her. They talk about the warm weather for a few minutes. Then she walks home with a happy heart and plans to come back next week.
+        - region "واژه‌های کلیدی" [ref=f60e69]:
+          - heading "واژه‌های کلیدی" [level=2] [ref=f60e70]
+          - note [ref=f60e73]: برای این درس واژه‌ای ثبت نشده است.
+  - region "پخش‌کننده صوت درس" [ref=f60e76]:
+    - generic [ref=f60e79]:
+      - button "پخش" [ref=f60e80] [cursor=pointer]
+      - generic [ref=f60e83]:
+        - status [ref=f60e84]: The City Park A2
+        - paragraph [ref=f60e85]: 0:00 / –:––
+      - 'button "سرعت پخش: 1×" [ref=f60e86] [cursor=pointer]':
+        - generic [ref=f60e90]: 1×
+      - button "نمایش کنترل‌های بیشتر" [ref=f60e91] [cursor=pointer]

@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { BookOpen, Lock, Play, UserPlus } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
@@ -32,12 +33,17 @@ export const LockedIndex: FunctionComponent<LockedProps> & { layout?: (page: Rea
     return (
         <>
             <Head title="نیاز به اشتراک فعال" />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-10">
+            <ScreenHeader
+                title="اشتراک"
+                width="reading"
+                back={{ href: isGuest ? '/' : '/app/account', label: isGuest ? 'بازگشت به صفحه اصلی' : 'بازگشت به حساب' }}
+            />
+            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-8">
                 <section aria-label="نیاز به اشتراک" className="grid justify-items-start gap-3 rounded-3xl border border-line bg-surface p-6">
                     <p aria-hidden="true" className="m-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-canvas text-primary">
                         <Lock size={24} />
                     </p>
-                    <h1 className="m-0 text-2xl leading-[1.7] font-extrabold tracking-tight">برای ادامه، اشتراک فعال لازم است</h1>
+                    <h2 className="m-0 text-2xl leading-[1.7] font-extrabold tracking-tight">برای ادامه، اشتراک فعال لازم است</h2>
                     <p className="m-0 text-[1.0625rem] leading-8 text-muted">
                         {isGuest
                             ? 'این بخش یادگیری فقط برای اعضایی است که اشتراک فعال دارند. اول حساب بساز، بعد پلن را انتخاب کن.'

@@ -7,14 +7,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f7f5ef">
+    <meta name="theme-color" content="#F7F4EE">
     <title>قطع اتصال — Fast English</title>
     <style>
-        :root { --fe-canvas: #f7f5ef; --fe-surface: #ffffff; --fe-text: #172238; --fe-muted: #5b6372; --fe-primary: #4263eb; --fe-on-primary: #ffffff; }
+        :root { --fe-canvas: #F7F4EE; --fe-surface: #FFFFFF; --fe-text: #101B33; --fe-muted: #55607A; --fe-primary: #1F3B82; --fe-on-primary: #FFFFFF; }
         body { margin: 0; background: var(--fe-canvas); color: var(--fe-text); font-family: system-ui, Tahoma, sans-serif; }
         main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem; text-align: center; }
         .fe-mark { width: 64px; height: 64px; border-radius: 16px; margin-bottom: 1rem; }
-        .fe-card { background: var(--fe-surface); border: 1px solid #e7dfd2; border-radius: 1.25rem; padding: 2rem 1.5rem; }
+        .fe-card { background: var(--fe-surface); border: 1px solid #E4DED2; border-radius: 1.25rem; padding: 2rem 1.5rem; }
         h1 { font-size: 1.25rem; margin: 0 0 .75rem; }
         p { color: var(--fe-muted); font-size: 1rem; line-height: 1.75; }
         .fe-actions { display: flex; gap: .75rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap; }
