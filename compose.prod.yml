@@ -29,6 +29,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Optional npm mirror; empty keeps registry.npmjs.org. Set it in
+        # Coolify when the build host cannot reach npm directly.
+        NPM_REGISTRY: ${NPM_REGISTRY:-}
     restart: unless-stopped
     depends_on:
       db:

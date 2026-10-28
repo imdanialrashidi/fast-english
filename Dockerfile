@@ -29,6 +29,10 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 # --- 2. Vite assets (pinned Node) ---
 FROM node:22.23.2 AS assets
 WORKDIR /app
+# Optional npm registry mirror for build hosts that cannot reach
+# registry.npmjs.org (the Iranian production server cannot; npmmirror can).
+# Empty means the npm default. Passed by compose.prod.yml as NPM_REGISTRY.
+ARG NPM_REGISTRY=
 COPY package.json package-lock.json vite.config.js ./
 COPY resources ./resources
 # Tailwind @source roots inside the Filament admin theme.
@@ -38,7 +42,9 @@ COPY public ./public
 # vendor/ is excluded from the build context, so take the already-installed
 # tree from the vendor stage (stage order matters: vendor is built first).
 COPY --from=vendor /app/vendor ./vendor
-RUN npm ci --ignore-scripts && npm run build
+RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi \
+    && npm ci --ignore-scripts \
+    && npm run build
 
 # --- 3. Runtime (pinned PHP-FPM) ---
 FROM php:8.4.26-fpm-bookworm

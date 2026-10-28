@@ -17,8 +17,12 @@ if [ ! -L public/storage ]; then
         || echo "WARN: public/storage is missing and cannot be created (covers will 404); run it as root once." >&2
 fi
 
-# Re-cache config with runtime env (real APP_KEY/DB/MAIL). Route/view/event
-# caches from the build do not contain env and are kept as-is.
+# Re-cache config with runtime env (real APP_KEY/DB/MAIL). The route cache
+# is rebuilt too: Livewire's asset-route prefix is derived from the vendor
+# tree, and a build-time cache can carry a prefix that no longer matches the
+# URL the rendered page asks for (the Filament panel then 404s its own JS).
+# Rebuilding here costs about a second and removes that class of mismatch.
 php artisan config:cache
+php artisan route:cache
 
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/app.conf
