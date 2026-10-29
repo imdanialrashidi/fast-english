@@ -143,7 +143,7 @@ not application code.
     360 and 1440 with 44px actions, no horizontal scroll, no console
     errors.
 18. **No `@test` on the public surface.** Support/cooperation and the
-    legal copy now reference `support@fastenglish.ir`; the owner can
+    legal copy now reference `info@fastenglishpodcast.ir`; the owner can
     change the address in Business settings without a deploy.
 
 ## 4. Open findings
@@ -152,7 +152,7 @@ not application code.
 
 | # | Finding | Next action |
 |---|---|---|
-| 1 | ~~`config/site.php` ships `@test` support/cooperation handles~~ **fixed 2026-10-26 pm** | Support and cooperation now default to `support@fastenglish.ir` (product domain), and the three legal-copy mentions point at the support page instead of a handle. Staff can change the address in `/admin/business-settings`; the owner should confirm the mailbox exists. |
+| 1 | ~~`config/site.php` ships `@test` support/cooperation handles~~ **fixed 2026-10-26 pm** | Support and cooperation now default to `info@fastenglishpodcast.ir` (product domain), and the three legal-copy mentions point at the support page instead of a handle. Staff can change the address in `/admin/business-settings`; the owner should confirm the mailbox exists. |
 | 2 | No SMTP: password reset and the renewal reminder never deliver | Coolify env `MAIL_*`, then one real send/receive |
 | 3 | Content is fixture-only. **Placement questions are no longer the blocker** (20 real items, A1–C1, `PlacementCatalogSeeder`); lessons and audio still are | Owner content (scope §25 item 4) |
 | 4 | No real card destination; `SALES_ENABLED=false`, checkout closed | Save destination, review legal copy, then enable sales |

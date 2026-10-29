@@ -110,7 +110,11 @@ class LandingController extends Controller
             'singlePackageLabel' => Toman::format(299000),
             // The hero's primary action follows reality: while no real APK
             // exists, the sample is primary and /download is informational.
+            // Once published, the landing's main download action points at
+            // the real APK file (one click), while /download keeps the
+            // metadata/checksum details.
             'releasePublished' => Release::published(),
+            'downloadUrl' => Release::metadata()['file_url'],
             // Guest-only funnel: the landing never links into the
             // authenticated app. Plan interest goes through registration;
             // the primary conversion is the download page.

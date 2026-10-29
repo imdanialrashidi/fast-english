@@ -57,11 +57,31 @@
         <script type="application/ld+json">{!! json_encode($seo['json_ld'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @endif
     <title inertia>{{ $seoTitle }}</title>
+    {{-- Boot resilience: a slow or blocked JS bundle must not leave a
+         completely blank page. React replaces #app on mount; until then
+         (or if the script never runs) this static message explains what is
+         happening instead of showing an empty warm-paper screen. --}}
+    <style>
+        #app:empty::after {
+            content: 'در حال بارگذاری Fast English…';
+            display: block;
+            padding: 4rem 1.25rem;
+            color: #55607A;
+            font-family: Vazirmatn, Tahoma, system-ui, sans-serif;
+            font-size: 1rem;
+            text-align: center;
+        }
+    </style>
     @viteReactRefresh
     @vite(['resources/css/inertia.css', 'resources/js/app.tsx', 'resources/js/pwa.js'])
     <x-inertia::head />
 </head>
 <body>
     <x-inertia::app />
+    <noscript>
+        <div style="max-width:40rem;margin:2rem auto;padding:1rem 1.25rem;border:1px solid #E4DED2;border-radius:1rem;background:#FFFFFF;color:#101B33;font-family:Tahoma,system-ui,sans-serif;line-height:1.8;text-align:center;">
+            برای استفاده از Fast English باید جاوااسکریپت مرورگر را فعال کنید.
+        </div>
+    </noscript>
 </body>
 </html>

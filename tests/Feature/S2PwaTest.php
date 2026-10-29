@@ -50,7 +50,7 @@ test('service worker is versioned, uncacheable, and allowlist-only', function ()
         ->and($response->headers->get('Cache-Control'))->toContain('no-store');
 
     $body = $response->getContent();
-    expect($body)->toContain('fe-public-s2-v1')
+    expect($body)->toContain('fe-public-'.config('pwa.sw_version'))
         ->and($body)->toContain('FE_SKIP_WAITING')
         ->and($body)->toContain('/offline');
 

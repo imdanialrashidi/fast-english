@@ -126,9 +126,9 @@ test('trust pages publish the owner contact channel and legal copy', function ()
     $support->assertInertia(fn (AssertableInertia $page) => $page
         ->component('Trust/Show')
         ->where('page', 'support')
-        ->where('contact.support_channel', 'support@fastenglish.ir')
-        ->where('contact.support_href', 'mailto:support@fastenglish.ir')
-        ->where('contact.cooperation_channel', 'support@fastenglish.ir'));
+        ->where('contact.support_channel', 'info@fastenglishpodcast.ir')
+        ->where('contact.support_href', 'mailto:info@fastenglishpodcast.ir')
+        ->where('contact.cooperation_channel', 'info@fastenglishpodcast.ir'));
 
     foreach (['terms' => 'این شرایط', 'privacy' => 'حریم خصوصی', 'refund' => 'بازگشت وجه'] as $name => $needle) {
         $response = $this->get(route('trust.'.$name))->assertOk();
@@ -144,8 +144,8 @@ test('trust pages publish the owner contact channel and legal copy', function ()
     $this->get(route('trust.cooperation'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('contact.cooperation_channel', 'support@fastenglish.ir')
-            ->where('contact.cooperation_href', 'mailto:support@fastenglish.ir'));
+            ->where('contact.cooperation_channel', 'info@fastenglishpodcast.ir')
+            ->where('contact.cooperation_href', 'mailto:info@fastenglishpodcast.ir'));
 });
 
 test('sitemap lists public pages only', function () {
@@ -178,9 +178,13 @@ test('signed-in visitors are redirected from every marketing page into the app',
 
     $this->actingAs($user);
 
-    foreach (['landing', 'trust.about', 'trust.cooperation', 'trust.faq', 'trust.support', 'trust.terms', 'trust.privacy', 'trust.refund', 'download'] as $route) {
+    foreach (['landing', 'trust.about', 'trust.cooperation', 'trust.faq', 'trust.support', 'trust.terms', 'trust.privacy', 'trust.refund'] as $route) {
         $this->get(route($route))->assertRedirect(route('today.index'));
     }
+
+    // Download is a public utility (2026-10-28): a signed-in learner must
+    // still be able to fetch the APK instead of being sent to the paywall.
+    $this->get(route('download'))->assertOk();
 
     // The install guide is outside that boundary on purpose: Account links
     // to it for iPhone users, who never see the in-app install card.
@@ -202,6 +206,32 @@ test('landing URL bag never exposes authenticated app destinations', function ()
     $urls = $this->get(route('landing'))->assertOk()->inertiaProps('urls');
 
     expect(array_keys($urls))->toBe(['sample', 'register', 'download', 'faq']);
+});
+
+test('landing download link follows the real release metadata', function () {
+    // Testing/staging stays honest: no file link until a release is
+    // configured for this environment.
+    $this->get(route('landing'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('releasePublished', false)
+            ->where('downloadUrl', null));
+
+    $artifact = config('release.artifact');
+    config([
+        'release.version_name' => $artifact['version_name'],
+        'release.version_code' => $artifact['version_code'],
+        'release.release_date' => $artifact['release_date'],
+        'release.size_bytes' => $artifact['size_bytes'],
+        'release.sha256' => $artifact['sha256'],
+        'release.file_url' => $artifact['file_url'],
+    ]);
+
+    $this->get(route('landing'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('releasePublished', true)
+            ->where('downloadUrl', $artifact['file_url']));
 });
 
 test('sitemap includes the public sample only while one exists', function () {

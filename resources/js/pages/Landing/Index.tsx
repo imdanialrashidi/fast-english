@@ -66,6 +66,7 @@ interface LandingProps extends SharedProps {
     salesOn: boolean;
     singlePackageLabel: string;
     releasePublished: boolean;
+    downloadUrl: string | null;
     urls: {
         sample: string;
         register: string;
@@ -262,9 +263,13 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
     salesOn,
     singlePackageLabel,
     releasePublished,
+    downloadUrl,
     urls,
 }: LandingProps): React.JSX.Element => {
     const sampleHref = sample?.reader_url ?? urls.sample;
+    // A published build downloads in one click; before publication the
+    // same action opens the honest status/details page.
+    const downloadHref = releasePublished && downloadUrl !== null ? downloadUrl : urls.download;
 
     return (
         <>
@@ -293,6 +298,15 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                     <Play size={19} aria-hidden="true" />
                                     شروع با نمونه رایگان
                                 </Link>
+                            ) : releasePublished ? (
+                                <a
+                                    href={downloadHref}
+                                    download
+                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-extrabold text-surface no-underline hover:bg-primary-hover sm:w-auto"
+                                >
+                                    <Download size={19} aria-hidden="true" />
+                                    دانلود اپلیکیشن
+                                </a>
                             ) : (
                                 <Link
                                     href={urls.download}
@@ -566,6 +580,15 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                 <Play size={18} aria-hidden="true" />
                                 شروع با نمونه رایگان
                             </Link>
+                        ) : releasePublished ? (
+                            <a
+                                href={downloadHref}
+                                download
+                                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-extrabold text-surface no-underline hover:bg-primary-hover sm:w-auto"
+                            >
+                                <Download size={18} aria-hidden="true" />
+                                دانلود اپلیکیشن
+                            </a>
                         ) : (
                             <Link
                                 href={urls.download}
@@ -582,6 +605,14 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                             >
                                 <Play size={18} aria-hidden="true" />
                                 شروع با نمونه رایگان
+                            </Link>
+                        )}
+                        {releasePublished && (
+                            <Link
+                                href={urls.download}
+                                className="inline-flex min-h-11 items-center text-sm font-bold text-muted underline underline-offset-4 hover:text-ink"
+                            >
+                                مشخصات فایل و SHA-256
                             </Link>
                         )}
                         {!releasePublished && (

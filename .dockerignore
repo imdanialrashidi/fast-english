@@ -7,6 +7,17 @@ node_modules
 vendor
 tests
 test-results
+# Demo/test content removed from the app (owner 2026-10-28). Fixture
+# seeders stay in git for Pest; the production image never ships them or
+# their sample audio. Only the real owner catalogs are available to
+# `db:seed` in the container.
+database/seeders/S1SampleSeeder.php
+database/seeders/S2BrowserSeeder.php
+database/seeders/S3SampleSeeder.php
+database/seeders/S4PaginationSeeder.php
+database/seeders/S5PaymentFixtureSeeder.php
+database/seeders/S7PlacementFixtureSeeder.php
+database/seeders/fixtures
 docs/exec-plans
 bootstrap/cache/*
 !bootstrap/cache/.gitignore
@@ -25,6 +36,7 @@ storage/pail
 playwright-report
 coverage
 .artifacts
+mobile
 
 # Repository/tooling material the runtime never reads. Keeping it out of the
 # image removes internal docs and workflow files from production and shrinks

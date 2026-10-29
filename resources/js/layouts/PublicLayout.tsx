@@ -40,9 +40,29 @@ const APP_LINKS = [
     { href: '/app/account/settings', label: 'تنظیمات' },
 ];
 
-function MarketingBrand({ onDark, href = '/' }: { onDark: boolean; href?: string }): React.JSX.Element {
+function MarketingBrand({ onDark, href = '/' }: { onDark: boolean; href?: string | null }): React.JSX.Element {
     // One owner-supplied lockup everywhere: the navy lockup on paper and the
     // warm-paper lockup on the deep footer. No icon-plus-text approximation.
+    // `href=null` renders a static mark (verification has no safe "home"
+    // destination for an unverified signed-in account).
+    const mark = (
+        <img
+            src={onDark ? '/images/brand/fastenglish-header-logo-dark.png' : '/images/brand/fastenglish-header-logo.png'}
+            alt=""
+            width={113}
+            height={32}
+            className="h-8 w-auto shrink-0"
+        />
+    );
+
+    if (href === null) {
+        return (
+            <span dir="ltr" className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-self-start">
+                {mark}
+            </span>
+        );
+    }
+
     return (
         <Link
             href={href}
@@ -50,13 +70,7 @@ function MarketingBrand({ onDark, href = '/' }: { onDark: boolean; href?: string
             className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-self-start no-underline"
             aria-label="Fast English — صفحه اصلی"
         >
-            <img
-                src={onDark ? '/images/brand/fastenglish-header-logo-dark.png' : '/images/brand/fastenglish-header-logo.png'}
-                alt=""
-                width={113}
-                height={32}
-                className="h-8 w-auto shrink-0"
-            />
+            {mark}
         </Link>
     );
 }
@@ -78,6 +92,9 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     const flash = props.flash;
     const onLogin = url.startsWith('/login');
     const onRegister = url.startsWith('/register');
+    // Verification is authenticated and must not show app links that loop
+    // back to the same gate. Keep the masthead mark, drop the nav/footer.
+    const onVerify = url.startsWith('/email/verify');
     const [navigating, setNavigating] = React.useState(false);
 
     React.useEffect(() => {
@@ -113,8 +130,8 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
             <header className="sticky top-0 z-40 border-b border-line bg-canvas">
                 <div aria-hidden="true" className={navigating ? 'h-0.5 w-full bg-accent' : 'h-0.5 w-full bg-transparent'} />
                 <div className="mx-auto flex min-h-16 w-full max-w-[1160px] items-center justify-between gap-3 px-4 sm:px-6">
-                    <MarketingBrand onDark={false} href={user !== null ? '/app/today' : '/'} />
-                    <nav aria-label="ناوبری عمومی" className="flex items-center gap-0.5">
+                    <MarketingBrand onDark={false} href={onVerify ? null : user !== null ? '/app/today' : '/'} />
+                    <nav aria-label="ناوبری عمومی" className={onVerify ? 'hidden' : 'flex items-center gap-0.5'}>
                         {user === null ? (
                             <>
                                 <NavLink href="/sample" className="hidden lg:flex">
@@ -149,7 +166,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
             </header>
 
             <div className="mx-auto w-full max-w-[1160px]">
-                {(flash.success !== null || flash.error !== null) && (
+                {!onVerify && (flash.success !== null || flash.error !== null) && (
                     <div aria-live="polite" className="px-4 pt-4">
                         {flash.success !== null && (
                             <p role="status" className="m-0 rounded-xl border border-line bg-surface px-4 py-3 text-success">
@@ -166,7 +183,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                 <main id="fe-public-content" className="scroll-mt-20">{children}</main>
             </div>
 
-            <footer className="mt-12 bg-ink text-surface">
+            {!onVerify && <footer className="mt-12 bg-ink text-surface">
                 <div className="mx-auto grid max-w-[1160px] gap-8 px-4 pt-10 pb-8 sm:px-6 md:grid-cols-[1.2fr_1fr]">
                     <div className="grid content-start gap-3">
                         <MarketingBrand onDark href={user !== null ? '/app/today' : '/'} />
@@ -206,7 +223,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                         Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.
                     </p>
                 </div>
-            </footer>
+            </footer>}
         </div>
     );
 }

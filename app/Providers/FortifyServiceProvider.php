@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\NeutralPasswordResetLinkResponse;
+use App\Http\Responses\RegisterResponse;
 use App\Models\User;
 use App\Support\SmtpStatus;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -16,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse;
+use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 use Laravel\Fortify\Contracts\SuccessfulPasswordResetLinkRequestResponse;
 use Laravel\Fortify\Fortify;
 
@@ -26,7 +28,9 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Owner request 2026-10-28: after registration, a new account lands
+        // on the six-digit email-verification page instead of /account.
+        $this->app->singleton(RegisterResponseContract::class, RegisterResponse::class);
     }
 
     /**

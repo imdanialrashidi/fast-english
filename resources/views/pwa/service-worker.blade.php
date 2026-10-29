@@ -62,8 +62,13 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (request.mode === 'navigate') {
+    // A single transient network/DNS failure should not immediately look
+    // like an offline site. Retry once with cache bypass, then fall back
+    // to the static offline page.
     event.respondWith(
-      fetch(request).catch(() => caches.match(FE_OFFLINE))
+      fetch(request).catch(() =>
+        fetch(request, { cache: 'reload' }).catch(() => caches.match(FE_OFFLINE))
+      )
     );
     return;
   }

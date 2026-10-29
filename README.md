@@ -43,6 +43,15 @@ Open this repository in DSH. No global workflow install, package, MCP server, or
 
 Product contracts: `docs/PRODUCT.md`, `docs/DESIGN.md`, `docs/ARCHITECTURE.md`, `docs/QUALITY.md`, `docs/PLAN.md`; baseline `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0; active plans in `docs/exec-plans/active/` (`fast-english-rebuild.md`, `frontend-inertia-migration.md`).
 
+## Canonical origin
+
+`https://fastenglishpodcast.ir` is the live production origin (the APK,
+`assetlinks`, emails, and `APP_URL` all use it). `fastenglish.ir` and
+`www.fastenglish.ir` currently have **no DNS delegation/nameservers**, so
+they cannot resolve; the owner must set those at the `.ir` registrar before
+that domain can serve or redirect. Use the `.ir` spelling
+`fastenglishpodcast.ir`, not the `.com`/shorter variants.
+
 ## Deploy (Coolify)
 
 The repository ships a production `Dockerfile` (nginx + php-fpm + scheduler +
@@ -66,6 +75,12 @@ scripts/coolify-smoke.sh https://<domain>
 Step-by-step bring-up, mounts, health check, and post-deploy probes:
 [`docs/ops/COOLIFY.md`](docs/ops/COOLIFY.md).
 
+The signed Android build and its measured release metadata ship with the
+app: `public/downloads/fast-english-1.0.0.apk` is served by the same image,
+`/download` reads `config/release.php`, and production serves the TWA
+certificate at `/.well-known/assetlinks.json`. Rebuilding/publishing a new
+version is documented in [`mobile/README.md`](mobile/README.md).
+
 ## Fast English app
 
 Stack: PHP 8.4, Laravel 13, Inertia 3 + React 19 + TypeScript + Tailwind 4 + shadcn/ui (learner/public), Filament 5 staff panel, Fortify auth, Pest + Playwright, PostgreSQL. Pins: `composer.json` (`php: ^8.4`), `.nvmrc` + `package.json` engines (Node 22.23.2), `composer.lock` + `package-lock.json`.
@@ -77,7 +92,7 @@ composer install
 cp .env.example .env
 php artisan key:generate
 # point DB_* at a local PostgreSQL, then:
-php artisan migrate --seed   # DatabaseSeeder chains S1SampleSeeder + S3/S5/S7 fixtures (labelled dev content)
+php artisan migrate --seed   # owner catalogs only: plans + the real placement test
 php artisan storage:link     # covers served from /storage/... via the public disk
 npm install
 npm run build
@@ -85,7 +100,16 @@ php artisan test   # Pest suite runs on PostgreSQL (phpunit.xml)
 npm run typecheck
 ```
 
+`DatabaseSeeder` never creates demo lessons, tone-file audio, or test accounts
+(owner 2026-10-28). For local sample content, opt in explicitly:
+`php artisan db:seed --class=S1SampleSeeder`. With `MAIL_MAILER=log`, the
+six-digit registration code appears in `storage/logs/laravel.log`; production
+needs real SMTP or new accounts cannot finish verification.
+
 One-command alternative: `composer setup` (install + env + key + migrate + build).
+
+Staff content work: [docs/ops/CONTENT_UPLOAD_FA.md](docs/ops/CONTENT_UPLOAD_FA.md).
+Android build, signing, and publish notes: [mobile/README.md](mobile/README.md).
 
 Targeted browser proof (local policy: one relevant spec, one worker, zero retries, reuse servers):
 

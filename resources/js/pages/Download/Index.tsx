@@ -27,6 +27,11 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
     release,
     published,
 }: DownloadProps): React.JSX.Element => {
+    const sizeLabel =
+        release.size_bytes !== null
+            ? `${(Number(release.size_bytes) / (1024 * 1024)).toLocaleString('fa-IR', { maximumFractionDigits: 1 })} مگابایت`
+            : null;
+
     return (
         <>
             <Head title="دانلود Fast English" />
@@ -109,13 +114,23 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
                             <p className="m-0">
                                 <a
                                     href={release.file_url}
+                                    download={`fast-english-${release.version_name ?? 'latest'}.apk`}
                                     className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
                                 >
                                     <DownloadIcon size={20} aria-hidden="true" />
-                                    دانلود فایل نصب
+                                    دانلود فایل نصب (APK)
                                 </a>
+                                {sizeLabel !== null && (
+                                    <span className="mt-2 block text-xs text-muted">
+                                        نسخه {release.version_name} • حجم {sizeLabel}
+                                    </span>
+                                )}
                             </p>
                         )}
+                        <p className="m-0 text-sm leading-7 text-muted">
+                            فایل نصب مستقیم از همین دامنه ارائه می‌شود. پس از دانلود، اگر اندروید اجازهٔ نصب از منبع ناشناس خواست، آن را
+                            فقط برای همین فایل تأیید کنید. مشخصات بالا (SHA-256) برای بررسی سلامت فایل است.
+                        </p>
                     </>
                 )}
             </div>

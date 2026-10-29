@@ -31,7 +31,7 @@ test('page modules bind exactly one shell each', function () {
     $pages = glob(resource_path('js/pages/**/*.tsx')) ?: [];
     expect($pages)->not->toBeEmpty();
 
-    $public = ['Landing/Index', 'Sample/Show', 'Trust/Show', 'Download/Index', 'Install/Index', 'Auth/Login', 'Auth/Register', 'Auth/ForgotPassword', 'Auth/ResetPassword'];
+    $public = ['Landing/Index', 'Sample/Show', 'Trust/Show', 'Download/Index', 'Install/Index', 'Auth/Login', 'Auth/Register', 'Auth/ForgotPassword', 'Auth/ResetPassword', 'Auth/VerifyEmail'];
     $errors = [];
     foreach ($pages as $file) {
         $relative = str_replace(resource_path('js/pages/'), '', $file);

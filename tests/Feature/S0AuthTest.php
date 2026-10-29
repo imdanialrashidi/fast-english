@@ -1,9 +1,13 @@
 <?php
 
+use App\Mail\VerifyEmailCodeMail;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
-// S0-2: register -> logout -> login -> session survives refresh.
-test('visitor can register, log out, log back in, and stay logged in across a refresh', function () {
+// S0-2: register -> verify email code -> logout -> login -> refresh.
+test('visitor can register, verify the emailed code, log out, log back in, and stay logged in across a refresh', function () {
+    Mail::fake();
+
     $payload = [
         'name' => 'S0 User',
         'email' => 's0@example.com',
@@ -11,8 +15,24 @@ test('visitor can register, log out, log back in, and stay logged in across a re
         'password_confirmation' => 'password123',
     ];
 
-    $this->post(route('register.store'), $payload)->assertRedirect(route('account'));
+    // Owner request 2026-10-28: registration sends a six-digit code and
+    // lands on the verification page; the account starts unverified.
+    $this->post(route('register.store'), $payload)->assertRedirect(route('verification.notice'));
     $this->assertAuthenticated();
+
+    $code = null;
+    Mail::assertSent(VerifyEmailCodeMail::class, function (VerifyEmailCodeMail $mail) use (&$code): bool {
+        $code = $mail->code;
+
+        return $mail->hasTo('s0@example.com');
+    });
+
+    // The learner surface stays closed until the code is accepted.
+    $this->get(route('account'))->assertRedirect(route('verification.notice'));
+    $this->get(route('verification.notice'))->assertOk()->assertSee('s0@example.com');
+
+    $this->post(route('verification.verify'), ['code' => $code])->assertRedirect(route('account'));
+    $this->assertNotNull(User::where('email', 's0@example.com')->first()?->email_verified_at);
 
     // Authenticated page reachable: the session is real.
     $this->get(route('account'))->assertOk()->assertSee('s0@example.com');

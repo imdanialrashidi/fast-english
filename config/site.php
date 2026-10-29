@@ -7,19 +7,20 @@
  *
  * Contact channels and legal copy were supplied by the owner on
  * 2026-10-25. The placeholder `@test` handle was replaced on 2026-10-26
- * with the product-domain support address, so no public page ships a test
+ * with the product-domain support address (updated 2026-10-28 to the
+ * live fastenglishpodcast.ir mailbox), so no public page ships a test
  * handle; staff can change it in Business settings without a deploy.
  * They are ordinary product copy, not legal advice; the owner still
  * reviews the final wording before enabling sales.
  */
 return [
     'support' => [
-        'channel' => 'support@fastenglish.ir',
+        'channel' => 'info@fastenglishpodcast.ir',
         'hours' => null,
     ],
 
     'cooperation' => [
-        'channel' => 'support@fastenglish.ir',
+        'channel' => 'info@fastenglishpodcast.ir',
     ],
 
     'payment' => [

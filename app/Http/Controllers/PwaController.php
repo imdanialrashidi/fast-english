@@ -127,6 +127,6 @@ class PwaController extends Controller
 
         $version = trim((string) config('pwa.sw_version', ''));
 
-        return $version !== '' ? $version : 's2-v1';
+        return $version !== '' ? $version : '2026-10-28-2';
     }
 }

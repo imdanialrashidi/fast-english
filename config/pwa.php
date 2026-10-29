@@ -16,21 +16,24 @@ return [
     |
     */
 
-    'sw_version' => env('SW_VERSION', 's2-v1'),
+    'sw_version' => env('SW_VERSION') ?: '2026-10-28-2',
 
     /*
     |--------------------------------------------------------------------------
     | TWA / Digital Asset Links
     |--------------------------------------------------------------------------
     |
-    | PROPOSAL (not owner-approved): package com.fastenglishpodcast.app.
-    | Finalize before the first release. The SHA-256 certificate fingerprint
-    | belongs in the untracked environment file; /.well-known/assetlinks.json
-    | serves an empty statement list until both values are configured.
+    | Package com.fastenglishpodcast.app and the SHA-256 fingerprint of the
+    | 1.0.0 release certificate. These are public values (Android reads them
+    | from /.well-known/assetlinks.json). The fingerprint default applies in
+    | production only, so tests keep their empty-statement assertions; a
+    | real TWA_SHA256_FINGERPRINT env value always wins.
     |
     */
 
-    'twa_package' => env('TWA_PACKAGE_NAME', 'com.fastenglishpodcast.app'),
+    'twa_package' => env('TWA_PACKAGE_NAME') ?: 'com.fastenglishpodcast.app',
 
-    'twa_fingerprint' => env('TWA_SHA256_FINGERPRINT'),
+    'twa_fingerprint' => env('TWA_SHA256_FINGERPRINT') ?: (env('APP_ENV') === 'production'
+        ? '9F:C0:C8:96:15:DC:7A:AA:3C:F8:4A:1F:1F:9D:80:92:E0:CB:B0:57:7D:8C:74:C8:98:4E:31:3E:E7:BB:B5:AF'
+        : null),
 ];

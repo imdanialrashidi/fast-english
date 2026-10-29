@@ -5,6 +5,7 @@ use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\DataTransferController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LessonAudioController;
@@ -25,11 +26,26 @@ use App\Http\Controllers\TrustController;
 use App\Http\Controllers\VocabularyController;
 use Illuminate\Support\Facades\Route;
 
-// Owner requirement (2026-10-21): the landing system is a guest-only
-// marketing surface for search and download. Signed-in learners never
-// see the public shell; middleware sends them back into /app. The public
-// sample stays outside this group because the in-app locked state links
-// to it as the free path.
+// Owner request (2026-10-28): a new account receives a six-digit code by
+// email and must enter it before the learner surface opens. These routes
+// are outside marketing.guest (a signed-in account reaches them) and the
+// verification gate allows them so there is no redirect loop.
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::post('/email/verify', [EmailVerificationController::class, 'verify'])
+        ->middleware('throttle:12,1')
+        ->name('verification.verify');
+    Route::post('/email/verify/resend', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+});
+
+// Owner requirement (2026-10-21): the landing/trust marketing surface is
+// guest-only. Signed-in learners never see the public shell; middleware
+// sends them back into /app. The public sample, install guide, and the
+// download page stay outside this group: the in-app locked state links to
+// the sample, and a signed-in learner who wants the APK must not be sent
+// to the paywall.
 Route::middleware('marketing.guest')->group(function () {
     // S8 landing (scope §6, PUB-01): short Persian page with the promise,
     // the real sample link, how it works, the DB plan list, install and
@@ -46,16 +62,17 @@ Route::middleware('marketing.guest')->group(function () {
     Route::get('/terms', [TrustController::class, 'terms'])->name('trust.terms');
     Route::get('/privacy', [TrustController::class, 'privacy'])->name('trust.privacy');
     Route::get('/refund', [TrustController::class, 'refund'])->name('trust.refund');
-
-    // S8 download page (scope §18.2): «هنوز منتشر نشده» until a real build
-    // fills the release metadata.
-    Route::get('/download', [DownloadController::class, 'index'])->name('download');
 });
 
 // Install guide (owner 2026-10-26): public for guests and signed-in
 // learners. iPhone Safari never fires `beforeinstallprompt`, and the
 // Account screen links here, so it stays outside marketing.guest.
 Route::get('/install', [InstallController::class, 'index'])->name('install');
+
+// Download page: public for guests AND signed-in learners (2026-10-28).
+// A learner who wants the APK must not be bounced to the paid app by the
+// marketing.guest boundary; the page exposes release metadata only.
+Route::get('/download', [DownloadController::class, 'index'])->name('download');
 
 // Public sample entry (scope §6, PUB-01/AC-01): the real published sample
 // without login. Drafts/premium never resolve here; 404 when none exists.

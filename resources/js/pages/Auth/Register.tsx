@@ -124,6 +124,9 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
                         ساخت حساب
                     </button>
                 </form>
+                <p className="m-0 text-sm leading-7 text-muted">
+                    بعد از ساخت حساب، یک کد شش‌رقمی به ایمیلت می‌فرستیم تا حسابت را تأیید کنی.
+                </p>
                 <p className="m-0 leading-8 text-muted">
                     حساب داری؟{' '}
                     <Link href="/login" className="inline-flex min-h-11 items-center text-primary">

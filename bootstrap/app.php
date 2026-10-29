@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\DisablePasswordResetWhenSmtpMissing;
+use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\PrivateNoStore;
@@ -61,6 +62,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', ThrottleUploads::class);
         // S9a: production without SMTP disables reset (neutral, no send/log).
         $middleware->appendToGroup('web', DisablePasswordResetWhenSmtpMissing::class);
+        // Owner request 2026-10-28: an unverified account reaches only the
+        // code page, auth/logout, staff auth, and the free public sample.
+        $middleware->appendToGroup('web', EnsureEmailVerified::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

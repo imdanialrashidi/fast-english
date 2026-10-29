@@ -219,8 +219,8 @@ checklist. Required/meaningful names:
 | `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` | Sender identity | no |
 | `SALES_ENABLED` | Off by default; on only with real prices/destination/terms | no |
 | `STAFF_2FA_ENFORCE`, `STAFF_2FA_IDLE_MINUTES` | Staff TOTP enforcement (on in prod) | no |
-| `RELEASE_*` | Real APK metadata only when measured; else empty (download shows «هنوز منتشر نشده») | no |
-| `SW_VERSION`, `TWA_PACKAGE_NAME`, `TWA_SHA256_FINGERPRINT` | PWA/TWA; fingerprint lives in Coolify env | fingerprint YES-ish |
+| `RELEASE_*` | Empty falls back to the measured 1.0.0 values in `config/release.php` when `APP_ENV=production`; set only to override a newer build | no |
+| `SW_VERSION`, `TWA_PACKAGE_NAME`, `TWA_SHA256_FINGERPRINT` | Empty production values fall back to the released package + certificate fingerprint; override only when the signing identity changes | no |
 
 Trusted proxies: code trusts `*` (`bootstrap/app.php`) so Laravel sees
 HTTPS via `X-Forwarded-Proto` from Coolify's proxy. No env name needed.
@@ -346,7 +346,7 @@ round-trip on a scratch install (RUNBOOK sections 3–4).
 - Public-surface placeholder check before launch: `/support`,
   `/cooperation`, `/terms`, `/privacy`, `/refund`, and the FAQ must not
   show `@test` or other fixture handles. Since 2026-10-26 the default is
-  `support@fastenglish.ir`; confirm the mailbox exists (or change it in
+  `info@fastenglishpodcast.ir`; confirm the mailbox exists (or change it in
   Business settings) — see `docs/LAUNCH_INPUTS_FA.md`.
 
 ## 10. Export, import, and retention [tested — local suite]

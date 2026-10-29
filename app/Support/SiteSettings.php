@@ -28,7 +28,7 @@ final class SiteSettings
 
     public static function supportChannel(): string
     {
-        return (string) Setting::read(self::SUPPORT_CHANNEL, (string) config('site.support.channel', 'support@fastenglish.ir'));
+        return (string) Setting::read(self::SUPPORT_CHANNEL, (string) config('site.support.channel', 'info@fastenglishpodcast.ir'));
     }
 
     public static function supportHours(): ?string
@@ -40,7 +40,7 @@ final class SiteSettings
 
     public static function cooperationChannel(): string
     {
-        return (string) Setting::read(self::COOPERATION_CHANNEL, (string) config('site.cooperation.channel', 'support@fastenglish.ir'));
+        return (string) Setting::read(self::COOPERATION_CHANNEL, (string) config('site.cooperation.channel', 'info@fastenglishpodcast.ir'));
     }
 
     /**
