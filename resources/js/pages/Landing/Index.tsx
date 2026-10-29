@@ -64,7 +64,7 @@ interface LandingProps extends SharedProps {
     plans: PlanProps[];
     faqs: FaqProps[];
     salesOn: boolean;
-    singlePackageLabel: string;
+    plansFromLabel: string | null;
     releasePublished: boolean;
     downloadUrl: string | null;
     urls: {
@@ -261,7 +261,7 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
     plans,
     faqs,
     salesOn,
-    singlePackageLabel,
+    plansFromLabel,
     releasePublished,
     downloadUrl,
     urls,
@@ -493,7 +493,9 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                 <strong>در دست آماده‌سازی</strong>
                             </p>
                             <p className="m-0 leading-8 text-muted">
-                                فروش هنوز فعال نشده است. بسته واحد {singlePackageLabel} (پیشنهاد محدود) پس از اعلام رسمی قابل خرید خواهد بود.
+                                {plansFromLabel === null
+                                    ? 'فروش هنوز فعال نشده است. پلن‌ها پس از اعلام رسمی قابل خرید خواهند بود.'
+                                    : `فروش هنوز فعال نشده است. پلن‌ها از ${plansFromLabel} شروع می‌شوند و پس از اعلام رسمی قابل خرید خواهند بود.`}
                             </p>
                         </div>
                     ) : plans.length === 0 ? (
@@ -502,9 +504,8 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                         </div>
                     ) : (
                         <>
-                            <p className="mt-6 mb-0 flex flex-wrap items-center gap-2 text-[1.0625rem] leading-8 text-muted">
-                                بسته واحد {singlePackageLabel}
-                                <span className="inline-flex items-center rounded-sm bg-ink px-2 py-0.5 text-xs font-bold text-surface">پیشنهاد محدود</span>
+                            <p className="mt-6 mb-0 text-[1.0625rem] leading-8 text-muted">
+                                {plansFromLabel === null ? 'پلن‌های فعال' : `پلن‌ها از ${plansFromLabel} شروع می‌شوند`}
                             </p>
                             <ul className="m-0 mt-4 grid list-none gap-4 p-0 md:grid-cols-3">
                                 {plans.map((plan) => (

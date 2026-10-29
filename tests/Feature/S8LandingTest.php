@@ -3,6 +3,7 @@
 use App\Models\Lesson;
 use App\Models\Plan;
 use App\Models\User;
+use App\Support\Toman;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
@@ -95,17 +96,24 @@ test('landing with sales off shows the preparing state and no purchase cta', fun
     // M0 port: the switch travels as a prop; the preparing panel and the
     // absent purchase CTA render client-side (no plan names rendered).
     // The plan rows stay in props (snapshot source for later slices) but
-    // carry no amounts.
+    // carry no amounts. The one public amount is the "from" label, and it
+    // must equal the cheapest active plan — never a hardcoded 299000.
+    $html = $this->get(route('landing'))->assertOk()->getContent();
+
     $this->get(route('landing'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Landing/Index')
             ->where('salesOn', false)
             ->where('sample.level', 'A2')
+            ->where('plansFromLabel', Toman::format(100000))
             ->has('plans', fn (AssertableInertia $plans) => $plans
                 ->has('0.name_fa')
                 ->missing('0.price_toman')
                 ->etc()));
+
+    expect($html)->not->toContain('299000')
+        ->and($html)->not->toContain('۲۹۹٬۰۰۰');
 });
 
 test('trust pages render public fa rtl copy with canonical tags', function () {

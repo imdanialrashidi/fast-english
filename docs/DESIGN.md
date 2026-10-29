@@ -2,6 +2,10 @@
 
 Source: scope §17 (UI/UX), §6 (routes/nav), §7 (flows), §13 (player/progress). Scope §17.1 palette/typography values are **proposals, not owner approval**.
 
+> **Owner approval 2026-10-29.** The owner delegated the remaining open design/copy decisions ("fill the test / awaiting-owner-approval places yourself") and approved the values already shipped in `resources/css/app.css` and the React pages. `PROPOSED` labels below are kept as history of when a value was introduced; they are no longer open questions. Anything that is a fact rather than a decision (real card, paid provider, licensed content, real-device proof, legal review) is still not claimed as approved.
+>
+> **Commercial correction 2026-10-29.** The 299,000-toman single-package note is retired. The live catalog is the owner's three plans (399,000 / 957,600 / 3,351,600 toman, see `PlanCatalogSeeder`); the landing quotes the cheapest active plan from the database instead of a hardcoded amount.
+
 ## Owner instruction 2026-10-25 — app-like shell, one lockup, denser discovery
 
 This supersedes the earlier quiet brand header, the mobile monogram/wordmark rule, and the full-width filter card. The palette, permanent-light rule, RTL/LTR split, and one-player contract are unchanged.

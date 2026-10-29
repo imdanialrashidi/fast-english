@@ -20,10 +20,11 @@ use Inertia\Response;
  *
  * - The promise, a link to the real S1 sample, how it works, the plan
  *   list from the database, install/download links, and an FAQ link.
- * - Plan cards show names + durations only, never amounts; the 299000
- *   toman single-package note is the owner-approved commercial input
- *   (limited-time label, no countdown, no end date). Fixture amounts
- *   never appear on the public landing (no price claims from TEST).
+ * - Plan cards show names + durations only, never per-plan amounts. The
+ *   "from" label on the plan section reads the cheapest active plan from
+ *   the database (owner catalog: 399000 / 957600 / 3351600 toman), so the
+ *   public copy cannot drift from checkout. Fixture amounts never appear
+ *   on the public landing (no price claims from TEST).
  * - Hero preview stages the real sample (cover, title, level, opening
  *   paragraph) and plays the sample's own stream with a real transport —
  *   never a mock player, never autoplay, and no fabricated testimonials,
@@ -62,6 +63,11 @@ class LandingController extends Controller
             ->orderBy('display_order')
             ->orderBy('id')
             ->get(['id', 'name_fa', 'duration_days']);
+
+        // The "from" line quotes the cheapest active plan. Price amounts
+        // stay server-side; only this single formatted label crosses the
+        // Inertia boundary and only while the plan list is shown.
+        $fromPrice = Plan::query()->where('is_active', true)->min('price_toman');
 
         $sample = Lesson::query()
             ->where('is_public_sample', true)
@@ -107,7 +113,7 @@ class LandingController extends Controller
             ])->all(),
             'faqs' => self::FAQS,
             'salesOn' => (bool) config('sales.enabled', false),
-            'singlePackageLabel' => Toman::format(299000),
+            'plansFromLabel' => $fromPrice === null ? null : Toman::format((int) $fromPrice),
             // The hero's primary action follows reality: while no real APK
             // exists, the sample is primary and /download is informational.
             // Once published, the landing's main download action points at

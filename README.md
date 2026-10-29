@@ -109,6 +109,7 @@ needs real SMTP or new accounts cannot finish verification.
 One-command alternative: `composer setup` (install + env + key + migrate + build).
 
 Staff content work: [docs/ops/CONTENT_UPLOAD_FA.md](docs/ops/CONTENT_UPLOAD_FA.md).
+Full admin-panel operator handbook (login/2FA, content, payments, users, settings, import/export): [docs/ops/ADMIN_PANEL_FA.md](docs/ops/ADMIN_PANEL_FA.md).
 Android build, signing, and publish notes: [mobile/README.md](mobile/README.md).
 
 Targeted browser proof (local policy: one relevant spec, one worker, zero retries, reuse servers):

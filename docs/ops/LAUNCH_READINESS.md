@@ -1,5 +1,16 @@
 # Fast English — launch readiness review
 
+> **Deployed 2026-10-29 (image `sha256:9c6305e7…`, Coolify app `fast-english`).**
+> Live checks after the rollout: `/up` 200, `/` 200 with `plansFromLabel`
+> `۳۹۹٬۰۰۰ تومان` (no 299,000 left anywhere), `/login` 200, `/download` 200,
+> `/admin` 302 to the staff gate, APK served with `accept-ranges`, all 27
+> `scripts/coolify-smoke.sh` probes PASS, migrations all `Ran`, scheduler with
+> 3 commands, and the four supervisor programs (`nginx`, `php-fpm`, `queue`,
+> `schedule`) alive. A 390px Chromium render of the live landing showed the new
+> copy with zero page errors. Still owner-data blocked: real card destination
+> (sales stay OFF), licensed content/sample, payment provider, off-server
+> backup, real-device proof.
+
 Date: 2026-10-26. Scope: whole repository at the current working tree
 (uncommitted S0–S9/R1–R5/M0–M6 work included). Environment: host PHP absent,
 so PHP ran in the pinned `fe-php:8.4.26` container against PostgreSQL 17
