@@ -11,16 +11,17 @@
 > (sales stay OFF), licensed content/sample, payment provider, off-server
 > backup, real-device proof.
 >
-> **2026-10-30 — pricing/copy pass.** The public landing and the signed-in
-> subscribe page now show each active plan's toman price (not only the
-> "from" label) even while sales are closed, with a disabled CTA. `/plans`
-> is public again (guests land on `/#plans`, learners on `/app/subscribe`).
-> Empty-sample states no longer link to a 404 `/sample`. Card data was
-> received and stored in the local production DB only (never in Git); the
-> live server still needs the same destination saved in
-> `/admin/business-settings`, `SALES_ENABLED=true`, and real content. The
-> production content tables are still empty (0 topics, 0 lessons), so
-> `/sample` 404s and sales should stay off until content is uploaded.
+> **Deployed 2026-10-30 (commit `c53bb69`, image `sha256:807f4b2e…`,
+> Coolify deployment `0wyhodwfaiqqzsrhzcgpdwwf`).** Live checks: new
+> container healthy, `/up` 200, `scripts/coolify-smoke.sh` 27/27 PASS,
+> `release.sh` clean (nothing to migrate, `ops:status ok`), live Inertia
+> props carry each plan's `price_label` (399,000 / 957,600 / 3,351,600),
+> `/plans` 302s to `/#plans`, `/sample` is still 404, and a 390px Chromium
+> render showed the prices with zero page errors. The card destination was
+> written to the production DB and reports `configured=true` (last4 6037,
+> bank Tejarat) without printing the number anywhere. `SALES_ENABLED`
+> remains `false`; the content tables are still empty (0 topics, 0
+> lessons), so sales stay off until content is uploaded.
 > Also fixed in this pass: an empty `MAIL_FROM_ADDRESS` no longer 500s
 > registration (config fallback), the Compose default sender now matches
 > the product domain (`info@fastenglishpodcast.ir`), and registration sends

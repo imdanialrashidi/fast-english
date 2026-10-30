@@ -1,3 +1,11 @@
+## Deployed 2026-10-30 — launch pricing, honest empty states, live destination
+
+- **Pricing is visible and server-owned.** The landing and `/app/subscribe` show each active plan's Persian name, duration, and server-formatted toman amount (399,000 / 957,600 / 3,351,600). Sales-off still shows the cards with a disabled CTA and a calm notice; `/plans` is public again (guests to `/#plans`, learners to `/app/subscribe`) and the public footer links to it.
+- **Empty states stop lying.** With no published sample, the landing omits the empty preview and sample CTAs; the header/footer, trust copy, install guide, download page, error page, FAQ, and shared `has_public_sample` flag stop sending visitors to a 404 `/sample`. The download copy follows the published/unpublished release state.
+- **Registration and mail are launch-safe.** An empty `MAIL_FROM_ADDRESS` no longer 500s registration, the Compose default sender is `info@fastenglishpodcast.ir`, and Laravel's duplicate English signed-link verification email is suppressed; only the Persian six-digit code mail is sent.
+- **Production deploy.** Built image `sha256:807f4b2e…` from commit `c53bb69`, pushed to the Coolify registry, deployed via Coolify (`0wyhodwfaiqqzsrhzcgpdwwf`), ran `release.sh`, and passed `scripts/coolify-smoke.sh` 27/27. The live card destination reports `configured=true` (last4 6037, bank Tejarat); `SALES_ENABLED` stays `false`, and live content remains empty (0 topics/lessons), so sales must stay closed until content is uploaded.
+- Evidence: full Pest 367 passed / 4,538 assertions; Pint PASS (313 files); typecheck + Vite build PASS; full Chromium 89 passed; live smoke 27/27; live props and a 390px render verified. Database backup: `/root/fe-backups/predeploy-20261030T134143.dump` on the server.
+
 ## Unreleased — landing price truth + owner-delegated launch decisions (owner 2026-10-29)
 
 - **The landing no longer quotes 299,000 toman.** That single-package note predated the three-plan catalog the owner actually ships (399,000 / 957,600 / 3,351,600). The sales-off panel and the plan header now read the cheapest *active* plan from the database (`plansFromLabel`), so the public copy cannot drift from checkout; the unbacked «پیشنهاد محدود» chip is gone.
