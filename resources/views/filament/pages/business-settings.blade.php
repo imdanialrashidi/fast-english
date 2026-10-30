@@ -38,8 +38,8 @@
         </x-filament::section>
 
         <x-filament::section
-            heading="Card destination"
-            description="Used for card-to-card checkout. The obvious placeholder keeps checkout disabled until a real 16-digit card and holder/bank are saved."
+            heading="Card destination (the only payment method)"
+            description="Card-to-card is the only checkout. The placeholder keeps checkout disabled until a real 16-digit card and holder/bank are saved."
         >
             <div class="grid gap-5 md:grid-cols-2">
                 <div class="grid gap-2">
@@ -81,54 +81,6 @@
                     @enderror
                 </div>
 
-                <label class="flex items-center gap-2 md:col-span-2">
-                    <x-filament::input.checkbox wire:model="cardFallback" />
-                    <span class="text-sm">Allow card-to-card fallback when a gateway is not active</span>
-                </label>
-            </div>
-        </x-filament::section>
-
-        <x-filament::section
-            heading="Online gateway (prepared, not live)"
-            description="The provider contract is not implemented yet. These values are stored so the switch can be completed without a schema change; card fallback remains the only live checkout."
-        >
-            @if (! $gatewayDriverReady)
-                <p class="mb-4 rounded-lg border border-warning-300 bg-warning-50 p-3 text-sm text-warning-800">
-                    No gateway driver is registered. Enabling the switch does not process online payments until the provider driver and callback are implemented.
-                </p>
-            @endif
-
-            <div class="grid gap-5 md:grid-cols-2">
-                <label class="flex items-center gap-2 md:col-span-2">
-                    <x-filament::input.checkbox wire:model="gatewayEnabled" />
-                    <span class="text-sm">Enable online gateway (requires a registered driver)</span>
-                </label>
-
-                <div class="grid gap-2">
-                    <label for="gatewayProvider" class="text-sm font-medium">Provider key</label>
-                    <x-filament::input.wrapper>
-                        <x-filament::input id="gatewayProvider" type="text" dir="ltr" wire:model="gatewayProvider" placeholder="e.g. zarinpal" />
-                    </x-filament::input.wrapper>
-                    @error('gatewayProvider')
-                        <p class="text-sm text-danger-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="grid gap-2">
-                    <label for="gatewayMerchantId" class="text-sm font-medium">Merchant ID</label>
-                    <x-filament::input.wrapper>
-                        <x-filament::input id="gatewayMerchantId" type="text" dir="ltr" wire:model="gatewayMerchantId" />
-                    </x-filament::input.wrapper>
-                    @error('gatewayMerchantId')
-                        <p class="text-sm text-danger-600">{{ $message }}</p>
-                    @enderror
-                    <p class="text-xs text-gray-500">Do not paste API secrets or private keys here; they belong in the server secret store.</p>
-                </div>
-
-                <label class="flex items-center gap-2">
-                    <x-filament::input.checkbox wire:model="gatewaySandbox" />
-                    <span class="text-sm">Use provider sandbox/test mode</span>
-                </label>
             </div>
         </x-filament::section>
 

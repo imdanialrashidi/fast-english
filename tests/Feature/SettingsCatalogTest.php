@@ -55,6 +55,17 @@ test('staff can save contact channels and a real card destination', function () 
         ->and($destination->isConfigured())->toBeTrue();
 });
 
+test('business settings expose card-to-card only, with no gateway controls', function () {
+    $this->actingAs(ContentFixtures::staff());
+
+    Livewire::test(BusinessSettings::class)
+        ->assertOk()
+        ->assertSee('Card destination (the only payment method)')
+        ->assertDontSee('Online gateway')
+        ->assertDontSee('Merchant ID')
+        ->assertDontSee('gateway');
+});
+
 test('a placeholder destination refuses payment creation with nothing stored', function () {
     $plan = Plan::factory()->create(['is_active' => true]);
     PaymentDestination::factory()->create([

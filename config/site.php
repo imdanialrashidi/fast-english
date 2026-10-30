@@ -23,14 +23,6 @@ return [
         'channel' => 'info@fastenglishpodcast.ir',
     ],
 
-    'payment' => [
-        'gateway_enabled' => false,
-        'gateway_provider' => null,
-        'gateway_merchant_id' => null,
-        'gateway_sandbox' => true,
-        'card_fallback' => true,
-    ],
-
     'legal' => [
         'terms' => <<<'TEXT'
 Fast English خدمتی برای خواندن و شنیدن متن‌های کوتاه انگلیسی است. با ساخت حساب یا خرید اشتراک، این شرایط را می‌پذیرید.

@@ -6,7 +6,6 @@ use App\Http\Responses\NoStore;
 use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
-use App\Support\SiteSettings;
 use App\Support\Toman;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -56,7 +55,7 @@ class PaymentRequestController extends Controller
 
         // S8 sales switch (scope §25): when sales are off, no payment
         // request can be created — nothing is stored. The subscribe page
-        // shows «در دست آماده‌سازی» instead of purchase forms.
+        // still shows prices, with the purchase CTA disabled.
         if ((bool) config('sales.enabled', false) !== true) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -110,7 +109,7 @@ class PaymentRequestController extends Controller
         }
 
         $destination = PaymentDestination::where('is_active', true)->first();
-        if ($destination === null || ! $destination->isConfigured() || ! SiteSettings::cardFallbackEnabled()) {
+        if ($destination === null || ! $destination->isConfigured()) {
             return $this->createFailure($request, 'روش پرداخت هنوز پیکربندی نشده است. لطفاً بعداً تلاش کنید.');
         }
 

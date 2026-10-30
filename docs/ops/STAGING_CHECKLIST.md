@@ -212,8 +212,8 @@ staging host shell, never commit the filled values.
 - Expected: owner `200` + `private, no-store`; other student `403`;
   guest redirect to login. Library HTML for both users contains no
   `receipt_path` / `receipts/` string.
-- Fail action: check `PaymentRequestPolicy` + gateway; do not expose the
-  file publicly. policy را بررسی کنید؛ فایل را عمومی نکنید.
+- Fail action: check `PaymentRequestPolicy` + receipt ownership; do not
+  expose the file publicly. policy را بررسی کنید؛ فایل را عمومی نکنید.
 
 ### B6. Password-reset neutral response with SMTP unset / پاسخ خنثی بازیابی رمز با SMTP تنظیم‌نشده
 - EN: With `MAIL_MAILER=log` (or any non-`smtp` / empty host) on staging

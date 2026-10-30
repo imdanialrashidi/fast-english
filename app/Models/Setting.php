@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Owner-editable operational settings (contact channels, legal copy,
- * payment gateway metadata, card fallback). Defaults live in
- * `config/site.php`, so a missing row never blanks a public page.
+ * Owner-editable operational settings (contact channels and legal copy).
+ * Defaults live in `config/site.php`, so a missing row never blanks a
+ * public page.
  *
  * Reads are uncached on purpose: staff changes must take effect on the
  * next request, and the volume is one small row per key.

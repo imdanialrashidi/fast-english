@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 use App\Models\PaymentDestination;
 use App\Models\Setting;
 use App\Support\Entitlement;
-use App\Support\PaymentMethods;
 use App\Support\SiteSettings;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -15,14 +14,12 @@ use UnitEnum;
 
 /**
  * Owner-editable business settings (2026-10-25): support/cooperation
- * channels, card destination, gateway metadata, and public legal copy.
+ * channels, the card-to-card destination, and public legal copy.
  *
- * The page stores plain operational values only. It never prints or
- * stores a gateway API secret; merchant IDs are not secrets. Card checkout
- * stays closed while the destination is the placeholder or the fallback
- * switch is off. Gateway fields are prepared infrastructure: no provider
- * driver is registered yet, so the page says so instead of pretending the
- * gateway is live.
+ * There is no online gateway (owner decision 2026-10-30). The only payment
+ * method is a transfer to the active card destination plus a private
+ * receipt reviewed by staff. Checkout stays closed while the destination
+ * is the placeholder.
  */
 class BusinessSettings extends Page
 {
@@ -42,16 +39,6 @@ class BusinessSettings extends Page
 
     public string $cooperationChannel = '';
 
-    public bool $gatewayEnabled = false;
-
-    public string $gatewayProvider = '';
-
-    public string $gatewayMerchantId = '';
-
-    public bool $gatewaySandbox = true;
-
-    public bool $cardFallback = true;
-
     public string $cardNumber = '';
 
     public string $cardHolder = '';
@@ -66,8 +53,6 @@ class BusinessSettings extends Page
 
     public string $refund = '';
 
-    public bool $gatewayDriverReady = false;
-
     public function mount(): void
     {
         $destination = PaymentDestination::query()->where('is_active', true)->first();
@@ -75,11 +60,6 @@ class BusinessSettings extends Page
         $this->supportChannel = SiteSettings::supportChannel();
         $this->supportHours = SiteSettings::supportHours() ?? '';
         $this->cooperationChannel = SiteSettings::cooperationChannel();
-        $this->gatewayEnabled = SiteSettings::gatewayEnabled();
-        $this->gatewayProvider = SiteSettings::gatewayProvider() ?? '';
-        $this->gatewayMerchantId = SiteSettings::gatewayMerchantId() ?? '';
-        $this->gatewaySandbox = SiteSettings::gatewaySandbox();
-        $this->cardFallback = SiteSettings::cardFallbackEnabled();
         $this->cardNumber = $destination?->card_number ?? PaymentDestination::PLACEHOLDER_CARD;
         $this->cardHolder = $destination?->holder_name ?? PaymentDestination::PLACEHOLDER_HOLDER;
         $this->cardBank = $destination?->bank_name ?? PaymentDestination::PLACEHOLDER_BANK;
@@ -87,7 +67,6 @@ class BusinessSettings extends Page
         $this->terms = SiteSettings::legal('terms') ?? '';
         $this->privacy = SiteSettings::legal('privacy') ?? '';
         $this->refund = SiteSettings::legal('refund') ?? '';
-        $this->gatewayDriverReady = PaymentMethods::gatewayConfigured();
     }
 
     public function save(): void
@@ -102,8 +81,6 @@ class BusinessSettings extends Page
             'supportChannel' => ['required', 'string', 'max:120'],
             'supportHours' => ['nullable', 'string', 'max:120'],
             'cooperationChannel' => ['required', 'string', 'max:120'],
-            'gatewayProvider' => ['nullable', 'string', 'max:120'],
-            'gatewayMerchantId' => ['nullable', 'string', 'max:190'],
             'cardNumber' => ['nullable', 'regex:/^\d{16}$/'],
             'cardHolder' => ['nullable', 'string', 'max:120'],
             'cardBank' => ['nullable', 'string', 'max:120'],
@@ -140,11 +117,6 @@ class BusinessSettings extends Page
             Setting::put(SiteSettings::SUPPORT_CHANNEL, $this->supportChannel);
             Setting::put(SiteSettings::SUPPORT_HOURS, $this->supportHours);
             Setting::put(SiteSettings::COOPERATION_CHANNEL, $this->cooperationChannel);
-            Setting::put(SiteSettings::GATEWAY_ENABLED, $this->gatewayEnabled ? '1' : '0');
-            Setting::put(SiteSettings::GATEWAY_PROVIDER, $this->gatewayProvider);
-            Setting::put(SiteSettings::GATEWAY_MERCHANT_ID, $this->gatewayMerchantId);
-            Setting::put(SiteSettings::GATEWAY_SANDBOX, $this->gatewaySandbox ? '1' : '0');
-            Setting::put(SiteSettings::CARD_FALLBACK, $this->cardFallback ? '1' : '0');
             Setting::put('legal.terms', $this->terms);
             Setting::put('legal.privacy', $this->privacy);
             Setting::put('legal.refund', $this->refund);
@@ -159,8 +131,6 @@ class BusinessSettings extends Page
                 'is_active' => true,
             ])->save();
         });
-
-        $this->gatewayDriverReady = PaymentMethods::gatewayConfigured();
 
         Notification::make()
             ->title('تنظیمات ذخیره شد')

@@ -22,8 +22,8 @@ This supersedes the earlier quiet brand header, the mobile monogram/wordmark rul
 ## Owner instruction 2026-10-25 — business settings and honest checkout states
 
 - **Plans are server data.** The subscribe page renders Persian plan names, Persian-digit toman amounts, and duration from active plan rows. Staff edit them in Plans; the owner catalog seeder is only an initial/repeatable install.
-- **Unconfigured payment is a calm closed state.** If the active card is the placeholder, the fallback switch is off, or no destination exists, the plan list still shows prices but the CTA reads «پرداخت هنوز فعال نشده» and is disabled; the server refuses creation with the same reason. A placeholder card is never presented as a transfer target.
-- **Gateway controls are prepared, visibly not live.** Business settings stores provider/merchant/sandbox and explains that no driver is registered; it never presents an online gateway as working. Card fallback remains the live method.
+- **Unconfigured payment is a calm closed state.** If the active card is the placeholder or no destination exists, the plan list still shows prices but the CTA reads «پرداخت هنوز فعال نشده» and is disabled; the server refuses creation with the same reason. A placeholder card is never presented as a transfer target.
+- **Card-to-card is the only method (owner decision 2026-10-30).** There is no online gateway: no provider/merchant/sandbox fields, no driver map, and no callback. Business settings edits the card destination, holder, bank, and transfer instructions only.
 - **Trust pages read as normal public copy.** Terms, privacy, and refund are readable Persian paragraphs; support/cooperation show the supplied channel as a link. No internal workflow badge or invented contact appears.
 
 ## Owner instruction 2026-10-25 — no developer copy, shared player console, calmer states

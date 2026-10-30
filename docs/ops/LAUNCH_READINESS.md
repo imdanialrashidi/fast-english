@@ -207,8 +207,9 @@ not application code.
 
 1. **Learner email loop** — welcome, payment received, approved, expiring,
    expired. One notification class per event, same content rules.
-2. **Gateway** — `PaymentMethods` already resolves a driver map; implement
-   the first provider's callback + idempotency once the owner picks one.
+2. ~~**Gateway** — implement the first provider's callback + idempotency~~
+   **Removed 2026-10-30:** the owner decided on card-to-card only; the
+   gateway fields and driver map are gone.
 3. **Offline premium audio** for active subscribers (PWA cache with
    entitlement check) — currently only the public shell is cached.
 4. **Account deletion self-service** — the privacy page promises a support
@@ -251,4 +252,4 @@ not application code.
 2. Deploy staging with real SMTP and one real device run (AC-19/21).
 3. Add learner email notifications (#11) and a real error signal (#8/#9) —
    the two gaps that make the product feel unmonitored and unresponsive.
-4. Only then spend on depth (gateway, offline audio, analytics).
+4. Only then spend on depth (offline audio, analytics).

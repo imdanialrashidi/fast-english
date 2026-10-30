@@ -19,10 +19,10 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 
 - **Prices:** 30 days = 399,000 toman; 90 days = 20% off (957,600); 365 days = 30% off (3,351,600). Plan names are duration-based. `PlanCatalogSeeder` installs/updates them by stable slug; the staff Plans resource edits them without a deploy.
 - **Domain:** production canonical is `https://fastenglishpodcast.ir`; `fastenglish.ir` has no nameserver/delegation (checked 2026-10-28) and cannot resolve until the owner sets DNS at the registrar. Support/cooperation channel: `info@fastenglishpodcast.ir`; support hours remain unset until the owner supplies them.
-- **Card-to-card remains the live checkout.** Staff can replace the active destination and edit transfer instructions in Business settings. A fresh environment gets an obvious placeholder card; checkout is blocked until a real 16-digit card, holder, and bank replace it. The fallback switch can close card payments without a deploy.
-- **Online gateway infrastructure is prepared, not claimed live.** Provider/merchant/sandbox fields and a driver map exist, but no provider driver is registered and no online charge is performed. When the owner chooses a provider, implement the driver and callback, then switch the flow.
+- **Card-to-card is the only checkout (owner decision 2026-10-30).** Staff can replace the active destination and edit transfer instructions in Business settings. A fresh environment gets an obvious placeholder card; checkout is blocked until a real 16-digit card, holder, and bank replace it.
+- **No online gateway.** Provider/merchant/sandbox fields and the driver map were removed on 2026-10-30. There is no online charge, callback, or gateway driver to configure; adding one would be a new product decision and scope change.
 - **Trust copy is published.** Terms, privacy, and refund are staff-editable Persian paragraphs with config defaults; `/refund` was added to the public pages, footer, and sitemap. The owner still needs a qualified review before launch.
-- **Sales stay off by default.** `SALES_ENABLED=true` only after the real card (or a live gateway), final legal review, and the remaining launch inputs in `docs/LAUNCH_INPUTS_FA.md`.
+- **Sales stay off by default.** `SALES_ENABLED=true` only after the real card, final legal review, and the remaining launch inputs in `docs/LAUNCH_INPUTS_FA.md`.
 
 ## Owner instruction 2026-10-25 — review pass: no developer errors, CSV export removed, player polish
 
@@ -49,7 +49,7 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 
 ## Product outcome
 
-Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English. Prices, domain, contact channels, and standard legal copy were supplied on 2026-10-25; final brand assets, real card/gateway credentials, SMTP, signing identity, hosting, staff roster, and content production remain launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures; `docs/LAUNCH_INPUTS_FA.md` tracks what is still missing.
+Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English. Prices, domain, contact channels, and standard legal copy were supplied on 2026-10-25; final brand assets, real card credentials, SMTP, signing identity, hosting, staff roster, and content production remain launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures; `docs/LAUNCH_INPUTS_FA.md` tracks what is still missing.
 
 Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `fastenglish.ir` reference has no DNS delegation as of 2026-10-28, so it cannot be the public origin until the owner fixes its registrar nameservers). Ownership/DNS verification remains a launch check (§25). The checkout is a working rebuild-in-progress: domain models, shared Actions, policies, and private media controllers exist, the learner surface is Inertia post-M0–M5 with the M6 regression pending, and staff runs in Filament. See the stage map in `docs/PLAN.md` and the active migration plan in `docs/exec-plans/active/frontend-inertia-migration.md`.
 
