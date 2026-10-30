@@ -1,3 +1,10 @@
+## Deployed 2026-10-30 — card-to-card only, gateway removed
+
+- **Owner decision: no online gateway.** Card-to-card with private receipt + staff approval is the only payment method. Removed the gateway fields from Business settings (provider, merchant ID, sandbox, enable switch), the fallback switch, `config/payments.php`, the driver resolution in `PaymentMethods`, and the gateway settings in `SiteSettings`/`config/site.php`. Checkout now opens solely when the active card destination is configured; a placeholder still keeps it closed.
+- **Admin page is honest.** Business settings shows only contact channels, the card destination (holder/bank/instructions), and legal copy. A regression test asserts no gateway controls render.
+- **Production deploy.** Commit `4312e7d`, image `sha256:bd9a3952…`, Coolify deployment `8ofljjltujdzoqmatcgmpfw4`; container healthy, `release.sh` clean, smoke 27/27, live `card_ready=true`, `gateway_config=null`, `site_payment=null`, `SALES_ENABLED=false`. Card remains configured (last4 6037, bank Tejarat). DB backup: `/root/fe-backups/predeploy-cardonly-20261030T153224.dump`.
+- Evidence: full Pest 368 passed / 4,543 assertions at 512M; Pint PASS (312 files); typecheck + Vite build PASS; full Chromium 89 passed. Content is still empty (0 topics, 0 lessons), so sales remain off.
+
 ## Deployed 2026-10-30 — launch pricing, honest empty states, live destination
 
 - **Pricing is visible and server-owned.** The landing and `/app/subscribe` show each active plan's Persian name, duration, and server-formatted toman amount (399,000 / 957,600 / 3,351,600). Sales-off still shows the cards with a disabled CTA and a calm notice; `/plans` is public again (guests to `/#plans`, learners to `/app/subscribe`) and the public footer links to it.

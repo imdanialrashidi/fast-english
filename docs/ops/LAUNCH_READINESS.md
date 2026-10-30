@@ -27,6 +27,16 @@
 > the product domain (`info@fastenglishpodcast.ir`), and registration sends
 > only the six-digit code email instead of also sending Laravel's default
 > English signed-link notification.
+>
+> **Second rollout 2026-10-30 — card-to-card only (commit `4312e7d`, image
+> `sha256:bd9a3952…`, Coolify deployment `8ofljjltujdzoqmatcgmpfw4`).**
+> Gateway settings, the driver map (`config/payments.php`), merchant/sandbox
+> UI, and the card-fallback switch were removed at the owner's direction.
+> Live verification: container healthy, `release.sh` clean, smoke 27/27,
+> `card_ready=true`, `gateway_config=null`, `site_payment=null`,
+> `SALES_ENABLED=false`, and the landing still shows all three plan prices.
+> The card remains `configured=true` (last4 6037, bank Tejarat). Content is
+> still empty (0 topics, 0 lessons), so sales stay off until upload.
 
 Date: 2026-10-26. Scope: whole repository at the current working tree
 (uncommitted S0–S9/R1–R5/M0–M6 work included). Environment: host PHP absent,
