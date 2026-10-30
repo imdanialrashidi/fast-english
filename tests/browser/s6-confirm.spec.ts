@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { completeEmailVerification } from './helpers';
 
 // S7 pre-slice 2: every staff money/access action requires an explicit
 // confirmation step showing the server snapshot amount, and a single
@@ -14,7 +15,10 @@ async function registerFreshLearner(page, tag: string) {
   await page.getByLabel('رمز عبور', { exact: true }).fill(password);
   await page.getByLabel('تکرار رمز عبور').fill(password);
   await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
+  await page.waitForURL(/\/email\/verify|\/account/);
+  if (page.url().includes('/email/verify')) {
+    await completeEmailVerification(page, email);
+  }
   return email;
 }
 

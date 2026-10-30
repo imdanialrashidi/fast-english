@@ -26,6 +26,7 @@ interface DownloadProps extends SharedProps {
 export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     release,
     published,
+    has_public_sample,
 }: DownloadProps): React.JSX.Element => {
     const sizeLabel =
         release.size_bytes !== null
@@ -39,7 +40,9 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
                 <div className="grid gap-2">
                     <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">دانلود</h1>
                     <p className="m-0 leading-8 text-muted">
-                        نسخه اندروید Fast English از همین صفحه منتشر می‌شود. تا آماده‌شدن فایل نصب، نمونه واقعی بدون حساب در دسترس است.
+                        {published
+                            ? 'نسخه اندروید Fast English از همین صفحه قابل دانلود است. مشخصات فایل و SHA-256 در ادامه آمده است.'
+                            : 'نسخه اندروید Fast English پس از انتشار از همین صفحه در دسترس قرار می‌گیرد.'}
                     </p>
                 </div>
 
@@ -72,13 +75,22 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
                             می‌شود.
                         </p>
                         <p className="m-0">
-                            <Link
-                                href="/sample"
-                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                            >
-                                <Play size={20} aria-hidden="true" />
-                                شروع با نمونه رایگان
-                            </Link>
+                            {has_public_sample ? (
+                                <Link
+                                    href="/sample"
+                                    className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                                >
+                                    <Play size={20} aria-hidden="true" />
+                                    شروع با نمونه رایگان
+                                </Link>
+                            ) : (
+                                <Link
+                                    href="/register"
+                                    className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                                >
+                                    ساخت حساب
+                                </Link>
+                            )}
                         </p>
                     </div>
                 ) : (

@@ -26,6 +26,11 @@ export interface SharedProps extends InertiaPageProps {
     status: string | null;
     /** Due vocabulary count for the tab badge; 0 for guests. */
     due_words: number;
+    /**
+     * Whether a published public sample exists. Public/auth surfaces hide
+     * sample links when false instead of sending a guest to a 404.
+     */
+    has_public_sample: boolean;
 }
 
 /** Page-specific URL bags are declared at their page (Landing only). */

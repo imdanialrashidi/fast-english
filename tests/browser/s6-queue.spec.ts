@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { completeEmailVerification } from './helpers';
 
 // S6 browser: the staff payment queue end-to-end on Chromium at 390 CSS px.
 // A fresh learner subscribes and uploads a real receipt (pending grants
@@ -15,7 +16,10 @@ async function registerFreshLearner(page, tag: string) {
   await page.getByLabel('رمز عبور', { exact: true }).fill(password);
   await page.getByLabel('تکرار رمز عبور').fill(password);
   await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
+  await page.waitForURL(/\/email\/verify|\/account/);
+  if (page.url().includes('/email/verify')) {
+    await completeEmailVerification(page, email);
+  }
   return email;
 }
 

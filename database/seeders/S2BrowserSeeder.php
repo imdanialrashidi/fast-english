@@ -77,29 +77,20 @@ class S2BrowserSeeder extends Seeder
         // S7 placement fixture (labelled FIXTURE rows, never real exam).
         $this->call(S7PlacementFixtureSeeder::class);
 
-        User::updateOrCreate(
-            ['email' => self::BROWSER_A_EMAIL],
-            ['name' => 'Browser A', 'password' => self::BROWSER_PASSWORD]
-        );
+        $this->verifiedUser(['email' => self::BROWSER_A_EMAIL], ['name' => 'Browser A', 'password' => self::BROWSER_PASSWORD]);
 
-        User::updateOrCreate(
-            ['email' => self::BROWSER_B_EMAIL],
-            ['name' => 'Browser B', 'password' => self::BROWSER_PASSWORD]
-        );
+        $this->verifiedUser(['email' => self::BROWSER_B_EMAIL], ['name' => 'Browser B', 'password' => self::BROWSER_PASSWORD]);
 
         foreach ([self::BROWSER_C_EMAIL, self::BROWSER_D_EMAIL, self::BROWSER_E_EMAIL, self::BROWSER_F_EMAIL, self::BROWSER_G_EMAIL, self::BROWSER_H_EMAIL, self::BROWSER_I_EMAIL, self::BROWSER_J_EMAIL] as $index => $email) {
-            User::updateOrCreate(
-                ['email' => $email],
-                ['name' => 'Browser '.chr(67 + $index), 'password' => self::BROWSER_PASSWORD]
-            );
+            $this->verifiedUser(['email' => $email], ['name' => 'Browser '.chr(67 + $index), 'password' => self::BROWSER_PASSWORD]);
         }
 
-        User::updateOrCreate(
+        $this->verifiedUser(
             ['email' => self::BROWSER_STAFF_EMAIL],
             ['name' => 'Browser Staff', 'password' => self::BROWSER_PASSWORD, 'is_staff' => true]
         );
 
-        User::updateOrCreate(
+        $this->verifiedUser(
             ['email' => self::BACKUP_STAFF_EMAIL],
             ['name' => 'Backup Staff', 'password' => self::BROWSER_PASSWORD, 'is_staff' => true]
         );
@@ -113,9 +104,29 @@ class S2BrowserSeeder extends Seeder
 
     public const BROWSER_SUB_EMAIL = 'browser-sub@example.com';
 
+    /**
+     * The email-verification gate is product behavior; browser fixtures
+     * must start verified or every post-login journey parks on /email/verify.
+     * email_verified_at is not mass-assignable on purpose, so set it after
+     * the upsert.
+     *
+     * @param  array<string, mixed>  $keys
+     * @param  array<string, mixed>  $values
+     */
+    private function verifiedUser(array $keys, array $values): User
+    {
+        $user = User::updateOrCreate($keys, $values);
+
+        if ($user->email_verified_at === null) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        return $user;
+    }
+
     private function seedSubscribedLearner(): void
     {
-        $learner = User::updateOrCreate(
+        $learner = $this->verifiedUser(
             ['email' => self::BROWSER_SUB_EMAIL],
             ['name' => 'Browser Sub', 'password' => self::BROWSER_PASSWORD]
         );

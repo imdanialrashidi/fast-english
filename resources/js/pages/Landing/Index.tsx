@@ -15,8 +15,9 @@ import { publicLayout } from '@/layouts/PublicLayout';
  * a three-step method band, the real public sample, newest topics as
  * non-navigating editorial rows, the DB plan list, FAQ rows, and one
  * closing download action. The page states only checkable product facts:
- * no counts, testimonials, ratings, or prices beyond the owner-approved
- * single-package label.
+ * no counts, testimonials, or ratings, and no price that is not read from
+ * the active plan rows. With no published sample the preview and sample
+ * sections stay out instead of rendering an empty stage.
  *
  * Separation (owner requirement, 2026-10-21): this page never links into
  * the authenticated app. Library/reader/purchase links would bounce a
@@ -29,10 +30,10 @@ import { publicLayout } from '@/layouts/PublicLayout';
  * واقعی» with its static opening paragraph and «بخشی از متن نمونه»
  * note, sample section «نمونه واقعی»
  * with heading «یک نمونه واقعی، بدون ثبت‌نام» and a /sample?topic=…&level=…
- * link, «تازه‌ترین مطالب», sales lanes («ساخت حساب و خرید» / «در دست
- * آماده‌سازی»), «بدون اشتراک می‌توانم امتحان کنم؟», «صفحه دانلود» →
- * «دانلود اپلیکیشن», «مشاهده همه پرسش‌ها», 44px targets, and no
- * horizontal scroll.
+ * link, «تازه‌ترین مطالب», sales lanes («ساخت حساب و خرید» /
+ * «پرداخت هنوز فعال نشده»), the real per-plan prices, «بدون اشتراک
+ * می‌توانم امتحان کنم؟», «صفحه دانلود» → «دانلود اپلیکیشن», «مشاهده همه
+ * پرسش‌ها», 44px targets, and no horizontal scroll.
  *
  * Owner exclusions respected (DESIGN.md): no gradients, glow, backdrop
  * blur, grain, rotating/floating decoration, or looping motion. The
@@ -48,6 +49,7 @@ interface SampleProps {
 interface PlanProps {
     id: number;
     name_fa: string;
+    price_label: string;
     duration_days: number;
 }
 
@@ -277,7 +279,11 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
 
             {/* 1. Hero: the promise beside the working sample. */}
             <section className="px-4 pt-10 sm:px-6 sm:pt-14 lg:pt-20" aria-label="معرفی Fast English">
-                <div className="mx-auto grid max-w-[1160px] items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+                <div
+                    className={`mx-auto grid max-w-[1160px] items-center gap-10 ${
+                        sample !== null ? 'lg:grid-cols-[1.05fr_0.95fr] lg:gap-14' : ''
+                    }`}
+                >
                     <div className="grid justify-items-start gap-5 text-start">
                         <p className="m-0 flex items-center gap-2.5 text-sm font-bold text-accent-strong">
                             <span aria-hidden="true" className="inline-block h-px w-6 bg-accent-strong" />
@@ -313,7 +319,7 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                     className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-extrabold text-surface no-underline hover:bg-primary-hover sm:w-auto"
                                 >
                                     <Download size={19} aria-hidden="true" />
-                                    دانلود اپلیکیشن
+                                    وضعیت نسخه اندروید
                                 </Link>
                             )}
                             {releasePublished && sample !== null && (
@@ -336,9 +342,13 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                             )}
                         </div>
                         <p className="m-0 text-sm leading-6 text-muted">
-                            {releasePublished
-                                ? 'نمونه بدون ثبت‌نام باز می‌شود و نسخه اندروید از صفحه دانلود در دسترس است.'
-                                : 'نمونه بدون ثبت‌نام باز می‌شود. نسخه اندروید به‌زودی منتشر می‌شود؛ وضعیت آن در صفحه دانلود اعلام می‌شود.'}
+                            {sample !== null
+                                ? releasePublished
+                                    ? 'نمونه بدون ثبت‌نام باز می‌شود و نسخه اندروید از صفحه دانلود در دسترس است.'
+                                    : 'نمونه بدون ثبت‌نام باز می‌شود. نسخه اندروید به‌زودی منتشر می‌شود؛ وضعیت آن در صفحه دانلود اعلام می‌شود.'
+                                : releasePublished
+                                  ? 'نمونهٔ عمومی هنوز منتشر نشده است. نسخه اندروید از صفحه دانلود در دسترس است.'
+                                  : 'نمونهٔ عمومی هنوز منتشر نشده است. وضعیت نسخه اندروید در صفحه دانلود اعلام می‌شود.'}
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
                             <span>شش سطح:</span>
@@ -364,12 +374,14 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                         </div>
                     </div>
 
-                    <SamplePreview
-                        sample={sample}
-                        paragraphs={sampleParagraphs}
-                        audioUrl={sampleAudioUrl}
-                        fallbackUrl={urls.download}
-                    />
+                    {sample !== null && (
+                        <SamplePreview
+                            sample={sample}
+                            paragraphs={sampleParagraphs}
+                            audioUrl={sampleAudioUrl}
+                            fallbackUrl={urls.download}
+                        />
+                    )}
                 </div>
             </section>
 
@@ -479,26 +491,26 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                 </section>
             )}
 
-            {/* 5. Plans: DB names and durations only, never amounts. */}
-            <section aria-label="پلن‌ها" className="border-y border-line bg-surface">
+            {/* 5. Plans: DB names, durations, and the server-formatted price. */}
+            <section id="plans" aria-label="پلن‌ها" className="scroll-mt-20 border-y border-line bg-surface">
                 <div className="mx-auto max-w-[1160px] px-4 py-12 sm:px-6 lg:py-16">
                     <div className="grid max-w-[56ch] gap-2">
                         <h2 className="m-0 text-3xl leading-[1.5] font-extrabold tracking-tight">پلن‌ها</h2>
-                        <p className="m-0 leading-8 text-muted">دسترسی پس از تأیید پرداخت فعال می‌شود. تا آن روز، نمونه رایگان همیشه در دسترس است.</p>
+                        <p className="m-0 leading-8 text-muted">
+                            مبلغ هر پلن در همان کارت آمده است. دسترسی پس از تأیید پرداخت فعال می‌شود.
+                        </p>
                     </div>
 
-                    {!salesOn ? (
-                        <div className="mt-6 grid max-w-[720px] gap-2 border border-line bg-canvas p-6 sm:p-8">
-                            <p className="m-0 text-lg font-extrabold">
-                                <strong>در دست آماده‌سازی</strong>
-                            </p>
+                    {!salesOn && (
+                        <div role="status" className="mt-6 grid max-w-[720px] gap-2 border border-line bg-canvas p-6 sm:p-8">
+                            <p className="m-0 text-lg font-extrabold">فروش هنوز فعال نشده است</p>
                             <p className="m-0 leading-8 text-muted">
-                                {plansFromLabel === null
-                                    ? 'فروش هنوز فعال نشده است. پلن‌ها پس از اعلام رسمی قابل خرید خواهند بود.'
-                                    : `فروش هنوز فعال نشده است. پلن‌ها از ${plansFromLabel} شروع می‌شوند و پس از اعلام رسمی قابل خرید خواهند بود.`}
+                                قیمت‌ها همین‌جا آمده‌اند؛ خرید پس از فعال‌شدن فروش در همین صفحه امکان‌پذیر می‌شود.
                             </p>
                         </div>
-                    ) : plans.length === 0 ? (
+                    )}
+
+                    {plans.length === 0 ? (
                         <div className="mt-6 max-w-[720px] border border-line bg-canvas p-6 text-muted sm:p-8">
                             <p className="m-0 leading-8">در حال حاضر پلن فعالی وجود ندارد.</p>
                         </div>
@@ -511,17 +523,28 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                 {plans.map((plan) => (
                                     <li key={plan.id} className="grid content-start gap-2 border border-line bg-canvas p-5">
                                         <h3 className="m-0 text-lg leading-7 font-extrabold">{plan.name_fa}</h3>
+                                        <p className="m-0 text-xl leading-8 font-extrabold">{plan.price_label}</p>
                                         <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
                                             <Clock size={15} aria-hidden="true" />
                                             {plan.duration_days.toLocaleString('fa-IR')} روز دسترسی پس از تأیید
                                         </p>
                                         <p className="m-0 pt-2">
-                                            <Link
-                                                href={urls.register}
-                                                className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-5 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                                            >
-                                                ساخت حساب و خرید
-                                            </Link>
+                                            {salesOn ? (
+                                                <Link
+                                                    href={urls.register}
+                                                    className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-5 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                                                >
+                                                    ساخت حساب و خرید
+                                                </Link>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    disabled
+                                                    className="inline-flex min-h-11 min-w-11 cursor-not-allowed items-center rounded-full bg-primary px-5 py-2.5 font-bold text-surface opacity-60"
+                                                >
+                                                    پرداخت هنوز فعال نشده
+                                                </button>
+                                            )}
                                         </p>
                                     </li>
                                 ))}
@@ -567,9 +590,13 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
             <section aria-label="شروع" className="border-t border-line bg-surface">
                 <div className="mx-auto grid max-w-[1160px] gap-6 px-4 py-12 sm:px-6 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:py-14">
                     <div className="grid content-start gap-2">
-                        <h2 className="m-0 text-2xl leading-[1.5] font-extrabold tracking-tight text-pretty sm:text-3xl">بدون حساب شروع کن</h2>
+                        <h2 className="m-0 text-2xl leading-[1.5] font-extrabold tracking-tight text-pretty sm:text-3xl">
+                            {sample !== null ? 'بدون حساب شروع کن' : 'برای شروع آماده‌ای؟'}
+                        </h2>
                         <p className="m-0 max-w-[52ch] leading-8 text-pretty text-muted">
-                            یک نمونه را بخوان و بشنو. برای ادامه، حساب بساز و پلن را انتخاب کن؛ دسترسی پس از تأیید پرداخت فعال می‌شود و پیشرفت، واژه‌ها و برنامه روزانه‌ات ذخیره می‌ماند.
+                            {sample !== null
+                                ? 'یک نمونه را بخوان و بشنو. برای ادامه، حساب بساز و پلن را انتخاب کن؛ دسترسی پس از تأیید پرداخت فعال می‌شود و پیشرفت، واژه‌ها و برنامه روزانه‌ات ذخیره می‌ماند.'
+                                : 'برای دسترسی به درس‌ها حساب بساز و پلن را انتخاب کن؛ دسترسی پس از تأیید پرداخت فعال می‌شود و پیشرفت، واژه‌ها و برنامه روزانه‌ات ذخیره می‌ماند.'}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 lg:justify-end">
@@ -596,7 +623,15 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                 className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 font-extrabold text-surface no-underline hover:bg-primary-hover sm:w-auto"
                             >
                                 <Download size={18} aria-hidden="true" />
-                                دانلود اپلیکیشن
+                                وضعیت نسخه اندروید
+                            </Link>
+                        )}
+                        {sample === null && (
+                            <Link
+                                href={urls.register}
+                                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-line px-6 py-3 font-bold text-ink no-underline hover:bg-canvas sm:w-auto"
+                            >
+                                ساخت حساب
                             </Link>
                         )}
                         {releasePublished && sample !== null && (
@@ -616,7 +651,7 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
                                 مشخصات فایل و SHA-256
                             </Link>
                         )}
-                        {!releasePublished && (
+                        {!releasePublished && sample !== null && (
                             <Link
                                 href={urls.download}
                                 className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-line px-6 py-3 font-bold text-ink no-underline hover:bg-canvas sm:w-auto"

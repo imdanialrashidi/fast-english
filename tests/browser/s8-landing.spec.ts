@@ -41,11 +41,13 @@ test('S8 landing 360: hero, preview, sample, plans, download, faq', async ({ pag
   await expect(page.getByRole('link', { name: 'شروع با نمونه رایگان' }).first()).toBeVisible();
   await expect(page.getByLabel('پیش‌نمایش روش یادگیری با نمونه واقعی')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'تازه‌ترین مطالب' })).toBeVisible();
-  // Sales-on lane state: DB plan names with durations (never amounts),
-  // a registration CTA, and no preparing-state text.
+  // Sales-on lane state: DB plan names, server-formatted prices, and
+  // durations, with a registration CTA and no closed-sales notice.
+  const plans = page.locator('section[aria-label="پلن‌ها"]');
   await expect(page.getByText('یک‌ماهه آزمایشی (TEST)')).toBeVisible();
+  await expect(plans.locator('li').first().getByText('۱۰۰٬۰۰۰ تومان', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'ساخت حساب و خرید' }).first()).toBeVisible();
-  await expect(page.getByText('در دست آماده‌سازی')).toHaveCount(0);
+  await expect(page.getByText('فروش هنوز فعال نشده است')).toHaveCount(0);
   // No real APK is published in the lane, so the sample is primary and
   // the download entry is the honest status link.
   await expect(page.getByRole('link', { name: 'وضعیت نسخه اندروید' }).first()).toBeVisible();
@@ -61,6 +63,9 @@ test('S8 landing 360: hero, preview, sample, plans, download, faq', async ({ pag
 test('S8 landing 390: same states recomposed', async ({ page }) => {
   await checkLanding(page, 390);
   await expect(page.getByText('یک‌ماهه آزمایشی (TEST)')).toBeVisible();
+  await expect(
+    page.locator('section[aria-label="پلن‌ها"] li').first().getByText('۱۰۰٬۰۰۰ تومان', { exact: true }),
+  ).toBeVisible();
   await page.screenshot({ path: 'test-results/browser-shots/s8-landing-390.png' });
 });
 

@@ -88,6 +88,17 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmailContr
     }
 
     /**
+     * The owner-approved flow sends one six-digit code from
+     * EmailVerificationCodes (registration + resend). Laravel's default
+     * signed-link notification would be a second, conflicting email whose
+     * GET link lands on the code page, so suppress it.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        // Deliberate no-op; see the method docblock.
+    }
+
+    /**
      * S0: only staff may reach the /admin panel. Suspended accounts
      * (disabled_at set) are refused even when the staff flag is present.
      */

@@ -753,3 +753,15 @@ Polish (agent-owned within the contract):
 - Both states keep the public shell, RTL copy, no gradients/looping motion, and the existing 44 px targets.
 
 Verification (final build): `npm run typecheck` + `npm run build` clean; Playwright on `fe_browser` (`BASE_URL=http://127.0.0.1:8112`): 50 passed across s1-mobile, s3-mobile, s3-library, r-today, m1-journey, s4-mobile, s4-persistent, s1-player, design-theme, r-words, r-reader, s2-pwa. 320px overflow rechecked on account/settings/placement/subscribe/words. Inspected pixels: reader 390/768/1440, library 320/390/768/1440, today 320/390/1440, words 390, account 320/390, login 390, sample/landing header.
+
+## Launch pricing + missing-sample states 2026-10-30 — owner request
+
+Owner direction (explicit, this turn): show the real prices, prepare the site for launch, and stop presenting experimental or empty states.
+
+- **Prices are visible product information.** The landing plan cards and the signed-in `/app/subscribe` list render each active plan's Persian name, server-formatted toman amount (`App\Support\Toman`), and duration. Raw integer amounts never cross the Inertia boundary. When sales are closed, the cards still show prices; the CTA is disabled and reads «پرداخت هنوز فعال نشده», with one calm notice explaining that purchase is closed. The server-side sales gate in `PaymentRequestController` is unchanged.
+- **`/plans` is public again.** Guests are redirected to the plan section of the landing (`/#plans`); a signed-in learner goes to `/app/subscribe`. The old unconditional redirect sent guests to an auth-only route.
+- **No imaginary sample.** When no published public sample exists, the landing does not render the empty preview column, sample CTAs, or a claim that a free sample is available. `HandleInertiaRequests` shares `has_public_sample` on public/auth surfaces only, and the public header/footer, trust copy, install guide, download page, and error page stop linking to `/sample` when it would 404. The FAQ answer follows the same flag. Learner routes skip the lookup so their fixed query budgets stay intact.
+- **Download copy follows release reality.** The published state says the APK is available on this page; the unpublished state no longer promises a file that is not there.
+- **One verification email.** Registration sends only the Persian six-digit code mail; Laravel's default English signed-link notification is suppressed because its GET link lands on the code page and cannot verify the account. The browser lane verifies fresh test users through that one code mail.
+
+Verification: see the final task report (`S8LandingTest`, `S8SalesFlagTest`, `P004QueryBudgetsTest`, typecheck/build and Chromium sales-on/sales-off captures).

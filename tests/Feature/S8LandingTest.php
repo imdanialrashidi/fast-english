@@ -54,13 +54,17 @@ test('landing renders fa rtl with metadata, sample link, plans, and no draft lab
                 ->where('0.slug', $topic->slug)
                 ->missing('0.reader_url')
                 ->etc())
-            // Plan names from the database, never amounts (no price claims).
+            // Plan names and prices from the database. Only the formatted
+            // label crosses the boundary; the raw integer never does.
             ->has('plans', fn (AssertableInertia $plans) => $plans
                 ->where('0.name_fa', 'یک‌ماهه آزمایشی (TEST)')
+                ->where('0.price_label', Toman::format(100000))
                 ->missing('0.price_toman')
                 ->missing('0.amount_toman')
                 ->etc())
             ->where('salesOn', true)
+            ->where('has_public_sample', true)
+            ->where('faqs.0.a', 'بله. نمونه واقعی همیشه رایگان است و بدون ثبت‌نام باز می‌شود.')
             ->where('urls.download', route('download'))
             ->where('urls.faq', route('trust.faq')));
 
@@ -79,10 +83,13 @@ test('landing without a sample shows the neutral state, never a broken link', fu
             ->where('sample', null)
             ->where('sampleParagraphs', [])
             ->where('sampleAudioUrl', null)
+            // Public chrome must not offer a sample link while /sample 404s.
+            ->where('has_public_sample', false)
+            ->where('faqs.0.a', 'نمونهٔ عمومی هنوز منتشر نشده است؛ پس از انتشار، بدون ثبت‌نام باز می‌شود.')
             ->missing('sample.reader_url'));
 });
 
-test('landing with sales off shows the preparing state and no purchase cta', function () {
+test('landing with sales off still shows plan prices and closes the purchase action', function () {
     config(['sales.enabled' => false]);
 
     $topic = ContentFixtures::publishedTopic();
@@ -93,11 +100,10 @@ test('landing with sales off shows the preparing state and no purchase cta', fun
         'is_public_sample' => true,
     ]);
 
-    // M0 port: the switch travels as a prop; the preparing panel and the
-    // absent purchase CTA render client-side (no plan names rendered).
-    // The plan rows stay in props (snapshot source for later slices) but
-    // carry no amounts. The one public amount is the "from" label, and it
-    // must equal the cheapest active plan — never a hardcoded 299000.
+    // Sales are closed, but the price list is product information: the
+    // cards and their formatted prices still travel. Only the purchase CTA
+    // is disabled client-side. The "from" label equals the cheapest active
+    // plan — never a hardcoded 299000.
     $html = $this->get(route('landing'))->assertOk()->getContent();
 
     $this->get(route('landing'))
@@ -109,11 +115,23 @@ test('landing with sales off shows the preparing state and no purchase cta', fun
             ->where('plansFromLabel', Toman::format(100000))
             ->has('plans', fn (AssertableInertia $plans) => $plans
                 ->has('0.name_fa')
+                ->where('0.price_label', Toman::format(100000))
                 ->missing('0.price_toman')
                 ->etc()));
 
     expect($html)->not->toContain('299000')
-        ->and($html)->not->toContain('۲۹۹٬۰۰۰');
+        ->and($html)->not->toContain('۲۹۹٬۰۰۰')
+        ->and($html)->not->toContain('price_toman');
+});
+
+test('public /plans sends guests to the pricing anchor and learners to checkout', function () {
+    $this->get(route('plans'))
+        ->assertRedirect(route('landing').'#plans');
+
+    $student = User::factory()->create();
+    $this->actingAs($student)
+        ->get(route('plans'))
+        ->assertRedirect(route('subscribe.index'));
 });
 
 test('trust pages render public fa rtl copy with canonical tags', function () {

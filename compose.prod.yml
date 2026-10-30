@@ -78,7 +78,7 @@ services:
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
-      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-support@fastenglish.ir}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-info@fastenglishpodcast.ir}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Fast English}
 
       # Commercial switch: keep false until the launch inputs are real.

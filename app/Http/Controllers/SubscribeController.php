@@ -17,9 +17,9 @@ use Inertia\Response;
  * with Persian digits (App\Support\Toman). Inactive plans never appear.
  * The response is private, no-store (scope §16).
  *
- * S8 sales switch (scope §25): when sales are off, the page shows
- * «در دست آماده‌سازی» with no purchase forms; creation is refused
- * server-side in PaymentRequestController as well.
+ * S8 sales switch (scope §25): when sales are off, the page still shows
+ * the real plan prices, disables the purchase CTA, and explains why;
+ * creation is refused server-side in PaymentRequestController as well.
  */
 class SubscribeController extends Controller
 {
@@ -32,13 +32,14 @@ class SubscribeController extends Controller
 
         $salesOn = (bool) config('sales.enabled', false);
 
-        $plans = $salesOn
-            ? Plan::query()
-                ->where('is_active', true)
-                ->orderBy('display_order')
-                ->orderBy('id')
-                ->get()
-            : collect();
+        // The price list is public product information, not a secret. It
+        // renders even while sales are closed so the learner can see what a
+        // plan costs; only the purchase action is gated.
+        $plans = Plan::query()
+            ->where('is_active', true)
+            ->orderBy('display_order')
+            ->orderBy('id')
+            ->get();
 
         $paymentReady = PaymentMethods::cardCheckoutReady();
 
@@ -58,7 +59,7 @@ class SubscribeController extends Controller
             'paymentReady' => $paymentReady,
             'paymentNotice' => $paymentReady
                 ? null
-                : 'روش پرداخت هنوز پیکربندی نشده است. شمارهٔ کارت به‌زودی در همین صفحه اعلام می‌شود.',
+                : 'روش پرداخت هنوز فعال نشده است. تا آماده‌شدن آن، خرید و پرداخت در دسترس نیست.',
         ]);
     }
 }

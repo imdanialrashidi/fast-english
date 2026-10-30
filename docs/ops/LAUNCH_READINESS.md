@@ -10,6 +10,22 @@
 > copy with zero page errors. Still owner-data blocked: real card destination
 > (sales stay OFF), licensed content/sample, payment provider, off-server
 > backup, real-device proof.
+>
+> **2026-10-30 — pricing/copy pass.** The public landing and the signed-in
+> subscribe page now show each active plan's toman price (not only the
+> "from" label) even while sales are closed, with a disabled CTA. `/plans`
+> is public again (guests land on `/#plans`, learners on `/app/subscribe`).
+> Empty-sample states no longer link to a 404 `/sample`. Card data was
+> received and stored in the local production DB only (never in Git); the
+> live server still needs the same destination saved in
+> `/admin/business-settings`, `SALES_ENABLED=true`, and real content. The
+> production content tables are still empty (0 topics, 0 lessons), so
+> `/sample` 404s and sales should stay off until content is uploaded.
+> Also fixed in this pass: an empty `MAIL_FROM_ADDRESS` no longer 500s
+> registration (config fallback), the Compose default sender now matches
+> the product domain (`info@fastenglishpodcast.ir`), and registration sends
+> only the six-digit code email instead of also sending Laravel's default
+> English signed-link notification.
 
 Date: 2026-10-26. Scope: whole repository at the current working tree
 (uncommitted S0–S9/R1–R5/M0–M6 work included). Environment: host PHP absent,

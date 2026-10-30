@@ -5,7 +5,9 @@ use App\Models\EmailVerificationCode;
 use App\Models\Lesson;
 use App\Models\User;
 use Database\Seeders\S1SampleSeeder;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 function registerWithCode(string $email = 'verify@example.com'): string
 {
@@ -49,6 +51,26 @@ test('registration mails a hashed six-digit code and the account starts unverifi
             ->where('hasActiveCode', true)
             ->where('ttlMinutes', 10)
             ->where('retryAfter', fn (int $seconds): bool => $seconds > 50 && $seconds <= 60));
+});
+
+test('registration sends only the six-digit code mail, not the default signed-link mail', function () {
+    Mail::fake();
+    Notification::fake();
+
+    $this->post(route('register.store'), [
+        'name' => 'One Mail User',
+        'email' => 'one-mail@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ])->assertRedirect(route('verification.notice'));
+
+    $user = User::where('email', 'one-mail@example.com')->firstOrFail();
+
+    Mail::assertSent(VerifyEmailCodeMail::class, 1);
+    // Laravel's default notification would be a second, English
+    // signed-link email whose GET route shows the code page instead of
+    // verifying, so it must not be sent.
+    Notification::assertNotSentTo($user, VerifyEmail::class);
 });
 
 test('the emailed code verifies the account and opens the learner surface', function () {

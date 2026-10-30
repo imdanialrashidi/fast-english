@@ -8,9 +8,10 @@ import type { SharedProps } from '@/types';
 
 /**
  * Subscribe (PAY-01 entry): the active plan list with the sales switch.
- * Choosing a plan posts its ID only — amount, duration, destination,
- * and status are server-owned and any client-sent copy is rejected
- * with 422 and nothing stored.
+ * Prices stay visible while sales are closed; only the purchase action is
+ * disabled. Choosing a plan posts its ID only — amount, duration,
+ * destination, and status are server-owned and any client-sent copy is
+ * rejected with 422 and nothing stored.
  */
 
 interface PlanRow {
@@ -58,48 +59,59 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
                     </p>
                 )}
 
-                {!salesOn ? (
-                    <div role="status" className="grid justify-items-center gap-2 rounded-3xl border border-line bg-surface px-6 py-12 text-center">
-                        <CardSim size={24} aria-hidden="true" />
-                        <p className="m-0 text-xl font-bold">در دست آماده‌سازی</p>
-                        <p className="m-0 leading-8 text-muted">فروش هنوز فعال نشده است. پلن‌ها پس از اعلام رسمی قابل خرید خواهند بود.</p>
+                {!salesOn && (
+                    <div role="status" className="grid gap-2 rounded-3xl border border-line bg-surface p-5">
+                        <p className="m-0 flex items-center gap-2 text-lg font-bold">
+                            <CardSim size={20} aria-hidden="true" />
+                            فروش هنوز فعال نشده است
+                        </p>
+                        <p className="m-0 leading-8 text-muted">
+                            قیمت پلن‌ها در همین صفحه آمده است؛ خرید پس از فعال‌شدن فروش امکان‌پذیر می‌شود.
+                        </p>
                     </div>
-                ) : plans.length === 0 ? (
+                )}
+
+                {salesOn && !paymentReady && paymentNotice !== null && (
+                    <p role="status" className="m-0 flex items-start gap-2 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
+                        <CircleAlert size={20} aria-hidden="true" className="mt-0.5 shrink-0" />
+                        {paymentNotice}
+                    </p>
+                )}
+
+                {plans.length === 0 ? (
                     <div role="status" className="grid justify-items-center gap-2 rounded-3xl border border-line bg-surface px-6 py-12 text-center">
                         <Inbox size={24} aria-hidden="true" />
                         <p className="m-0 text-xl font-bold">در حال حاضر پلن فعالی وجود ندارد. لطفاً بعداً مراجعه کنید.</p>
                     </div>
                 ) : (
-                    <>
-                        {!paymentReady && paymentNotice !== null && (
-                            <p role="status" className="m-0 flex items-start gap-2 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
-                                <CircleAlert size={20} aria-hidden="true" className="mt-0.5 shrink-0" />
-                                {paymentNotice}
-                            </p>
-                        )}
-                        <ul className="m-0 grid list-none gap-4 p-0">
-                            {plans.map((plan) => (
-                                <li key={plan.id} className="grid gap-1 rounded-3xl border border-line bg-surface p-5">
-                                    <h2 lang="fa" dir="rtl" className="m-0 text-lg leading-8 font-bold">
-                                        {plan.name_fa}
-                                    </h2>
-                                    <p className="m-0 text-lg font-bold">{plan.price_label}</p>
-                                    <p className="m-0 leading-8 text-muted">{plan.duration_days} روز دسترسی پس از تأیید</p>
-                                    <p className="m-0 mt-1">
-                                        <button
-                                            type="button"
-                                            disabled={form.processing || !paymentReady}
-                                            onClick={() => choose(plan.id)}
-                                            className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-                                        >
-                                            <Check size={20} aria-hidden="true" />
-                                            {paymentReady ? 'انتخاب این پلن' : 'پرداخت هنوز فعال نشده'}
-                                        </button>
-                                    </p>
-                                </li>
-                            ))}
-                        </ul>
-                    </>
+                    <ul className="m-0 grid list-none gap-4 p-0">
+                        {plans.map((plan) => (
+                            <li key={plan.id} className="grid gap-1 rounded-3xl border border-line bg-surface p-5">
+                                <h2 lang="fa" dir="rtl" className="m-0 text-lg leading-8 font-bold">
+                                    {plan.name_fa}
+                                </h2>
+                                <p className="m-0 text-lg font-bold">{plan.price_label}</p>
+                                <p className="m-0 leading-8 text-muted">
+                                    {plan.duration_days.toLocaleString('fa-IR')} روز دسترسی پس از تأیید
+                                </p>
+                                <p className="m-0 mt-1">
+                                    <button
+                                        type="button"
+                                        disabled={form.processing || !salesOn || !paymentReady}
+                                        onClick={() => choose(plan.id)}
+                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        <Check size={20} aria-hidden="true" />
+                                        {!salesOn
+                                            ? 'فروش هنوز فعال نشده'
+                                            : paymentReady
+                                              ? 'انتخاب این پلن'
+                                              : 'پرداخت هنوز فعال نشده'}
+                                    </button>
+                                </p>
+                            </li>
+                        ))}
+                    </ul>
                 )}
 
                 {errors.plan_id !== undefined && (

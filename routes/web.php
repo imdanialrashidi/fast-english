@@ -78,8 +78,17 @@ Route::get('/download', [DownloadController::class, 'index'])->name('download');
 // without login. Drafts/premium never resolve here; 404 when none exists.
 Route::get('/sample', [LandingController::class, 'sample'])->name('sample');
 
-// S8: /plans is an alias for the subscribe page (scope §6).
-Route::redirect('/plans', '/app/subscribe', 302)->name('plans');
+// S8: /plans is a public price entry (scope §6). Guests land on the plan
+// section of the public pricing page; a signed-in learner goes straight to
+// the authenticated checkout list. The old unconditional redirect sent
+// guests to an auth-only route and then to the login screen.
+Route::get('/plans', function () {
+    if (auth()->check()) {
+        return redirect()->route('subscribe.index');
+    }
+
+    return redirect()->to(route('landing').'#plans');
+})->name('plans');
 
 // S8 sitemap (scope §19.1): public marketing pages only.
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');

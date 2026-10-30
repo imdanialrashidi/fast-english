@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import type { Browser, BrowserContext, Page } from '@playwright/test';
 import { expect, test as baseTest } from '@playwright/test';
 
@@ -11,6 +12,57 @@ import { expect, test as baseTest } from '@playwright/test';
  * viewport); only the login is shared. No test in the lane logs
  * browser-sub out — logout journeys use their own accounts.
  */
+
+/**
+ * Complete the owner-mandated email-verification gate for a freshly
+ * registered browser user. The local lane uses the log mailer, so the
+ * six-digit code is read from the mail block addressed to this exact
+ * email. Production uses SMTP and a real mailbox; nothing here ships.
+ */
+export async function completeEmailVerification(page: Page, email: string): Promise<void> {
+  if (!page.url().includes('/email/verify')) {
+    await page.waitForURL(/\/email\/verify/, { timeout: 15_000 });
+  }
+
+  const code = await verificationCodeFromLog(email);
+  await page.locator('#code').fill(code);
+  await page.getByRole('button', { name: 'تأیید ایمیل' }).click();
+  await page.waitForURL('**/account**', { timeout: 15_000 });
+}
+
+async function verificationCodeFromLog(email: string): Promise<string> {
+  const marker = `To: ${email}`;
+
+  for (let attempt = 0; attempt < 30; attempt++) {
+    try {
+      const log = readFileSync('storage/logs/laravel.log', 'utf8');
+      // Registration used to emit two mails for the same address (the code
+      // mail and Laravel's default signed-link mail). Search every block,
+      // newest first, for the one that actually carries the six-digit code.
+      const starts: number[] = [];
+      let from = 0;
+      while ((from = log.indexOf(marker, from)) !== -1) {
+        starts.push(from);
+        from += marker.length;
+      }
+
+      for (const start of starts.reverse()) {
+        const block = log.slice(start);
+        const match = block.match(
+          /<div dir="ltr" style="[^"]*letter-spacing:10px;[^"]*">\s*(\d{6})\s*<\/div>/,
+        );
+        if (match !== null) {
+          return match[1];
+        }
+      }
+    } catch {
+      // The log file may not exist yet on a cold lane.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+
+  throw new Error(`verification code for ${email} not found in the log mailer`);
+}
 
 async function loginAsSub(page: Page): Promise<void> {
   await page.goto('/login');
@@ -95,7 +147,10 @@ export async function registerSubscribeAndApprove(
     await learner.getByLabel('رمز عبور', { exact: true }).fill('password123');
     await learner.getByLabel('تکرار رمز عبور').fill('password123');
     await learner.getByRole('button', { name: 'ساخت حساب' }).click();
-    await learner.waitForURL('**/account**');
+    await learner.waitForURL(/\/email\/verify|\/account/);
+    if (learner.url().includes('/email/verify')) {
+      await completeEmailVerification(learner, email);
+    }
 
     await learner.goto('/app/subscribe');
     await learner.getByRole('button', { name: 'انتخاب این پلن' }).first().click();

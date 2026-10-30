@@ -17,6 +17,7 @@ import type { SharedProps } from '@/types';
  */
 
 const TRUST_LINKS = [
+    { href: '/plans', label: 'پلن‌ها و قیمت' },
     { href: '/about', label: 'درباره' },
     { href: '/cooperation', label: 'همکاری' },
     { href: '/faq', label: 'پرسش‌های پرتکرار' },
@@ -90,6 +91,10 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     const { props, url } = usePage<SharedProps>();
     const user = props.auth.user;
     const flash = props.flash;
+    // /sample is a 404 until content is uploaded; never offer a free-sample
+    // link that dead-ends. The server flags the real availability on every
+    // public/auth surface.
+    const hasPublicSample = props.has_public_sample;
     const onLogin = url.startsWith('/login');
     const onRegister = url.startsWith('/register');
     // Verification is authenticated and must not show app links that loop
@@ -134,9 +139,11 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <nav aria-label="ناوبری عمومی" className={onVerify ? 'hidden' : 'flex items-center gap-0.5'}>
                         {user === null ? (
                             <>
-                                <NavLink href="/sample" className="hidden lg:flex">
-                                    نمونه رایگان
-                                </NavLink>
+                                {hasPublicSample && (
+                                    <NavLink href="/sample" className="hidden lg:flex">
+                                        نمونه رایگان
+                                    </NavLink>
+                                )}
                                 <NavLink href="/download" className="hidden md:flex">
                                     دانلود
                                 </NavLink>
@@ -192,12 +199,21 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                         </p>
                         {user === null && (
                             <p className="m-0 flex flex-wrap gap-2 pt-1">
-                                <Link
-                                    href="/sample"
-                                    className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-accent-strong px-5 py-2 font-bold text-surface no-underline hover:brightness-110"
-                                >
-                                    شروع با نمونه رایگان
-                                </Link>
+                                {hasPublicSample ? (
+                                    <Link
+                                        href="/sample"
+                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-accent-strong px-5 py-2 font-bold text-surface no-underline hover:brightness-110"
+                                    >
+                                        شروع با نمونه رایگان
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        href="/register"
+                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-accent-strong px-5 py-2 font-bold text-surface no-underline hover:brightness-110"
+                                    >
+                                        ساخت حساب
+                                    </Link>
+                                )}
                                 <Link
                                     href="/download"
                                     className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-surface/25 px-5 py-2 text-surface no-underline hover:bg-surface/10"

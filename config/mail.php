@@ -111,8 +111,12 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
+        // An empty MAIL_FROM_ADDRESS in a local .env must not turn every
+        // registration/verification mail into a 500 («An email must have a
+        // "From" ... header»). Production sets the real domain address in
+        // compose.prod.yml / Coolify env.
+        'address' => env('MAIL_FROM_ADDRESS') ?: 'hello@example.com',
+        'name' => env('MAIL_FROM_NAME') ?: env('APP_NAME', 'Laravel'),
     ],
 
 ];

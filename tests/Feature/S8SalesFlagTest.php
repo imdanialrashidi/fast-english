@@ -2,14 +2,15 @@
 
 use App\Models\PaymentRequest;
 use App\Models\Plan;
+use App\Support\Toman;
 use Database\Seeders\S5PaymentFixtureSeeder;
 use Illuminate\Config\Repository;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 // S8 sales switch: a configuration flag, off by default in production.
-// When off, the plan list shows «در دست آماده‌سازی» and no payment
-// request can be created. Both states tested, two users + negative path.
+// When off, prices stay visible but no payment request can be created.
+// Both states tested, two users + negative path.
 
 beforeEach(function () {
     $this->seed(S5PaymentFixtureSeeder::class);
@@ -26,20 +27,24 @@ test('sales flag defaults off outside testing config', function () {
     expect(config('sales.enabled'))->toBeTrue(); // test lane enables it (phpunit.xml)
 });
 
-test('sales off shows preparing state with no purchase forms', function () {
+test('sales off still lists priced plans while refusing purchase', function () {
     config(['sales.enabled' => false]);
 
-    // Public-slice port (ADR-0002): the sales-off state travels as
-    // salesOn=false with no plans (the Persian copy renders client-side).
+    // Public-slice port (ADR-0002): salesOn=false closes the purchase
+    // action, but the priced plan list is still product information and
+    // remains visible to the signed-in learner.
     $off = $this->actingAs($this->studentA)->get(route('subscribe.index'))->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Subscribe/Index')
             ->where('salesOn', false));
-    expect($off->inertiaProps()['plans'])->toBe([]);
-    expect($off->getContent())->not->toContain('یک‌ماهه آزمایشی (TEST)');
+    $plans = $off->inertiaProps()['plans'];
+    expect($plans)->not->toBeEmpty()
+        ->and($plans[0])->toHaveKeys(['name_fa', 'price_label', 'duration_days'])
+        ->and($plans[0]['price_label'])->toBe(Toman::format(100000))
+        ->and($plans[0])->not->toHaveKey('price_toman');
 
     $offB = $this->actingAs($this->studentB)->get(route('subscribe.index'))->assertOk();
-    expect($offB->inertiaProps()['plans'])->toBe([]);
+    expect($offB->inertiaProps()['plans'])->toBe($plans);
 });
 
 test('sales off refuses payment creation with nothing stored', function () {

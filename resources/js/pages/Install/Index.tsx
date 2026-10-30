@@ -42,7 +42,7 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
 }
 
 export const InstallIndex: FunctionComponent<InstallIndexProps> & { layout?: (page: ReactNode) => ReactNode } = (): React.JSX.Element => {
-    const { auth } = usePage<SharedProps>().props;
+    const { auth, has_public_sample: hasPublicSample } = usePage<SharedProps>().props;
     const signedIn = auth.user !== null;
 
     return (
@@ -183,12 +183,21 @@ export const InstallIndex: FunctionComponent<InstallIndexProps> & { layout?: (pa
                                 >
                                     ساخت حساب
                                 </Link>
-                                <Link
-                                    href="/sample"
-                                    className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-canvas px-5 py-2 text-ink no-underline hover:bg-surface"
-                                >
-                                    نمونهٔ رایگان
-                                </Link>
+                                {hasPublicSample ? (
+                                    <Link
+                                        href="/sample"
+                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-canvas px-5 py-2 text-ink no-underline hover:bg-surface"
+                                    >
+                                        نمونهٔ رایگان
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        href="/plans"
+                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-canvas px-5 py-2 text-ink no-underline hover:bg-surface"
+                                    >
+                                        پلن‌ها و قیمت
+                                    </Link>
+                                )}
                             </>
                         )}
                         <Link

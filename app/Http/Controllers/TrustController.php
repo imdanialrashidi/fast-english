@@ -13,8 +13,8 @@ use Inertia\Response;
  * visitor, and contact/legal copy comes from owner-editable settings
  * (database) with config defaults. Since 2026-10-26 the default support and
  * cooperation channel is the product-domain address
- * (support@fastenglish.ir), not the former @test placeholder; the legal
- * pages publish the standard Persian copy the owner asked for.
+ * (info@fastenglishpodcast.ir), not the former @test placeholder; the
+ * legal pages publish the standard Persian copy the owner asked for.
  */
 class TrustController extends Controller
 {

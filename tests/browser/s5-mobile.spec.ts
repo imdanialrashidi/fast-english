@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { completeEmailVerification } from './helpers';
 
 // S5-8 rendered mobile: subscribe, request, and receipt-upload step at 360
 // and 390 CSS px have no horizontal scroll, touch targets are >=44px, and
@@ -14,7 +15,10 @@ async function registerFreshStudent(page, tag: string) {
   await page.getByLabel('رمز عبور', { exact: true }).fill(password);
   await page.getByLabel('تکرار رمز عبور').fill(password);
   await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
+  await page.waitForURL(/\/email\/verify|\/account/);
+  if (page.url().includes('/email/verify')) {
+    await completeEmailVerification(page, email);
+  }
 }
 
 async function noHorizontalScroll(page) {

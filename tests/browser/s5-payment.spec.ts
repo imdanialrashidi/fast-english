@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { completeEmailVerification } from './helpers';
 
 // S5-7 browser: learner cancels awaiting_receipt via the real UI, the row
 // is kept (reload still shows cancelled), and a new purchase creates a new
@@ -15,7 +16,10 @@ async function registerFreshStudent(page, tag: string) {
   await page.getByLabel('رمز عبور', { exact: true }).fill(password);
   await page.getByLabel('تکرار رمز عبور').fill(password);
   await page.getByRole('button', { name: 'ساخت حساب' }).click();
-  await page.waitForURL('**/account**');
+  await page.waitForURL(/\/email\/verify|\/account/);
+  if (page.url().includes('/email/verify')) {
+    await completeEmailVerification(page, email);
+  }
 }
 
 test('S5-7 cancel: awaiting_receipt cancels, row kept, new purchase creates new', async ({ page }) => {
