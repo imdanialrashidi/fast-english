@@ -78,7 +78,7 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
                             alt=""
                             loading="eager"
                             fetchPriority="high"
-                            className="block h-56 w-full rounded-3xl border border-line bg-canvas object-cover"
+                            className="block aspect-video h-auto w-40 rounded-xl border border-line bg-canvas object-cover sm:w-full sm:max-w-[26rem] sm:rounded-3xl"
                         />
                     )}
                     {sampleLevels.length > 1 && (

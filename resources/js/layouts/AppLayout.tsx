@@ -134,7 +134,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                 className={`pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-accent transition-opacity duration-150 ${navigating ? 'opacity-100' : 'opacity-0'}`}
             />
 
-            <div className="mx-auto grid w-full max-w-[1024px] gap-8 px-4 lg:grid-cols-[12.5rem_1fr]">
+            <div className="mx-auto grid w-full max-w-[1120px] gap-8 px-4 lg:grid-cols-[13rem_1fr] lg:gap-10">
                 {/* Desktop rail: the same four destinations as the mobile tabs,
                     and the one place the app shell keeps the brand lockup. */}
                 <aside className="fe-sidebar hidden lg:block" aria-label="ناوبری اصلی">
@@ -231,7 +231,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
 
             {/* Fixed audio layer: studio player above the mobile tabs. */}
             <div className="fixed inset-x-0 bottom-0 z-40">
-                <div className="mx-auto w-full max-w-[1024px] px-3 pb-2 lg:px-4">
+                <div className="mx-auto w-full max-w-[1120px] px-3 pb-2 lg:px-4">
                     <AudioPlayer />
                 </div>
                 <nav aria-label="بخش‌های یادگیری" className="fe-bottomnav border-t border-line bg-surface lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>

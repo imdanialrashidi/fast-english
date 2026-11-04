@@ -168,7 +168,7 @@ Measured contrast (computed WCAG relative luminance, same method as S1/S3, 2026-
 
 ### Page-specific rules (PROPOSED; no page built this turn)
 
-- Landing: promise → real sample → how-it-works → plans (real data or honest not-on-sale) → FAQ → install/support; stages the real reader, no marketing art, no fake counts/testimonials/ratings.
+- Landing (publication cover, rewritten 2026-11-01): working sample sheet beside the promise → six-level ink band → four-row session → real sample spread → library contents → DB plans (real data or honest not-on-sale) → FAQ → framed closing action. Folio marks, hairline rules, and the hard-offset cover plate carry the publication identity; the real reader is staged, with no marketing art, fake counts, testimonials, or ratings. Hover/focus motion only; every control keeps a 44px target.
 - Today: greeting + Continue Learning first, then plan divider rows, goal ring/progress, due vocab, recommendations; incomplete stays incomplete; goal change never writes `preferred_level`.
 - Discover: editorial rows (cover + EN title LTR + FA meta + level), pill filters + search with labels, result count, empty + reset, pagination 12/page.
 - Reader: title/cover/level/player/LTR body/vocab in one measure; loading/audio-error/locked/missing-level (exact message + available levels, no substitution)/empty-vocab states all designed; mobile safe-area clearance.
@@ -765,3 +765,36 @@ Owner direction (explicit, this turn): show the real prices, prepare the site fo
 - **One verification email.** Registration sends only the Persian six-digit code mail; Laravel's default English signed-link notification is suppressed because its GET link lands on the code page and cannot verify the account. The browser lane verifies fresh test users through that one code mail.
 
 Verification: see the final task report (`S8LandingTest`, `S8SalesFlagTest`, `P004QueryBudgetsTest`, typecheck/build and Chromium sales-on/sales-off captures).
+
+## UI refinement 2026-10-31 — owner request: better landing and app UI/UX
+
+Owner direction (explicit, this turn): make the landing and app UI/UX better. No new palette, font, theme, or fabricated content was requested. Every change uses the canonical `@theme` tokens, the permanent light theme, and the existing Vazirmatn/Inter split.
+
+Design read for this slice: an editorial publication plus a mobile-first learning app for adult Persian-speaking learners, dial **ENERGY 2 / RHYTHM 2 / MOTION 1**. Motion stays at press/focus/enter only; no new animation, gradient, glow, or shadow was introduced.
+
+Defects found on the rendered pages and fixed:
+- **Two primaries on first paint.** The public masthead carried a filled «ساخت حساب» while the landing hero carried its own filled action. The masthead action is now an outline button on every public page, so the hero owns the primary.
+- **A static level row that looked tappable.** The landing marked the sample level with an underline, which reads as a filter chip. The six levels are now a quiet static scale; the sample level is bold with an `sr-only` annotation.
+- **Three repeated plan cards.** The plan block rendered three bordered cards with three identical filled buttons, all pointing at the same registration destination. It is now one ledger (divided rows on mobile, three columns from `lg`): name, server-formatted price, duration. One action below the ledger goes to registration, and the «دسترسی پس از تأیید پرداخت» note appears once.
+- **Full-width topic rows on desktop.** The newest-topics list put every row's content at the inline start of a 1040px line. It is now an asymmetric two-column split from `md`: heading, copy, and download action beside the rows.
+- **A full-column sample cover on the landing.** The sample cover is a bounded plate (max 30rem) with a surface frame, sized like a printed plate rather than a banner.
+- **A stretched phone layout on desktop.** The app shell was capped at 1024px and every Today/Account/Subscribe card was a 648px phone card with its content clustered at the inline start. The shell is now 1120px at `lg` with a 13rem rail; `ScreenHeader` and the library search/content align to the same measure.
+- **Today recomposition.** From `md`, the work column (level prompt, continue card, plan rows) sits beside an aside (goal ring, recommendations). The continue card is one row with a square/large cover, label, LTR title, level/start/estimate, and the action; every plan row is one full-row link; the goal card is compact enough for the aside. Mobile keeps the same reading order.
+- **Account recomposition.** From `md`, profile/subscription/history form one column and install/settings/logout the other; the identity card stacks its meta pairs instead of stretching them across the card.
+- **Subscribe recomposition.** Plan rows are one ledger (name and price on the baseline, duration under the name, action at the end) instead of three stretched cards.
+- **Reader and public sample covers.** The cover is a 10rem plate on phones and grows at `sm` and up (previously it consumed most of a phone screen before the level control and player).
+- **44px secondary actions.** Library clear-filter and active-filter controls and the Words clear action moved from 36px to 44px.
+
+This supersedes the card presentation named in «Launch pricing + missing-sample states 2026-10-30»; the data contract there is unchanged (server-formatted labels only, raw integers never cross Inertia, prices stay visible with sales closed). Copy touched only where the rendered UI carried implementation language or repeated a line: the subscribe lede now says «پلن موردنظرت را انتخاب کن؛ مبلغ و مدت هر پلن همان‌جا آمده است.» and the payment note now appears once instead of in every plan row. All preserved browser contracts (section labels, the sample CTA, plan names/prices, FAQ strings, auth labels) are unchanged.
+
+Verification: `npm run typecheck` and `npm run build` clean. Full Playwright suite 89/89 on the `fe_browser` lane at `:8112` (s1/s3/s4/s5/s6/s7/s8/s9, design-theme, m0-inertia, r-today/r-words/r-reader). Pest on PostgreSQL: 368 passed (4543 assertions); Pint clean. Rendered pages inspected at 390, 768, and 1440 (landing, Today, library, words, account, subscribe, reader, sample); the suite also reflows at 320/360 (r-reader, s8-landing, s5-mobile). Checked result: no horizontal overflow, no visible control under 44×44px, no page errors.
+
+## Landing rewrite 2026-11-01 — publication cover
+
+Owner request: rewrite `/` into a substantially stronger landing that actually introduces the product. The canonical palette, type, permanent-light, and content rules are unchanged; no new asset, claim, count, or testimonial was added.
+
+Design read for this surface: a Persian-language learning publication landing for adult learners, in a warm editorial print language, dial **ENERGY 2 / RHYTHM 3 / MOTION 1** (varied section compositions, hover/focus motion only).
+
+The `/` composition is the publication cover named in the page-specific rules: working sample sheet → six-level ink band → four-row session → real sample spread → library contents → DB plan ledger → FAQ → framed closing panel. It supersedes the landing presentation details of the 2026-10-31 refinement: the six-level band keeps the static scale but carries a visible active-level label and a teal rule; the plan ledger stays one row per plan at every width; the topic split begins at `lg`; the sample cover is a wide plate; the sample sheet is the new hero object. The app-surface refinements from 2026-10-31 (shell, Today, Account, Subscribe, reader covers, 44px controls) stand.
+
+Focus rings now include native summaries and role controls; pointer affordance is declared once in the base layer. Rendered proof at 320/390/768/1440: no horizontal overflow, no visible control under 44×44px, the primary focus ring on every control, and all measured text pairs at or above 4.5:1 (large text 3:1). Checks: `s8-landing`, `m0-inertia`, the M1 landing leg, `design-theme`; `S8LandingTest`, `M0InertiaFoundationTest`; typecheck, build, and Pint.

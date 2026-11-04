@@ -69,7 +69,7 @@ function MarketingBrand({ onDark, href = '/' }: { onDark: boolean; href?: string
             href={href}
             dir="ltr"
             className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-self-start no-underline"
-            aria-label="Fast English — صفحه اصلی"
+            aria-label="Fast English، صفحه اصلی"
         >
             {mark}
         </Link>
@@ -154,7 +154,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                                 {!onRegister && (
                                     <Link
                                         href="/register"
-                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-4 py-2 font-bold whitespace-nowrap text-surface no-underline hover:bg-primary-hover"
+                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-surface px-4 py-2 font-bold whitespace-nowrap text-ink no-underline hover:bg-canvas"
                                     >
                                         ساخت حساب
                                     </Link>
@@ -195,7 +195,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <div className="grid content-start gap-3">
                         <MarketingBrand onDark href={user !== null ? '/app/today' : '/'} />
                         <p className="m-0 max-w-[52ch] text-sm leading-7 text-surface/75">
-                            Fast English — خواندن و شنیدن هم‌زمان انگلیسی، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+                            با Fast English، انگلیسی را هم‌زمان بخوان و بشنو، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
                         </p>
                         {user === null && (
                             <p className="m-0 flex flex-wrap gap-2 pt-1">
@@ -236,7 +236,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                         ))}
                     </nav>
                     <p className="m-0 border-t border-surface/15 pt-4 text-sm text-surface/60 md:col-span-2">
-                        Fast English — یادگیری انگلیسی با خواندن و شنیدن واقعی.
+                        یادگیری انگلیسی با خواندن و شنیدن واقعی، با Fast English.
                     </p>
                 </div>
             </footer>}

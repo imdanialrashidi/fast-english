@@ -143,8 +143,8 @@ class LandingController extends Controller
             // Server-rendered in app.blade.php so crawlers see the title,
             // description, Open Graph tags, and JSON-LD before React runs.
             'seo' => [
-                'title' => 'Fast English — انگلیسی را با داستان کوتاه بخوان و بشنو',
-                'description' => 'Fast English — متن‌های کوتاه انگلیسی در سطح A1 تا C2 با صوت همان نسخه؛ بخوان و بشنو، سرعت را تنظیم کن و واژه بساز.',
+                'title' => 'Fast English: انگلیسی را با داستان کوتاه بخوان و بشنو',
+                'description' => 'Fast English: متن‌های کوتاه انگلیسی در سطح A1 تا C2 با صوت همان نسخه؛ بخوان و بشنو، سرعت را تنظیم کن و واژه بساز.',
                 'canonical' => route('landing'),
                 'json_ld' => [
                     '@context' => 'https://schema.org',
@@ -252,7 +252,7 @@ class LandingController extends Controller
         return Inertia::render('Sample/Show', array_merge(ReadingPayload::for($sample), [
             'sampleLevels' => $sampleLevels,
             'seo' => [
-                'title' => $sample->title_en.' ('.$sample->level.') — نمونه رایگان Fast English',
+                'title' => $sample->title_en.' ('.$sample->level.'): نمونهٔ رایگان Fast English',
                 'description' => $description,
                 'canonical' => route('sample'),
                 'json_ld' => [

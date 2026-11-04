@@ -29,7 +29,7 @@ export function ScreenHeader({
         <header className="sticky top-0 z-30 border-b border-line bg-canvas pt-[env(safe-area-inset-top)]">
             <div
                 className={`mx-auto flex min-h-14 w-full items-center gap-1 px-4 ${
-                    width === 'reading' ? 'max-w-[680px]' : 'max-w-[1024px]'
+                    width === 'reading' ? 'max-w-[680px]' : 'max-w-[1120px]'
                 }`}
             >
                 {back !== undefined && (

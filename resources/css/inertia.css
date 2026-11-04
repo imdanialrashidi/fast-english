@@ -163,8 +163,20 @@ body {
     cursor: pointer;
 }
 
-/* Visible keyboard focus everywhere: primary on surface (10.47:1). */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+/* Enabled controls advertise their affordance; disabled ones do not.
+ * Set once here so no page has to repeat it per element. */
+:where(a[href], button, summary, label[for], [role='button']):not(:disabled) {
+    cursor: pointer;
+}
+
+:where(button:disabled, [aria-disabled='true']) {
+    cursor: not-allowed;
+}
+
+/* Visible keyboard focus everywhere: primary on surface (10.47:1).
+ * Native disclosure summaries and custom role controls are focusable
+ * too, so they share the same ring instead of the UA default. */
+:where(a, button, input, select, textarea, summary, [tabindex], [role='button'], [role='tab'], [role='switch']):focus-visible {
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
 }

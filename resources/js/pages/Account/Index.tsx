@@ -144,7 +144,6 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
             <Head title="حساب" />
             <ScreenHeader
                 title="حساب"
-                width="reading"
                 actions={
                     <Link
                         href="/app/account/settings"
@@ -155,193 +154,197 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                     </Link>
                 }
             />
-            <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
-                <section aria-label="پروفایل" className="rounded-3xl border border-line bg-surface p-5">
-                    <div className="flex items-center gap-4">
-                        <span
-                            aria-hidden="true"
-                            className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary font-en text-2xl font-extrabold text-surface"
-                        >
-                            {initial}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                            <h2 className="fe-title m-0 break-words text-right text-2xl" dir="auto">{user.name}</h2>
-                            <p dir="ltr" className="m-0 mt-0.5 break-all text-right font-en text-sm leading-6 text-muted">
-                                {user.email}
-                            </p>
-                        </div>
-                    </div>
-                    <dl className="m-0 mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4">
-                        <div>
-                            <dt className="m-0 flex items-center gap-1.5 text-sm text-muted">
-                                <GraduationCap size={16} aria-hidden="true" />
-                                سطح ترجیحی
-                            </dt>
-                            <dd className="m-0 mt-1 font-bold">
-                                {user.preferred_level !== null ? (
-                                    <span lang="en" dir="ltr" className="font-en">
-                                        {user.preferred_level}
-                                    </span>
-                                ) : (
-                                    <Link
-                                        href="/app/placement"
-                                        className="inline-flex items-center gap-1 text-primary no-underline hover:underline"
-                                    >
-                                        تعیین سطح
-                                        <ChevronLeft size={16} aria-hidden="true" />
-                                    </Link>
-                                )}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt className="m-0 flex items-center gap-1.5 text-sm text-muted">
-                                <Sparkles size={16} aria-hidden="true" />
-                                هدف روزانه
-                            </dt>
-                            <dd className="m-0 mt-1 font-bold">{user.daily_goal_minutes.toLocaleString('fa-IR')} دقیقه</dd>
-                        </div>
-                    </dl>
-                </section>
-
-                <InstallCard />
-
-                <section aria-label="وضعیت پرداخت و اشتراک" className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
-                    <div className="flex items-start justify-between gap-3">
-                        <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
-                            <CreditCard size={20} aria-hidden="true" />
-                            اشتراک
-                        </h2>
-                        <span
-                            className={
-                                active
-                                    ? 'inline-flex shrink-0 items-center rounded-full bg-canvas px-3 py-1 text-sm font-bold text-success'
-                                    : 'inline-flex shrink-0 items-center rounded-full bg-canvas px-3 py-1 text-sm font-bold text-muted'
-                            }
-                        >
-                            {stateLabel}
-                        </span>
-                    </div>
-
-                    {active ? (
-                        <p className="fe-prose m-0">
-                            اشتراک فعال تا{' '}
-                            <span className="font-bold">
-                                {expiresAt ?? 'پایان دوره'}
+            <div className="mx-auto grid max-w-[1120px] gap-5 px-4 py-5 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] md:items-start md:gap-6">
+                <div className="grid gap-5">
+                    <section aria-label="پروفایل" className="grid gap-4 rounded-3xl border border-line bg-surface p-5">
+                        <div className="flex min-w-0 items-center gap-4">
+                            <span
+                                aria-hidden="true"
+                                className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary font-en text-2xl font-extrabold text-surface"
+                            >
+                                {initial}
                             </span>
-                        </p>
-                    ) : subscription?.state === 'revoked' ? (
-                        <p className="fe-prose m-0 text-muted">اشتراک فعالی وجود ندارد.</p>
-                    ) : (
-                        <p className="fe-prose m-0 text-muted">
-                            اشتراک فعالی وجود ندارد.
-                            {subscription !== null && expiresAt !== null && (
-                                <>
-                                    {' '}دوره قبلی تا <span className="font-bold">{expiresAt}</span> بود.
-                                </>
-                            )}
-                        </p>
-                    )}
+                            <div className="min-w-0 flex-1">
+                                <h2 className="fe-title m-0 break-words text-right text-2xl" dir="auto">{user.name}</h2>
+                                <p dir="ltr" className="m-0 mt-0.5 break-all text-right font-en text-sm leading-6 text-muted">
+                                    {user.email}
+                                </p>
+                            </div>
+                        </div>
+                        <dl className="m-0 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-4">
+                            <div>
+                                <dt className="m-0 flex items-center gap-1.5 text-sm text-muted">
+                                    <GraduationCap size={16} aria-hidden="true" />
+                                    سطح ترجیحی
+                                </dt>
+                                <dd className="m-0 mt-1 font-bold">
+                                    {user.preferred_level !== null ? (
+                                        <span lang="en" dir="ltr" className="font-en">
+                                            {user.preferred_level}
+                                        </span>
+                                    ) : (
+                                        <Link
+                                            href="/app/placement"
+                                            className="inline-flex min-h-11 items-center gap-1 text-primary no-underline hover:underline"
+                                        >
+                                            تعیین سطح
+                                            <ChevronLeft size={16} aria-hidden="true" />
+                                        </Link>
+                                    )}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt className="m-0 flex items-center gap-1.5 text-sm text-muted">
+                                    <Sparkles size={16} aria-hidden="true" />
+                                    هدف روزانه
+                                </dt>
+                                <dd className="m-0 mt-1 font-bold">{user.daily_goal_minutes.toLocaleString('fa-IR')} دقیقه</dd>
+                            </div>
+                        </dl>
+                    </section>
 
-                    {openRequest !== null ? (
-                        <>
+                    <section aria-label="وضعیت پرداخت و اشتراک" className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
+                        <div className="flex items-start justify-between gap-3">
+                            <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
+                                <CreditCard size={20} aria-hidden="true" />
+                                اشتراک
+                            </h2>
+                            <span
+                                className={
+                                    active
+                                        ? 'inline-flex shrink-0 items-center rounded-full bg-canvas px-3 py-1 text-sm font-bold text-success'
+                                        : 'inline-flex shrink-0 items-center rounded-full bg-canvas px-3 py-1 text-sm font-bold text-muted'
+                                }
+                            >
+                                {stateLabel}
+                            </span>
+                        </div>
+
+                        {active ? (
                             <p className="fe-prose m-0">
-                                درخواست جاری: <span className="font-bold">{statusLabel(openRequest.status)}</span>
+                                اشتراک فعال تا{' '}
+                                <span className="font-bold">
+                                    {expiresAt ?? 'پایان دوره'}
+                                </span>
                             </p>
-                            <p className="m-0">
-                                <Link
-                                    href={openRequest.url}
-                                    className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                                >
-                                    مشاهده درخواست
-                                </Link>
-                            </p>
-                        </>
-                    ) : (
-                        <>
-                            {latestRequest !== null &&
-                                (latestRequest.status === 'rejected' || latestRequest.status === 'cancelled') && (
-                                    <p className="fe-prose m-0 text-muted">
-                                        آخرین درخواست: <span className="font-bold">{statusLabel(latestRequest.status)}</span>
-                                    </p>
+                        ) : subscription?.state === 'revoked' ? (
+                            <p className="fe-prose m-0 text-muted">اشتراک فعالی وجود ندارد.</p>
+                        ) : (
+                            <p className="fe-prose m-0 text-muted">
+                                اشتراک فعالی وجود ندارد.
+                                {subscription !== null && expiresAt !== null && (
+                                    <>
+                                        {' '}دوره قبلی تا <span className="font-bold">{expiresAt}</span> بود.
+                                    </>
                                 )}
-                            {active ? (
-                                <>
+                            </p>
+                        )}
+
+                        {openRequest !== null ? (
+                            <>
+                                <p className="fe-prose m-0">
+                                    درخواست جاری: <span className="font-bold">{statusLabel(openRequest.status)}</span>
+                                </p>
+                                <p className="m-0">
+                                    <Link
+                                        href={openRequest.url}
+                                        className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                                    >
+                                        مشاهده درخواست
+                                    </Link>
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                {latestRequest !== null &&
+                                    (latestRequest.status === 'rejected' || latestRequest.status === 'cancelled') && (
+                                        <p className="fe-prose m-0 text-muted">
+                                            آخرین درخواست: <span className="font-bold">{statusLabel(latestRequest.status)}</span>
+                                        </p>
+                                    )}
+                                {active ? (
+                                    <>
+                                        <p className="m-0">
+                                            <Link
+                                                href="/app/subscribe"
+                                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                                            >
+                                                <CreditCard size={20} aria-hidden="true" />
+                                                تمدید اشتراک
+                                            </Link>
+                                        </p>
+                                        <p className="fe-meta m-0 text-muted">تمدید از پایان دوره فعلی ادامه پیدا می‌کند.</p>
+                                    </>
+                                ) : (
                                     <p className="m-0">
                                         <Link
                                             href="/app/subscribe"
                                             className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
                                         >
                                             <CreditCard size={20} aria-hidden="true" />
-                                            تمدید اشتراک
+                                            انتخاب پلن
                                         </Link>
                                     </p>
-                                    <p className="fe-meta m-0 text-muted">تمدید از پایان دوره فعلی ادامه پیدا می‌کند.</p>
-                                </>
-                            ) : (
-                                <p className="m-0">
-                                    <Link
-                                        href="/app/subscribe"
-                                        className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                                    >
-                                        <CreditCard size={20} aria-hidden="true" />
-                                        انتخاب پلن
-                                    </Link>
-                                </p>
-                            )}
-                        </>
-                    )}
-                </section>
+                                )}
+                            </>
+                        )}
+                    </section>
 
-                <section aria-label="تاریخچه پرداخت" className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
-                    <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
-                        <History size={20} aria-hidden="true" />
-                        تاریخچه پرداخت
-                    </h2>
-                    {paymentHistory.length === 0 ? (
-                        <p className="fe-prose m-0 text-muted">هنوز درخواست پرداختی ثبت نکرده‌ای.</p>
-                    ) : (
-                        <ul className="m-0 grid list-none divide-y divide-line p-0">
-                            {paymentHistory.map((row) => (
-                                <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
-                                    <div className="min-w-0">
-                                        <p className="m-0 font-bold">{row.plan_name}</p>
-                                        <p className="fe-meta m-0 text-muted">
-                                            {row.created_at !== null ? formatDate(row.created_at) : '—'} · {row.amount_label}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="rounded-full bg-canvas px-3 py-1 text-sm font-bold text-muted">
-                                            {statusLabel(row.status)}
-                                        </span>
-                                        <Link
-                                            href={row.url}
-                                            className="inline-flex min-h-11 min-w-11 items-center text-[0.9375rem] text-primary no-underline"
-                                        >
-                                            جزئیات
-                                        </Link>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </section>
+                    <section aria-label="تاریخچه پرداخت" className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
+                        <h2 className="m-0 flex items-center gap-2 text-xl leading-8">
+                            <History size={20} aria-hidden="true" />
+                            تاریخچه پرداخت
+                        </h2>
+                        {paymentHistory.length === 0 ? (
+                            <p className="fe-prose m-0 text-muted">هنوز درخواست پرداختی ثبت نکرده‌ای.</p>
+                        ) : (
+                            <ul className="m-0 grid list-none divide-y divide-line p-0">
+                                {paymentHistory.map((row) => (
+                                    <li key={row.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+                                        <div className="min-w-0">
+                                            <p className="m-0 font-bold">{row.plan_name}</p>
+                                            <p className="fe-meta m-0 text-muted">
+                                                {row.created_at !== null ? formatDate(row.created_at) : '—'} · {row.amount_label}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="rounded-full bg-canvas px-3 py-1 text-sm font-bold text-muted">
+                                                {statusLabel(row.status)}
+                                            </span>
+                                            <Link
+                                                href={row.url}
+                                                className="inline-flex min-h-11 min-w-11 items-center text-[0.9375rem] text-primary no-underline"
+                                            >
+                                                جزئیات
+                                            </Link>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </section>
+                </div>
 
-                <nav aria-label="تنظیمات حساب" className="overflow-hidden rounded-3xl border border-line bg-surface">
-                    <MenuRow href="/app/account/settings" icon={<SettingsIcon size={18} />} label="تنظیمات حساب" hint="نام، سطح و هدف روزانه" />
-                    <MenuRow href="/app/saved" icon={<Bookmark size={18} />} label="ذخیره‌شده‌ها" hint="مطلب‌هایی که برای بعد نگه داشته‌ای" />
-                    <MenuRow href="/app/placement" icon={<GraduationCap size={18} />} label="تعیین سطح" hint="آزمون اختیاری برای پیدا کردن سطح مناسب" />
-                    <MenuRow href="/install" icon={<Smartphone size={18} />} label="نصب روی گوشی" hint="افزودن به صفحهٔ اصلی در iPhone و اندروید" />
-                </nav>
+                <div className="grid gap-5">
+                    <InstallCard />
 
-                <form onSubmit={logout}>
-                    <button
-                        type="submit"
-                        className="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 font-bold text-danger hover:bg-canvas"
-                    >
-                        <LogOut size={20} aria-hidden="true" />
-                        خروج از حساب
-                    </button>
-                </form>
+                    <nav aria-label="تنظیمات حساب" className="overflow-hidden rounded-3xl border border-line bg-surface">
+                        <MenuRow href="/app/account/settings" icon={<SettingsIcon size={18} />} label="تنظیمات حساب" hint="نام، سطح و هدف روزانه" />
+                        <MenuRow href="/app/saved" icon={<Bookmark size={18} />} label="ذخیره‌شده‌ها" hint="مطلب‌هایی که برای بعد نگه داشته‌ای" />
+                        <MenuRow href="/app/placement" icon={<GraduationCap size={18} />} label="تعیین سطح" hint="آزمون اختیاری برای پیدا کردن سطح مناسب" />
+                        <MenuRow href="/install" icon={<Smartphone size={18} />} label="نصب روی گوشی" hint="افزودن به صفحهٔ اصلی در iPhone و اندروید" />
+                    </nav>
+
+                    <form onSubmit={logout}>
+                        <button
+                            type="submit"
+                            className="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 font-bold text-danger hover:bg-canvas"
+                        >
+                            <LogOut size={20} aria-hidden="true" />
+                            خروج از حساب
+                        </button>
+                    </form>
+                </div>
             </div>
         </>
     );

@@ -475,7 +475,7 @@ export const WordsIndex: FunctionComponent<WordsProps> & { layout?: (page: React
                 {activeQuery !== null && activeQuery !== '' && (
                     <Link
                         href={tab === 'all' ? '/app/words' : `/app/words?tab=${tab}`}
-                        className="inline-flex min-h-9 w-fit items-center gap-1.5 rounded-full px-2 text-sm font-bold text-muted no-underline hover:text-ink"
+                        className="inline-flex min-h-11 w-fit items-center gap-1.5 rounded-full px-2 text-sm font-bold text-muted no-underline hover:text-ink"
                     >
                         <X size={16} aria-hidden="true" />
                         پاک کردن جست‌وجو

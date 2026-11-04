@@ -51,7 +51,7 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
                 back={{ href: '/app/account', label: 'بازگشت به حساب' }}
             />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
-                <p className="m-0 text-[1.0625rem] leading-8 text-muted">پلن موردنظر را انتخاب کنید. مبلغ و مشخصات واریز از سمت سرور ثبت می‌شود.</p>
+                <p className="m-0 text-[1.0625rem] leading-8 text-muted">پلن موردنظرت را انتخاب کن؛ مبلغ و مدت هر پلن همان‌جا آمده است.</p>
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
@@ -84,22 +84,29 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
                         <p className="m-0 text-xl font-bold">در حال حاضر پلن فعالی وجود ندارد. لطفاً بعداً مراجعه کنید.</p>
                     </div>
                 ) : (
-                    <ul className="m-0 grid list-none gap-4 p-0">
+                    <ul className="m-0 grid list-none overflow-hidden rounded-2xl border border-line bg-surface p-0">
                         {plans.map((plan) => (
-                            <li key={plan.id} className="grid gap-1 rounded-3xl border border-line bg-surface p-5">
-                                <h2 lang="fa" dir="rtl" className="m-0 text-lg leading-8 font-bold">
-                                    {plan.name_fa}
-                                </h2>
-                                <p className="m-0 text-lg font-bold">{plan.price_label}</p>
-                                <p className="m-0 leading-8 text-muted">
-                                    {plan.duration_days.toLocaleString('fa-IR')} روز دسترسی پس از تأیید
-                                </p>
-                                <p className="m-0 mt-1">
+                            <li
+                                key={plan.id}
+                                className="grid gap-3 border-b border-line p-5 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-5"
+                            >
+                                <div className="grid min-w-0 gap-1">
+                                    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                                        <h2 lang="fa" dir="rtl" className="m-0 text-base leading-7 font-bold">
+                                            {plan.name_fa}
+                                        </h2>
+                                        <p className="m-0 text-lg leading-7 font-bold tabular-nums">{plan.price_label}</p>
+                                    </div>
+                                    <p className="m-0 text-sm leading-6 text-muted">
+                                        {plan.duration_days.toLocaleString('fa-IR')} روز دسترسی، پس از تأیید پرداخت
+                                    </p>
+                                </div>
+                                <p className="m-0 sm:justify-self-end">
                                     <button
                                         type="button"
                                         disabled={form.processing || !salesOn || !paymentReady}
                                         onClick={() => choose(plan.id)}
-                                        className="inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+                                        className="inline-flex min-h-11 w-full min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                                     >
                                         <Check size={20} aria-hidden="true" />
                                         {!salesOn

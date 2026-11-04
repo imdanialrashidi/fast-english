@@ -173,7 +173,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
 
             {/* Sticky search: the one control that stays while scanning. */}
             <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-20 border-b border-line bg-canvas">
-                <div className="mx-auto w-full max-w-[1024px] px-4 py-2">
+                <div className="mx-auto w-full max-w-[1120px] px-4 py-2">
                     <form onSubmit={submitSearch} role="search" aria-label="جست‌وجوی مطالب" className="flex items-center gap-2">
                         <label htmlFor="filter-q" className="sr-only">
                             جست‌وجو در عنوان
@@ -201,7 +201,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                 </div>
             </div>
 
-            <div className="mx-auto grid max-w-[1024px] gap-3 px-4 py-4">
+            <div className="mx-auto grid max-w-[1120px] gap-3 px-4 py-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <p role="status" aria-live="polite" data-total={pagination.total} className="m-0 text-sm text-muted">
                         {fa(pagination.total)} مطلب
@@ -209,7 +209,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                     {hasFilters && (
                         <Link
                             href="/app"
-                            className="inline-flex min-h-9 items-center gap-1.5 rounded-full px-2 text-sm font-bold text-muted no-underline hover:text-ink"
+                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-2 text-sm font-bold text-muted no-underline hover:text-ink"
                         >
                             <X size={16} aria-hidden="true" />
                             پاک کردن فیلترها
@@ -223,7 +223,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                             <Link
                                 href={libraryHref({ category: activeCategory, q: activeQuery })}
                                 aria-label={`حذف فیلتر سطح ${activeLevel}`}
-                                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm no-underline hover:bg-canvas"
+                                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm no-underline hover:bg-canvas"
                             >
                                 سطح <span lang="en" dir="ltr" className="font-en font-bold">{activeLevel}</span>
                                 <X size={14} aria-hidden="true" />
@@ -233,7 +233,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                             <Link
                                 href={libraryHref({ level: activeLevel, q: activeQuery })}
                                 aria-label={`حذف فیلتر دسته ${selectedCategoryName ?? activeCategory}`}
-                                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm no-underline hover:bg-canvas"
+                                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm no-underline hover:bg-canvas"
                             >
                                 {selectedCategoryName}
                                 <X size={14} aria-hidden="true" />
@@ -243,7 +243,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                             <Link
                                 href={libraryHref({ level: activeLevel, category: activeCategory })}
                                 aria-label="حذف فیلتر جست‌وجو"
-                                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm no-underline hover:bg-canvas"
+                                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm no-underline hover:bg-canvas"
                             >
                                 «{activeQuery}»
                                 <X size={14} aria-hidden="true" />
