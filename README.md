@@ -109,6 +109,7 @@ needs real SMTP or new accounts cannot finish verification.
 One-command alternative: `composer setup` (install + env + key + migrate + build).
 
 Staff content work: [docs/ops/CONTENT_UPLOAD_FA.md](docs/ops/CONTENT_UPLOAD_FA.md).
+Agent content upload (MCP): staff-only bearer tokens, draft-first writes, staged MP3/cover uploads, and publish only with an explicit `content:publish` ability. Setup, client config, tools, and troubleshooting: [docs/ops/MCP_CONTENT_UPLOAD_FA.md](docs/ops/MCP_CONTENT_UPLOAD_FA.md).
 Full admin-panel operator handbook (login/2FA, content, payments, users, settings, import/export): [docs/ops/ADMIN_PANEL_FA.md](docs/ops/ADMIN_PANEL_FA.md).
 Android build, signing, and publish notes: [mobile/README.md](mobile/README.md).
 

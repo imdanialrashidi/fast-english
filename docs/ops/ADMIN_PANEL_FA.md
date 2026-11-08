@@ -6,6 +6,7 @@
 - مخاطب: اپراتور محتوا و پشتیبانی
 - پیش‌نیاز: حساب staff فعال و دسترسی به برنامهٔ احراز هویت (TOTP)
 - راهنمای تخصصی محتوا با مثال‌های بیشتر: [CONTENT_UPLOAD_FA.md](CONTENT_UPLOAD_FA.md)
+- آپلود محتوا با Agent از طریق MCP: [MCP_CONTENT_UPLOAD_FA.md](MCP_CONTENT_UPLOAD_FA.md)
 - رویهٔ فنی و اضطراری: [RUNBOOK.md](RUNBOOK.md)
 
 ## ۱. در یک نگاه

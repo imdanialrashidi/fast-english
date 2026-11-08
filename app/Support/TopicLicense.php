@@ -69,4 +69,17 @@ final class TopicLicense
     {
         return "Source: generated abstract cover for {$slug}\nLicense: generated (no third-party rights)\nChecked: ".date('Y-m-d')."\nNotes: GD deterministic from slug, no baked text.";
     }
+
+    /**
+     * True when a note is the machine-generated cover record. Replacing a
+     * generated cover with a staff upload must supply its own license; the
+     * generated record cannot be carried over as if it licensed a photo.
+     */
+    public static function isGeneratedRecord(?string $note): bool
+    {
+        $note = trim((string) $note);
+
+        return str_starts_with($note, 'Source: generated abstract cover for ')
+            && str_contains($note, 'License: generated (no third-party rights)');
+    }
 }

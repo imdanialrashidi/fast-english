@@ -15,3 +15,6 @@ Schedule::command('receipts:retain-reviewed')->daily();
 Schedule::command('receipts:cleanup')->daily();
 // Owner follow-up 2026-10-22: one renewal reminder per current window.
 Schedule::command('subscriptions:remind-expiring')->dailyAt('09:00')->withoutOverlapping()->onOneServer();
+// Owner request 2026-11-08: abandoned agent uploads must not accumulate on
+// the private disk after their one-time token expires.
+Schedule::command('mcp:cleanup-uploads')->everyFifteenMinutes()->withoutOverlapping();
