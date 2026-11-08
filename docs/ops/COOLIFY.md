@@ -41,6 +41,14 @@ scripts/coolify-env.sh --domain https://<domain> --out /tmp/fe.env
 #    Deploy and wait for the app health check.
 ```
 
+> **Domain scheme matters.** For a Docker Compose app Coolify stores the
+> full URL (scheme included) in `docker_compose_domains`. A value stored as
+> `http://…` generates only HTTP Traefik routers plus a redirect to an HTTPS
+> router that was never created; the public origin then returns 503 while
+> `/up` works inside the container. Keep both apex and `www` as `https://…`.
+> After deploy, verify the new container carries
+> `traefik.http.routers.https-*.tls=true` and a certresolver label.
+
 Then the one explicit release step, in the Coolify app-service terminal:
 
 ```sh
