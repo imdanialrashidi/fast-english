@@ -53,6 +53,17 @@
 > topic / 2 lessons against the 5-topic / 12-lesson launch target. The domain
 > resolves to `185.226.119.68`; the `45.11.186.146` image app is a stale
 > duplicate whose Coolify API token is revoked.
+>
+> **Enabled 2026-11-14 — SMS on production (commit `d69dbb5`, container
+> `app-uerw…-20261113T211130`).** The MelliPayamak runtime variables were
+> written to the Coolify app env and rolled out; smoke 27/27, `ops:status ok`.
+> `/login/code` now answers 200 (it was 302 while SMS was off), `/login` and
+> `/register` payloads report `smsReady=true`, an in-app code send returned a
+> provider receipt id and wrote its `sms_messages` row, `GetDeliveries2`
+> reported `1` (delivered), and `sms:check-deliveries` finalized it. New
+> registrations now require a verified mobile; email + password stays for
+> existing accounts and staff. Turning `SMS_DRIVER` back to `null` restores
+> the email-only registration path.
 
 Date: 2026-10-26. Scope: whole repository at the current working tree
 (uncommitted S0–S9/R1–R5/M0–M6 work included). Environment: host PHP absent,
