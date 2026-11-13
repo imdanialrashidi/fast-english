@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'phone', 'password'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable implements FilamentUser, MustVerifyEmailContract
 {
@@ -32,6 +32,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmailContr
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_staff' => 'boolean',
             'disabled_at' => 'datetime',
@@ -96,6 +97,31 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmailContr
     public function sendEmailVerificationNotification(): void
     {
         // Deliberate no-op; see the method docblock.
+    }
+
+    /**
+     * A phone-verified account is a verified account: the SMS code proves
+     * possession of the number, and email keeps its role as the password
+     * reset channel. Accounts without a phone keep the email gate.
+     */
+    public function hasVerifiedPhone(): bool
+    {
+        return $this->phone_verified_at !== null;
+    }
+
+    public function markPhoneAsVerified(): void
+    {
+        if ($this->phone_verified_at === null) {
+            $this->forceFill(['phone_verified_at' => now()])->save();
+        }
+    }
+
+    /** The one verification channel the account actually has. */
+    public function accountVerified(): bool
+    {
+        return $this->phone !== null && $this->phone !== ''
+            ? $this->hasVerifiedPhone()
+            : $this->hasVerifiedEmail();
     }
 
     /**

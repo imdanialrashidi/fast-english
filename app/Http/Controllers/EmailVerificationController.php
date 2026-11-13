@@ -32,6 +32,12 @@ class EmailVerificationController extends Controller
             return redirect()->intended(route('account'));
         }
 
+        // A phone-registered account completes verification by SMS; the
+        // email code page would otherwise be a dead end.
+        if ($user->phone !== null && ! $user->hasVerifiedPhone()) {
+            return redirect()->route('phone.notice');
+        }
+
         $row = EmailVerificationCode::where('user_id', $user->id)->first();
         if ($row !== null && $row->expires_at->isPast()) {
             $row->delete();
@@ -57,6 +63,10 @@ class EmailVerificationController extends Controller
 
         if ($user->hasVerifiedEmail()) {
             return redirect()->intended(route('account'));
+        }
+
+        if ($user->phone !== null && ! $user->hasVerifiedPhone()) {
+            return redirect()->route('phone.notice');
         }
 
         $data = $request->validate([
@@ -94,6 +104,10 @@ class EmailVerificationController extends Controller
 
         if ($user->hasVerifiedEmail()) {
             return redirect()->intended(route('account'));
+        }
+
+        if ($user->phone !== null && ! $user->hasVerifiedPhone()) {
+            return redirect()->route('phone.notice');
         }
 
         $wait = EmailVerificationCodes::retryAfter($user);

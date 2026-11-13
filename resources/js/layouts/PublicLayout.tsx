@@ -99,7 +99,8 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     const onRegister = url.startsWith('/register');
     // Verification is authenticated and must not show app links that loop
     // back to the same gate. Keep the masthead mark, drop the nav/footer.
-    const onVerify = url.startsWith('/email/verify');
+    const onVerify = url.startsWith('/email/verify') || url.startsWith('/phone/verify');
+    const support = props.support;
     const [navigating, setNavigating] = React.useState(false);
 
     React.useEffect(() => {
@@ -238,6 +239,32 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <p className="m-0 border-t border-surface/15 pt-4 text-sm text-surface/60 md:col-span-2">
                         یادگیری انگلیسی با خواندن و شنیدن واقعی، با Fast English.
                     </p>
+                    {support !== null && (
+                        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-surface/75 md:col-span-2">
+                            <span className="font-bold text-surface">پشتیبانی:</span>
+                            {support.phone_href !== null ? (
+                                <a
+                                    href={support.phone_href}
+                                    dir="ltr"
+                                    className="inline-flex min-h-11 items-center text-surface no-underline hover:underline"
+                                >
+                                    {support.phone}
+                                </a>
+                            ) : (
+                                <span dir="ltr">{support.phone}</span>
+                            )}
+                            {support.messenger !== '' && <span>{support.messenger} با همین شماره</span>}
+                            {support.email_href !== null && (
+                                <a
+                                    href={support.email_href}
+                                    dir="ltr"
+                                    className="inline-flex min-h-11 items-center text-surface/75 no-underline hover:text-surface hover:underline"
+                                >
+                                    {support.email}
+                                </a>
+                            )}
+                        </p>
+                    )}
                 </div>
             </footer>}
         </div>

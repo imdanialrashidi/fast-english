@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Lesson;
 use App\Models\VocabularyWord;
+use App\Support\SiteSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -76,7 +77,35 @@ class HandleInertiaRequests extends Middleware
             // /sample is a 404 until content is uploaded. Learner routes are
             // excluded so their fixed query budgets stay untouched.
             'has_public_sample' => fn (): bool => $this->publicSampleAvailable($request),
+            // Owner-confirmed support phone/Bale/email, shown on the
+            // support page, footer, payment page, and auth screens. Only
+            // the routes that render a support note pay for the settings
+            // reads; learner query budgets stay untouched.
+            'support' => fn (): ?array => $this->supportAvailable($request)
+                ? SiteSettings::supportContacts()
+                : null,
         ];
+    }
+
+    private function supportAvailable(Request $request): bool
+    {
+        return $request->routeIs(
+            'landing',
+            'sample',
+            'download',
+            'install',
+            'trust.*',
+            'login',
+            'register',
+            'password.*',
+            'verification.*',
+            'phone.*',
+            'subscribe.index',
+            'payments.show',
+            'account',
+            'app.account',
+            'app.account.settings',
+        );
     }
 
     private function publicSampleAvailable(Request $request): bool
@@ -91,6 +120,7 @@ class HandleInertiaRequests extends Middleware
             'register',
             'password.*',
             'verification.*',
+            'phone.*',
         )) {
             return false;
         }

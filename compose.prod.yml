@@ -81,6 +81,19 @@ services:
       MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-info@fastenglishpodcast.ir}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Fast English}
 
+      # SMS (owner request 2026-11-13): login code + activation
+      # confirmation only, both as approved MelliPayamak patterns. The
+      # username/password and both pattern ids must be present before the
+      # phone surface activates; blank values fail closed and keep the
+      # email verification path. No sender line is configured.
+      SMS_DRIVER: ${SMS_DRIVER:-null}
+      MELIPAYAMAK_BASE_URL: ${MELIPAYAMAK_BASE_URL:-https://rest.payamak-panel.com/api/SendSMS}
+      MELIPAYAMAK_USERNAME: ${MELIPAYAMAK_USERNAME:-}
+      MELIPAYAMAK_PASSWORD: ${MELIPAYAMAK_PASSWORD:-}
+      MELIPAYAMAK_OTP_BODY_ID: ${MELIPAYAMAK_OTP_BODY_ID:-0}
+      MELIPAYAMAK_SUBSCRIPTION_BODY_ID: ${MELIPAYAMAK_SUBSCRIPTION_BODY_ID:-0}
+      SMS_SUBSCRIPTION_NOTIFICATIONS: ${SMS_SUBSCRIPTION_NOTIFICATIONS:-true}
+
       # Commercial switch: keep false until the launch inputs are real.
       SALES_ENABLED: ${SALES_ENABLED:-false}
 

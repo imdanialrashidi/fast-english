@@ -6,6 +6,7 @@ use App\Http\Responses\NoStore;
 use App\Models\PaymentDestination;
 use App\Models\PaymentRequest;
 use App\Models\Plan;
+use App\Support\Sms\SmsStatus;
 use App\Support\Toman;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -197,6 +198,11 @@ class PaymentRequestController extends Controller
                 'has_receipt' => $hasReceipt,
                 'receipt_url' => $hasReceipt ? route('payments.receipt.show', $fresh) : null,
             ],
+            // The page promises the activation SMS only when a verified
+            // phone, a working driver, and the notice switch are present.
+            'activationSms' => SmsStatus::ready()
+                && (bool) config('sms.subscription_notifications', true)
+                && $user->hasVerifiedPhone(),
         ]);
     }
 

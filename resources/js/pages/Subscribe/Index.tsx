@@ -3,6 +3,7 @@ import { CardSim, Check, CircleAlert, Inbox } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { SupportNote } from '@/components/SupportNote';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
@@ -26,6 +27,7 @@ interface SubscribeProps extends SharedProps {
     salesOn: boolean;
     paymentReady: boolean;
     paymentNotice: string | null;
+    activationSms: boolean;
 }
 
 export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (page: ReactNode) => ReactNode } = ({
@@ -33,6 +35,7 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
     salesOn,
     paymentReady,
     paymentNotice,
+    activationSms,
 }: SubscribeProps): React.JSX.Element => {
     const { errors, status } = usePage<SharedProps>().props;
     const form = useForm({ plan_id: 0 });
@@ -51,7 +54,12 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
                 back={{ href: '/app/account', label: 'بازگشت به حساب' }}
             />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
-                <p className="m-0 text-[1.0625rem] leading-8 text-muted">پلن موردنظرت را انتخاب کن؛ مبلغ و مدت هر پلن همان‌جا آمده است.</p>
+                <p className="m-0 text-[1.0625rem] leading-8 text-muted">
+                    پلن را انتخاب کن، مبلغ را کارت‌به‌کارت کن و رسید را بفرست.
+                    {activationSms
+                        ? ' بعد از تأیید، اشتراک فعال می‌شود و یک پیامک تأیید برای موبایلت می‌آید.'
+                        : ' بعد از تأیید، اشتراک فعال می‌شود.'}
+                </p>
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-muted">
@@ -127,6 +135,8 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
                         {errors.plan_id}
                     </p>
                 )}
+
+                <SupportNote />
             </div>
         </>
     );

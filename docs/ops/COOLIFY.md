@@ -225,6 +225,10 @@ checklist. Required/meaningful names:
 | `MAIL_HOST`, `MAIL_PORT` | SMTP host/port | no |
 | `MAIL_USERNAME`, `MAIL_PASSWORD` | SMTP credentials | YES |
 | `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME` | Sender identity | no |
+| `SMS_DRIVER`, `MELIPAYAMAK_BASE_URL` | `melipayamak` in production; `null`/`log` keeps phone login off or non-production dry runs | no |
+| `MELIPAYAMAK_USERNAME`, `MELIPAYAMAK_PASSWORD` | MelliPayamak panel web-service credentials (never in Git; blank means phone login stays hidden and registration uses email). If the panel reports `-110`, put its API key in `MELIPAYAMAK_PASSWORD`. | YES |
+| `MELIPAYAMAK_OTP_BODY_ID`, `MELIPAYAMAK_SUBSCRIPTION_BODY_ID` | Approved pattern ids for the login code and the activation confirmation; both required. The pattern chooses the line, so no sender line is configured. | YES |
+| `SMS_SUBSCRIPTION_NOTIFICATIONS` | `true` to send the best-effort activation confirmation; it never changes payment state. Login codes stay available when false. | no |
 | `SALES_ENABLED` | Off by default; on only with real prices/destination/terms | no |
 | `STAFF_2FA_ENFORCE`, `STAFF_2FA_IDLE_MINUTES` | Staff TOTP enforcement (on in prod) | no |
 | `RELEASE_*` | Empty falls back to the measured 1.0.0 values in `config/release.php` when `APP_ENV=production`; set only to override a newer build | no |

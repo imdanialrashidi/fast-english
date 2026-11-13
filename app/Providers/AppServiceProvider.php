@@ -11,6 +11,11 @@ use App\Policies\PaymentRequestPolicy;
 use App\Policies\PlacementAttemptPolicy;
 use App\Policies\VocabularyWordPolicy;
 use App\Support\BrowserDatabaseGuard;
+use App\Support\Sms\LogSmsSender;
+use App\Support\Sms\MelliPayamakSender;
+use App\Support\Sms\RecordingSmsSender;
+use App\Support\Sms\SmsSender;
+use App\Support\Sms\UnavailableSmsSender;
 use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Facades\Gate;
@@ -25,7 +30,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // One SMS boundary for the only two messages the product sends: a
+        // login/verification code and a subscription-activation
+        // confirmation. The driver is selected from server env; a blank or
+        // unrecognized value fails closed instead of silently dropping a
+        // code. Every attempt is recorded around the driver.
+        $this->app->singleton(SmsSender::class, function (): SmsSender {
+            $driver = match ((string) config('sms.driver', 'null')) {
+                'melipayamak' => new MelliPayamakSender((array) config('sms.melipayamak', [])),
+                'log' => new LogSmsSender,
+                default => new UnavailableSmsSender,
+            };
+
+            return new RecordingSmsSender($driver);
+        });
     }
 
     /**

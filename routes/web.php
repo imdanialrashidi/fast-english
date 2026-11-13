@@ -12,6 +12,8 @@ use App\Http\Controllers\LessonAudioController;
 use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\PaymentReceiptController;
 use App\Http\Controllers\PaymentRequestController;
+use App\Http\Controllers\PhoneLoginController;
+use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\SavedTopicsController;
@@ -38,6 +40,35 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/verify/resend', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+});
+
+// Owner request (2026-11-12): phone login by a six-digit SMS code. The
+// guest routes issue and consume a hashed code; the auth routes finish the
+// phone check for registration or an account-settings change. The
+// verification gate allows both groups so a half-verified account can
+// complete the flow without a redirect loop.
+Route::middleware('guest')->group(function () {
+    Route::get('/login/code', [PhoneLoginController::class, 'show'])->name('phone.login');
+    Route::post('/login/code', [PhoneLoginController::class, 'send'])
+        ->middleware('throttle:5,1')
+        ->name('phone.login.send');
+    Route::get('/login/code/verify', [PhoneLoginController::class, 'verifyForm'])->name('phone.login.verify');
+    Route::post('/login/code/verify', [PhoneLoginController::class, 'verify'])
+        ->middleware('throttle:10,1')
+        ->name('phone.login.verify.store');
+    Route::post('/login/code/resend', [PhoneLoginController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('phone.login.resend');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/phone/verify', [PhoneVerificationController::class, 'notice'])->name('phone.notice');
+    Route::post('/phone/verify', [PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:12,1')
+        ->name('phone.verify');
+    Route::post('/phone/verify/resend', [PhoneVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('phone.send');
 });
 
 // Owner requirement (2026-10-21): the landing/trust marketing surface is

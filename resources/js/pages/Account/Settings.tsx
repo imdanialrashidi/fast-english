@@ -1,8 +1,9 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { Check, Settings as SettingsIcon, User } from 'lucide-react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Check, Settings as SettingsIcon, ShieldCheck, Smartphone, User } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { SupportNote } from '@/components/SupportNote';
 import AppLayout from '@/layouts/AppLayout';
 import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
@@ -20,19 +21,25 @@ interface SettingsProps extends SharedProps {
     user: {
         name: string;
         email: string;
+        phone: string | null;
+        phone_verified: boolean;
         preferred_level: string | null;
         daily_goal_minutes: number;
     };
     levels: string[];
+    /** SMS delivery is configured; the phone field is meaningful. */
+    smsReady: boolean;
 }
 
 export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     user,
     levels,
+    smsReady,
 }: SettingsProps): React.JSX.Element => {
     const { errors, status } = usePage<SharedProps>().props;
     const form = useForm({
         name: user.name,
+        phone: user.phone ?? '',
         preferred_level: user.preferred_level ?? '',
         daily_goal_minutes: String(user.daily_goal_minutes),
     });
@@ -51,7 +58,7 @@ export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (pag
                 back={{ href: '/app/account', label: 'بازگشت به حساب' }}
             />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
-                <p className="m-0 text-[1.0625rem] leading-8 text-muted">نام، سطح و هدف روزانه‌ات را اینجا تنظیم کن.</p>
+                <p className="m-0 text-[1.0625rem] leading-8 text-muted">نام، موبایل، سطح و هدف روزانه‌ات را اینجا تنظیم کن.</p>
 
                 {status !== null && (
                     <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-success">
@@ -85,6 +92,49 @@ export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (pag
                             </p>
                         )}
                     </div>
+                    {smsReady && (
+                        <div className="grid gap-1.5">
+                            <label htmlFor="settings-phone" className="inline-flex items-center gap-1.5 font-bold">
+                                <Smartphone size={16} aria-hidden="true" />
+                                شمارهٔ موبایل
+                                {user.phone_verified && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-canvas px-2 py-0.5 text-xs font-bold text-success">
+                                        <ShieldCheck size={14} aria-hidden="true" />
+                                        تأیید شده
+                                    </span>
+                                )}
+                            </label>
+                            <input
+                                id="settings-phone"
+                                type="tel"
+                                value={form.data.phone}
+                                onChange={(event) => form.setData('phone', event.target.value)}
+                                autoComplete="tel"
+                                inputMode="tel"
+                                dir="ltr"
+                                placeholder="09xxxxxxxxx"
+                                aria-describedby={errors.phone ? 'settings-phone-error' : 'settings-phone-hint'}
+                                className={`${INPUT_CLASS} text-left font-en`}
+                            />
+                            {errors.phone !== undefined ? (
+                                <p id="settings-phone-error" role="alert" className="m-0 text-sm leading-7 text-danger">
+                                    {errors.phone}
+                                </p>
+                            ) : (
+                                <p id="settings-phone-hint" className="m-0 text-sm leading-7 text-muted">
+                                    برای ورود با کد پیامکی، همین شماره را تأیید کن. با تغییر شماره، یک کد تازه پیامک می‌شود.
+                                </p>
+                            )}
+                            {user.phone !== null && user.phone !== '' && !user.phone_verified && (
+                                <p className="m-0">
+                                    <Link href="/phone/verify" className="inline-flex min-h-11 items-center gap-1.5 font-bold text-primary">
+                                        <ShieldCheck size={18} aria-hidden="true" />
+                                        وارد کردن کد تأیید موبایل
+                                    </Link>
+                                </p>
+                            )}
+                        </div>
+                    )}
                     <div className="grid gap-1.5">
                         <label htmlFor="preferred-level" className="font-bold">سطح ترجیحی</label>
                         <select
@@ -141,6 +191,7 @@ export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (pag
                 <p className="m-0 leading-8 text-muted">
                     تغییر سطح در صفحه مطلب، سطح ترجیحی را تغییر نمی‌دهد. تغییر هدف روزانه، سطح ترجیحی را تغییر نمی‌دهد.
                 </p>
+                <SupportNote />
             </div>
         </>
     );

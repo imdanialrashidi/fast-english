@@ -120,7 +120,9 @@ Alpine دوباره از CDN یا bundle دوم بارگذاری نشود. asset
 
 ## 4. خارج از نسخه اول
 
-درگاه و اتصال بانکی، تأیید خودکار/OCR رسید، OTP پیامکی، native iOS، انتشار store، دانلود آفلاین محتوای پولی، Push، AI tutor، speaking، runtime AI/TTS، flashcard/SRS، ترجمه کامل درس، highlight کلمه‌به‌کلمه، import pipeline عمومی، dashboard نموداری، streak/gamification، پیشنهاددهنده الگوریتمی، coupon، affiliate، چند مدرس، چند زبان رابط و dark mode.
+درگاه و اتصال بانکی، تأیید خودکار/OCR رسید، native iOS، انتشار store، دانلود آفلاین محتوای پولی، Push، AI tutor، speaking، runtime AI/TTS، flashcard/SRS، ترجمه کامل درس، highlight کلمه‌به‌کلمه، import pipeline عمومی، dashboard نموداری، streak/gamification، پیشنهاددهنده الگوریتمی، coupon، affiliate، چند مدرس، چند زبان رابط و dark mode.
+
+> به‌روزرسانی 2026-11-12 (درخواست صریح مالک، جایگزین این بند): «OTP پیامکی» از فهرست خارج شد و به‌صورت ورود/تأیید با موبایل و کد شش‌رقمی، در کنار ورود ایمیل/رمز و با ملی‌پیامک، وارد scope شد. جزئیات و معیار پذیرش در `docs/PRODUCT.md` و `docs/QUALITY.md` (AC-28) ثبت شده است. فروش/پرداخت، snapshot و قواعد دسترسی تغییر نکرد.
 
 پیشرفت در صفحه مطلب و «ادامه» دیده می‌شود؛ صفحه مستقل آمار ساخته نمی‌شود. همکاری و پشتیبانی در آغاز لینک/صفحه اطلاعات‌اند؛ CRM یا ticketing داخلی ندارند.
 

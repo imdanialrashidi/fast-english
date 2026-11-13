@@ -2,6 +2,7 @@ import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { KeyRound, MailCheck, RefreshCw, ShieldCheck } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { SupportNote } from '@/components/SupportNote';
 import { AuthFrame, authLayout } from './Frame';
 import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
@@ -39,7 +40,7 @@ export const VerifyEmail: FunctionComponent<VerifyEmailProps> & { layout?: (page
     retryAfter,
     ttlMinutes,
 }: VerifyEmailProps): React.JSX.Element => {
-    const { errors, flash } = usePage<SharedProps>().props;
+    const { errors, flash, status } = usePage<SharedProps>().props;
     const verify = useForm({ code: '' });
     const resend = useForm({});
     const [seconds, setSeconds] = React.useState<number>(retryAfter);
@@ -77,7 +78,7 @@ export const VerifyEmail: FunctionComponent<VerifyEmailProps> & { layout?: (page
                 heading="تأیید ایمیل"
                 lede={`کد شش‌رقمی به ${email} فرستادیم. کد را وارد کن تا حسابت کامل شود.`}
                 errors={errors}
-                status={flash.success}
+                status={status ?? flash.success}
             >
                 <div className="grid gap-3 rounded-2xl border border-line bg-canvas px-4 py-3">
                     <p className="m-0 flex items-center gap-2 text-sm leading-7 font-bold">
@@ -166,6 +167,7 @@ export const VerifyEmail: FunctionComponent<VerifyEmailProps> & { layout?: (page
                     </button>{' '}
                     و با ایمیل درست دوباره ثبت‌نام کن.
                 </p>
+                <SupportNote />
             </AuthFrame>
         </>
     );

@@ -1,16 +1,22 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { Lock, Mail, User, UserPlus } from 'lucide-react';
+import { Lock, Mail, Smartphone, User, UserPlus } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { SupportNote } from '@/components/SupportNote';
 import { AuthFrame, authLayout } from './Frame';
 import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
 
 /**
  * Registration (AUTH-01): name + email + password through the same
- * Fortify endpoint. Success signs the account in and lands on the
- * account page (Fortify home, unchanged).
+ * Fortify endpoint. When SMS is configured the mobile number is required
+ * and the six-digit code arrives by SMS; without it the previous email
+ * code flow stays intact.
  */
+
+interface RegisterProps extends SharedProps {
+    smsReady: boolean;
+}
 
 function FieldError({ id, message }: { id: string; message?: string }): React.JSX.Element | null {
     if (message === undefined) {
@@ -23,9 +29,11 @@ function FieldError({ id, message }: { id: string; message?: string }): React.JS
     );
 }
 
-export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactNode) => ReactNode } = (): React.JSX.Element => {
+export const Register: FunctionComponent<RegisterProps> & { layout?: (page: ReactNode) => ReactNode } = ({
+    smsReady,
+}: RegisterProps): React.JSX.Element => {
     const { errors } = usePage<SharedProps>().props;
-    const form = useForm({ name: '', email: '', password: '', password_confirmation: '' });
+    const form = useForm({ name: '', phone: '', email: '', password: '', password_confirmation: '' });
 
     const submit = (event: React.FormEvent): void => {
         event.preventDefault();
@@ -38,7 +46,11 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
             <AuthFrame
                 title="یک حساب بساز؛ سطحت را انتخاب کن و بخوان."
                 heading="ساخت حساب"
-                lede="نام، ایمیل و یک رمز عبور برای حسابت وارد کن."
+                lede={
+                    smsReady
+                        ? 'نام، موبایل، ایمیل و یک رمز انتخاب کن. بعد از ثبت‌نام یک کد شش‌رقمی به موبایلت پیامک می‌شود.'
+                        : 'نام، ایمیل و یک رمز عبور برای حسابت وارد کن.'
+                }
                 errors={errors}
             >
                 <form onSubmit={submit} className="grid gap-4" noValidate>
@@ -59,6 +71,36 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
                         />
                         <FieldError id="name-error" message={errors.name} />
                     </div>
+
+                    {smsReady && (
+                        <div className="grid gap-1.5">
+                            <label htmlFor="phone" className="inline-flex items-center gap-1.5 font-bold">
+                                <Smartphone size={16} aria-hidden="true" />
+                                شمارهٔ موبایل
+                            </label>
+                            <input
+                                id="phone"
+                                type="tel"
+                                value={form.data.phone}
+                                onChange={(event) => form.setData('phone', event.target.value)}
+                                required
+                                autoComplete="tel"
+                                inputMode="tel"
+                                dir="ltr"
+                                placeholder="09xxxxxxxxx"
+                                aria-describedby={errors.phone ? 'phone-error' : 'phone-hint'}
+                                className={`${INPUT_CLASS} text-left font-en`}
+                            />
+                            {errors.phone !== undefined ? (
+                                <FieldError id="phone-error" message={errors.phone} />
+                            ) : (
+                                <p id="phone-hint" className="m-0 text-sm leading-7 text-muted">
+                                    کد ورود و کد تأیید به همین شماره پیامک می‌شود.
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <div className="grid gap-1.5">
                         <label htmlFor="email" className="inline-flex items-center gap-1.5 font-bold">
                             <Mail size={16} aria-hidden="true" />
@@ -125,7 +167,9 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
                     </button>
                 </form>
                 <p className="m-0 text-sm leading-7 text-muted">
-                    بعد از ساخت حساب، یک کد شش‌رقمی به ایمیلت می‌فرستیم تا حسابت را تأیید کنی.
+                    {smsReady
+                        ? 'بعد از ساخت حساب، یک کد شش‌رقمی به موبایلت می‌فرستیم تا حسابت را تأیید کنی.'
+                        : 'بعد از ساخت حساب، یک کد شش‌رقمی به ایمیلت می‌فرستیم تا حسابت را تأیید کنی.'}
                 </p>
                 <p className="m-0 leading-8 text-muted">
                     حساب داری؟{' '}
@@ -133,6 +177,7 @@ export const Register: FunctionComponent<SharedProps> & { layout?: (page: ReactN
                         ورود به حساب
                     </Link>
                 </p>
+                <SupportNote />
             </AuthFrame>
         </>
     );

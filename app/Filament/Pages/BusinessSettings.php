@@ -35,6 +35,10 @@ class BusinessSettings extends Page
 
     public string $supportChannel = '';
 
+    public string $supportPhone = '';
+
+    public string $supportMessenger = '';
+
     public string $supportHours = '';
 
     public string $cooperationChannel = '';
@@ -58,6 +62,8 @@ class BusinessSettings extends Page
         $destination = PaymentDestination::query()->where('is_active', true)->first();
 
         $this->supportChannel = SiteSettings::supportChannel();
+        $this->supportPhone = SiteSettings::supportPhone();
+        $this->supportMessenger = SiteSettings::supportMessenger();
         $this->supportHours = SiteSettings::supportHours() ?? '';
         $this->cooperationChannel = SiteSettings::cooperationChannel();
         $this->cardNumber = $destination?->card_number ?? PaymentDestination::PLACEHOLDER_CARD;
@@ -79,6 +85,8 @@ class BusinessSettings extends Page
 
         $this->validate([
             'supportChannel' => ['required', 'string', 'max:120'],
+            'supportPhone' => ['required', 'string', 'max:30'],
+            'supportMessenger' => ['nullable', 'string', 'max:120'],
             'supportHours' => ['nullable', 'string', 'max:120'],
             'cooperationChannel' => ['required', 'string', 'max:120'],
             'cardNumber' => ['nullable', 'regex:/^\d{16}$/'],
@@ -91,6 +99,7 @@ class BusinessSettings extends Page
         ], [
             'cardNumber.regex' => 'شمارهٔ کارت باید دقیقاً ۱۶ رقم باشد.',
             'supportChannel.required' => 'کانال پشتیبانی الزامی است.',
+            'supportPhone.required' => 'شمارهٔ پشتیبانی الزامی است.',
             'cooperationChannel.required' => 'کانال همکاری الزامی است.',
             'terms.required' => 'متن قوانین الزامی است.',
             'privacy.required' => 'متن حریم خصوصی الزامی است.',
@@ -115,6 +124,8 @@ class BusinessSettings extends Page
 
         DB::transaction(function (): void {
             Setting::put(SiteSettings::SUPPORT_CHANNEL, $this->supportChannel);
+            Setting::put(SiteSettings::SUPPORT_PHONE, $this->supportPhone);
+            Setting::put(SiteSettings::SUPPORT_MESSENGER, $this->supportMessenger);
             Setting::put(SiteSettings::SUPPORT_HOURS, $this->supportHours);
             Setting::put(SiteSettings::COOPERATION_CHANNEL, $this->cooperationChannel);
             Setting::put('legal.terms', $this->terms);

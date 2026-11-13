@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionEvent;
 use App\Models\User;
 use App\Support\Entitlement;
+use App\Support\SubscriptionSms;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Database\QueryException;
@@ -57,7 +58,7 @@ final class ApprovePayment
             throw ValidationException::withMessages(['request' => 'Staff cannot approve their own payment request.']);
         }
 
-        return DB::transaction(function () use ($requestId, $staff, $moment, $precheck) {
+        $result = DB::transaction(function () use ($requestId, $staff, $moment, $precheck) {
             $owner = User::where('id', $precheck->user_id)->lockForUpdate()->firstOrFail();
             $row = PaymentRequest::where('id', $requestId)->lockForUpdate()->firstOrFail();
 
@@ -168,6 +169,15 @@ final class ApprovePayment
                 'replayed' => false,
             ];
         });
+
+        // The transaction is durable; the activation confirmation is
+        // best-effort and queued after it so a provider failure cannot
+        // undo access. A replayed approve sent it once already.
+        if ($result['replayed'] === false) {
+            SubscriptionSms::queueActivated($result['request']);
+        }
+
+        return $result;
     }
 
     /**

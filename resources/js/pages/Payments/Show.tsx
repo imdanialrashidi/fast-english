@@ -3,6 +3,7 @@ import { CardSim, Check, CircleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { SupportNote } from '@/components/SupportNote';
 import AppLayout from '@/layouts/AppLayout';
 import { INPUT_CLASS } from '@/lib/form';
 import type { SharedProps } from '@/types';
@@ -28,6 +29,8 @@ interface PaymentProps extends SharedProps {
         has_receipt: boolean;
         receipt_url: string | null;
     };
+    /** A verified phone, a working driver, and the activation SMS switch. */
+    activationSms: boolean;
 }
 
 function statusLabel(status: string): string {
@@ -49,6 +52,7 @@ function statusLabel(status: string): string {
 
 export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     request,
+    activationSms,
 }: PaymentProps): React.JSX.Element => {
     const { errors, status } = usePage<SharedProps>().props;
     const receiptForm = useForm({ receipt: null as File | null, bank_reference: '', sender_last4: '', transferred_at: '' });
@@ -105,11 +109,24 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                     )}
                 </div>
 
+                {(request.status === 'awaiting_receipt' || request.status === 'pending') && (
+                    <section aria-label="روند پرداخت" className="grid gap-2 rounded-3xl border border-line bg-surface p-5">
+                        <h2 className="m-0 text-xl leading-8">چه اتفاقی می‌افتد؟</h2>
+                        <ol className="m-0 grid list-decimal gap-1.5 ps-5 leading-8 text-muted">
+                            <li>مبلغ را دقیقاً به کارت بالا واریز می‌کنی.</li>
+                            <li>تصویر رسید را همین‌جا می‌فرستی.</li>
+                            <li>رسید را بررسی می‌کنیم؛ وضعیت را در همین صفحه می‌بینی.</li>
+                            <li>بعد از تأیید، اشتراک فعال می‌شود و به درس‌ها دسترسی پیدا می‌کنی.</li>
+                            {activationSms && <li>بعد از فعال‌شدن اشتراک، یک پیامک تأیید برای موبایلت می‌آید.</li>}
+                        </ol>
+                    </section>
+                )}
+
                 {request.status === 'awaiting_receipt' && (
                     <section aria-label="ارسال رسید" className="grid gap-4">
                         <h2 className="m-0 text-xl leading-8">قدم بعدی: واریز و ارسال رسید</h2>
                         <p className="m-0 leading-8 text-muted">
-                            مبلغ بالا را به کارت مقصد واریز کنید، سپس رسید را همین‌جا ارسال کنید. نتیجه فقط پس از ثبت در سرور نمایش داده می‌شود.
+                            مبلغ بالا را به کارت مقصد واریز کن، سپس تصویر رسید را همین‌جا بفرست. نتیجه بعد از بررسی مشخص می‌شود.
                         </p>
                         <form onSubmit={submitReceipt} className="fe-filters grid gap-4 rounded-3xl border border-line bg-surface p-5">
                             <div className="grid gap-1.5">
@@ -231,9 +248,11 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                     <section aria-label="وضعیت بررسی" className="grid gap-2">
                         <h2 className="m-0 text-xl leading-8">قدم بعدی: انتظار برای بررسی</h2>
                         <p className="m-0 leading-8 text-muted">
-                            رسید شما ثبت شد و در صف بررسی قرار گرفت. این وضعیت دسترسی تازه ایجاد نمی‌کند. برای بررسی وضعیت همین صفحه را دوباره بارگذاری
-                            کنید.
+                            رسیدت ثبت شد و در صف بررسی است. بعد از تأیید، اشتراک فعال می‌شود و دسترسی باز می‌شود. وضعیت را در همین صفحه ببین.
                         </p>
+                        {activationSms && (
+                            <p className="m-0 leading-8 text-muted">بعد از فعال‌شدن اشتراک، یک پیامک تأیید برای موبایلت می‌آید.</p>
+                        )}
                         <p className="m-0 flex flex-wrap gap-2">
                             <Link
                                 href={`/app/payments/${request.id}`}
@@ -256,7 +275,7 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                 {request.status === 'rejected' && (
                     <section aria-label="رد شده" className="grid gap-2">
                         <h2 className="m-0 text-xl leading-8">قدم بعدی: خرید دوباره</h2>
-                        <p className="m-0 leading-8 text-muted">این درخواست رد شد. برای ادامه، یک درخواست تازه بسازید؛ سابقه قبلی حفظ می‌شود.</p>
+                        <p className="m-0 leading-8 text-muted">این درخواست رد شد. برای ادامه، یک درخواست تازه بساز؛ سابقهٔ قبلی حفظ می‌شود.</p>
                         <p className="m-0">
                             <Link
                                 href="/app/subscribe"
@@ -271,7 +290,7 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                 {request.status === 'cancelled' && (
                     <section aria-label="لغو شده" className="grid gap-2">
                         <h2 className="m-0 text-xl leading-8">قدم بعدی: خرید دوباره در صورت نیاز</h2>
-                        <p className="m-0 leading-8 text-muted">این درخواست لغو شد و سابقه آن حفظ شده است. برای شروع تازه، یک پلن انتخاب کنید.</p>
+                        <p className="m-0 leading-8 text-muted">این درخواست لغو شد و سابقه‌اش حفظ شده است. برای شروع تازه، یک پلن انتخاب کن.</p>
                         <p className="m-0">
                             <Link
                                 href="/app/subscribe"
@@ -286,9 +305,11 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                 {request.status === 'approved' && (
                     <section aria-label="تأیید شده" className="grid gap-2">
                         <h2 className="m-0 text-xl leading-8">تأیید شده</h2>
-                        <p className="m-0 leading-8 text-muted">این درخواست تأیید شده است. جزئیات اشتراک در حساب نمایش داده می‌شود.</p>
+                        <p className="m-0 leading-8 text-muted">پرداخت تأیید شد و اشتراک فعال شد. جزئیات اشتراک در حساب نمایش داده می‌شود.</p>
                     </section>
                 )}
+
+                <SupportNote />
             </div>
         </>
     );

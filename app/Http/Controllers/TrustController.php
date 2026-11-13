@@ -55,12 +55,20 @@ class TrustController extends Controller
 
     private function trustPage(string $page): Response
     {
+        $support = SiteSettings::supportContacts();
+
         return Inertia::render('Trust/Show', [
             'page' => $page,
             'notice' => null,
             'contact' => [
                 'support_channel' => SiteSettings::supportChannel(),
                 'support_href' => SiteSettings::contactHref(SiteSettings::supportChannel()),
+                'support_phone' => $support['phone'],
+                'support_phone_href' => $support['phone_href'],
+                'support_email' => $support['email'],
+                'support_email_href' => $support['email_href'],
+                'support_messenger' => $support['messenger'],
+                'support_messenger_note' => $support['messenger_note'],
                 'support_hours' => SiteSettings::supportHours(),
                 'cooperation_channel' => SiteSettings::cooperationChannel(),
                 'cooperation_href' => SiteSettings::contactHref(SiteSettings::cooperationChannel()),

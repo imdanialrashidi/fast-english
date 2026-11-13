@@ -10,6 +10,17 @@ export interface AuthUser {
     email: string;
 }
 
+/** Owner-confirmed support channels (SiteSettings::supportContacts()). */
+export interface SupportContact {
+    phone: string;
+    phone_href: string | null;
+    email: string;
+    email_href: string | null;
+    messenger: string;
+    messenger_note: string;
+    hours: string | null;
+}
+
 export interface SharedProps extends InertiaPageProps {
     auth: {
         user: AuthUser | null;
@@ -31,6 +42,8 @@ export interface SharedProps extends InertiaPageProps {
      * sample links when false instead of sending a guest to a 404.
      */
     has_public_sample: boolean;
+    /** Null on pages that do not render a support note. */
+    support: SupportContact | null;
 }
 
 /** Page-specific URL bags are declared at their page (Landing only). */

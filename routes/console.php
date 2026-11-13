@@ -18,3 +18,6 @@ Schedule::command('subscriptions:remind-expiring')->dailyAt('09:00')->withoutOve
 // Owner request 2026-11-08: abandoned agent uploads must not accumulate on
 // the private disk after their one-time token expires.
 Schedule::command('mcp:cleanup-uploads')->everyFifteenMinutes()->withoutOverlapping();
+// Owner request 2026-11-13: read-only delivery reports for the login code
+// and the subscription-activation SMS. It never resends.
+Schedule::command('sms:check-deliveries')->everyTenMinutes()->withoutOverlapping()->onOneServer();

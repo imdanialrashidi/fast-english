@@ -25,6 +25,9 @@
         <env name="CACHE_STORE" value="array"/>
         <env name="DB_CONNECTION" value="pgsql"/>
         <env name="MAIL_MAILER" value="array"/>
+        <!-- Phone/SMS tests opt in explicitly; the rest of the suite keeps
+             the email verification path (and never calls a provider). -->
+        <env name="SMS_DRIVER" value="null"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <!-- S8: the sales switch defaults OFF everywhere; the test lane
              enables it so the S5/S6 money suites keep their meaning.

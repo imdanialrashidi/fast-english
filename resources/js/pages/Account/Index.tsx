@@ -14,6 +14,7 @@ import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { InstallCard } from '@/components/InstallCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { SupportNote } from '@/components/SupportNote';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
@@ -329,11 +330,13 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
                     <InstallCard />
 
                     <nav aria-label="تنظیمات حساب" className="overflow-hidden rounded-3xl border border-line bg-surface">
-                        <MenuRow href="/app/account/settings" icon={<SettingsIcon size={18} />} label="تنظیمات حساب" hint="نام، سطح و هدف روزانه" />
+                        <MenuRow href="/app/account/settings" icon={<SettingsIcon size={18} />} label="تنظیمات حساب" hint="نام، موبایل، سطح و هدف روزانه" />
                         <MenuRow href="/app/saved" icon={<Bookmark size={18} />} label="ذخیره‌شده‌ها" hint="مطلب‌هایی که برای بعد نگه داشته‌ای" />
                         <MenuRow href="/app/placement" icon={<GraduationCap size={18} />} label="تعیین سطح" hint="آزمون اختیاری برای پیدا کردن سطح مناسب" />
                         <MenuRow href="/install" icon={<Smartphone size={18} />} label="نصب روی گوشی" hint="افزودن به صفحهٔ اصلی در iPhone و اندروید" />
                     </nav>
+
+                    <SupportNote />
 
                     <form onSubmit={logout}>
                         <button

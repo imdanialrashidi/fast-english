@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use App\Support\PaymentMethods;
+use App\Support\Sms\SmsStatus;
 use App\Support\Toman;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -60,6 +61,9 @@ class SubscribeController extends Controller
             'paymentNotice' => $paymentReady
                 ? null
                 : 'روش پرداخت هنوز فعال نشده است. تا آماده‌شدن آن، خرید و پرداخت در دسترس نیست.',
+            'activationSms' => SmsStatus::ready()
+                && (bool) config('sms.subscription_notifications', true)
+                && $user->hasVerifiedPhone(),
         ]);
     }
 }

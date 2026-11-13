@@ -1,15 +1,22 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { Eye, EyeOff, Lock, LogIn, Mail } from 'lucide-react';
+import { Eye, EyeOff, Lock, LogIn, Mail, Smartphone } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { SupportNote } from '@/components/SupportNote';
 import { AuthFrame, authLayout } from './Frame';
 import type { SharedProps } from '@/types';
 
 /**
- * Login (AUTH-01): email + password through the same Fortify endpoint.
+ * Login (AUTH-01): email + password through the same Fortify endpoint,
+ * plus the owner's phone-code route when SMS delivery is configured.
  * Wrong credentials and suspended accounts get the same generic error
  * from the server; the throttle (5/min per account+IP) is unchanged.
  */
+
+interface LoginProps extends SharedProps {
+    /** SMS driver + credentials are present; show the phone-code entry. */
+    smsReady: boolean;
+}
 
 function PasswordField({
     id,
@@ -64,7 +71,9 @@ function PasswordField({
     );
 }
 
-export const Login: FunctionComponent<SharedProps> & { layout?: (page: ReactNode) => ReactNode } = (): React.JSX.Element => {
+export const Login: FunctionComponent<LoginProps> & { layout?: (page: ReactNode) => ReactNode } = ({
+    smsReady,
+}: LoginProps): React.JSX.Element => {
     const { errors } = usePage<SharedProps>().props;
     const form = useForm({ email: '', password: '' });
 
@@ -79,9 +88,30 @@ export const Login: FunctionComponent<SharedProps> & { layout?: (page: ReactNode
             <AuthFrame
                 title="با یک متن کوتاه انگلیسی، امروز را شروع کن."
                 heading="ورود به حساب"
-                lede="ایمیل و رمز عبورت را وارد کن تا به درس‌هایت برسی."
+                lede={smsReady ? 'با کد پیامکی سریع وارد شو، یا با ایمیل و رمز.' : 'ایمیل و رمز عبورت را وارد کن.'}
                 errors={errors}
             >
+                {smsReady && (
+                    <div className="grid gap-2 rounded-2xl border border-line bg-canvas p-4">
+                        <p className="m-0 flex items-center gap-2 font-bold">
+                            <Smartphone size={18} aria-hidden="true" />
+                            ورود با کد پیامکی
+                        </p>
+                        <p className="m-0 text-sm leading-7 text-muted">
+                            شمارهٔ موبایلت را می‌نویسی و یک کد شش‌رقمی برایت پیامک می‌شود. نیازی به رمز نیست.
+                        </p>
+                        <Link
+                            href="/login/code"
+                            className="inline-flex min-h-11 w-fit min-w-11 items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                        >
+                            <Smartphone size={20} aria-hidden="true" />
+                            ورود با موبایل
+                        </Link>
+                    </div>
+                )}
+
+                {smsReady && <p className="m-0 text-center text-sm text-muted">یا با ایمیل و رمز</p>}
+
                 <form onSubmit={submit} className="grid gap-4" noValidate>
                     <div className="grid gap-1.5">
                         <label htmlFor="email" className="inline-flex items-center gap-1.5 font-bold">
@@ -132,6 +162,7 @@ export const Login: FunctionComponent<SharedProps> & { layout?: (page: ReactNode
                         رمز را فراموش کرده‌ام
                     </Link>
                 </div>
+                <SupportNote />
             </AuthFrame>
         </>
     );

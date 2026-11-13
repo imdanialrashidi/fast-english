@@ -7,6 +7,7 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\NeutralPasswordResetLinkResponse;
 use App\Http\Responses\RegisterResponse;
 use App\Models\User;
+use App\Support\Sms\SmsStatus;
 use App\Support\SmtpStatus;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -59,8 +60,12 @@ class FortifyServiceProvider extends ServiceProvider
         // handling, and redirects are unchanged; only the HTML transport
         // moved. Error bags + old input travel through the Inertia
         // protocol automatically.
-        Fortify::loginView(fn () => Inertia::render('Auth/Login'));
-        Fortify::registerView(fn () => Inertia::render('Auth/Register'));
+        Fortify::loginView(fn () => Inertia::render('Auth/Login', [
+            'smsReady' => SmsStatus::ready(),
+        ]));
+        Fortify::registerView(fn () => Inertia::render('Auth/Register', [
+            'smsReady' => SmsStatus::ready(),
+        ]));
         Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword', [
             'resetDisabled' => SmtpStatus::isPasswordResetDisabled(),
         ]));

@@ -8,13 +8,15 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Email-verification gate (owner request 2026-10-28).
+ * Account-verification gate.
  *
- * A signed-in account without a verified email may reach only the
- * verification surface, auth/logout, the free public sample, and staff
- * authentication routes. Everything else redirects to the code page so a
- * new registration actually completes the flow instead of silently
- * browsing. The route allowlist also prevents a redirect loop.
+ * A signed-in account completes one verification channel: the SMS code
+ * when a phone is attached, otherwise the email code. Until then it may
+ * reach only the verification surface, auth/logout, the free public
+ * sample, and staff authentication routes. Everything else redirects to
+ * the right code page so a new registration actually completes the flow
+ * instead of silently browsing. The route allowlist also prevents a
+ * redirect loop.
  */
 class EnsureEmailVerified
 {
@@ -25,6 +27,7 @@ class EnsureEmailVerified
      */
     private const ALLOWED = [
         'verification.*',
+        'phone.*',
         'logout',
         'login',
         'login.store',
@@ -52,7 +55,14 @@ class EnsureEmailVerified
     {
         $user = $request->user();
 
-        if ($user === null || $user->hasVerifiedEmail() || $user->disabled_at !== null) {
+        if ($user === null || $user->accountVerified() || $user->disabled_at !== null) {
+            return $next($request);
+        }
+
+        // A phone-bearing account that mistyped its number may correct it
+        // here without being trapped on the code page. Email-only accounts
+        // keep the stricter pre-existing gate.
+        if ($user->phone !== null && $request->routeIs('account.settings', 'account.settings.update')) {
             return $next($request);
         }
 
@@ -62,10 +72,10 @@ class EnsureEmailVerified
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'برای ادامه، ایمیل خود را تأیید کنید. کد تأیید را از صفحهٔ تأیید ایمیل دوباره بفرستید.',
+                'message' => 'برای ادامه، حسابت را تأیید کنید. کد تأیید را از صفحهٔ تأیید دوباره بفرستید.',
             ], 403, NoStore::headers());
         }
 
-        return redirect()->route('verification.notice');
+        return redirect()->route($user->phone !== null ? 'phone.notice' : 'verification.notice');
     }
 }

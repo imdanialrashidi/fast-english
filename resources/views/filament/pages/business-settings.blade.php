@@ -2,11 +2,31 @@
     <form wire:submit="save" class="grid gap-6">
         <x-filament::section
             heading="Contact channels"
-            description="Shown on the public support and cooperation pages. Use @handle, an email address, or an https URL."
+            description="Shown on the public support page, footer, payment page, and auth pages. The support phone is the primary channel; Bale uses the same number."
         >
             <div class="grid gap-5 md:grid-cols-2">
                 <div class="grid gap-2">
-                    <label for="supportChannel" class="text-sm font-medium">Support channel</label>
+                    <label for="supportPhone" class="text-sm font-medium">Support phone</label>
+                    <x-filament::input.wrapper>
+                        <x-filament::input id="supportPhone" type="text" dir="ltr" inputmode="tel" wire:model="supportPhone" placeholder="09xxxxxxxxx" />
+                    </x-filament::input.wrapper>
+                    @error('supportPhone')
+                        <p class="text-sm text-danger-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid gap-2">
+                    <label for="supportMessenger" class="text-sm font-medium">Support messenger label</label>
+                    <x-filament::input.wrapper>
+                        <x-filament::input id="supportMessenger" type="text" wire:model="supportMessenger" placeholder="بله" />
+                    </x-filament::input.wrapper>
+                    @error('supportMessenger')
+                        <p class="text-sm text-danger-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid gap-2">
+                    <label for="supportChannel" class="text-sm font-medium">Support email / channel</label>
                     <x-filament::input.wrapper>
                         <x-filament::input id="supportChannel" type="text" dir="ltr" wire:model="supportChannel" />
                     </x-filament::input.wrapper>
