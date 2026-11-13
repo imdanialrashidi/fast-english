@@ -58,7 +58,7 @@ S0–S9/R1–R5 above remain the behavioral milestones; migration slices below a
 | M3 — Returning user | Progress/bookmarks/account/settings/Today/words-SRS/placement as Inertia | Resume/isolation/completion; SRS determinism; pinned-version exam | Delivered 2026-10-11 |
 | M4 — Payment views | Subscribe/payments status/cancel/receipt-upload UI as Inertia | Snapshot immutability; upload validation; ownership; approval stays Filament | Delivered 2026-10-11 |
 | M5 — PWA + hardening + obsolete removal | Manifest/SW/offline/robots/assetlinks/sitemap intact; no-store/SW-allowlist re-audit; Blade learner views + `app/Livewire` + `reader-player.js` + `theme.js` removed after parity | No private SW cache; Range re-proven; no admin assets in learner bundle | Delivered 2026-10-11 |
-| M6 — Full regression + handover | Entire Pest + Playwright suites green; rendered inspection desktop + mobile | All migration acceptance criteria PASS with evidence | Pending |
+| M6 — Full regression + handover | Entire Pest + Playwright suites green; rendered inspection desktop + mobile | All migration acceptance criteria PASS with evidence | Regression delivered 2026-11-13 — Pest 409 passed / 4,937 assertions, full Chromium 89 passed; handover legs AC-19/20/22 stay BLOCKED on real devices and off-server backup |
 
 ## Fixtures vs launch boundaries
 

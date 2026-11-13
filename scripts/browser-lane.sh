@@ -13,7 +13,10 @@
 #   scripts/browser-lane.sh test ... # BASE_URL=<lane> npx playwright test ...
 #
 # Requires Docker, the fe-php image, the s0-net network, and untracked
-# .env + .env.browser (DB overrides). Secrets are never printed.
+# .env + .env.browser (DB overrides). The database host is forced to the
+# container name on that network (BROWSER_LANE_DB_HOST, default s0-pg):
+# a stale DB_HOST in .env.browser used to leave the lane hanging with no
+# response. Secrets are never printed.
 set -Eeuo pipefail
 
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -22,6 +25,7 @@ cd "$ROOT"
 CONTAINER="${BROWSER_LANE_CONTAINER:-fe-browser-lane}"
 IMAGE="${BROWSER_LANE_IMAGE:-fe-php:8.4.26}"
 NETWORK="${BROWSER_LANE_NETWORK:-s0-net}"
+DB_HOST="${BROWSER_LANE_DB_HOST:-s0-pg}"
 PORT="${BROWSER_LANE_PORT:-8112}"
 URL="http://127.0.0.1:${PORT}"
 
@@ -52,6 +56,7 @@ start() {
         -v "$ROOT:/repo" -w /repo \
         --user "$(id -u):$(id -g)" \
         --env-file .env --env-file .env.browser \
+        -e "DB_HOST=$DB_HOST" \
         -e APP_ENV=staging -e APP_DEBUG=false \
         -e APP_LOCALE=fa \
         -e "APP_URL=$URL" -e SALES_ENABLED=true \

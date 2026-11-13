@@ -106,6 +106,13 @@ npm run typecheck
 six-digit registration code appears in `storage/logs/laravel.log`; production
 needs real SMTP or new accounts cannot finish verification.
 
+No host PHP (the pinned local setup)? Run the same PHP steps in the dev
+image on the docker network that carries PostgreSQL:
+`docker run --rm --network s0-net -v "$PWD:/repo" -w /repo --user "$(id -u):$(id -g)" fe-php:8.4.26 php vendor/bin/pest`.
+The stock 128M CLI limit aborts the receipt-upload suite, so pass
+`-d memory_limit=1G` or mount `scripts/php-test.ini`; the gate does this for
+you.
+
 One-command alternative: `composer setup` (install + env + key + migrate + build).
 
 Staff content work: [docs/ops/CONTENT_UPLOAD_FA.md](docs/ops/CONTENT_UPLOAD_FA.md).
@@ -125,7 +132,7 @@ npx playwright test m0-inertia --project=chromium
 bash scripts/project-verify.sh
 ```
 
-Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). The local Chromium lane is documented by `scripts/browser-lane.sh` (`start`, `seed`, `status`, `stop`, `reset`, `test`). Requires PostgreSQL reachable and an app server on `:8111` (default `BASE_URL=http://127.0.0.1:8111`); when no server answers, the browser lane prints `SKIP: browser lane (no server on :8111)` and the lanes that ran still count.
+Full gate: Pint + Pest on PostgreSQL + typecheck + build + affected Playwright spec (`m0-inertia --project=chromium`). PHP runs on the host when it is installed; without host PHP the gate runs the same steps in `fe-php:8.4.26` on the `s0-net` docker network and applies `scripts/php-test.ini` (1G) so the receipt suite does not abort at the stock 128M limit. The local Chromium lane is documented by `scripts/browser-lane.sh` (`start`, `seed`, `status`, `stop`, `reset`, `test`); it forces `DB_HOST` to `s0-pg` (`BROWSER_LANE_DB_HOST` to override) so a stale `.env.browser` cannot leave it hanging. It needs an app server on `:8112` (the lane's own origin); when no server answers the gate prints `SKIP: browser lane (...)` and the lanes that ran still count.
 
 Solo default: leave the proven change in the working tree and report its state. Team PR only on explicit request: `node scripts/pr-deliver.mjs prepare` before editing, then `deliver --message ... --title ... --body-file .artifacts/pr-deliver.md --file <path>...` after verification. No per-task branches, no main writes, no auto-merge. Read-only/local-only work never publishes; `PR_DELIVERY=off` opts out. See `docs/GIT_POLICY.md`.
 
