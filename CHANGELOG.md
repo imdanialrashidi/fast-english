@@ -1,3 +1,8 @@
+## Unreleased — live SMS verified, local dev database repaired (owner 2026-11-14)
+
+- **MelliPayamak is live-capable.** The two approved patterns accept sends: `BaseServiceNumber` returned `RetStatus=1` with a receipt id for both the login-code and the activation pattern, and `GetDeliveries2` reported the code message `1` (delivered). The application path was exercised as well: `SmsStatus::ready()` is true, the `RecordingSmsSender` wrote its audit row (`kind=code`, `status=accepted`, receipt id kept as text), the provider accepted the send, and the delivery poll resolves later. Production still has `SMS_DRIVER` unset, so the phone surface stays hidden until the owner enables it.
+- **Local dev database repaired.** `.env` pointed at `fe_dev` on `s0-pg`, but neither the role nor the database existed, so every pinned `php artisan` command failed with password authentication. Created the `fe_dev` role and database, ran all 29 migrations, and seeded only the owner catalogs (plans + placement). `migrate:status` is clean; the verification gate already checks the testing database and was unaffected.
+
 ## Deployed 2026-11-13 — support contacts, phone login, two-message SMS
 
 - **Support is placed everywhere it is needed.** The owner-confirmed phone `09221889814` and Bale (same number) join the existing support email. `/support`, the public footer, `/app/subscribe`, the payment page, login/register/verification pages, and account settings render a shared support note. Phone, messenger label, email, and hours stay owner-editable in Business settings.
