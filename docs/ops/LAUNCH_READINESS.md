@@ -37,6 +37,22 @@
 > `SALES_ENABLED=false`, and the landing still shows all three plan prices.
 > The card remains `configured=true` (last4 6037, bank Tejarat). Content is
 > still empty (0 topics, 0 lessons), so sales stay off until upload.
+>
+> **Deployed 2026-11-13 — phone login, two-message SMS, support contacts
+> (commit `328a4c7`, Coolify compose app `uerwghnhy5ezsd3ghxo96ugl` on
+> `185.226.119.68`, deployment `2b44aa37…`, container
+> `app-uerw…-20261113T135514`).** `release.sh` ran migrations `000025`
+> (phone columns + `phone_verification_codes`) and `000026` (`sms_messages`);
+> `ops:status ok`; smoke 27/27; `/sample` 200 with «My Morning»; the sample
+> audio answers 206 with `no-store, private`; `/support` shows the confirmed
+> phone; `/login/code` 302s to `/login` because `SMS_DRIVER` is unset. The
+> active payment destination was repaired from the owner-approved row (last4
+> 2588, Pasargad, holder and transfer text) because production held the old
+> card with an empty bank (`configured=false`); checkout has a valid
+> destination again while `SALES_ENABLED` stays `false`. Live content is 1
+> topic / 2 lessons against the 5-topic / 12-lesson launch target. The domain
+> resolves to `185.226.119.68`; the `45.11.186.146` image app is a stale
+> duplicate whose Coolify API token is revoked.
 
 Date: 2026-10-26. Scope: whole repository at the current working tree
 (uncommitted S0–S9/R1–R5/M0–M6 work included). Environment: host PHP absent,
