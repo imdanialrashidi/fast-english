@@ -14,20 +14,31 @@
 # Migrations NEVER run on container start; release runs one explicit
 # `php artisan migrate --force` after a backup (RUNBOOK section 1).
 
+# Base-image registry. The production build host (Iran) cannot complete
+# Docker Hub's token exchange: registry-1.docker.io answers, but the auth
+# endpoint resets the connection, so every base-image pull fails. Pull the
+# same tags through a reachable mirror by default; override on networks that
+# can reach Docker Hub directly:
+#   docker build --build-arg BASE_REGISTRY=docker.io ...
+ARG BASE_REGISTRY=docker.arvancloud.ir
+
+# --- 0. Composer binary (mirror-aware) ---
+FROM ${BASE_REGISTRY}/library/composer:2 AS composer
+
 # --- 1. PHP vendor (pinned PHP CLI + Composer) ---
-FROM php:8.4.26-cli-bookworm AS vendor
+FROM ${BASE_REGISTRY}/library/php:8.4.26-cli-bookworm AS vendor
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip libpq-dev libicu-dev libpng-dev libjpeg-dev libwebp-dev libzip-dev \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install pdo_pgsql gd exif intl opcache zip \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-scripts
 
 # --- 2. Vite assets (pinned Node) ---
-FROM node:22.23.2 AS assets
+FROM ${BASE_REGISTRY}/library/node:22.23.2 AS assets
 WORKDIR /app
 # Optional npm registry mirror for build hosts that cannot reach
 # registry.npmjs.org (the Iranian production server cannot; npmmirror can).
@@ -47,7 +58,7 @@ RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi 
     && npm run build
 
 # --- 3. Runtime (pinned PHP-FPM) ---
-FROM php:8.4.26-fpm-bookworm
+FROM ${BASE_REGISTRY}/library/php:8.4.26-fpm-bookworm
 ENV DEBIAN_FRONTEND=noninteractive
 
 # System deps: nginx, supervisor, curl (healthcheck), pg client 17 for
