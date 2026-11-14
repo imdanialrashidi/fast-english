@@ -20,7 +20,9 @@
 # same tags through a reachable mirror by default; override on networks that
 # can reach Docker Hub directly:
 #   docker build --build-arg BASE_REGISTRY=docker.io ...
-ARG BASE_REGISTRY=docker.arvancloud.ir
+# Docker ArvanCloud serves composer/php-fpm but returns registry errors for
+# node and php-cli; iranserver served all four on 2026-11-14.
+ARG BASE_REGISTRY=docker.iranserver.com
 
 # --- 0. Composer binary (mirror-aware) ---
 FROM ${BASE_REGISTRY}/library/composer:2 AS composer
