@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { CircleCheck, Info, MonitorDown, MoreVertical, Share } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
@@ -47,7 +47,6 @@ export const InstallIndex: FunctionComponent<InstallIndexProps> & { layout?: (pa
 
     return (
         <>
-            <Head title="نصب روی گوشی" />
             <div className="mx-auto grid max-w-[760px] gap-5 px-4 py-6">
                 <div className="grid gap-2">
                     <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">نصب روی گوشی</h1>

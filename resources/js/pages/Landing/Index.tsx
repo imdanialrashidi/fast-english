@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { Clock, Download, LoaderCircle, Pause, Play, Plus } from 'lucide-react';
 import type { SharedProps, TopicRow } from '@/types';
@@ -386,8 +386,6 @@ export const LandingIndex: FunctionComponent<LandingProps> & { layout?: (page: R
 
     return (
         <>
-            <Head title="Fast English: انگلیسی را با داستان کوتاه بخوان و بشنو" />
-
             {/* 1. Cover: promise at the start, the working sample at the end. */}
             <section aria-label="معرفی Fast English" className="mx-auto w-full max-w-[1200px] px-4 pt-10 pb-14 sm:px-6 sm:pt-14 lg:pt-20 lg:pb-20">
                 <div className="grid gap-12 lg:grid-cols-[1fr_1.03fr] lg:items-start lg:gap-16">

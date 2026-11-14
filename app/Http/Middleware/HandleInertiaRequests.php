@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Lesson;
 use App\Models\VocabularyWord;
+use App\Support\PublicSample;
 use App\Support\SiteSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -125,10 +125,6 @@ class HandleInertiaRequests extends Middleware
             return false;
         }
 
-        return Lesson::query()
-            ->where('is_public_sample', true)
-            ->where('status', 'published')
-            ->whereHas('topic', fn ($topics) => $topics->where('status', 'published'))
-            ->exists();
+        return PublicSample::exists();
     }
 }

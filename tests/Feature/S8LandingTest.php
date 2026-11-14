@@ -286,9 +286,15 @@ test('public sample ships canonical, description, and Article structured data', 
         ->assertOk()
         ->getContent();
 
-    expect($html)->toContain('<link rel="canonical" href="'.route('sample').'">')
+    expect($html)->toContain('<link rel="canonical" data-inertia="canonical" href="'.route('sample').'">')
         ->and($html)->toContain('<meta name="description"')
+        ->and($html)->toContain('نمونهٔ رایگان')
+        ->and($html)->toContain('property="og:type" data-inertia="og:type" content="article"')
+        ->and($html)->toContain('property="og:image"')
         ->and($html)->toContain('"@type":"Article"')
+        ->and($html)->toContain('"image":')
+        ->and($html)->toContain('"datePublished":')
+        ->and($html)->toContain('"dateModified":')
         ->and($html)->toContain('"isAccessibleForFree":true')
         ->and($html)->not->toContain('canonical" href="'.route('sample').'?');
 });

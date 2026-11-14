@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\File;
  * - /manifest.webmanifest: Fast English (fa/RTL, standalone,
  *   start_url /app, scope /). Icons are the owner-supplied app mark
  *   (Logo/fast_english_app_favicon.png) rendered at 192/512/maskable/180.
- * - /sw.js: allowlist-only service worker. Precaches fingerprinted public
- *   assets, icons, the self-hosted Vazirmatn font, and the public offline
- *   page. Everything else — HTML navigations, auth, Livewire, admin,
- *   receipts, progress, placement, media (including the sample audio) — is
- *   network-only and never cached. Versioned cache names; old fe-* caches
- *   are deleted on activation. Served no-store so updates are discovered.
+ * - /sw.js: allowlist-only service worker. Precaches only the offline page,
+ *   its icons, and the web manifest — the app shell is network-only, so the
+ *   React bundle, CSS, and fonts are not stored for offline use. Everything
+ *   else — HTML navigations, auth, Livewire, admin, receipts, progress,
+ *   placement, media (including the sample audio) — is network-only and never
+ *   cached. Versioned cache names; old fe-* caches are deleted on activation.
+ *   Served no-store so updates are discovered.
  * - /offline: public offline page with the exact message
  *   «برای ادامه به اینترنت وصل شوید» and a retry control.
  * - /.well-known/assetlinks.json: TWA association; empty until the release
@@ -46,7 +47,10 @@ class PwaController extends Controller
                 ['src' => '/icons/icon-maskable-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
                 ['src' => '/icons/apple-touch-180.png', 'sizes' => '180x180', 'type' => 'image/png'],
             ],
-        ], 200, ['Content-Type' => 'application/manifest+json']);
+        ], 200, [
+            'Content-Type' => 'application/manifest+json',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
     }
 
     public function serviceWorker()
@@ -87,7 +91,10 @@ class PwaController extends Controller
             ];
         }
 
-        return response()->json($statements, 200, ['Content-Type' => 'application/json']);
+        return response()->json($statements, 200, [
+            'Content-Type' => 'application/json',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
     }
 
     /**
@@ -105,7 +112,10 @@ class PwaController extends Controller
             $body = "User-agent: *\nDisallow: /app\nDisallow: /admin\nDisallow: /account\nDisallow: /login\nDisallow: /register\nDisallow: /forgot-password\nDisallow: /reset-password\nDisallow: /media\nDisallow: /staff\nSitemap: ".config('app.url')."/sitemap.xml\n";
         }
 
-        return response($body, 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+        return response($body, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
     }
 
     /**
@@ -127,6 +137,16 @@ class PwaController extends Controller
 
         $version = trim((string) config('pwa.sw_version', ''));
 
-        return $version !== '' ? $version : '2026-10-28-2';
+        if ($version !== '') {
+            return $version;
+        }
+
+        $manifest = public_path('build/manifest.json');
+
+        if (is_file($manifest)) {
+            return substr((string) hash_file('xxh128', $manifest), 0, 12);
+        }
+
+        return 'dev';
     }
 }

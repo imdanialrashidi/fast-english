@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PwaController;
 use App\Support\PublicAssets;
 use Database\Seeders\S1SampleSeeder;
 use Illuminate\Support\Facades\File;
@@ -50,7 +51,9 @@ test('service worker is versioned, uncacheable, and allowlist-only', function ()
         ->and($response->headers->get('Cache-Control'))->toContain('no-store');
 
     $body = $response->getContent();
-    expect($body)->toContain('fe-public-'.config('pwa.sw_version'))
+    $version = app(PwaController::class)->swVersion();
+
+    expect($body)->toContain('fe-public-'.$version)
         ->and($body)->toContain('FE_SKIP_WAITING')
         ->and($body)->toContain('/offline');
 
@@ -104,6 +107,22 @@ test('precache is complete for the shared public-asset allowlist', function () {
             expect($precache)->not->toContain('/build/'.$file);
         }
     }
+});
+
+test('precache carries only offline shell bytes', function () {
+    $paths = PublicAssets::precache();
+
+    expect($paths)->toContain('/offline')
+        ->and(collect($paths)->filter(fn ($path) => str_starts_with($path, '/build/')))->toBeEmpty()
+        ->and(collect($paths)->filter(fn ($path) => str_starts_with($path, '/fonts/')))->toBeEmpty();
+
+    $bytes = collect($paths)->sum(function (string $path): int {
+        $file = public_path(ltrim($path, '/'));
+
+        return is_file($file) ? (int) filesize($file) : 0;
+    });
+
+    expect($bytes)->toBeLessThan(100_000);
 });
 
 test('offline page shows the exact Persian message with a retry control', function () {

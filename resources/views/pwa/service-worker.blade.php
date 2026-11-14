@@ -1,7 +1,8 @@
 /* S2 PWA shell: allowlist-only service worker (scope §18.1).
  *
- * Precaches ONLY the public allowlist injected below (fingerprinted Vite
- * assets, icons, Vazirmatn, the offline page, the manifest). Everything
+ * Precaches ONLY the offline shell injected below: the public /offline page,
+ * its icons, and the web manifest. The app shell (Vite JS/CSS/fonts) is
+ * network-only and relies on the immutable /build/ HTTP cache. Everything
  * else — HTML navigations, auth, component updates, admin, payment files,
  * saved state, exams, audio/video bytes including the sample audio — is
  * network-only and is NEVER written to any cache. Runtime caching is

@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Search Console verification is an owner input: set the token in the
+    // environment and the public root emits the meta tag. DNS verification
+    // remains valid; this is the no-DNS fallback.
+    'google' => [
+        'site_verification' => env('GOOGLE_SITE_VERIFICATION'),
+    ],
+
 ];

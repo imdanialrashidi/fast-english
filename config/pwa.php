@@ -10,13 +10,16 @@ return [
     | Service worker version
     |--------------------------------------------------------------------------
     |
-    | Baked into the versioned cache names (fe-public-<version>). Bump to
-    | roll caches. The /sw.js route prefers storage/app/sw-version when
-    | present so browser tests can trigger a real update without a restart.
+    | Baked into the versioned cache names (fe-public-<version>). Empty means
+    | the built Vite manifest hash is used, so every build rotates the cache
+    | and evicts old entries on activation. Set SW_VERSION only to force a
+    | roll without a new build. The /sw.js route also prefers
+    | storage/app/sw-version when present so browser tests can trigger a real
+    | update without a restart.
     |
     */
 
-    'sw_version' => env('SW_VERSION') ?: '2026-10-28-2',
+    'sw_version' => env('SW_VERSION'),
 
     /*
     |--------------------------------------------------------------------------

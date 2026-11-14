@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { Download as DownloadIcon, Play, Smartphone } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
@@ -35,7 +35,6 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
 
     return (
         <>
-            <Head title="دانلود Fast English" />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
                 <div className="grid gap-2">
                     <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">دانلود</h1>

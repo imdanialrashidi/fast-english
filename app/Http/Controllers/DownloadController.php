@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PublicSeo;
 use App\Support\Release;
 use Inertia\Inertia;
 
@@ -24,11 +25,11 @@ class DownloadController extends Controller
         return Inertia::render('Download/Index', [
             'release' => Release::metadata(),
             'published' => Release::published(),
-            'seo' => [
-                'title' => 'دانلود Fast English',
-                'description' => 'دانلود اپلیکیشن اندروید Fast English — وضعیت انتشار نسخه، مشخصات فایل نصب، و راه شروع با نمونه رایگان.',
-                'canonical' => route('download'),
-            ],
+            'seo' => PublicSeo::page(
+                'دانلود Fast English',
+                'دانلود اپلیکیشن اندروید Fast English — وضعیت انتشار نسخه، مشخصات فایل نصب، و راه شروع با نمونه رایگان.',
+                route('download'),
+            ),
         ]);
     }
 }

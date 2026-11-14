@@ -1,5 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import * as React from 'react';
+import { SeoHead } from '@/components/SeoHead';
 import type { SharedProps } from '@/types';
 
 /**
@@ -126,6 +127,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
 
     return (
         <div className="min-h-dvh bg-canvas text-ink">
+            <SeoHead />
             <a
                 href="#fe-public-content"
                 className="absolute start-2 -top-16 z-50 inline-flex min-h-11 min-w-11 items-center rounded-md border border-line bg-surface px-4 py-2 focus:top-2"

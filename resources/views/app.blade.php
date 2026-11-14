@@ -4,18 +4,21 @@
      fe-theme storage, no pre-paint theme script. lang=fa dir=rtl is static
      so the document direction is correct before React mounts. --}}
 @php
-    // Server-rendered SEO for public marketing pages (landing/download):
-    // crawlers see title, description, canonical, Open Graph, and JSON-LD
-    // before React runs. Private pages carry no `seo` prop and keep the
-    // generic title + noindex headers.
+    // Server-rendered SEO for public pages: crawlers see the title,
+    // description, canonical, social tags, and JSON-LD before React runs.
+    // The partial owns the shared tag set; private pages carry no `seo`
+    // prop and keep the generic title + noindex headers.
     $seo = $page['props']['seo'] ?? null;
     $seo = is_array($seo) ? $seo : null;
     $seoTitle = $seo['title'] ?? 'Fast English — انگلیسی را با داستان کوتاه بخوان و بشنو';
-    $seoDescription = $seo['description'] ?? null;
-    $seoCanonical = $seo['canonical'] ?? url()->current();
     // Bump the favicon URLs whenever the files change: browsers cache
     // /favicon.ico aggressively and ignore a plain overwrite.
     $faviconVersion = (int) filemtime(public_path('favicon.ico'));
+    // The hero cover is React-rendered, so the browser discovers it only
+    // after hydration. The server already has the same URL in the page
+    // props; expose it here so the first paint can preload one image.
+    $hero = data_get($page, 'props.sample.cover_url')
+        ?? data_get($page, 'props.topic.cover_url');
 @endphp
 <html lang="fa" dir="rtl">
 <head>
@@ -35,26 +38,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Fast English">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    {{-- Canonical for the current URL; the S8 index discipline (PrivateNoStore
-         noindex blanket + per-surface rules) is unchanged. --}}
-    <link rel="canonical" href="{{ $seoCanonical }}">
-    @if ($seoDescription !== null)
-        <meta name="description" content="{{ $seoDescription }}">
-        <meta property="og:site_name" content="Fast English">
-        <meta property="og:locale" content="fa_IR">
-        <meta property="og:type" content="website">
-        <meta property="og:title" content="{{ $seoTitle }}">
-        <meta property="og:description" content="{{ $seoDescription }}">
-        <meta property="og:url" content="{{ $seoCanonical }}">
-        <meta name="twitter:card" content="summary">
-        <meta name="twitter:title" content="{{ $seoTitle }}">
-        <meta name="twitter:description" content="{{ $seoDescription }}">
-        @if (app()->environment('production'))
-            <meta name="robots" content="index, follow">
-        @endif
+    {{-- Canonical and the public metadata set. Private pages still get a
+         canonical (current URL) and their noindex header. --}}
+    @include('partials.seo', ['seo' => $seo])
+    {{-- First-paint hints: the Persian UI font is otherwise discovered only
+         after the blocking CSS parses, and the React-rendered hero cover is
+         otherwise discovered only after hydration. One image only. --}}
+    <link rel="preload" as="font" type="font/woff2"
+          href="/fonts/vazirmatn/vazirmatn-arabic-variable.woff2" crossorigin>
+    @if (is_string($hero) && $hero !== '')
+        <link rel="preload" as="image" href="{{ $hero }}" fetchpriority="high">
     @endif
-    @if ($seo !== null && isset($seo['json_ld']) && is_array($seo['json_ld']))
-        <script type="application/ld+json">{!! json_encode($seo['json_ld'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @if (config('services.google.site_verification'))
+        <meta name="google-site-verification" content="{{ config('services.google.site_verification') }}">
     @endif
     <title inertia>{{ $seoTitle }}</title>
     {{-- Boot resilience: a slow or blocked JS bundle must not leave a

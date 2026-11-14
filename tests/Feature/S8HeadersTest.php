@@ -57,3 +57,18 @@ test('staging blanket noindex stays intact', function () {
     expect(app()->environment())->not->toBe('production');
     $this->get(route('landing'))->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 });
+
+test('public machine surfaces are publicly cacheable', function () {
+    foreach ([
+        '/sitemap.xml',
+        '/manifest.webmanifest',
+        '/robots.txt',
+        '/.well-known/assetlinks.json',
+    ] as $path) {
+        $response = $this->get($path)->assertOk();
+        $cacheControl = strtolower((string) $response->headers->get('Cache-Control'));
+
+        expect($cacheControl)->toContain('public')
+            ->and($cacheControl)->toContain('max-age=3600');
+    }
+});

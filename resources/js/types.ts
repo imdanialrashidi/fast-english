@@ -1,6 +1,35 @@
 import type { PageProps as InertiaPageProps } from '@inertiajs/core';
 
 /**
+ * Inertia's client Head dedupes tags by `head-key`. React's HTML typings
+ * do not know that attribute, so declare it once here instead of casting
+ * every meta/link in SeoHead.
+ */
+declare module 'react' {
+    interface HTMLAttributes<T> {
+        'head-key'?: string;
+    }
+}
+
+/**
+ * Server-shaped public SEO metadata (App\Support\PublicSeo). Present only
+ * on public pages; SeoHead uses the same values as the Blade partial so an
+ * Inertia visit updates the tags instead of leaving them stale.
+ */
+export interface SeoProps {
+    title: string;
+    description: string | null;
+    canonical: string;
+    type: 'website' | 'article';
+    image: string;
+    image_alt: string;
+    image_width: number;
+    image_height: number;
+    robots: string | null;
+    json_ld: Record<string, unknown> | null;
+}
+
+/**
  * M0 shared Inertia props (mirrors HandleInertiaRequests::share()).
  * Page-specific props extend this interface per page.
  */
@@ -44,6 +73,8 @@ export interface SharedProps extends InertiaPageProps {
     has_public_sample: boolean;
     /** Null on pages that do not render a support note. */
     support: SupportContact | null;
+    /** Public pages only; null/absent on auth and app screens. */
+    seo?: SeoProps | null;
 }
 
 /** Page-specific URL bags are declared at their page (Landing only). */

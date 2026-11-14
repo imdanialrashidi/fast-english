@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Plan;
 use App\Models\Topic;
+use App\Support\Faq;
 use App\Support\Levels;
+use App\Support\PublicSeo;
 use App\Support\ReadingPayload;
 use App\Support\Release;
 use App\Support\Toman;
@@ -35,34 +37,6 @@ use Inertia\Response;
  */
 class LandingController extends Controller
 {
-    /**
-     * Landing FAQ rows. One server source feeds both the visible
-     * accordion and the FAQPage structured data, so SEO copy can never
-     * drift from what a visitor reads. The first answer follows whether a
-     * public sample is actually published.
-     *
-     * @return list<array{q: string, a: string}>
-     */
-    private function faqs(bool $hasSample): array
-    {
-        return [
-            [
-                'q' => 'بدون اشتراک می‌توانم امتحان کنم؟',
-                'a' => $hasSample
-                    ? 'بله. نمونه واقعی همیشه رایگان است و بدون ثبت‌نام باز می‌شود.'
-                    : 'نمونهٔ عمومی هنوز منتشر نشده است؛ پس از انتشار، بدون ثبت‌نام باز می‌شود.',
-            ],
-            [
-                'q' => 'سطح‌ها یعنی چه؟',
-                'a' => 'شش سطح از A1 تا C2. هر مطلب نسخه خودش را در هر سطح دارد و متن و صوت همیشه از یک نسخه‌اند.',
-            ],
-            [
-                'q' => 'واژه‌ها چطور مرور می‌شوند؟',
-                'a' => 'هر واژه‌ای که ذخیره کنی سر موعد با کارت مرور برمی‌گردد؛ دوباره، سخت، خوب یا آسان را خودت ثبت می‌کنی.',
-            ],
-        ];
-    }
-
     public function index(Request $request): Response
     {
         $plans = Plan::query()
@@ -105,7 +79,7 @@ class LandingController extends Controller
         // sample's own stream URL.
         $preview = ReadingPayload::preview($sample);
 
-        $faqs = $this->faqs($sample !== null);
+        $faqs = Faq::landing($sample !== null);
 
         // M0 Inertia transport (ADR-0002): the same gating and the same
         // fields as the Blade landing. Props are an allowlist — never
@@ -141,44 +115,37 @@ class LandingController extends Controller
                 'faq' => route('trust.faq'),
             ],
             // Server-rendered in app.blade.php so crawlers see the title,
-            // description, Open Graph tags, and JSON-LD before React runs.
-            'seo' => [
-                'title' => 'Fast English: انگلیسی را با داستان کوتاه بخوان و بشنو',
-                'description' => 'Fast English: متن‌های کوتاه انگلیسی در سطح A1 تا C2 با صوت همان نسخه؛ بخوان و بشنو، سرعت را تنظیم کن و واژه بساز.',
-                'canonical' => route('landing'),
-                'json_ld' => [
+            // description, social tags, and JSON-LD before React runs.
+            'seo' => PublicSeo::page(
+                'Fast English: انگلیسی را با داستان کوتاه بخوان و بشنو',
+                'Fast English: متن‌های کوتاه انگلیسی در سطح A1 تا C2 با صوت همان نسخه؛ بخوان و بشنو، سرعت را تنظیم کن و واژه بساز.',
+                route('landing'),
+                [
                     '@context' => 'https://schema.org',
                     '@graph' => [
+                        PublicSeo::organization(),
                         [
                             '@type' => 'WebSite',
                             '@id' => route('landing').'#website',
                             'url' => route('landing'),
                             'name' => 'Fast English',
                             'inLanguage' => 'fa-IR',
+                            'publisher' => ['@id' => route('landing').'#organization'],
                         ],
                         [
                             '@type' => 'SoftwareApplication',
                             'name' => 'Fast English',
                             'applicationCategory' => 'EducationalApplication',
-                            'operatingSystem' => 'Android',
+                            'operatingSystem' => 'Android, Web',
                             'inLanguage' => 'fa-IR',
                             'description' => 'یادگیری انگلیسی با متن‌های کوتاه و صوت همراه آن در شش سطح A1 تا C2.',
                             'url' => route('download'),
+                            'image' => PublicSeo::absolute(PublicSeo::DEFAULT_IMAGE),
                         ],
-                        [
-                            '@type' => 'FAQPage',
-                            'mainEntity' => array_map(fn (array $faq) => [
-                                '@type' => 'Question',
-                                'name' => $faq['q'],
-                                'acceptedAnswer' => [
-                                    '@type' => 'Answer',
-                                    'text' => $faq['a'],
-                                ],
-                            ], $faqs),
-                        ],
+                        Faq::schema($faqs),
                     ],
                 ],
-            ],
+            ),
         ]));
     }
 
@@ -244,29 +211,70 @@ class LandingController extends Controller
         // The sample is public content, so it gets its own crawler
         // metadata. The canonical deliberately drops ?topic/?level so
         // every level variant consolidates onto the sample entry.
-        $description = $sample->topic->summary_public;
-        if ($description === null || trim($description) === '') {
-            $description = Str::limit(trim((string) preg_replace('/\s+/u', ' ', $sample->body_en)), 150);
+        $payload = ReadingPayload::for($sample);
+        $coverUrl = $payload['topic']['cover_url'];
+
+        // Article copy stays English (the lesson is English); the SERP
+        // description is Persian because the audience and page chrome are.
+        $summary = $sample->topic->summary_public;
+        if ($summary === null || trim($summary) === '') {
+            $summary = Str::limit(trim((string) preg_replace('/\s+/u', ' ', $sample->body_en)), 150);
         }
 
-        return Inertia::render('Sample/Show', array_merge(ReadingPayload::for($sample), [
-            'sampleLevels' => $sampleLevels,
-            'seo' => [
-                'title' => $sample->title_en.' ('.$sample->level.'): نمونهٔ رایگان Fast English',
-                'description' => $description,
-                'canonical' => route('sample'),
-                'json_ld' => [
-                    '@context' => 'https://schema.org',
-                    '@type' => 'Article',
-                    'headline' => $sample->title_en,
-                    'description' => $description,
-                    'inLanguage' => 'en',
-                    'isAccessibleForFree' => true,
-                    'mainEntityOfPage' => route('sample'),
-                    'author' => ['@type' => 'Organization', 'name' => 'Fast English'],
-                    'publisher' => ['@type' => 'Organization', 'name' => 'Fast English'],
+        $title = $sample->title_en.' ('.$sample->level.'): نمونهٔ رایگان متن و صوت | Fast English';
+        $metaDescription = 'نمونهٔ رایگان Fast English: متن و صوت درس «'.$sample->title_en.'» در سطح '.$sample->level.'. بدون ثبت‌نام بخوان و بشنو.';
+        $image = $coverUrl ?? PublicSeo::DEFAULT_IMAGE;
+        $publishedAt = $sample->published_at?->toAtomString();
+        $modifiedAt = $sample->updated_at?->toAtomString();
+
+        $article = [
+            '@type' => 'Article',
+            'headline' => $sample->title_en,
+            'description' => $summary,
+            'image' => PublicSeo::absolute($image),
+            'inLanguage' => 'en',
+            'isAccessibleForFree' => true,
+            'mainEntityOfPage' => route('sample'),
+            'isPartOf' => ['@id' => route('landing').'#website'],
+            'author' => [
+                '@type' => 'Organization',
+                '@id' => route('landing').'#organization',
+                'name' => 'Fast English',
+                'url' => route('landing'),
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                '@id' => route('landing').'#organization',
+                'name' => 'Fast English',
+                'url' => route('landing'),
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => PublicSeo::absolute('/icons/icon-512.png'),
+                    'width' => 512,
+                    'height' => 512,
                 ],
             ],
+        ];
+        if ($publishedAt !== null) {
+            $article['datePublished'] = $publishedAt;
+        }
+        if ($modifiedAt !== null) {
+            $article['dateModified'] = $modifiedAt;
+        }
+
+        return Inertia::render('Sample/Show', array_merge($payload, [
+            'sampleLevels' => $sampleLevels,
+            'seo' => PublicSeo::page(
+                $title,
+                $metaDescription,
+                route('sample'),
+                ['@context' => 'https://schema.org', ...$article],
+                'article',
+                $image,
+                'تصویر جلد درس '.$sample->title_en,
+                $coverUrl !== null ? 800 : null,
+                $coverUrl !== null ? 450 : null,
+            ),
         ]));
     }
 }

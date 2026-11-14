@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, Clock, Gauge } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
@@ -51,7 +51,6 @@ export const SampleShow: FunctionComponent<SampleProps> & { layout?: (page: Reac
 
     return (
         <>
-            <Head title={`${lesson.title_en} (${lesson.level}) · نمونه رایگان`} />
             <div className="mx-auto grid max-w-[680px] gap-6 px-4 py-6">
                 <header className="grid gap-3">
                     <p className="m-0 inline-flex items-center gap-1.5 text-sm text-muted">

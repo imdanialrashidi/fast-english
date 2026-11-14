@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\RequireSubscription;
 use App\Support\DailyPlan;
 use App\Support\TopicCard;
 use App\Support\TopicCover;
@@ -24,7 +25,12 @@ class TodayController extends Controller
             abort(403);
         }
 
-        $plan = DailyPlan::build($user);
+        // The `subscribed` gate already resolved eligibility for this exact
+        // request. Reuse it instead of paying the fresh user + subscription
+        // lookup a second time; direct controller calls fall back to null.
+        $eligible = $request->attributes->get(RequireSubscription::ELIGIBLE_ATTRIBUTE);
+
+        $plan = DailyPlan::build($user, is_bool($eligible) ? $eligible : null);
         $recommendations = DailyPlan::recommendations($user, 3, $plan['eligible'] ?? null);
 
         // Public-slice Inertia transport (ADR-0002): the same DailyPlan

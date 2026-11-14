@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PublicSeo;
 use Inertia\Inertia;
 
 /**
@@ -19,11 +20,11 @@ class InstallController extends Controller
     public function index()
     {
         return Inertia::render('Install/Index', [
-            'seo' => [
-                'title' => 'نصب Fast English روی گوشی و کامپیوتر',
-                'description' => 'راهنمای گام‌به‌گام افزودن Fast English به صفحهٔ اصلی iPhone، iPad، اندروید و مرورگر کامپیوتر؛ بدون فروشگاه برنامه.',
-                'canonical' => route('install'),
-            ],
+            'seo' => PublicSeo::page(
+                'نصب Fast English روی گوشی و کامپیوتر',
+                'راهنمای گام‌به‌گام افزودن Fast English به صفحهٔ اصلی iPhone، iPad، اندروید و مرورگر کامپیوتر؛ بدون فروشگاه برنامه.',
+                route('install'),
+            ),
         ]);
     }
 }

@@ -98,14 +98,13 @@ test('today stays constant as words and completed lessons grow', function () {
     $large = p004AppQueries();
     DB::disableQueryLog();
 
-    // Fixed: recommendations() reuses build()'s eligibility (the fresh
-    // user + subscription lookup is paid once per request) and learned
-    // minutes come from one joined sum — neither moves as completions
-    // (1 -> 4) or words (1 -> 7) grow. Four completions at 4 minutes
-    // each; no word was reviewed today, so the review bonus is 0.
-    // Pre-fix ran 17 app queries; fixed: 15 (14 core + the constant shared
-    // due-words badge query added 2026-10-25).
-    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(15);
+    // Fixed: the subscribed gate pays the fresh user + subscription lookup
+    // once, Today reuses that decision, and learned minutes come from one
+    // joined sum — none moves as completions (1 -> 4) or words (1 -> 7) grow.
+    // Four completions at 4 minutes each; no word was reviewed today, so the
+    // review bonus is 0. Pre-fix ran 17; the gate reuse brings it to 13
+    // (12 core + the constant shared due-words badge query).
+    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(13);
     expect($response->inertiaProps()['plan']['learned_minutes'])->toBe(16);
 });
 

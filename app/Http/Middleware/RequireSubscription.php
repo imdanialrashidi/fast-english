@@ -23,9 +23,18 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RequireSubscription
 {
+    /**
+     * Request attribute consumed by controllers that need the same fresh
+     * decision this gate just made. Never persisted across requests.
+     */
+    public const ELIGIBLE_ATTRIBUTE = 'fe.subscription_eligible';
+
     public function handle(Request $request, Closure $next): Response
     {
-        if (Entitlement::eligible($request->user())) {
+        $eligible = Entitlement::eligible($request->user());
+        $request->attributes->set(self::ELIGIBLE_ATTRIBUTE, $eligible);
+
+        if ($eligible) {
             return $next($request);
         }
 

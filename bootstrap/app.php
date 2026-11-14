@@ -4,6 +4,7 @@ use App\Http\Middleware\DisablePasswordResetWhenSmtpMissing;
 use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\NormalizeTrailingSlash;
 use App\Http\Middleware\PrivateNoStore;
 use App\Http\Middleware\RedirectAuthenticatedToApp;
 use App\Http\Middleware\RejectDisabledUsers;
@@ -52,6 +53,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // S2 scope §16: private HTML/Livewire responses are uncacheable.
         $middleware->appendToGroup('web', PrivateNoStore::class);
+        // Public crawler URLs answer on one spelling: /about/, /sample/,
+        // and the other marketing paths 301 to the slashless form before
+        // the controller runs.
+        $middleware->appendToGroup('web', NormalizeTrailingSlash::class);
         // M0 Inertia foundation (ADR-0002): the Inertia protocol middleware
         // serves X-Inertia responses + shared props; sessions, CSRF, and the
         // Fortify/Filament behavior around it are unchanged.

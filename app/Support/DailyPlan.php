@@ -32,13 +32,16 @@ final class DailyPlan
      *   tasks: list<array{key: string, title: string, detail: string|null, url: string, done: bool}>
      * }
      */
-    public static function build(User $user): array
+    public static function build(User $user, ?bool $eligible = null): array
     {
         $goal = in_array((int) $user->daily_goal_minutes, self::GOALS, true)
             ? (int) $user->daily_goal_minutes
             : 10;
 
-        $eligible = Entitlement::eligible($user);
+        // The `subscribed` gate passes its already-fresh decision in; other
+        // callers (tests, future commands) leave this null and keep the
+        // original per-call fresh lookup.
+        $eligible ??= Entitlement::eligible($user);
         $today = now()->startOfDay();
 
         $continueProgress = LessonProgress::where('user_id', $user->id)

@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { Info, MessageCircle, Phone } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
@@ -36,17 +36,9 @@ interface TrustProps extends SharedProps {
     notice: string | null;
     contact: ContactProps;
     legal: string | null;
+    /** Server-owned FAQ rows; the same list feeds the FAQPage JSON-LD. */
+    faqs: { q: string; a: string }[];
 }
-
-const TITLES: Record<TrustPage, string> = {
-    about: 'درباره Fast English',
-    cooperation: 'همکاری با Fast English',
-    faq: 'پرسش‌های پرتکرار',
-    support: 'پشتیبانی Fast English',
-    terms: 'قوانین استفاده',
-    privacy: 'حریم خصوصی',
-    refund: 'بازگشت وجه',
-};
 
 const HEADINGS: Record<TrustPage, string> = {
     about: 'درباره',
@@ -128,13 +120,11 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
     notice,
     contact,
     legal,
+    faqs,
     has_public_sample,
 }: TrustProps): React.JSX.Element => {
     return (
         <>
-            <Head title={TITLES[page]}>
-                <meta name="description" content={TITLES[page]} />
-            </Head>
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-6">
                 <h1 className="m-0 text-3xl leading-[1.6] font-extrabold tracking-tight">{HEADINGS[page]}</h1>
 
@@ -143,6 +133,10 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                         <p className="m-0">
                             Fast English یک محصول ساده برای خواندن و شنیدن متن‌های کوتاه انگلیسی در سطح مناسب زبان‌آموز است. هر مطلب در
                             چند سطح ارائه می‌شود و صوت هر نسخه دقیقاً همان متن را پوشش می‌دهد.
+                        </p>
+                        <p className="m-0">
+                            هر مطلب در شش سطح A1 تا C2 بازنویسی می‌شود و متن و صوت هر نسخه از یک درس می‌آیند؛ سطح فقط سختی متن را
+                            می‌گوید، نه دسترسی را.
                         </p>
                         <p className="m-0 text-muted">
                             {has_public_sample
@@ -167,23 +161,7 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
 
                 {page === 'faq' && (
                     <div className="grid gap-5">
-                        {[
-                            {
-                                q: 'آیا بدون حساب می‌توانم نمونه را ببینم؟',
-                                a: has_public_sample
-                                    ? 'بله. یک نمونه واقعی از صفحه اصلی در دسترس است و نیازی به ثبت‌نام ندارد.'
-                                    : 'نمونهٔ عمومی هنوز منتشر نشده است؛ پس از انتشار، بدون ثبت‌نام باز می‌شود.',
-                            },
-                            { q: 'سطح‌ها چه معنایی دارند؟', a: 'مطالب در سطح‌های A1 تا C2 ارائه می‌شوند. می‌توانید سطح را مستقیم انتخاب کنید یا از آزمون تعیین سطح استفاده کنید.' },
-                            {
-                                q: 'خرید چگونه انجام می‌شود؟',
-                                a: 'پلن را انتخاب می‌کنی، مبلغ را به کارت مقصد واریز می‌کنی و تصویر رسید را در همان صفحه می‌فرستی. رسید بررسی می‌شود و بعد از تأیید، اشتراک فعال می‌شود و دسترسی باز می‌شود.',
-                            },
-                            {
-                                q: 'بعد از پرداخت چه اتفاقی می‌افتد؟',
-                                a: 'رسیدت در صف بررسی قرار می‌گیرد. وضعیت را در همان صفحهٔ پرداخت می‌بینی. بعد از تأیید، اشتراک فعال می‌شود و اگر موبایلت تأیید شده باشد، یک پیامک تأیید فعال‌سازی هم می‌گیری.',
-                            },
-                        ].map((item) => (
+                        {faqs.map((item) => (
                             <div key={item.q} className="grid gap-1">
                                 <h2 className="m-0 text-lg leading-8 font-bold">{item.q}</h2>
                                 <p className="m-0 leading-8 text-muted">{item.a}</p>
