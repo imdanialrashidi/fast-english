@@ -90,9 +90,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # PostgreSQL 17 client tools (pg_dump/pg_restore/psql) without PGDG.
+# The PG17 binaries need the PG17 libpq for psql's PQchangePassword symbol;
+# keep that library private so the PHP pdo_pgsql extension continues to use
+# the Debian libpq5 it was built against.
 COPY --from=pgclient /usr/lib/postgresql/17 /usr/lib/postgresql/17
-ENV PATH="/usr/lib/postgresql/17/bin:${PATH}"
-RUN pg_dump --version && psql --version
+COPY --from=pgclient /usr/lib/x86_64-linux-gnu/libpq.so.5 /usr/lib/x86_64-linux-gnu/libpq.so.5.18 /usr/local/lib/pg17/
+RUN for tool in pg_dump pg_restore psql pg_isready; do \
+        printf '#!/bin/sh\nLD_LIBRARY_PATH=/usr/local/lib/pg17${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} exec /usr/lib/postgresql/17/bin/%s "$@"\n' "$tool" > "/usr/local/bin/$tool"; \
+        chmod +x "/usr/local/bin/$tool"; \
+    done \
+    && pg_dump --version && pg_restore --version && psql --version
 
 WORKDIR /var/www/html
 
