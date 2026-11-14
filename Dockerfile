@@ -59,6 +59,13 @@ RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi 
     && npm ci --ignore-scripts \
     && npm run build
 
+# --- 2b. PostgreSQL 17 client binaries ---
+# The PGDG apt repository is unreachable from the production build host
+# (the 5.8 MB Packages index times out), so take the matching client
+# binaries from the official postgres:17 image instead of apt. Debian's
+# libpq5 (already installed below) is protocol-compatible with a v17 server.
+FROM ${BASE_REGISTRY}/library/postgres:17-bookworm AS pgclient
+
 # --- 3. Runtime (pinned PHP-FPM) ---
 FROM ${BASE_REGISTRY}/library/php:8.4.26-fpm-bookworm
 ENV DEBIAN_FRONTEND=noninteractive
@@ -66,23 +73,26 @@ ENV DEBIAN_FRONTEND=noninteractive
 # System deps: nginx, supervisor, curl (healthcheck), pg client 17 for
 # `pg_dump` drills, plus build libs for the PHP extensions (zip is required
 # by openspout/Filament; the four mandated ones are pdo_pgsql/gd/exif/intl
-# plus opcache).
+# plus opcache). The pg binaries are copied from the pgclient stage below;
+# the PGDG apt repo is deliberately not used.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gnupg lsb-release curl ca-certificates \
-    && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
-    && apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
     && apt-get install -y --no-install-recommends \
-        nginx supervisor curl unzip git \
-        postgresql-client-17 \
+        nginx supervisor unzip git \
         libpq-dev libicu-dev libpng-dev libjpeg-dev libwebp-dev libzip-dev \
         libpq5 libjpeg62-turbo libpng16-16 libwebp7 libzip4 \
+        libreadline8 liblz4-1 libxslt1.1 \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install pdo_pgsql gd exif intl opcache zip \
-    && apt-mark manual libpq5 libjpeg62-turbo libpng16-16 libwebp7 libzip4 \
+    && apt-mark manual libpq5 libjpeg62-turbo libpng16-16 libwebp7 libzip4 libreadline8 liblz4-1 libxslt1.1 \
     && apt-get purge -y libpq-dev libicu-dev libpng-dev libjpeg-dev libwebp-dev libzip-dev \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
+
+# PostgreSQL 17 client tools (pg_dump/pg_restore/psql) without PGDG.
+COPY --from=pgclient /usr/lib/postgresql/17 /usr/lib/postgresql/17
+ENV PATH="/usr/lib/postgresql/17/bin:${PATH}"
+RUN pg_dump --version && psql --version
 
 WORKDIR /var/www/html
 
