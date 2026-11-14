@@ -37,7 +37,7 @@ untracked files under `app/Http/Controllers`, `app/Http/Middleware`,
 | 007 | Preload the LCP font/cover and shrink the header lockup | P1 | S | none | DONE — preloads in `app.blade.php`, 240×68 lockups (41,204→10,367 B light / 10,950→5,461 B dark), S8Seo test 6 passed |
 | 008 | Trim the service-worker precache and auto-version the cache | P1 | S | none | DONE — precache now offline+icons+manifest (~62 KB, was 553,597 B); version falls back to the manifest hash; S2Pwa 12 passed |
 | 009 | Read the settings table once per request | P1 | S | none | DONE — request-scoped map, `put()` keeps it consistent; `/faq` settings query 13→1; S8Seo + SettingsCatalog passed |
-| 010 | Cache public machine surfaces and hide the PHP version | P2 | S | none | DONE — sitemap/manifest/robots/assetlinks cache headers, nginx `/downloads/` immutable, `expose_php=0`; PHP tests + `nginx -t` passed; runtime `X-Powered-By` proof NOT EXECUTED until image rebuild |
+| 010 | Cache public machine surfaces and hide the PHP version | P2 | S | none | DONE — headers, nginx `/downloads/` immutable, `expose_php=0`; deployed in `f15e12c`, smoke 27/27, `X-Powered-By` absent live |
 | 011 | Reuse the middleware entitlement decision on Today | P2 | S | none | DONE — Today 15→13 queries; P004 + S6/D5 access tests 15 passed |
 | 012 | Decide the public HTML caching posture before changing `no-store` | P2 | M | 009, 010 | DONE — decision C: public HTML stays `private, no-store`; recorded in `docs/ARCHITECTURE.md`, revisit with a CDN/stateless-marketing decision |
 

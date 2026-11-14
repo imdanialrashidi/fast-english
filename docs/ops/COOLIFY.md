@@ -103,6 +103,28 @@ and `HTTPS_PROXY` are honoured by BuildKit during `RUN`. Without either,
 the deploy fails at the assets stage — that is a network limit, not an
 application defect.
 
+### Base-image registry and PGDG (2026-11-14/15)
+
+The production build host cannot complete Docker Hub's token exchange:
+`registry-1.docker.io/v2/` answers, but the auth/token endpoint resets the
+connection, so every `FROM` pull fails. The Dockerfile therefore defaults
+`ARG BASE_REGISTRY=docker.iranserver.com` (verified serving php-cli,
+php-fpm, node, composer, and postgres:17-bookworm) and uses
+`${BASE_REGISTRY}/library/...` for every base. On a build host that can
+reach Docker Hub directly, override it:
+
+```sh
+docker build --build-arg BASE_REGISTRY=docker.io ...
+```
+
+The PGDG apt repository is also unreachable (the 5.8 MB Packages index times
+out), so the runtime stage must not reintroduce `apt.postgresql.org` or
+`postgresql-client-17`. It copies the PG17 client tools from the
+`postgres:17-bookworm` stage and wraps `pg_dump`/`pg_restore`/`psql`/
+`pg_isready` with a private PG17 `libpq`; the PHP `pdo_pgsql` extension
+continues to use the Debian libpq5 it was built against. The image build
+proves `pg_dump`, `pg_restore`, and `psql` versions before exporting.
+
 ## 0. Topology (one app, one database, one origin)
 
 ```
