@@ -87,4 +87,6 @@ Baseline: `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0. Contracts: `docs/PRODUCT.m
 
 Product invariants (see `docs/QUALITY.md` for the full contract): level is content, not permission; money is integer toman; timestamps are stored UTC and displayed Asia/Tehran; one open payment request per user and pending grants nothing; private audio and receipts never enter public HTML, Inertia payloads, CDN/service-worker caches, or logs. The current working tree contains accepted, uncommitted product work: preserve it.
 
+Content upload standard (agent path, covers, publishing gate, sample policy, verification): `docs/ops/CONTENT_PIPELINE_FA.md`, with the proven reference scripts in `scripts/content-upload/`.
+
 Workflow provenance and rollback: `docs/adr/0003-dsh-workflow.md`.

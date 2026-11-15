@@ -88,6 +88,18 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmailContr
         return $this->hasMany(VocabularyWord::class);
     }
 
+    /** Per-card flashcard schedule (owner request 2026-11-15). */
+    public function flashcards(): HasMany
+    {
+        return $this->hasMany(UserFlashcard::class);
+    }
+
+    /** Append-only flashcard review log; never exposed publicly. */
+    public function flashcardReviews(): HasMany
+    {
+        return $this->hasMany(FlashcardReview::class);
+    }
+
     /**
      * The owner-approved flow sends one six-digit code from
      * EmailVerificationCodes (registration + resend). Laravel's default

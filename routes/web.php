@@ -6,6 +6,10 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\DataTransferController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\FlashcardBookController;
+use App\Http\Controllers\FlashcardMediaController;
+use App\Http\Controllers\FlashcardReviewController;
+use App\Http\Controllers\FlashcardUnitController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LessonAudioController;
@@ -226,6 +230,43 @@ Route::post('/app/words/{word}/grade', [VocabularyController::class, 'grade'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('word')
     ->name('words.grade');
+
+// Book flashcards (owner request 2026-11-15): AEF Starter decks in Fast
+// English. One unit = one picture-prompt session; the unit page is the
+// player, the results page groups the latest self-report, and the daily
+// review page is the due queue. Media stays private/no-store.
+Route::get('/app/flashcards', [FlashcardBookController::class, 'index'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('flashcards.index');
+Route::get('/app/flashcards/review', [FlashcardReviewController::class, 'index'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('flashcards.review');
+Route::post('/app/flashcards/reviews', [FlashcardReviewController::class, 'store'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed', 'throttle:120,1'])
+    ->name('flashcards.reviews.store');
+Route::get('/app/flashcards/{book:slug}', [FlashcardBookController::class, 'show'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('flashcards.book');
+Route::get('/app/flashcards/{book:slug}/{unit}/results', [FlashcardUnitController::class, 'results'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->whereNumber('unit')
+    ->name('flashcards.results');
+Route::get('/app/flashcards/{book:slug}/{unit}', [FlashcardUnitController::class, 'show'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->whereNumber('unit')
+    ->name('flashcards.unit');
+
+Route::get('/media/flashcards/{flashcard}/image', [FlashcardMediaController::class, 'image'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->whereNumber('flashcard')
+    ->name('media.flashcard.image');
+Route::get('/media/flashcards/{flashcard}/audio', [FlashcardMediaController::class, 'audio'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->whereNumber('flashcard')
+    ->name('media.flashcard.audio');
+Route::get('/media/flashcard-books/{book:slug}/cover', [FlashcardMediaController::class, 'cover'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('media.flashcard.cover');
 
 // S4 progress + bookmarks (scope §13.2–13.3): authenticated, policy-checked,
 // private no-store JSON. The service worker never caches these (POST +
