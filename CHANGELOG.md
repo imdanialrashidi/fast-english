@@ -50,7 +50,7 @@
   so the release refreshed the collation version and reindexed the database
   (pre/post dumps in `/root/fe-backups/`).
 - Evidence: full Pest **461 passed / 5,581 assertions** on PostgreSQL 17;
-  Pint **PASS** (418 files); `npm run typecheck` **PASS**; `npm run build`
+  Pint **PASS** (404 files); `npm run typecheck` **PASS**; `npm run build`
   **PASS**; full Chromium **96 passed**; the five new migrations ran on a
   restored production dump; `config:cache` + `route:cache` + `view:cache`
   **PASS**.
