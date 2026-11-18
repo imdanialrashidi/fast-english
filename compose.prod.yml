@@ -125,7 +125,10 @@ services:
     stop_grace_period: 30s
 
   db:
-    image: postgres:17
+    # The production host cannot reach Docker Hub reliably (403 on the
+    # manifest request since 2026-11-18); the documented mirror serves the
+    # same PostgreSQL 17 image. Override with DB_IMAGE on another network.
+    image: ${DB_IMAGE:-docker.iranserver.com/library/postgres:17-bookworm}
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_DATABASE:-fast_english}
