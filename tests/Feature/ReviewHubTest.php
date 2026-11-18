@@ -1,15 +1,14 @@
 <?php
 
-use App\Models\UserFlashcard;
 use App\Models\VocabularyWord;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\Support\BookFixtures;
 use Tests\Support\ContentFixtures;
 use Tests\Support\ExerciseFixtures;
-use Tests\Support\FlashcardFixtures;
 
-// Cross-track review hub (owner request 2026-11-15): due words, due book
-// cards and exercise mistakes in one read-only page with a deterministic
-// primary action, plus the due-card task on Today.
+// The review hub (owner request 2026-11-15; book cards retired 2026-11-18):
+// due words and exercise mistakes in one read-only page with a deterministic
+// primary action. The card queue and its Today task are gone.
 
 test('the review hub is paid-only', function () {
     $this->get(route('review.index'))->assertRedirect();
@@ -29,12 +28,12 @@ test('an empty hub is calm and offers the notebook', function () {
             ->where('total', 0)
             ->where('primary', null)
             ->where('words.due', 0)
-            ->where('cards.due', 0)
-            ->where('exercises.wrong', 0));
+            ->where('exercises.wrong', 0)
+            ->missing('cards'));
 });
 
-test('the hub counts words, cards and exercise mistakes, and words win the primary action', function () {
-    [$book, $unit, $cards] = FlashcardFixtures::deck(1);
+test('the hub counts due words and exercise mistakes, and words win the primary action', function () {
+    [$book, $unit] = BookFixtures::deck(1);
     $set = ExerciseFixtures::set($book, $unit);
     $items = $set->items()->get();
     $student = ContentFixtures::subscribedStudent();
@@ -43,19 +42,6 @@ test('the hub counts words, cards and exercise mistakes, and words win the prima
         'word' => 'reviewone',
         'due_at' => now()->subDay(),
         'status' => 'learning',
-    ]);
-
-    UserFlashcard::create([
-        'user_id' => $student->id,
-        'flashcard_id' => $cards[0]->id,
-        'phase' => 'learning',
-        'step' => 0,
-        'due_at' => now()->subMinute(),
-        'interval_days' => 0,
-        'ease_factor' => 2.5,
-        'reps' => 1,
-        'lapses' => 0,
-        'last_rating' => 'again',
     ]);
 
     $this->actingAs($student)->postJson(
@@ -68,17 +54,15 @@ test('the hub counts words, cards and exercise mistakes, and words win the prima
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('words.due', 1)
-            ->where('cards.due', 1)
             ->where('exercises.wrong', 1)
             ->where('exercises.sets', 1)
-            ->where('total', 3)
+            ->where('total', 2)
             ->where('primary.url', route('words.review'))
-            ->where('exercises.retry_url', route('books.unit', ['book' => $book->slug, 'unit' => $unit->number]))
-            ->where('exercises.result_url', null));
+            ->where('exercises.retry_url', route('books.unit', ['book' => $book->slug, 'unit' => $unit->number])));
 });
 
-test('without due words the primary action moves to cards, then exercise mistakes', function () {
-    [$book, $unit, $cards] = FlashcardFixtures::deck(1);
+test('without due words the primary action moves to the exercise retry', function () {
+    [$book, $unit] = BookFixtures::deck(1);
     $set = ExerciseFixtures::set($book, $unit);
     $items = $set->items()->get();
     $student = ContentFixtures::subscribedStudent();
@@ -92,25 +76,8 @@ test('without due words the primary action moves to cards, then exercise mistake
         ->get(route('review.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
+            ->where('total', 1)
             ->where('primary.url', route('books.unit', ['book' => $book->slug, 'unit' => $unit->number])));
-
-    UserFlashcard::create([
-        'user_id' => $student->id,
-        'flashcard_id' => $cards[0]->id,
-        'phase' => 'learning',
-        'step' => 0,
-        'due_at' => now()->subMinute(),
-        'interval_days' => 0,
-        'ease_factor' => 2.5,
-        'reps' => 1,
-        'lapses' => 0,
-        'last_rating' => 'again',
-    ]);
-
-    $this->actingAs($student)
-        ->get(route('review.index'))
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page->where('primary.url', route('flashcards.review')));
 });
 
 test('the hub is owner-scoped', function () {
@@ -128,30 +95,14 @@ test('the hub is owner-scoped', function () {
         ->assertInertia(fn (Assert $page) => $page->where('words.due', 0)->where('total', 0));
 });
 
-test('today adds a due-card task that links to the card review', function () {
-    [, , $cards] = FlashcardFixtures::deck(1);
+test('today no longer adds a card task', function () {
+    [$book, $unit] = BookFixtures::deck(1);
+    ExerciseFixtures::set($book, $unit);
     $student = ContentFixtures::subscribedStudent();
 
-    $without = $this->actingAs($student)->get(route('today.index'))->assertOk();
-    expect(collect($without->inertiaProps()['plan']['tasks'])->pluck('key')->all())->not->toContain('cards');
+    $response = $this->actingAs($student)->get(route('today.index'))->assertOk();
+    $keys = collect($response->inertiaProps()['plan']['tasks'])->pluck('key')->all();
 
-    UserFlashcard::create([
-        'user_id' => $student->id,
-        'flashcard_id' => $cards[0]->id,
-        'phase' => 'learning',
-        'step' => 0,
-        'due_at' => now()->subMinute(),
-        'interval_days' => 0,
-        'ease_factor' => 2.5,
-        'reps' => 1,
-        'lapses' => 0,
-        'last_rating' => 'again',
-    ]);
-
-    $with = $this->actingAs($student)->get(route('today.index'))->assertOk();
-    $task = collect($with->inertiaProps()['plan']['tasks'])->firstWhere('key', 'cards');
-
-    expect($task)->not->toBeNull()
-        ->and($task['url'])->toBe(route('flashcards.review'))
-        ->and($task['detail'])->toBe('1 کارت');
+    expect($keys)->not->toContain('cards')
+        ->and($keys)->toContain('exercise');
 });

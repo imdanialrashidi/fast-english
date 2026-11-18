@@ -1,7 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { Check, ChevronLeft, ChevronRight, CircleCheck, Layers, RotateCcw, Volume2, X } from 'lucide-react';
 import * as React from 'react';
-import { postJson } from '@/lib/http';
 import type { FlashcardCardRow, FlashcardStudyConfig } from '@/types';
 
 /**
@@ -37,7 +36,7 @@ interface Props {
     reviewedToday?: number;
     nextDueAt?: string | null;
     ratings?: FlashcardRatingOption[];
-    onSubmitRating?: (card: FlashcardCardRow, rating: string) => Promise<{ ok: boolean; message?: string }>;
+    onSubmitRating: (card: FlashcardCardRow, rating: string) => Promise<{ ok: boolean; message?: string }>;
     bucketLabels?: { good: string; again: string };
     correctRatings?: string[];
     againRatings?: string[];
@@ -61,18 +60,6 @@ function fa(value: number): string {
     return value.toLocaleString('fa-IR');
 }
 
-function newId(): string {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID();
-    }
-
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-        const random = Math.floor(Math.random() * 16);
-        const value = char === 'x' ? random : (random & 0x3) | 0x8;
-
-        return value.toString(16);
-    });
-}
 
 function formatDue(iso: string | null | undefined): string {
     if (iso === null || iso === undefined || iso === '') {
@@ -130,10 +117,8 @@ export function FlashcardPlayer({
     const [error, setError] = React.useState('');
     const [audioFailed, setAudioFailed] = React.useState(false);
     const [finished, setFinished] = React.useState(false);
-    const [sessionId, setSessionId] = React.useState<string>(() => newId());
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
     const preloadRef = React.useRef<HTMLAudioElement | null>(null);
-    const shownAtRef = React.useRef<number>(Date.now());
 
     const card: FlashcardCardRow | undefined = activeCards[index];
     const answered: string | undefined = card === undefined ? undefined : answers[card.id];
@@ -198,7 +183,6 @@ export function FlashcardPlayer({
         setAnswers({});
         setFinished(false);
         setError('');
-        setSessionId(newId());
     }, [cards]);
 
     React.useEffect(() => {
@@ -222,7 +206,6 @@ export function FlashcardPlayer({
 
         setError('');
         setAudioFailed(false);
-        shownAtRef.current = Date.now();
     }, [started, finished, index, activeCards]);
 
     // Preload the next clip so the next reveal never waits on the network.
@@ -287,28 +270,9 @@ export function FlashcardPlayer({
     }, [pauseAudio]);
 
     const submit = React.useCallback(
-        async (target: FlashcardCardRow, rating: string): Promise<{ ok: boolean; message?: string }> => {
-            if (onSubmitRating !== undefined) {
-                return onSubmitRating(target, rating);
-            }
-
-            const response = await postJson('/app/flashcards/reviews', {
-                flashcard_id: target.id,
-                rating,
-                client_review_id: newId(),
-                session_id: sessionId,
-                duration_ms: Math.min(600000, Math.max(0, Date.now() - shownAtRef.current)),
-            });
-
-            if (response.ok) {
-                return { ok: true };
-            }
-
-            const data = (await response.json().catch(() => null)) as { message?: string } | null;
-
-            return { ok: false, message: data?.message ?? 'ثبت نتیجه مرور ممکن نشد. دوباره تلاش کنید.' };
-        },
-        [onSubmitRating, sessionId],
+        async (target: FlashcardCardRow, rating: string): Promise<{ ok: boolean; message?: string }> =>
+            onSubmitRating(target, rating),
+        [onSubmitRating],
     );
 
     const rate = React.useCallback(
@@ -356,8 +320,6 @@ export function FlashcardPlayer({
         setAnswers({});
         setRevealedIds(new Set<number>());
         setRevealed(false);
-        setSessionId(newId());
-        shownAtRef.current = Date.now();
     }, [unlockAudio]);
 
     const restartWith = React.useCallback((subset: FlashcardCardRow[]): void => {
@@ -373,8 +335,6 @@ export function FlashcardPlayer({
         setFinished(false);
         setError('');
         setStarted(true);
-        setSessionId(newId());
-        shownAtRef.current = Date.now();
     }, []);
 
     const answeredCards = activeCards.filter((entry) => answers[entry.id] !== undefined);
@@ -445,7 +405,7 @@ export function FlashcardPlayer({
                     <p className="m-0 max-w-md leading-8 text-muted">
                         {mode === 'review'
                             ? 'وقتی موعد کارتی برسد، همین‌جا مرور می‌شود.'
-                            : 'برای این درس هنوز واژه‌ای ثبت نشده است.'}
+                            : 'برای این مقاله هنوز واژه‌ای ثبت نشده است.'}
                     </p>
                     {mode === 'review' && nextDueAt !== null && (
                         <p className="m-0 text-sm leading-7 text-muted">موعد بعدی: {formatDue(nextDueAt)}</p>
@@ -514,7 +474,7 @@ export function FlashcardPlayer({
                     </span>
                     <div className="grid gap-1">
                         <h2 className="m-0 text-2xl font-extrabold">
-                            {mode === 'review' ? 'مرور امروز تمام شد.' : 'این درس تمام شد.'}
+                            {mode === 'review' ? 'مرور امروز تمام شد.' : 'این مقاله تمام شد.'}
                         </h2>
                         <p className="m-0 text-sm leading-7 text-muted">
                             {fa(answeredCards.length)} از {fa(activeCards.length)} کارت پاسخ داده شد.
@@ -612,7 +572,7 @@ export function FlashcardPlayer({
                 className="overflow-hidden rounded-3xl border border-line bg-surface"
             >
                 <div className="grid gap-3 px-5 py-8 text-center">
-                    <p className="m-0 text-xs tracking-wide text-muted">{mode === 'lesson' ? 'واژهٔ این درس' : 'واژه'}</p>
+                    <p className="m-0 text-xs tracking-wide text-muted">{mode === 'lesson' ? 'واژهٔ این مقاله' : 'واژه'}</p>
                     <div className="flex items-center justify-center gap-2">
                         <p
                             lang="en"

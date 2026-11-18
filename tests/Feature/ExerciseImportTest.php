@@ -4,7 +4,7 @@ use App\Models\ExerciseItem;
 use App\Models\ExerciseSet;
 use App\Models\ExerciseTopic;
 use Illuminate\Support\Str;
-use Tests\Support\FlashcardFixtures;
+use Tests\Support\BookFixtures;
 
 // Exercise content import (owner request 2026-11-16): one reviewed JSON per
 // unit, grammar topics plus choice/matching items, upserted by stable keys.
@@ -65,7 +65,7 @@ function exerciseImportPayload(array $overrides = []): array
 }
 
 test('a reviewed file writes topics, choice and matching items', function () {
-    FlashcardFixtures::deck(1);
+    BookFixtures::deck(1);
 
     $this->artisan('exercises:import', ['source' => exerciseImportFile(exerciseImportPayload())])
         ->assertSuccessful();
@@ -89,7 +89,7 @@ test('a reviewed file writes topics, choice and matching items', function () {
 });
 
 test('a re-import upserts by stable ids and does not duplicate', function () {
-    FlashcardFixtures::deck(1);
+    BookFixtures::deck(1);
     $path = exerciseImportFile(exerciseImportPayload());
 
     $this->artisan('exercises:import', ['source' => $path])->assertSuccessful();
@@ -104,7 +104,7 @@ test('a re-import upserts by stable ids and does not duplicate', function () {
 });
 
 test('a matching set with duplicate right side is refused and writes nothing', function () {
-    FlashcardFixtures::deck(1);
+    BookFixtures::deck(1);
     $payload = exerciseImportPayload();
     $payload['items'][1]['pairs'] = [
         ['left' => 'A', 'right' => 'same'],
@@ -118,7 +118,7 @@ test('a matching set with duplicate right side is refused and writes nothing', f
 });
 
 test('an unknown topic is refused', function () {
-    FlashcardFixtures::deck(1);
+    BookFixtures::deck(1);
     $payload = exerciseImportPayload();
     $payload['items'][0]['topic'] = 'missing';
 

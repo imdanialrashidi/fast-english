@@ -205,14 +205,6 @@ export interface UnitProgress {
     answered: number;
 }
 
-export interface FlashcardCounts {
-    total: number;
-    known: number;
-    unknown: number;
-    due: number;
-    fresh: number;
-}
-
 /** One lesson deck's computed state (owner clarification 2026-11-15). */
 export interface LessonDeckCounts {
     total: number;
@@ -241,37 +233,24 @@ export interface UnitExerciseProgress {
     answered: number;
 }
 
-export interface FlashcardBookRow {
+export interface BookRow {
     slug: string;
     title_en: string;
     title_fa: string | null;
     level: string | null;
     edition: string | null;
-    cover_url: string | null;
     units_count: number;
-    cards_count: number;
-    known_count: number;
-    unknown_count: number;
-    due_count: number;
-    fresh_count: number;
     exercise: BookExerciseProgress | null;
     url: string;
 }
 
-export interface FlashcardUnitRow {
+export interface BookUnitRow {
     number: number;
     title_en: string;
     title_fa: string | null;
     subtitle: string | null;
-    cards_count: number;
-    known_count: number;
-    unknown_count: number;
-    due_count: number;
-    fresh_count: number;
     exercise: UnitExerciseProgress | null;
-    url: string;
     hub_url: string;
-    results_url: string;
 }
 
 export interface FlashcardCardRow {
@@ -302,30 +281,6 @@ export interface FlashcardStudyConfig {
     auto_play_audio: boolean;
     show_phonetic: boolean;
     show_translation: boolean;
-}
-
-export interface FlashcardBookSummary {
-    slug: string;
-    title_en: string;
-    title_fa: string | null;
-    level: string | null;
-    url: string;
-}
-
-export interface FlashcardUnitSummary {
-    number: number;
-    title_en: string;
-    title_fa: string | null;
-    subtitle: string | null;
-    url: string;
-    hub_url: string;
-    results_url: string;
-}
-
-export interface FlashcardReviewSummary {
-    due: number;
-    next_due_at: string | null;
-    reviewed_today: number;
 }
 
 declare global {

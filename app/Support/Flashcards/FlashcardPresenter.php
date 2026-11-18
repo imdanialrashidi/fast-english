@@ -2,25 +2,22 @@
 
 namespace App\Support\Flashcards;
 
-use App\Models\Flashcard;
 use App\Models\FlashcardBook;
 use App\Models\FlashcardUnit;
-use App\Models\UserFlashcard;
 use App\Models\VocabularyWord;
 use App\Models\WordAudio;
 
 /**
- * One shape per flashcard payload. Controllers never hand-build card or
- * summary arrays, so the player, the book list and the results screen always
- * agree on field names and URL routes.
+ * One shape per books payload. The shelf, the book page and the unit hub
+ * read the same keys, so a change lands in all three at once.
  */
 final class FlashcardPresenter
 {
     /**
-     * @param  array{total: int, known: int, unknown: int, due: int, fresh: int}  $counts
+     * @param  array<string, mixed>|null  $exercise
      * @return array<string, mixed>
      */
-    public static function book(FlashcardBook $book, array $counts, int $unitsCount = 0, ?array $exercise = null): array
+    public static function book(FlashcardBook $book, int $unitsCount, ?array $exercise = null): array
     {
         return [
             'slug' => (string) $book->slug,
@@ -28,76 +25,14 @@ final class FlashcardPresenter
             'title_fa' => $book->title_fa,
             'level' => $book->level,
             'edition' => $book->edition,
-            'cover_url' => $book->cover_path !== null
-                ? route('media.flashcard.cover', ['book' => $book->slug])
-                : null,
             'units_count' => $unitsCount,
-            'cards_count' => $counts['total'],
-            'known_count' => $counts['known'],
-            'unknown_count' => $counts['unknown'],
-            'due_count' => $counts['due'],
-            'fresh_count' => $counts['fresh'],
             'exercise' => $exercise,
             'url' => route('flashcards.book', ['book' => $book->slug]),
         ];
     }
 
     /**
-     * @param  array{total: int, known: int, unknown: int, due: int, fresh: int}  $counts
-     * @return array<string, mixed>
-     */
-    public static function unit(FlashcardUnit $unit, array $counts, ?array $exercise = null): array
-    {
-        return [
-            'number' => (int) $unit->number,
-            'title_en' => (string) $unit->title_en,
-            'title_fa' => $unit->title_fa,
-            'subtitle' => $unit->subtitle,
-            'cards_count' => $counts['total'],
-            'known_count' => $counts['known'],
-            'unknown_count' => $counts['unknown'],
-            'due_count' => $counts['due'],
-            'fresh_count' => $counts['fresh'],
-            'exercise' => $exercise,
-            'url' => route('flashcards.unit', [
-                'book' => $unit->book->slug,
-                'unit' => $unit->number,
-            ]),
-            'hub_url' => route('books.unit', [
-                'book' => $unit->book->slug,
-                'unit' => $unit->number,
-            ]),
-            'results_url' => route('flashcards.results', [
-                'book' => $unit->book->slug,
-                'unit' => $unit->number,
-            ]),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function card(Flashcard $card, ?UserFlashcard $state = null): array
-    {
-        return [
-            'id' => (int) $card->id,
-            'word' => $card->label(),
-            'headword' => (string) $card->word,
-            'phonetic' => $card->phonetic,
-            'translation_fa' => (string) $card->translation_fa,
-            'definition_en' => $card->definition_en,
-            'example_en' => $card->example_en,
-            'part_of_speech' => $card->part_of_speech,
-            'audio_url' => route('media.flashcard.audio', ['flashcard' => $card->id]),
-            'last_rating' => $state?->last_rating,
-            'phase' => $state?->phase,
-            'due_at' => $state?->due_at?->toIso8601String(),
-            'is_new' => $state === null || $state->phase === 'new',
-        ];
-    }
-
-    /**
-     * One glossary card on a lesson deck. Cards are vocabulary state, not
+     * One glossary card on an article deck. Cards are vocabulary state, not
      * book content: the same word keeps one schedule wherever it appears.
      * A word without an approved clip is still a valid card; the player
      * simply hides the speaker action.
@@ -131,9 +66,22 @@ final class FlashcardPresenter
         ];
     }
 
-    /** @return array{total: int, known: int, unknown: int, due: int, fresh: int} */
-    public static function emptyCounts(): array
+    /**
+     * @param  array<string, mixed>|null  $exercise
+     * @return array<string, mixed>
+     */
+    public static function unit(FlashcardUnit $unit, ?array $exercise = null): array
     {
-        return ['total' => 0, 'known' => 0, 'unknown' => 0, 'due' => 0, 'fresh' => 0];
+        return [
+            'number' => (int) $unit->number,
+            'title_en' => (string) $unit->title_en,
+            'title_fa' => $unit->title_fa,
+            'subtitle' => $unit->subtitle,
+            'exercise' => $exercise,
+            'hub_url' => route('books.unit', [
+                'book' => $unit->book->slug,
+                'unit' => $unit->number,
+            ]),
+        ];
     }
 }

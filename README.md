@@ -117,63 +117,52 @@ One-command alternative: `composer setup` (install + env + key + migrate + build
 
 Staff content work: [docs/ops/CONTENT_UPLOAD_FA.md](docs/ops/CONTENT_UPLOAD_FA.md).
 
-### Flashcards (book units + lesson vocabulary)
+### Flashcards (article vocabulary only)
 
-The books section lives at `/app/books`; a book unit is a hub with a
-flashcard entry and an exercise entry, and the player is a child route. Cards
-are text-first: the English word and a speaker, then an explicit «نمایش
-پاسخ» for the Persian meaning, example and IPA. There is no picture prompt and
-no card-image route. Two decks share the player:
+Flashcards belong to articles, not to book units (owner decision 2026-11-18).
+The reader's glossary is the deck: an article with N key words yields N
+cards, no cap. Cards are text-first — the English word and a speaker, then an
+explicit «نمایش پاسخ» for the Persian meaning, example and IPA — with four
+grades (Again / Hard / Good / Easy). Grading writes the same `vocabulary_words`
+row the «واژه‌ها» notebook schedules, so one word has one schedule. There is
+no picture prompt and no card-image route.
 
-- **Book units.** One deck per unit, two self-reports («درست گفتم / درست
-  نگفتم»), previous/next and per-unit result buckets, backed by a two-grade
-  Anki-style schedule. The first book is American English File Starter (12
-  units, 258 cards). Family and Friends stays in Kidotalks (children-only).
-- **Lesson vocabulary.** The article's glossary is its deck; grading writes
-  the same notebook row «واژه‌ها» schedules, so one word has one schedule. No
-  entry cap: an article with N key words yields N cards.
-
-Import a curated book dataset (the folder containing `manifest.json`):
-
-```bash
-php artisan flashcards:import storage/app/private/imports/aef-3e-starter
-php artisan flashcards:import <path> --dry-run   # validate counts only
-php artisan flashcards:import <path> --force     # re-process media
-```
-
-Import reviewed word clips for lesson decks (Underdog Woof workflow):
+Word audio is produced offline with Underdog Woof and imported from a
+reviewed manifest:
 
 ```bash
 php artisan flashcards:audio:import storage/app/private/imports/word-audio/manifest.json
 php artisan flashcards:audio:import <manifest> --dry-run
 ```
 
-Both flashcard commands are idempotent and never touch learner schedules.
-Media is private and `no-store`. Full contract and verification:
-[docs/FLASHCARDS.md](docs/FLASHCARDS.md); audio production:
+The command is idempotent and never touches learner schedules. Clips are
+private (`private, no-store`) and served only through the paid media route.
+Full contract: [docs/FLASHCARDS.md](docs/FLASHCARDS.md); audio production:
 [docs/ops/FLASHCARD_AUDIO_FA.md](docs/ops/FLASHCARD_AUDIO_FA.md).
 
-### Book exercises
+### Books (grammar + exercises)
 
-Every book unit can carry one reviewed exercise set: choice, fill-blank and
-order questions with server marking, a result page that reveals the key and
-the Persian explanation only after submit, and a retry that creates a new
-attempt. The unit hub links it, with the latest score, when a published set
-exists.
+The books section lives at `/app/books`: six American English File books
+(Starter, 1–5), 66 units, and the unit page is the lesson — each grammar
+topic in the book's order with a Persian explanation, formulas and examples,
+then that topic's questions answered in place. Choice and matching questions
+are marked on the server; the key and the Persian feedback appear only after
+answering, and the first answer is counted once. The unit page also shows
+card-free progress and previous/next unit navigation.
 
 ```bash
+php artisan aef:import-catalog
 php artisan exercises:import database/seeders/fixtures/exercises
 php artisan exercises:import <set.json> --draft
 php artisan exercises:import <set.json> --dry-run
 ```
 
-Twelve AEF Starter sets (five items each) ship as fixtures; the command
-accepts one JSON file or a directory. Sets and items are upserted by stable
-ids; learner attempts are never touched. Progress reads on the shelf (`تمرین: X از Y`), the unit row, the hub
-(last/best/attempts) and Today (a fresh or review exercise task). The
-cross-track review hub at `/app/review` gathers due words, due book cards and
-latest-attempt exercise mistakes, with one primary action. Contract, JSON
-shape and limits: [docs/EXERCISES.md](docs/EXERCISES.md).
+The catalog command installs the six books and the 66 unit titles; the
+exercise command accepts one JSON file or a directory of sets and upserts by
+stable external ids. Learner attempts are never touched. Progress reads on
+the shelf, the book page and Today (a fresh or review exercise task). The
+review hub at `/app/review` gathers due words and latest-attempt exercise
+mistakes. Contract and JSON shape: [docs/EXERCISES.md](docs/EXERCISES.md).
 Agent content upload (MCP): staff-only bearer tokens, draft-first writes, staged MP3/cover uploads, and publish only with an explicit `content:publish` ability. Setup, client config, tools, and troubleshooting: [docs/ops/MCP_CONTENT_UPLOAD_FA.md](docs/ops/MCP_CONTENT_UPLOAD_FA.md).
 Full admin-panel operator handbook (login/2FA, content, payments, users, settings, import/export): [docs/ops/ADMIN_PANEL_FA.md](docs/ops/ADMIN_PANEL_FA.md).
 Android build, signing, and publish notes: [mobile/README.md](mobile/README.md).

@@ -1,3 +1,41 @@
+## 2026-11-18 — article-only flashcards, exercise-only books
+
+- **Owner decision: flashcards belong to articles, not to book units.** The
+  AEF unit decks, their results pages, the daily card queue, the card review
+  write and the book-card media route are removed with their controllers,
+  models, scheduler, importer and tests. `/app/books` keeps the shelf, book
+  page and scrolling unit lesson; `/app/flashcards/**` stays only as legacy
+  redirects. The `flashcards`, `user_flashcards` and `flashcard_reviews`
+  tables remain in the schema for rollback but nothing writes or serves them.
+- **The article deck is the only deck.** The reader opens the lesson glossary
+  with four grades writing the notebook row; the CTA and deck copy say
+  «مقاله». The player no longer falls back to the retired card endpoint.
+- **Word audio for every article card.** 803 unique glossary words across 16
+  published topics / 89 published lessons were synthesised with Underdog Woof
+  (Juno), mastered to 44.1 kHz mono 96 kbps with loudness normalisation and
+  the required credit tags, and imported with `flashcards:audio:import`.
+  Coverage is checked key-by-key; clips are private, `no-store`, and served
+  only through the paid media route. A missing clip still renders a silent
+  card.
+- **Books are a grammar exercise track.** `catalog.json` now carries the 66
+  real unit titles (English + Persian); `aef:import-catalog` upserts them and
+  accepts both the legacy count and the enriched list. The shelf, book page
+  and unit page show answered-question progress only, with typographic
+  covers (no licensed cover art) and no card counts.
+- **Review and Today.** The review hub has two queues (due words, exercise
+  mistakes); Today no longer adds a card task (14 app queries, down from 15).
+- **UI/UX pass.** Exercise-first shelf/book pages at 360–1440, unit page and
+  deck checked at 320/390/1440 with no horizontal overflow, and the deck gets
+  bottom padding so the persistent player never covers its controls.
+- **Docs.** PRODUCT carries the 2026-11-18 amendment; QUALITY retires AC-29
+  and updates AC-30–34; FLASHCARDS, EXERCISES, the AEF pipeline, the
+  `aef-unit` skill, README, LAUNCH_INPUTS and the learning-tracks plan follow.
+- Evidence: full Pest **461 passed / 5,581 assertions** on PostgreSQL 17;
+  Pint **PASS** (418 files); `npm run typecheck` **PASS**; `npm run build`
+  **PASS**; full Chromium **96 passed**; the five new migrations ran on a
+  restored production dump; `config:cache` + `route:cache` + `view:cache`
+  **PASS**.
+
 ## Deployed 2026-11-15 — performance pass: first paint, cache lifecycle, query budgets
 
 - **First paint.** The Inertia root now preloads the Persian Vazirmatn font and, when a page has one, the hero cover the client otherwise discovers only after hydration. The header lockup was resized from 697×197 (41,204 B light / 10,950 B dark) to 240×68 (10,367 B / 5,461 B), 2× the largest rendered size.

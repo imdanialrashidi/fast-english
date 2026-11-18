@@ -2,16 +2,16 @@
 
 use App\Support\Exercises\ExerciseProgress;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\Support\BookFixtures;
 use Tests\Support\ContentFixtures;
 use Tests\Support\ExerciseFixtures;
-use Tests\Support\FlashcardFixtures;
 
 // Progress is answered-question count, first answer only (owner request
 // 2026-11-16): the shelf, the book list and the unit page read the same
 // numbers, and a retry never raises them.
 
 test('the shelf, book and unit read the same answered-question progress', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+    [$book, $unit] = BookFixtures::deck(1);
     $set = ExerciseFixtures::set($book, $unit);
     $items = $set->items()->get();
     $student = ContentFixtures::subscribedStudent();
@@ -61,7 +61,7 @@ test('the shelf, book and unit read the same answered-question progress', functi
 });
 
 test('the daily task points at the first unit with unanswered questions', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+    [$book, $unit] = BookFixtures::deck(1);
     $set = ExerciseFixtures::set($book, $unit);
     $student = ContentFixtures::subscribedStudent();
 

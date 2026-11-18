@@ -1,14 +1,14 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, BookOpen, Check, ClipboardList, Languages, Layers, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Check, ClipboardList, Languages, RotateCcw } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import type { SharedProps } from '@/types';
 
 /**
- * The cross-track review hub (owner request 2026-11-15): due words, due
- * book cards and exercise mistakes in one place. Each queue keeps its own
- * session; the hub only reads and links, so the two schedulers stay intact.
+ * The review hub (owner request 2026-11-15; book cards retired 2026-11-18):
+ * due words and exercise mistakes in one place. Each queue keeps its own
+ * session; the hub only reads and links.
  */
 
 interface ReviewProps extends SharedProps {
@@ -19,12 +19,6 @@ interface ReviewProps extends SharedProps {
         learning: number;
         review_url: string;
         notebook_url: string;
-    };
-    cards: {
-        due: number;
-        next_due_at: string | null;
-        review_url: string;
-        books_url: string;
     };
     exercises: {
         wrong: number;
@@ -38,22 +32,9 @@ function fa(value: number): string {
     return value.toLocaleString('fa-IR');
 }
 
-function formatDue(iso: string | null): string {
-    if (iso === null || iso === '') {
-        return '';
-    }
-
-    const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) {
-        return '';
-    }
-
-    return new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
-}
-
 export const ReviewIndex: FunctionComponent<ReviewProps> & {
     layout?: (page: ReactNode) => ReactNode;
-} = ({ total, primary, words, cards, exercises }: ReviewProps): React.JSX.Element => {
+} = ({ total, primary, words, exercises }: ReviewProps): React.JSX.Element => {
     return (
         <>
             <Head title="مرور" />
@@ -68,8 +49,8 @@ export const ReviewIndex: FunctionComponent<ReviewProps> & {
                         </p>
                         <p className="m-0 text-sm leading-7 text-muted">
                             {total > 0
-                                ? 'واژه‌های موعددار، کارت‌های کتاب و اشتباه‌های تمرین، همه یک‌جا.'
-                                : 'وقتی موعد واژه یا کارتی برسد یا تمرینی غلط داشته باشد، همین‌جا ظاهر می‌شود.'}
+                                ? 'واژه‌های موعددار و اشتباه‌های تمرین، همه یک‌جا.'
+                                : 'وقتی موعد واژه‌ای برسد یا تمرینی غلط داشته باشد، همین‌جا ظاهر می‌شود.'}
                         </p>
                     </div>
 
@@ -135,56 +116,6 @@ export const ReviewIndex: FunctionComponent<ReviewProps> & {
                             className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-canvas px-5 py-2 text-sm font-bold text-ink no-underline hover:bg-surface"
                         >
                             دفترچهٔ واژه‌ها
-                        </Link>
-                    </div>
-                </section>
-
-                <section aria-label="کارت‌های کتاب" className="grid gap-3 rounded-2xl border border-line bg-surface p-4">
-                    <div className="flex items-start gap-3">
-                        <span aria-hidden="true" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                            <Layers size={22} />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                            <h2 className="m-0 text-base font-bold">کارت‌های کتاب</h2>
-                            <p className="m-0 text-xs leading-6 text-muted">
-                                {cards.due > 0
-                                    ? `${fa(cards.due)} کارت آمادهٔ مرور`
-                                    : cards.next_due_at !== null
-                                      ? `موعد بعدی: ${formatDue(cards.next_due_at)}`
-                                      : 'کارتی در برنامه نیست'}
-                            </p>
-                        </div>
-                        <span
-                            data-review-count="cards"
-                            className={
-                                cards.due > 0
-                                    ? 'inline-flex min-w-9 items-center justify-center rounded-full bg-accent-strong px-2 py-0.5 text-xs font-bold text-surface'
-                                    : 'inline-flex min-w-9 items-center justify-center rounded-full bg-line px-2 py-0.5 text-xs font-bold text-muted'
-                            }
-                        >
-                            {fa(cards.due)}
-                        </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {cards.due > 0 ? (
-                            <Link
-                                href={cards.review_url}
-                                className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-surface no-underline hover:bg-primary-hover"
-                            >
-                                شروع مرور کارت‌ها
-                            </Link>
-                        ) : (
-                            <span className="inline-flex min-h-11 items-center gap-1 text-xs text-success">
-                                <Check size={16} aria-hidden="true" />
-                                امروز چیزی نمانده
-                            </span>
-                        )}
-                        <Link
-                            href={cards.books_url}
-                            className="inline-flex min-h-11 items-center justify-center gap-1 rounded-full border border-line bg-canvas px-5 py-2 text-sm font-bold text-ink no-underline hover:bg-surface"
-                        >
-                            <BookOpen size={16} aria-hidden="true" />
-                            کتاب‌ها
                         </Link>
                     </div>
                 </section>

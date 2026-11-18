@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 /**
- * Upserts the American English File series catalog: six books and their unit
- * shells. Content (cards, exercises) is imported per unit by the other
- * commands; this one only makes the books and units reachable so a unit page
- * can exist before its content does. Existing unit titles are never
- * overwritten, and no learner row is touched.
+ * Upserts the American English File series catalog: six books and their units
+ * with the real unit titles. Exercises are imported per unit by
+ * `exercises:import`; this command only makes the books and units reachable
+ * so a unit page can exist before its exercises do. Titles are content, so a
+ * re-run refreshes them from the catalog; no learner row is touched.
  */
 class ImportAefCatalog extends Command
 {
@@ -58,17 +58,17 @@ class ImportAefCatalog extends Command
                     ],
                 );
 
-                $units = max(0, (int) ($entry['units'] ?? 0));
+                $units = self::unitRows($entry['units'] ?? []);
                 $created = 0;
 
-                for ($number = 1; $number <= $units; $number++) {
-                    $unit = FlashcardUnit::query()->firstOrCreate(
+                foreach ($units as $number => $unitData) {
+                    $unit = FlashcardUnit::query()->updateOrCreate(
                         ['book_id' => $book->id, 'number' => $number],
-                        [
-                            'title_en' => 'File '.$number,
-                            'title_fa' => 'یونیت '.$number,
+                        array_filter([
+                            'title_en' => $unitData['title_en'],
+                            'title_fa' => $unitData['title_fa'],
                             'sort_order' => $number,
-                        ],
+                        ], fn (mixed $value): bool => $value !== null),
                     );
 
                     if ($unit->wasRecentlyCreated) {
@@ -76,7 +76,7 @@ class ImportAefCatalog extends Command
                     }
                 }
 
-                $rows[] = [$slug, (string) $book->title_en, $units, $created];
+                $rows[] = [$slug, (string) $book->title_en, count($units), $created];
             }
 
             return $rows;
@@ -86,5 +86,43 @@ class ImportAefCatalog extends Command
         $this->info('American English File catalog imported.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Accept both catalog shapes: a plain unit count (legacy) or the
+     * enriched list with English/Persian titles.
+     *
+     * @return array<int, array{title_en: string, title_fa: ?string}>
+     */
+    private static function unitRows(mixed $units): array
+    {
+        if (is_numeric($units)) {
+            $rows = [];
+            for ($number = 1; $number <= (int) $units; $number++) {
+                $rows[$number] = ['title_en' => 'File '.$number, 'title_fa' => 'یونیت '.$number];
+            }
+
+            return $rows;
+        }
+
+        if (! is_array($units)) {
+            return [];
+        }
+
+        $rows = [];
+        foreach ($units as $unit) {
+            $number = (int) ($unit['number'] ?? 0);
+            $title = trim((string) ($unit['title_en'] ?? ''));
+            if ($number < 1 || $title === '') {
+                continue;
+            }
+
+            $rows[$number] = [
+                'title_en' => $title,
+                'title_fa' => isset($unit['title_fa']) ? trim((string) $unit['title_fa']) : null,
+            ];
+        }
+
+        return $rows;
     }
 }

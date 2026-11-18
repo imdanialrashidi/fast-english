@@ -7,7 +7,6 @@ use App\Models\FlashcardBook;
 use App\Models\User;
 use App\Support\Exercises\ExercisePresenter;
 use App\Support\Exercises\ExerciseProgress;
-use App\Support\Flashcards\FlashcardProgress;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,9 +14,8 @@ use Inertia\Response;
 /**
  * The unit page (owner request 2026-11-16): a unit is one scrolling lesson —
  * each grammar topic's Persian explanation, formulas and examples, then that
- * topic's questions — followed by the unit's vocabulary deck. Exercises are
- * answered in place with immediate feedback; the flashcard deck stays a
- * child route so opening a unit never starts a session by accident.
+ * topic's questions. Exercises are answered in place with immediate feedback;
+ * book vocabulary decks are retired (2026-11-18), so no card route exists.
  */
 class BookUnitController extends Controller
 {
@@ -39,7 +37,6 @@ class BookUnitController extends Controller
         $items = $set?->items ?? collect();
         $answers = ExerciseProgress::firstAnswers($user, $items->pluck('id')->all());
 
-        $counts = FlashcardProgress::forUnit($user, $unitModel);
         $answered = count($answers);
 
         $previous = $book->units()->where('number', '<', $unitModel->number)->orderByDesc('number')->first();
@@ -58,14 +55,6 @@ class BookUnitController extends Controller
                 'title_en' => (string) $unitModel->title_en,
                 'title_fa' => $unitModel->title_fa,
                 'subtitle' => $unitModel->subtitle,
-                'flashcards_url' => route('flashcards.unit', [
-                    'book' => $book->slug,
-                    'unit' => $unitModel->number,
-                ]),
-                'results_url' => route('flashcards.results', [
-                    'book' => $book->slug,
-                    'unit' => $unitModel->number,
-                ]),
                 'previous_url' => $previous === null ? null : route('books.unit', [
                     'book' => $book->slug,
                     'unit' => $previous->number,
@@ -94,15 +83,6 @@ class BookUnitController extends Controller
                 'book' => $book->slug,
                 'unit' => $unitModel->number,
             ]),
-            'flashcards' => [
-                'cards_count' => $counts['total'],
-                'known_count' => $counts['known'],
-                'unknown_count' => $counts['unknown'],
-                'url' => route('flashcards.unit', [
-                    'book' => $book->slug,
-                    'unit' => $unitModel->number,
-                ]),
-            ],
         ]);
     }
 

@@ -10,8 +10,6 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\FlashcardBookController;
 use App\Http\Controllers\FlashcardMediaController;
-use App\Http\Controllers\FlashcardReviewController;
-use App\Http\Controllers\FlashcardUnitController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LessonAudioController;
@@ -235,17 +233,16 @@ Route::post('/app/words/{word}/grade', [VocabularyController::class, 'grade'])
     ->whereNumber('word')
     ->name('words.grade');
 
-// Cross-track review hub (owner request 2026-11-15): due words, due book
-// cards and exercise mistakes in one read-only page. Each queue keeps its
-// own session; the hub only links.
+// Review hub (owner request 2026-11-15; book cards retired 2026-11-18):
+// due words and exercise mistakes in one read-only page. Each queue keeps
+// its own session; the hub only links.
 Route::get('/app/review', [ReviewController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('review.index');
 
-// Books section (owner request 2026-11-15): the shelf, one book, and the
-// unit hub. A unit has two real paths — flashcards and exercises — so the
-// hub is the unit's home and the player is a child route. Deep links from
-// the pre-books URLs are redirected at the bottom of this block.
+// Books section (owner request 2026-11-15; exercise-only 2026-11-18): the
+// shelf, one book, and the unit page. Deep links from the pre-books URLs
+// are redirected at the bottom of this block.
 Route::get('/app/books', [FlashcardBookController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('flashcards.index');
@@ -256,15 +253,6 @@ Route::get('/app/books/{book:slug}/{unit}', [BookUnitController::class, 'show'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('unit')
     ->name('books.unit');
-Route::get('/app/books/{book:slug}/{unit}/flashcards', [FlashcardUnitController::class, 'show'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
-    ->whereNumber('unit')
-    ->name('flashcards.unit');
-Route::get('/app/books/{book:slug}/{unit}/flashcards/results', [FlashcardUnitController::class, 'results'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
-    ->whereNumber('unit')
-    ->name('flashcards.results');
-
 // Book-unit exercises (owner request 2026-11-16): grammar topics and
 // questions live on the unit page, and one question is marked in place.
 // The first answer is stored and counted; a retry returns the same result.
@@ -282,22 +270,10 @@ Route::get('/app/books/{book:slug}/{unit}/exercises/{attempt}', fn (string $book
     ->whereNumber('unit')
     ->whereNumber('attempt');
 
-// The daily card queue and the idempotent card review write are card-level
-// surfaces, not a book path; they keep their existing URLs (the future
-// «مرور» tab will host them).
-Route::get('/app/flashcards/review', [FlashcardReviewController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
-    ->name('flashcards.review');
-Route::post('/app/flashcards/reviews', [FlashcardReviewController::class, 'store'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed', 'throttle:120,1'])
-    ->name('flashcards.reviews.store');
-
 // Legacy deep links → the books section.
 Route::redirect('/app/flashcards', '/app/books');
 Route::get('/app/flashcards/{book:slug}', fn (string $book) => redirect()->route('flashcards.book', ['book' => $book]));
 Route::get('/app/flashcards/{book:slug}/{unit}', fn (string $book, string $unit) => redirect()->route('books.unit', ['book' => $book, 'unit' => $unit]))
-    ->whereNumber('unit');
-Route::get('/app/flashcards/{book:slug}/{unit}/results', fn (string $book, string $unit) => redirect()->route('flashcards.results', ['book' => $book, 'unit' => $unit]))
     ->whereNumber('unit');
 Route::get('/app/flashcards/{book:slug}/{unit}/exercises', fn (string $book, string $unit) => redirect()->route('books.unit', ['book' => $book, 'unit' => $unit]))
     ->whereNumber('unit');
@@ -318,17 +294,10 @@ Route::post('/app/lessons/{lesson}/flashcards/reviews', [LessonFlashcardControll
     ->whereNumber('lesson')
     ->name('lessons.flashcards.store');
 
-Route::get('/media/flashcards/{flashcard}/audio', [FlashcardMediaController::class, 'audio'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
-    ->whereNumber('flashcard')
-    ->name('media.flashcard.audio');
 Route::get('/media/words/{wordAudio}/audio', [FlashcardMediaController::class, 'word'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('wordAudio')
     ->name('media.word.audio');
-Route::get('/media/flashcard-books/{book:slug}/cover', [FlashcardMediaController::class, 'cover'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
-    ->name('media.flashcard.cover');
 
 // S4 progress + bookmarks (scope §13.2–13.3): authenticated, policy-checked,
 // private no-store JSON. The service worker never caches these (POST +

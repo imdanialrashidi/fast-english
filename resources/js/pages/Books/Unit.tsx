@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, Check, ChevronLeft, ChevronRight, Layers, X } from 'lucide-react';
+import { BookOpen, Check, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { MixedText } from '@/components/MixedText';
@@ -19,8 +19,7 @@ import type {
  * topic is explained in Persian with formulas and examples, and its
  * questions sit directly under it. A question is marked in place: the first
  * answer is stored and counted, the key and the Persian feedback appear
- * immediately, and retrying the same question never changes progress. The
- * vocabulary deck closes the unit.
+ * immediately, and retrying the same question never changes progress.
  */
 
 interface BookUnitProps extends SharedProps {
@@ -36,8 +35,6 @@ interface BookUnitProps extends SharedProps {
         title_en: string;
         title_fa: string | null;
         subtitle: string | null;
-        flashcards_url: string;
-        results_url: string;
         previous_url: string | null;
         next_url: string | null;
     };
@@ -46,7 +43,6 @@ interface BookUnitProps extends SharedProps {
     topics: ExerciseTopicRow[];
     items: UnitExerciseItem[];
     answer_url: string;
-    flashcards: { cards_count: number; known_count: number; unknown_count: number; url: string };
 }
 
 function fa(value: number): string {
@@ -79,7 +75,6 @@ export const BookUnitPage: FunctionComponent<BookUnitProps> & {
     topics,
     items,
     answer_url,
-    flashcards,
 }: BookUnitProps): React.JSX.Element => {
     const [results, setResults] = React.useState<Record<number, ExerciseAnswerResult>>(() => {
         const initial: Record<number, ExerciseAnswerResult> = {};
@@ -218,7 +213,7 @@ export const BookUnitPage: FunctionComponent<BookUnitProps> & {
                         <BookOpen size={28} aria-hidden="true" />
                         <h2 className="m-0 text-lg font-extrabold">محتوای این یونیت در حال آماده‌سازی است.</h2>
                         <p className="m-0 max-w-md text-sm leading-8 text-muted">
-                            فلش‌کارت‌های واژگان همین یونیت آماده است؛ تمرین‌های گرامر به‌زودی اضافه می‌شوند.
+                            تمرین‌های گرامر این یونیت به‌زودی اضافه می‌شوند.
                         </p>
                     </section>
                 ) : (
@@ -297,24 +292,6 @@ export const BookUnitPage: FunctionComponent<BookUnitProps> & {
                         </section>
                     ))
                 )}
-
-                <section className="grid gap-3 rounded-3xl border border-line bg-surface p-5 sm:grid-cols-[1fr_auto] sm:items-center">
-                    <div className="grid gap-1">
-                        <p className="m-0 inline-flex items-center gap-2 text-sm font-bold">
-                            <Layers size={18} aria-hidden="true" />
-                            فلش‌کارت‌های واژگان این یونیت
-                        </p>
-                        <p className="m-0 text-xs leading-6 text-muted">
-                            {fa(flashcards.cards_count)} کارت · {fa(flashcards.known_count)} بلد · {fa(flashcards.unknown_count)} نیاز به مرور
-                        </p>
-                    </div>
-                    <Link
-                        href={flashcards.url}
-                        className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-surface no-underline hover:bg-primary-hover"
-                    >
-                        شروع فلش‌کارت
-                    </Link>
-                </section>
 
                 <nav aria-label="یونیت‌های کتاب" className="flex items-center justify-between gap-2">
                     {unit.previous_url !== null ? (

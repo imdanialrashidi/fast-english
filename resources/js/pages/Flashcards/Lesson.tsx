@@ -14,7 +14,7 @@ import type {
 } from '@/types';
 
 /**
- * One lesson's vocabulary deck (owner clarification 2026-11-15): the
+ * One article's vocabulary deck (owner clarification 2026-11-15): the
  * article's glossary is the deck, each card is text-first with audio, and
  * the four grades write the same `vocabulary_words` row the notebook reads.
  * Answering a card is what saves the word to the notebook; simply opening
@@ -71,10 +71,10 @@ export const LessonFlashcardsPage: FunctionComponent<LessonFlashcardsProps> & {
             <Head title={`فلش‌کارت واژه‌های ${lesson.title_en}`} />
             <ScreenHeader
                 title="فلش‌کارت واژه‌ها"
-                back={{ href: lesson.reader_url, label: 'بازگشت به درس' }}
+                back={{ href: lesson.reader_url, label: 'بازگشت به مقاله' }}
             />
 
-            <div className="mx-auto grid w-full max-w-[680px] gap-3 px-4 py-4">
+            <div className="mx-auto grid w-full max-w-[680px] gap-3 px-4 py-4 pb-44">
                 <section className="grid gap-2 rounded-2xl border border-line bg-surface px-4 py-3">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm leading-7">
                         <span className="font-bold">{fa(counts.total)} واژه</span>
@@ -96,13 +96,13 @@ export const LessonFlashcardsPage: FunctionComponent<LessonFlashcardsProps> & {
                     title={lesson.title_en}
                     subtitle={`${lesson.topic_title} · ${lesson.level}`}
                     backHref={lesson.reader_url}
-                    backLabel="بازگشت به درس"
+                    backLabel="بازگشت به مقاله"
                     ratings={RATINGS}
                     onSubmitRating={submitRating}
                     bucketLabels={{ good: 'بلدم', again: 'نیاز به مرور' }}
                     correctRatings={['good', 'easy']}
                     againRatings={['again', 'hard']}
-                    startHint={`${fa(counts.total)} واژه از این درس. واژه را ببین و بشنو، معنی را بگو و بعد پاسخ را باز کن.`}
+                    startHint={`${fa(counts.total)} واژه از این مقاله. واژه را ببین و بشنو، معنی را بگو و بعد پاسخ را باز کن.`}
                 />
             </div>
         </>

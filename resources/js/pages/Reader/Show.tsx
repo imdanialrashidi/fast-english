@@ -400,7 +400,7 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
                             >
                                 <Layers size={18} aria-hidden="true" />
-                                فلش‌کارت این درس ({glossary.length.toLocaleString('fa-IR')} واژه)
+                                فلش‌کارت واژه‌های این مقاله ({glossary.length.toLocaleString('fa-IR')} واژه)
                             </Link>
                         </div>
                     )}

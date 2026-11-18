@@ -2,11 +2,389 @@
   "series": "American English File",
   "edition": "3rd",
   "books": [
-    { "slug": "aef-3e-starter", "title_en": "American English File Starter", "title_fa": "امریکن اینگلیش فایل استارتر", "level": "A1", "sort_order": 0, "units": 12 },
-    { "slug": "aef-3e-1", "title_en": "American English File 1", "title_fa": "امریکن اینگلیش فایل ۱", "level": "A1-A2", "sort_order": 1, "units": 12 },
-    { "slug": "aef-3e-2", "title_en": "American English File 2", "title_fa": "امریکن اینگلیش فایل ۲", "level": "A2-B1", "sort_order": 2, "units": 12 },
-    { "slug": "aef-3e-3", "title_en": "American English File 3", "title_fa": "امریکن اینگلیش فایل ۳", "level": "B1-B2", "sort_order": 3, "units": 10 },
-    { "slug": "aef-3e-4", "title_en": "American English File 4", "title_fa": "امریکن اینگلیش فایل ۴", "level": "B2-C1", "sort_order": 4, "units": 10 },
-    { "slug": "aef-3e-5", "title_en": "American English File 5", "title_fa": "امریکن اینگلیش فایل ۵", "level": "C1", "sort_order": 5, "units": 10 }
+    {
+      "slug": "aef-3e-starter",
+      "title_en": "American English File Starter",
+      "title_fa": "امریکن اینگلیش فایل استارتر",
+      "level": "A1",
+      "sort_order": 0,
+      "units": [
+        {
+          "number": 1,
+          "title_en": "A cappuccino, please",
+          "title_fa": "یک کاپوچینو، لطفاً"
+        },
+        {
+          "number": 2,
+          "title_en": "Are you on vacation?",
+          "title_fa": "تعطیلات هستی؟"
+        },
+        {
+          "number": 3,
+          "title_en": "Where are my keys?",
+          "title_fa": "کلیدهای من کجاست؟"
+        },
+        {
+          "number": 4,
+          "title_en": "Meet the family",
+          "title_fa": "با خانواده آشنا شو"
+        },
+        {
+          "number": 5,
+          "title_en": "A big breakfast?",
+          "title_fa": "صبحانهٔ مفصل؟"
+        },
+        {
+          "number": 6,
+          "title_en": "A school reunion",
+          "title_fa": "دورهمی مدرسه"
+        },
+        {
+          "number": 7,
+          "title_en": "Have a nice weekend!",
+          "title_fa": "آخر هفتهٔ خوبی داشته باشی!"
+        },
+        {
+          "number": 8,
+          "title_en": "Can I park here?",
+          "title_fa": "می‌توانم اینجا پارک کنم؟"
+        },
+        {
+          "number": 9,
+          "title_en": "Everything's fine!",
+          "title_fa": "همه‌چیز خوب است!"
+        },
+        {
+          "number": 10,
+          "title_en": "A room with a view",
+          "title_fa": "اتاقی با منظره"
+        },
+        {
+          "number": 11,
+          "title_en": "A new life in the US",
+          "title_fa": "یک زندگی تازه در آمریکا"
+        },
+        {
+          "number": 12,
+          "title_en": "Strangers on a train",
+          "title_fa": "غریبه‌ها در قطار"
+        }
+      ]
+    },
+    {
+      "slug": "aef-3e-1",
+      "title_en": "American English File 1",
+      "title_fa": "امریکن اینگلیش فایل ۱",
+      "level": "A1-A2",
+      "sort_order": 1,
+      "units": [
+        {
+          "number": 1,
+          "title_en": "Welcome to the class",
+          "title_fa": "به کلاس خوش آمدید"
+        },
+        {
+          "number": 2,
+          "title_en": "Are you neat or messy?",
+          "title_fa": "مرتب هستی یا نامرتب؟"
+        },
+        {
+          "number": 3,
+          "title_en": "America: the good and the bad",
+          "title_fa": "آمریکا: خوب و بد"
+        },
+        {
+          "number": 4,
+          "title_en": "Family photos",
+          "title_fa": "عکس‌های خانوادگی"
+        },
+        {
+          "number": 5,
+          "title_en": "Vote for me!",
+          "title_fa": "به من رأی بده!"
+        },
+        {
+          "number": 6,
+          "title_en": "A North African story",
+          "title_fa": "یک داستان شمال آفریقایی"
+        },
+        {
+          "number": 7,
+          "title_en": "Selfies",
+          "title_fa": "سلفی‌ها"
+        },
+        {
+          "number": 8,
+          "title_en": "A murder mystery",
+          "title_fa": "یک معمای قتل"
+        },
+        {
+          "number": 9,
+          "title_en": "#mydinnerlastnight",
+          "title_fa": "شام دیشب من"
+        },
+        {
+          "number": 10,
+          "title_en": "The most dangerous place...",
+          "title_fa": "خطرناک‌ترین مکان..."
+        },
+        {
+          "number": 11,
+          "title_en": "Culture shock",
+          "title_fa": "شوک فرهنگی"
+        },
+        {
+          "number": 12,
+          "title_en": "I've seen it ten times!",
+          "title_fa": "ده بار دیده‌ام!"
+        }
+      ]
+    },
+    {
+      "slug": "aef-3e-2",
+      "title_en": "American English File 2",
+      "title_fa": "امریکن اینگلیش فایل ۲",
+      "level": "A2-B1",
+      "sort_order": 2,
+      "units": [
+        {
+          "number": 1,
+          "title_en": "Are you? Can you? Do you?",
+          "title_fa": "تو؟ می‌توانی؟ انجام می‌دهی؟"
+        },
+        {
+          "number": 2,
+          "title_en": "OMG! Where's my passport?",
+          "title_fa": "خدایا! پاسپورتم کجاست؟"
+        },
+        {
+          "number": 3,
+          "title_en": "TripAside",
+          "title_fa": "تریپ‌آساید"
+        },
+        {
+          "number": 4,
+          "title_en": "Who does what?",
+          "title_fa": "چه کسی چه کاری می‌کند؟"
+        },
+        {
+          "number": 5,
+          "title_en": "I want it NOW!",
+          "title_fa": "همین حالا می‌خواهمش!"
+        },
+        {
+          "number": 6,
+          "title_en": "Think positive - or negative?",
+          "title_fa": "مثبت فکر کن یا منفی؟"
+        },
+        {
+          "number": 7,
+          "title_en": "First day nerves",
+          "title_fa": "اضطراب روز اول"
+        },
+        {
+          "number": 8,
+          "title_en": "Should I stay or should I go?",
+          "title_fa": "بمانم یا بروم؟"
+        },
+        {
+          "number": 9,
+          "title_en": "Beware of the dog",
+          "title_fa": "مراقب سگ باش"
+        },
+        {
+          "number": 10,
+          "title_en": "International inventions",
+          "title_fa": "اختراعات بین‌المللی"
+        },
+        {
+          "number": 11,
+          "title_en": "Ask the teacher",
+          "title_fa": "از معلم بپرس"
+        },
+        {
+          "number": 12,
+          "title_en": "The American English File interview",
+          "title_fa": "مصاحبهٔ American English File"
+        }
+      ]
+    },
+    {
+      "slug": "aef-3e-3",
+      "title_en": "American English File 3",
+      "title_fa": "امریکن اینگلیش فایل ۳",
+      "level": "B1-B2",
+      "sort_order": 3,
+      "units": [
+        {
+          "number": 1,
+          "title_en": "Eating in...and out",
+          "title_fa": "غذا خوردن در خانه و بیرون"
+        },
+        {
+          "number": 2,
+          "title_en": "Spending money",
+          "title_fa": "خرج کردن پول"
+        },
+        {
+          "number": 3,
+          "title_en": "Survive the drive",
+          "title_fa": "از پس رانندگی بربیا"
+        },
+        {
+          "number": 4,
+          "title_en": "Bad manners?",
+          "title_fa": "بی‌ادبی؟"
+        },
+        {
+          "number": 5,
+          "title_en": "Sporting superstitions",
+          "title_fa": "خرافه‌های ورزشی"
+        },
+        {
+          "number": 6,
+          "title_en": "Behind the scenes",
+          "title_fa": "پشت صحنه"
+        },
+        {
+          "number": 7,
+          "title_en": "Live and learn",
+          "title_fa": "زندگی کن و یاد بگیر"
+        },
+        {
+          "number": 8,
+          "title_en": "The right job for you",
+          "title_fa": "شغل مناسب برای تو"
+        },
+        {
+          "number": 9,
+          "title_en": "Lucky encounters",
+          "title_fa": "برخوردهای شانسی"
+        },
+        {
+          "number": 10,
+          "title_en": "Idols and icons",
+          "title_fa": "بت‌ها و اسطوره‌ها"
+        }
+      ]
+    },
+    {
+      "slug": "aef-3e-4",
+      "title_en": "American English File 4",
+      "title_fa": "امریکن اینگلیش فایل ۴",
+      "level": "B2-C1",
+      "sort_order": 4,
+      "units": [
+        {
+          "number": 1,
+          "title_en": "Questions and answers",
+          "title_fa": "سؤال و جواب"
+        },
+        {
+          "number": 2,
+          "title_en": "Doctor, doctor!",
+          "title_fa": "دکتر، دکتر!"
+        },
+        {
+          "number": 3,
+          "title_en": "Fasten your seat belts",
+          "title_fa": "کمربندهایتان را ببندید"
+        },
+        {
+          "number": 4,
+          "title_en": "Stormy weather",
+          "title_fa": "هوای طوفانی"
+        },
+        {
+          "number": 5,
+          "title_en": "I'm a survivor",
+          "title_fa": "من یک بازمانده‌ام"
+        },
+        {
+          "number": 6,
+          "title_en": "Night night",
+          "title_fa": "شب بخیر"
+        },
+        {
+          "number": 7,
+          "title_en": "My life in six words",
+          "title_fa": "زندگی من در شش کلمه"
+        },
+        {
+          "number": 8,
+          "title_en": "A witness",
+          "title_fa": "یک شاهد"
+        },
+        {
+          "number": 9,
+          "title_en": "The world's oddest traditions",
+          "title_fa": "عجیب‌ترین سنت‌های جهان"
+        },
+        {
+          "number": 10,
+          "title_en": "The end of the world",
+          "title_fa": "پایان جهان"
+        }
+      ]
+    },
+    {
+      "slug": "aef-3e-5",
+      "title_en": "American English File 5",
+      "title_fa": "امریکن اینگلیش فایل ۵",
+      "level": "C1",
+      "sort_order": 5,
+      "units": [
+        {
+          "number": 1,
+          "title_en": "Family matters",
+          "title_fa": "مسائل خانوادگی"
+        },
+        {
+          "number": 2,
+          "title_en": "The past: habits and incidents",
+          "title_fa": "گذشته: عادت‌ها و رویدادها"
+        },
+        {
+          "number": 3,
+          "title_en": "get",
+          "title_fa": "کاربردهای get"
+        },
+        {
+          "number": 4,
+          "title_en": "Speculation and deduction",
+          "title_fa": "حدس و استنتاج"
+        },
+        {
+          "number": 5,
+          "title_en": "Distancing",
+          "title_fa": "فاصله گرفتن از اطلاعات"
+        },
+        {
+          "number": 6,
+          "title_en": "Verb patterns and conditionals",
+          "title_fa": "الگوهای فعل و شرطی‌ها"
+        },
+        {
+          "number": 7,
+          "title_en": "Permission, obligation, necessity",
+          "title_fa": "اجازه، اجبار و ضرورت"
+        },
+        {
+          "number": 8,
+          "title_en": "Gerunds, infinitives, and the future",
+          "title_fa": "اسم مصدر، مصدر و آینده"
+        },
+        {
+          "number": 9,
+          "title_en": "Ellipsis and compound nouns",
+          "title_fa": "حذف و اسم‌های مرکب"
+        },
+        {
+          "number": 10,
+          "title_en": "Emphasis and relative clauses",
+          "title_fa": "تأکید و جمله‌های وصفی"
+        }
+      ]
+    }
   ]
 }

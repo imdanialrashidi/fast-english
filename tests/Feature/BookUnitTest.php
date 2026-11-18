@@ -1,15 +1,16 @@
 <?php
 
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\Support\BookFixtures;
 use Tests\Support\ContentFixtures;
 use Tests\Support\ExerciseFixtures;
-use Tests\Support\FlashcardFixtures;
 
-// The unit hub (owner request 2026-11-15): a unit's home with its deck and
-// exercise paths, plus the books-section URLs and the legacy redirects.
+// The unit page (owner request 2026-11-15; exercise-only 2026-11-18): topics
+// and questions render together, the legacy book URLs still land in the
+// books section, and a draft book or unknown unit is not found.
 
-test('the unit hub is paid-only', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+test('the unit page is paid-only', function () {
+    [$book, $unit] = BookFixtures::deck(1);
 
     $this->get(route('books.unit', ['book' => $book->slug, 'unit' => $unit->number]))->assertRedirect();
 
@@ -19,8 +20,8 @@ test('the unit hub is paid-only', function () {
         ->assertForbidden();
 });
 
-test('the unit page shows the lesson topics, the deck and the progress', function () {
-    [$book, $unit] = FlashcardFixtures::deck(3);
+test('the unit page shows the lesson topics, the set and the progress', function () {
+    [$book, $unit] = BookFixtures::deck(1);
     ExerciseFixtures::set($book, $unit);
     $student = ContentFixtures::subscribedStudent();
 
@@ -31,21 +32,18 @@ test('the unit page shows the lesson topics, the deck and the progress', functio
             ->component('Books/Unit')
             ->where('book.slug', $book->slug)
             ->where('unit.number', $unit->number)
-            ->where('unit.flashcards_url', route('flashcards.unit', ['book' => $book->slug, 'unit' => $unit->number]))
-            ->where('unit.results_url', route('flashcards.results', ['book' => $book->slug, 'unit' => $unit->number]))
-            ->where('flashcards.cards_count', 3)
-            ->where('flashcards.known_count', 0)
             ->where('progress.questions', 3)
             ->where('progress.answered', 0)
             ->where('set.title', 'تمرین تست')
             ->has('topics', 2)
             ->has('items', 3)
             ->where('items.0.type', 'choice')
-            ->missing('items.0.result'));
+            ->missing('items.0.result')
+            ->missing('flashcards'));
 });
 
-test('the unit page without a published set is calm and keeps the deck', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+test('the unit page without a published set is calm', function () {
+    [$book, $unit] = BookFixtures::deck(1);
     $student = ContentFixtures::subscribedStudent();
 
     $this->actingAs($student)
@@ -56,12 +54,11 @@ test('the unit page without a published set is calm and keeps the deck', functio
             ->where('set', null)
             ->where('progress.questions', 0)
             ->has('topics', 0)
-            ->has('items', 0)
-            ->where('flashcards.cards_count', 1));
+            ->has('items', 0));
 });
 
 test('a draft book or an unknown unit is not found', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+    [$book, $unit] = BookFixtures::deck(1);
     $student = ContentFixtures::subscribedStudent();
 
     $this->actingAs($student)
@@ -75,14 +72,12 @@ test('a draft book or an unknown unit is not found', function () {
         ->assertNotFound();
 });
 
-test('the legacy books URLs redirect to the new section', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+test('the legacy books URLs redirect to the section', function () {
+    [$book, $unit] = BookFixtures::deck(1);
 
     $this->get('/app/flashcards')->assertRedirect('/app/books');
     $this->get('/app/flashcards/'.$book->slug)
         ->assertRedirect(route('flashcards.book', ['book' => $book->slug]));
     $this->get('/app/flashcards/'.$book->slug.'/'.$unit->number)
         ->assertRedirect(route('books.unit', ['book' => $book->slug, 'unit' => $unit->number]));
-    $this->get('/app/flashcards/'.$book->slug.'/'.$unit->number.'/results')
-        ->assertRedirect(route('flashcards.results', ['book' => $book->slug, 'unit' => $unit->number]));
 });

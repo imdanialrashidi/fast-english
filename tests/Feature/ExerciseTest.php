@@ -4,9 +4,9 @@ use App\Models\ExerciseAnswer;
 use App\Models\ExerciseAttempt;
 use App\Support\Exercises\Grader;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\Support\BookFixtures;
 use Tests\Support\ContentFixtures;
 use Tests\Support\ExerciseFixtures;
-use Tests\Support\FlashcardFixtures;
 
 // The grammar-first unit page (owner request 2026-11-16): topics and
 // questions render together, one answer is marked in place, the key and the
@@ -14,14 +14,14 @@ use Tests\Support\FlashcardFixtures;
 
 function exerciseUnit(): array
 {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+    [$book, $unit] = BookFixtures::deck(1);
     $set = ExerciseFixtures::set($book, $unit);
 
     return [$book, $unit, $set, $set->items()->get()];
 }
 
 test('the unit page and answer endpoint are paid-only', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
+    [$book, $unit] = BookFixtures::deck(1);
     $student = ContentFixtures::student();
 
     $this->get(route('books.unit', ['book' => $book->slug, 'unit' => $unit->number]))->assertRedirect();
@@ -143,9 +143,9 @@ test('a matching answer is marked from the shuffled right column', function () {
 });
 
 test('an item from another set is rejected', function () {
-    [$book, $unit] = FlashcardFixtures::deck(1);
-    $otherBook = FlashcardFixtures::book(['slug' => 'other-book']);
-    $otherUnit = FlashcardFixtures::unit($otherBook, ['number' => 1]);
+    [$book, $unit] = BookFixtures::deck(1);
+    $otherBook = BookFixtures::book(['slug' => 'other-book']);
+    $otherUnit = BookFixtures::unit($otherBook, ['number' => 1]);
     $otherSet = ExerciseFixtures::set($otherBook, $otherUnit);
     $foreign = $otherSet->items()->first();
     $student = ContentFixtures::subscribedStudent();

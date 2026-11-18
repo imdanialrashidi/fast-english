@@ -51,7 +51,7 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 
 Mobile-first Persian-RTL web product where learners pick a short English article at a CEFR level, read it, and listen to the matching audio (scope §1). Brand working name: Fast English. Prices, domain, contact channels, and standard legal copy were supplied on 2026-10-25; final brand assets, real card credentials, SMTP, signing identity, hosting, staff roster, and content production remain launch-only inputs (§25) and block only their own launch boundary. Development continues with clearly labelled fixtures; `docs/LAUNCH_INPUTS_FA.md` tracks what is still missing.
 
-Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `fastenglish.ir` reference has no DNS delegation as of 2026-10-28, so it cannot be the public origin until the owner fixes its registrar nameservers). Ownership/DNS verification remains a launch check (§25). The checkout is a working rebuild-in-progress: domain models, shared Actions, policies, and private media controllers exist, the learner surface is Inertia post-M0–M5 with the M6 regression pending, and staff runs in Filament. See the stage map in `docs/PLAN.md` and the active migration plan in `docs/exec-plans/active/frontend-inertia-migration.md`.
+Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `fastenglish.ir` reference has no DNS delegation as of 2026-10-28, so it cannot be the public origin until the owner fixes its registrar nameservers). Ownership/DNS verification remains a launch check (§25). The checkout is a working rebuild-in-progress: domain models, shared Actions, policies, and private media controllers exist, the learner surface is Inertia with M0–M6 delivered (M6 regression 2026-11-13), and staff runs in Filament. See the stage map in `docs/PLAN.md` and the active migration plan in `docs/exec-plans/active/frontend-inertia-migration.md`.
 
 ## Admin operations (2026-10-26)
 
@@ -75,7 +75,7 @@ Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `
 | READ-03 | Sentence audio cues (RETIRED 2026-10-21) | Owner removed sentence-level sync. Reader/sample/landing render plain paragraphs with the normal player; cue storage and editor were removed too. |
 | VOCAB-01 | Vocabulary notebook + SRS | Save lesson words with meaning/example/context; Again/Hard/Good/Easy review with deterministic next-review scheduling; due/learning/known states; owner-only |
 | PLAN-01 | Daily learning path | 5/10/15-minute goal with tasks (continue lesson, listen, review due words, next lesson) derived from persisted progress; respects level and premium access |
-| FLASH-01 | Book flashcards | One book unit = one text-prompt session (no card image): word + audio, explicit reveal of Persian meaning/IPA/example, two self-reports, previous/next, per-unit buckets and a two-grade Anki-style schedule; paid-only, private media |
+| FLASH-01 | Book flashcards (**RETIRED 2026-11-18**) | One book unit = one text-prompt session (no card image): word + audio, explicit reveal of Persian meaning/IPA/example, two self-reports, previous/next, per-unit buckets and a two-grade Anki-style schedule; paid-only, private media. Retired by the owner: the books track is exercises only. |
 | EXER-01 | Book exercises | One published set per unit: choice/fill-blank/order, server marking, answer key only after submit, result with explanations and retry, unit entry with last score; paid-only, owner-scoped |
 | MEDIA-01 | Player | Play/pause, seek, ±10s, speed |
 | MEDIA-02 | Continue playback | In-layout navigation without unwanted stop; recoverable network error |
@@ -123,7 +123,7 @@ Bank gateway/bank API, auto/OCR receipt verification, native iOS, store publishi
 6. Soft Day light theme (owner Softly inspiration, 2026-10-09) replaces the Night Studio light table and the §17.1 proposal values in code for learner app surfaces (canvas `#FDFCF8`, coral `#FFB7B2`/`#FF9E99`, text `#292524`, muted `#78716C`); sage `#E8EFE8` recorded for landing; perf-heavy effects excluded; landing markup untouched. Owner-approved on 2026-10-09 by owner direction. Reason: owner wants the Softly look in the app without the perf cost.
 7. Editorial redesign + three learning features into v1 (owner request 2026-10-09): (a) premium editorial visual identity from the supplied reference (warm ivory canvas, deep navy text, blue primary actions, warm amber accent; Vazirmatn Persian + Inter English; landing, Today «امروز», Discover «کشف مطالب», immersive reader, vocabulary «واژه‌ها», calm account, desktop sidebar + mobile four-tab nav «امروز/کشف/واژه‌ها/حساب»); (b) sentence-level immersive reading with real validated timing data and fallback (READ-03 — retired by the 2026-10-21 owner instruction); (c) personal vocabulary notebook with deterministic Again/Hard/Good/Easy SRS (VOCAB-01); (d) personalized daily learning path with 5/10/15-minute goals derived from persisted progress (PLAN-01). Removes `flashcards/SRS` and `word-by-word highlight` from the §4 exclusion above in this narrow sense only: sentence-level sync is required, word-level alignment stays excluded; no third-party dictionary/translation/transcription/TTS API; streaks/leaderboards/achievements stay excluded. Reason: owner explicitly approved these three scope extensions and the reference visual direction.
 
-## Owner-approved frontend migration 2026-10-10 (M0–M5 delivered 2026-10-11; M6 pending — authoritative per scope §0; history above preserved, not rewritten)
+## Owner-approved frontend migration 2026-10-10 (M0–M5 delivered 2026-10-11; M6 delivered 2026-11-13 — authoritative per scope §0; history above preserved, not rewritten)
 
 Owner-approved architectural change (see `docs/adr/0002-inertia-react-learner-frontend.md`; history above preserved, not rewritten):
 
@@ -163,7 +163,7 @@ Owner-required product change (supersedes the public-sample-in-learner-shell beh
 3. **Delivery outcomes are explicit.** A documented provider refusal is `rejected` and safe to retry; a timeout, 5xx, HTML, or unreadable response is `unknown` and is never resent automatically. Every attempt is recorded in `sms_messages` with the receipt id as a string. `sms:check-deliveries` polls `GetDeliveries2` every ten minutes and never sends. `SMS_SUBSCRIPTION_NOTIFICATIONS=false` disables the activation confirmation only; login codes remain available.
 4. **Launch input still open:** MelliPayamak must approve the two patterns for the supplied panel account. The panel credentials are supplied and readable; live delivery is BLOCKED/UNPROVEN until `BaseServiceNumber` stops returning `-4`.
 
-## Owner request 2026-11-15 — book flashcards (authoritative; history above preserved)
+## Owner request 2026-11-15 — book flashcards (superseded 2026-11-18; kept as history)
 
 1. **Scope.** Fast English gets a dedicated book-flashcard surface for adult coursebooks, starting with **American English File Starter (Third Edition)**: 12 units, 258 cards. Family and Friends remains a **Kidotalks** feature (children-only) and is not duplicated here.
 2. **Learner flow.** One unit = one session. A picture appears; after three seconds the word, IPA and Persian meaning appear and the word audio plays. The four actions are **درست گفتم / درست نگفتم / گزینه قبلی / گزینه بعدی**; the first card has no previous action, the last card has no next action, and the slot is kept so the layout does not jump. A self-report advances. The end screen groups the latest self-report into **درست گفتم** and **درست نگفتم**, with a retry of the failed cards; the unit result page is the persistent two-bucket view.
@@ -261,3 +261,29 @@ Owner clarification of the same day's book-flashcard request. It supersedes the 
 ## Open product decisions (pointers, not approvals)
 
 All of §25 remains owner/Domain input at its launch boundary: stack confirmation, nav/placement confirmation, staff model, brand/logo/domain, package ID + signing owner, plans/prices, bank destination, snapshot-validity policy, staff SLA text, email/SMTP, placement questions + cut scores, pilot content (proposed 5 topics / ≥12 lessons covering all six levels + two-level sample), palette/fonts/assets, refund/privacy/retention policy, VPS/storage/backup destination, support channel, budget/deadline. Proposed defaults are labelled as proposals in DESIGN.md/PLAN.md and never presented as owner approval.
+
+
+## Owner decision 2026-11-18 — article-only flashcards; books are exercises
+
+1. **Book vocabulary decks are removed.** The shelf, book page and unit page no
+   longer show card counts or a deck entry; `/app/books/{book}/{unit}/flashcards`,
+   its results page, `/app/flashcards/review`, the card review write and the
+   book-card media route are gone. Legacy `/app/flashcards/**` links still
+   redirect to the books section, but there is no deck to land on.
+2. **The only decks are article glossary decks.** The reader opens
+   `/app/lessons/{lesson}/flashcards` with the lesson's glossary; the four
+   grades write the same `vocabulary_words` row the notebook schedules. The
+   reader CTA and the deck copy say «مقاله».
+3. **Every article card can speak.** The 803 unique glossary words across the
+   16 published topics / 89 published lessons carry approved Underdog Woof
+   clips, imported by `flashcards:audio:import` and served privately. A word
+   without an approved clip still renders a valid silent card.
+4. **Books remain the grammar track.** The unit page is the lesson: Persian
+   explanation, formulas, examples and the topic's questions marked in
+   place. Progress is first-answer counts on the shelf, book page and Today;
+   the review hub reports due words and exercise mistakes.
+5. **Status.** Delivered in the working tree on 2026-11-18: routes/controllers,
+   the exercise-only shelf/book/unit pages, the two-queue review hub, the
+   catalog with the 66 real unit titles, and the word-audio batch. The legacy
+   `flashcards`, `user_flashcards` and `flashcard_reviews` tables stay in the
+   schema for rollback but nothing writes or serves them.

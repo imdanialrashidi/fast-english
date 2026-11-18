@@ -1,12 +1,13 @@
 # Learning tracks — books, exercises, progress
 
-Status: exercises track delivered 2026-11-16. Slices 1–5 are in the working tree; all six
-American English File books now carry exercises and decks (64 units, 1,630 answered-question
-items, 1,320 audio cards). This plan turns Fast English from an audio-article library into the
-owner's target product: the article is the podcast, its glossary is a
-text-first flashcard deck, every book unit adds flashcards and a real
-exercise set, and progress reads across both tracks. Behavior contracts live
-in `docs/PRODUCT.md`; this file owns ordering and status.
+Status: exercises delivered 2026-11-16; book decks retired 2026-11-18. All six
+American English File books carry exercises (66 units, 1,630 questions). Flashcards
+now belong to articles only; book units are grammar topics + questions. This
+plan turns Fast English from an audio-article library into the owner's target
+product: the article is the podcast, its glossary is a text-first flashcard
+deck, every book unit adds a real exercise set, and progress reads across both
+tracks. Behavior contracts live in `docs/PRODUCT.md`; this file owns ordering
+and status.
 
 ## Owner decisions (2026-11-15)
 
@@ -84,44 +85,46 @@ in `docs/PRODUCT.md`; this file owns ordering and status.
   `review.spec.ts` 2/2 (8/8 with flashcards + exercises); screenshot
   `review-hub-393.png`.
 
+## Delivered — 2026-11-18: article-only flashcards, exercise-only books
+
+- Book vocabulary decks removed at the owner's direction: the shelf, book
+  page and unit page no longer show cards; the deck/results/review/media
+  routes, controllers, scheduler, importer and tests are gone. Legacy
+  `/app/flashcards/**` links redirect to the books section.
+- The only decks are article glossary decks (`/app/lessons/{lesson}/flashcards`),
+  four grades writing the notebook row, reader CTA «فلشکارت واژههای این مقاله».
+- 803 unique article glossary words (16 topics / 89 published lessons) got
+  Underdog Woof clips, imported by `flashcards:audio:import`; clips are keyed
+  by word, private and `no-store`, and a missing clip hides the speaker.
+- Books are exercises only: six books / 66 units / 1,630 questions, real unit
+  titles in `catalog.json`, typographic covers (no licensed art), exercise
+  progress on shelf/book/unit, two-queue review hub, Today 14 queries.
+- Evidence: full Pest **461 passed**, Pint **PASS** (418 files), typecheck +
+  build **PASS**, full Chromium **96 passed**.
+
 ## Remaining slices
 
-### Slice 5 — Content and admin (in progress)
+### Slice 5b — Admin (in progress)
 
-- Rebuilt 2026-11-16 after the owner's grammar-first brief: the six-book
-  catalog, `exercise_topics`, in-place marking, answered-question progress and
-  the unit lesson page. All 12 Starter units are authored end to end
-  (2 topics and 18 questions each, 20 cards each with Woof audio); Unit 1 is
-  the reference unit. Starter content is complete: 216 questions, 240 cards.
-  Book 1 is complete: 12 units (3 topics and 24–27 questions each, 20 cards each),
-  308 questions and 240 cards. Book 2 is complete: 12 units, 324 questions and 240 cards. Book 3 is complete: 10 units, 262 questions and 200 cards. Book 4 is complete: 10 units, 260 questions and 200 cards. Book 5 is complete: 10 units, 260 questions and 200 cards. All 64 units across the six
-  books are live.
-- The old 12 five-item Starter sets are archived in
-  `database/seeders/fixtures/exercises/legacy-v1/`; only the v2 U1 set is live.
-- Next: owner review of the finished track; future units follow the `aef-unit` skill.
-  skill (`docs/ops/AEF_CONTENT_PIPELINE_FA.md`). Filament resources for
-  exercises and attempt history still follow the content.
-- Filament resources for books/units/cards, `word_audio` review, exercises
-  and attempt history.
+- Filament resources for books/units, exercises and attempt history, plus a
+  `word_audio` review surface. Today every content change is a CLI import.
 - Rights: AEF text/artwork is OUP; commercial redistribution needs clearance
-  (recorded in `docs/FLASHCARDS.md`).
+  (recorded in `docs/FLASHCARDS.md` and `docs/LAUNCH_INPUTS_FA.md`).
 
 ### Slice 6 — Sales polish (~3–5 days)
 
-- Onboarding (level, first lesson, first deck, first exercise), landing/sample
-  promise that matches the product, paywall copy, and a real-device pass.
+- Onboarding (level, first article, first deck, first exercise), a landing and
+  sample promise that match the product, paywall copy, and a real-device pass.
 
 ## Open decisions
 
-- One grade set for both deck kinds (four grades for books too) or keep the
-  two-grade book schedule. Current: books two, lesson decks four.
-- Whether `/app/flashcards/review` moves under the future «مرور» destination.
-- Merged review session: one card model/grader across words and book cards, or
-  keep the hub read-only with two sessions.
+- Whether the review hub grows a merged session (one card/grader across words
+  and exercise mistakes) or stays read-only with two queues.
+- Free preview of the books: the product rule is paid-only, so a shopper sees
+  no question or card before paying.
 
 ## Risks
 
-- Content production (exercises + word clips) is the long pole, not code.
-- Two schedules remain (book SM-2 vs vocabulary SM-2); acceptable while each
-  has a distinct surface, revisit if the review queue merges.
-- AEF rights and real-device audio remain the launch-boundary checks.
+- Content production (articles and word clips) is the long pole, not code.
+- AEF rights and real-device audio remain the launch-boundary checks; the
+  803-clip batch was checked for format/duration/serving, not by a human ear.

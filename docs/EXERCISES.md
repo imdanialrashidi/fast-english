@@ -9,11 +9,12 @@ describes it.
 
 - The path is `کتاب‌ها → American English File → کتاب → یونیت`; the unit page is
   the lesson. Exercises are not a separate tab and not a separate session.
-- One published set per unit. A unit without a set shows a calm not-ready block
-  and keeps its vocabulary deck.
+- One published set per unit. A unit without a set shows a calm not-ready block.
+- Book vocabulary decks were retired on 2026-11-18: the unit has no card entry and
+  flashcards exist for articles only (`docs/FLASHCARDS.md`).
 - The unit page renders, in the book's order: grammar topic explanation
   (Persian use, formulas, examples, one note) → that topic's questions → next
-  topic → the unit's vocabulary deck.
+  topic.
 - Each question is marked in place. The first answer is stored; the correct
   answer, a Persian explanation and the option-specific feedback appear
   immediately. A retry returns the stored result and changes nothing.
@@ -57,10 +58,9 @@ carries no key, no explanation and no feedback for unanswered items.
 
 | Route | Purpose |
 |---|---|
-| `GET /app/books/{book:slug}/{unit}` | The unit page: topics, questions, progress, deck entry. |
+| `GET /app/books/{book:slug}/{unit}` | The unit page: topics, questions and answered progress. |
 | `POST /app/books/{book:slug}/{unit}/exercises/answer` | Mark one question; first answer only. |
-| `GET /app/books/{book:slug}/{unit}/exercises` | Redirects to the unit page. |
-| `GET /app/books/{book:slug}/{unit}/flashcards` | The unit deck. |
+| `GET /app/books/{book:slug}/{unit}/exercises` | Redirects to the unit page (legacy session URL). |
 
 ## Content import
 

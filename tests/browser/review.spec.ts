@@ -2,16 +2,16 @@ import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { test } from './helpers';
 
-// Cross-track review hub (owner request 2026-11-15): due words, due book
-// cards and exercise mistakes in one read-only page, reachable from Today
-// and the books shelf, with one deterministic primary action.
+// Review hub (owner request 2026-11-15; book cards retired 2026-11-18):
+// due words and exercise mistakes in one read-only page, reachable from
+// Today and the books shelf, with one deterministic primary action.
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
 }
 
-test('review hub: three queues, primary action and 320 reflow', async ({ sub: page }) => {
+test('review hub: two queues, primary action and 320 reflow', async ({ sub: page }) => {
     await page.setViewportSize({ width: 393, height: 851 });
 
     await page.goto('/app/today');
@@ -19,9 +19,9 @@ test('review hub: three queues, primary action and 320 reflow', async ({ sub: pa
 
     await expect(page.getByRole('heading', { name: 'مرور', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'واژه‌های من' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'کارت‌های کتاب' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'تمرین‌های کتاب' })).toBeVisible();
-    await expect(page.locator('[data-review-count]')).toHaveCount(3);
+    await expect(page.getByRole('heading', { name: 'کارت‌های کتاب' })).toHaveCount(0);
+    await expect(page.locator('[data-review-count]')).toHaveCount(2);
     await expectNoHorizontalOverflow(page);
     await page.screenshot({ path: 'test-results/browser-shots/review-hub-393.png', fullPage: true });
 
@@ -48,5 +48,5 @@ test('the books shelf links to the review hub', async ({ sub: page }) => {
     await page.getByRole('link', { name: 'مرور واژه‌ها و تمرین‌ها' }).click();
 
     await expect(page.getByRole('heading', { name: 'مرور', exact: true })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'کارت‌های کتاب' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'تمرین‌های کتاب' })).toBeVisible();
 });

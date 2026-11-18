@@ -1,6 +1,6 @@
 # خط تولید محتوای American English File
 
-راهنمای استاندارد ساخت و آپلود یک یونیت (گرامر + فلش‌کارت) در بخش «کتاب‌ها ← American English File».
+راهنمای استاندارد ساخت و آپلود یک یونیت (گرامر + تمرین) در بخش «کتاب‌ها ← American English File».
 این فایل مرجعِ خودِ عامل (agent) و بازبین انسانی است؛ هر یونیت باید دقیقاً با همین ترتیب ساخته و
 قبل از رفتن به یونیت بعدی تأیید شود.
 
@@ -25,19 +25,18 @@ PDFها اسکن تصویری‌اند و لایهٔ متنی ندارند. هر
    از بخش GRAMMAR همان درس در Workbook. اگر یک ساختار در چند یونیت تکرار شده، فقط همان فرم/کاربرد
    یونیت جاری تمرین می‌شود.
 2. **ترتیب کتاب.** مبحث ۱ → توضیح → سؤال‌های همان مبحث → مبحث ۲ → … . هیچ سؤالی به مبحث دیگر منتقل
-   نمی‌شود. تمرین واژگان (فلش‌کارت) در پایان یونیت است.
+   نمی‌شود.
 3. **فارسی برای آموزش، انگلیسی برای فرمول.** کاربرد، نکته و بازخورد فارسی؛ فرمول و مثال انگلیسیِ
    هم‌سطح کتاب. در Starter واژه و جمله باید A1 بماند.
 4. **یک جواب درست.** هر MCQ دقیقاً یک گزینهٔ درست با ایندکس معتبر؛ هر Matching جفت یکتا با سمت راست
    تکراری‌نشده. گزینه‌های غلط از خطاهای رایج ساخته می‌شوند و هر کدام بازخورد فارسی خودش را دارد.
 5. **اولین پاسخ می‌ماند.** سؤال با اولین پاسخ (درست یا غلط) یک‌بار در پیشرفت شمرده می‌شود؛ تلاش دوباره
    شمارش را بالا نمی‌برد و همان نتیجه را برمی‌گرداند.
-6. **بدون تصویر.** کارت واژه متنی است: واژه + IPA + معنی فارسی + تعریف انگلیسی + مثال + نقش دستوری.
-7. **صدا اجباری است.** هر کارت یک MP3 از Underdog Woof (صدای Juno) دارد؛ credit «Voice by Underdog
-   Woof» در تگ فایل و در صفحهٔ دربارهٔ ما حفظ می‌شود.
-8. **پولی.** کل بخش کتاب‌ها و تمرین‌ها پشت اشتراک فعال است؛ هیچ پیش‌نمایش رایگان سؤال یا کارت وجود ندارد.
-9. **حذف محدود.** فقط محتوای صریحاً تأییدشده (کارت‌های قدیمی AEF) جایگزین می‌شود؛ مقاله‌ها، درس‌ها،
-   واژه‌نامه و دادهٔ کاربران دست‌نخورده می‌ماند.
+6. **بدون فلش‌کارت کتاب.** دک واژگان یونیت‌های کتاب در ۲۰۲۶-۱۱-۱۸ حذف شد؛ یونیت فقط مبحث گرامر و
+   سؤال است. فلش‌کارت فقط برای مقاله‌هاست (`docs/FLASHCARDS.md`).
+7. **پولی.** کل بخش کتاب‌ها و تمرین‌ها پشت اشتراک فعال است؛ هیچ پیش‌نمایش رایگان سؤال وجود ندارد.
+8. **حذف محدود.** فقط محتوای صریحاً تأییدشده جایگزین می‌شود؛ مقاله‌ها، درس‌ها، واژه‌نامه و دادهٔ
+   کاربران دست‌نخورده می‌ماند.
 
 ## ۳. چرخهٔ یک یونیت
 
@@ -95,40 +94,23 @@ scripts/aef/ocr-pages.sh "<pdf>" <first> <last> /tmp/aef-ocr/<book>-<unit> 250
 - گزینه‌های غلط از خطاهای رایج (زمان، فاعل، حرف اضافه، شکل کوتاه)؛ بازخورد هر گزینه دقیقاً همان خطا.
 - سؤال طولانی، دستور چندمرحله‌ای و تکرار حذف می‌شود.
 
-### گام ۵ — فلش‌کارت‌ها
+### گام ۵–۶ — فلش‌کارت و صدا (حذف‌شده)
 
-- ۱۵ تا ۲۵ واژهٔ پرکاربرد از Vocabulary همان یونیت؛ واژهٔ کم‌کاربرد یا تخصصی کنار گذاشته می‌شود.
-- IPA، معنی فارسی، تعریف انگلیسیِ ساده، یک مثال کوتاه هم‌سطح، نقش دستوری، `lesson_code` و `topic`.
-
-### گام ۶ — صدا
-
-```bash
-python3 scripts/aef/generate-audio.py \
-  database/seeders/fixtures/aef/aef-3e-starter-u01-cards.json \
-  storage/app/aef-audio/aef-3e-starter/u01
-```
-
-- صدا با Woof محلی ساخته می‌شود (`~/Documents/Projects/Kido-Talks-Flashcards`)، یک صدا (Juno)،
-  tempo پیش‌فرض 0.85 برای یونیت‌های جدید.
-- فایل‌های تولیدشده در `storage/app/aef-audio/<book>/uNN/` می‌مانند و وارد git نمی‌شوند.
+دک واژگان یونیت و صدای کارت کتاب در ۲۰۲۶-۱۱-۱۸ از محصول حذف شد؛ برای یونیت کتاب نه فایل کارت
+بنویس و نه صدا تولید کن. فلش‌کارت فقط دک گلاسری مقاله‌هاست.
 
 ### گام ۷ — اعتبارسنجی و آپلود
 
 ```bash
-python3 scripts/aef/validate-content.py \
-  database/seeders/fixtures/exercises database/seeders/fixtures/aef
+python3 scripts/aef/validate-content.py database/seeders/fixtures/exercises
 docker exec <php-container> php artisan aef:import-catalog
-docker exec <php-container> php artisan flashcards:import-aef \
-  database/seeders/fixtures/aef/aef-3e-starter-u01-cards.json \
-  --audio=storage/app/aef-audio/aef-3e-starter/u01
 docker exec <php-container> php artisan exercises:import \
   database/seeders/fixtures/exercises/aef-3e-starter-u01.json
 ```
 
 - اول `--dry-run` برای تمرین‌ها؛ خطا یعنی هیچ چیز نوشته نمی‌شود.
-- import کارت، فایل صوتی را به `storage/app/private/flashcards/<book>/uNN/` کپی می‌کند.
-- re-import با همان `external_id` به‌روزرسانی است؛ کارت‌های حذف‌شده از فایل، از همان یونیت حذف
-  می‌شوند.
+- re-import با همان `external_id` به‌روزرسانی است؛ سؤال‌های حذف‌شده از فایل حذف نمی‌شوند و باید
+  صریح پاک شوند.
 
 ### گام ۸ — بازبینی
 
@@ -136,11 +118,10 @@ docker exec <php-container> php artisan exercises:import \
 2. یک سؤال را عمداً غلط جواب بده: پاسخ درست + بازخورد همان گزینه + توضیح فوراً دیده شود.
 3. همان سؤال را دوباره جواب بده: پیشرفت تغییر نکند و پیام «قبلاً پاسخ داده شده» بدهد.
 4. رفرش: همان تعداد پاسخ باقی بماند؛ پیشرفت کتاب و فهرست یونیت‌ها همان عدد را نشان دهند.
-5. صوت کارت: درخواست `/media/flashcards/{id}/audio` با ۲۰۶ پاسخ دهد.
-6. تست‌ها:
+5. تست‌ها:
 
 ```bash
-docker exec -e APP_ENV=testing -e DB_DATABASE=fe_test ... php artisan test --filter="Exercise|BookUnit|ReviewHub|Grader"
+docker exec -e APP_ENV=testing -e DB_DATABASE=fe_test ... php artisan test --filter="Exercise|BookUnit|ExerciseProgress|Grader"
 BASE_URL=http://127.0.0.1:8112 npx playwright test tests/browser/exercises.spec.ts --project=chromium
 ```
 
@@ -190,29 +171,6 @@ BASE_URL=http://127.0.0.1:8112 npx playwright test tests/browser/exercises.spec.
 قاعده‌ها: `topic` هر آیتم باید در `topics` باشد؛ Matching بین ۲ تا ۶ جفت و سمت راست یکتا؛
 `answer` ایندکس گزینه؛ `feedback` فقط برای گزینه‌های موجود.
 
-## ۵. قرارداد فایل کارت
-
-```json
-{
-  "book": { "slug": "aef-3e-starter" },
-  "unit": { "number": 1, "title_en": "A cappuccino, please", "title_fa": "…" },
-  "cards": [
-    {
-      "external_id": "aef3s-u01-001",
-      "word": "zero",
-      "phonetic": "/ˈzɪroʊ/",
-      "translation_fa": "صفر",
-      "definition_en": "the number 0",
-      "example_en": "Zero, one, two.",
-      "part_of_speech": "number",
-      "lesson_code": "1A",
-      "topic": "numbers",
-      "audio": "aef3s-u01-001.mp3"
-    }
-  ]
-}
-```
-
 ## ۶. تعریف «یونیت تمام‌شده»
 
 - [ ] عنوان و شمارهٔ یونیت با Student Book یکی است.
@@ -220,7 +178,6 @@ BASE_URL=http://127.0.0.1:8112 npx playwright test tests/browser/exercises.spec.
 - [ ] هر سؤال زیر مبحثی است که پیش از آن تدریس شده.
 - [ ] هر MCQ یک جواب و هر گزینهٔ غلط بازخورد دارد.
 - [ ] هر Matching جفت یکتا دارد.
-- [ ] ۱۵–۲۵ کارت با IPA، معنی، تعریف، مثال و صدا.
 - [ ] پیشرفت یک‌بار شمرده می‌شود و بعد از رفرش می‌ماند.
 - [ ] تست‌ها و اسکرین‌شات موبایل ثبت شده‌اند.
 - [ ] ارجاع داخلی (`source`) پر شده است.

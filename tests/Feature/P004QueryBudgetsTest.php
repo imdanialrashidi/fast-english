@@ -103,9 +103,9 @@ test('today stays constant as words and completed lessons grow', function () {
     // joined sum — none moves as completions (1 -> 4) or words (1 -> 7) grow.
     // Four completions at 4 minutes each; no word was reviewed today, so the
     // review bonus is 0. Pre-fix ran 17; the gate reuse brought it to 13,
-    // then two constant cross-track lookups (due book cards + the exercise
-    // set planner; this fixture has no books) bring the budget to 15.
-    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(15);
+    // the exercise set planner brings it to 14, and the retired card query
+    // (2026-11-18) is gone.
+    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(14);
     expect($response->inertiaProps()['plan']['learned_minutes'])->toBe(16);
 });
 
