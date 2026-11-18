@@ -9,8 +9,9 @@
 > download. The one open admin item is owner action: the staff account has an
 > unconfirmed TOTP secret, so `/admin` fail-closes to setup until enrolment is
 > confirmed (fallback `php artisan staff:2fa-reset <email> --by=… --reason=…`).
-> Residual: no CSP; `trustProxies('*')` while 8080 stays internal; npm
-> advisories are build-tool only.
+> Residual: CSP uses `'unsafe-inline'` (panel also `'unsafe-eval'`) until a
+> nonce pipeline lands; error tracking and off-server backup still need the
+> owner's DSN/destination.
 
 > **Deployed 2026-11-18 — article-only flashcards, exercise-only books
 > (commit `4b5049b`, image `uerwghnhy5ezsd3ghxo96ugl_app:4b5049b1a324…`,
@@ -264,11 +265,11 @@ not application code.
 | 10 | No copy of the export lives off the server | A disk failure would still take the library and the one pre-import safety copy together | Download the panel export (`/admin/data-transfer`) to an encrypted off-site location after each release; a nightly `pg_dump` stays the low-level fallback |
 | 11 | Approval/rejection emails do not exist | The learner only sees the state by re-opening the payment page; staff notifications are panel-only | Add a `PaymentApproved` / `PaymentRejected` notification (same guarded content as `SubscriptionExpiring`) |
 | 12 | No e-mail verification (`MustVerifyEmail` is commented out) | A typo'd address loses access and cannot be recovered without SMTP | Enable verification once SMTP exists, or require confirmation on the first password change |
-| 13 | No Content-Security-Policy | Defence in depth against injected scripts | Needs a nonce pipeline for Inertia + Filament inline bootstraps; do not ship a report-only `unsafe-inline` placeholder |
+| 13 | ~~No Content-Security-Policy~~ **fixed 2026-11-19** | Defence in depth against injected scripts | Baseline CSP on every HTML response: self-only sources, `object-src 'none'`, `frame-ancestors 'self'`, no third-party hosts; learner pages have no `unsafe-eval`, the panel does for Alpine. `'unsafe-inline'` remains until a nonce pipeline lands. |
 | 14 | ~~CI runs PostgreSQL 16, production is 17~~ **fixed 2026-10-26 pm** | Race/feature behaviour was proven on a different major version | Both jobs now use `postgres:17`; a new `image` job builds the production Dockerfile (CI-only, not executed locally) |
 | 15 | Health check is liveness only | A database outage looks healthy | Keep `/up` as liveness, add a separate readiness probe (DB ping) for Coolify/monitoring |
 | 16 | No deploy/rollback automation | Rollback is a manual redeploy | Add a Coolify deploy hook + release note; keep `release.sh --check` in the loop |
-| 17 | `trustProxies('*')` trusts any `X-Forwarded-*` | Only safe while port 8080 stays behind Coolify's proxy. If it were ever published directly, a spoofed `X-Forwarded-For` would let a client dodge the per-IP login/upload throttles | Keep 8080 internal (Coolify default); if a direct port is ever needed, restrict `trustProxies` to the proxy address |
+| 17 | ~~`trustProxies('*')` trusts any `X-Forwarded-*`~~ **fixed 2026-11-19** | A spoofed `X-Forwarded-For` could dodge per-IP throttles if 8080 were public | Trusted proxies are now loopback + RFC1918 only (127.0.0.1, ::1, 10/8, 172.16/12, 192.168/16); 8080 stays expose-only. |
 
 ### P2 — product depth (after launch is unblocked)
 

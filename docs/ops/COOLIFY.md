@@ -136,9 +136,10 @@ Coolify proxy (TLS) → app container :8080 → php-fpm → PostgreSQL 17 (inter
 - Two persistent mounts on the app (section 4). No Redis.
 - Processes inside the app container: `nginx`, `php-fpm`,
   `php artisan schedule:work`, `php artisan queue:work` (supervisord).
-- Port `8080` must stay internal. The app trusts every proxy header
-  (`trustProxies('*')`), so publishing 8080 publicly would let a client
-  spoof `X-Forwarded-For` and sidestep the per-IP throttles.
+- Port `8080` must stay internal. The app trusts `X-Forwarded-*` only from
+  loopback and the private Docker ranges (127.0.0.1, ::1, 10/8, 172.16/12,
+  192.168/16); a public client cannot spoof the headers, and an unrelated
+  public proxy would need to be added to the list.
 
 ## 1. PostgreSQL 17 resource [untested — Coolify UI only; automatic in the Compose path]
 
@@ -219,8 +220,12 @@ health check still says healthy.
   `Cross-Origin-Opener-Policy: same-origin`. `Strict-Transport-Security`
   is emitted only when `X-Forwarded-Proto: https` (map `$fe_hsts`), so the
   header never appears over plain HTTP.
-- No CSP yet: Inertia hydration and the Filament panel rely on inline
-  bootstrap scripts, so a policy needs a nonce pipeline first.
+- CSP is on for every HTML response (`ContentSecurityPolicy`): self-only
+  scripts/styles/images/fonts/media, `object-src 'none'`,
+  `frame-ancestors 'self'`, no third-party hosts. Inline styles and the
+  Inertia/JSON-LD bootstrap use `'unsafe-inline'`; the Filament panel also
+  allows `'unsafe-eval'` for Alpine. Blob URLs are allowed for upload
+  previews. A nonce pipeline would remove `'unsafe-inline'` later.
 
 ## 3. Environment variables (names, purpose, secret?) [tested — local containers]
 

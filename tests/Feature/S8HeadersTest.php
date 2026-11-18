@@ -72,3 +72,20 @@ test('public machine surfaces are publicly cacheable', function () {
             ->and($cacheControl)->toContain('max-age=3600');
     }
 });
+
+test('html carries the baseline CSP; the panel alone allows eval', function () {
+    $landing = $this->get(route('landing'))->assertOk();
+    $csp = (string) $landing->headers->get('Content-Security-Policy');
+
+    expect($csp)
+        ->toContain("default-src 'self'")
+        ->toContain("base-uri 'self'")
+        ->toContain("object-src 'none'")
+        ->toContain("frame-ancestors 'self'")
+        ->toContain("img-src 'self' data: blob:")
+        ->not->toContain('unsafe-eval')
+        ->not->toContain('ui-avatars');
+
+    $admin = $this->get('/admin/login')->assertOk();
+    expect((string) $admin->headers->get('Content-Security-Policy'))->toContain("'unsafe-eval'");
+});

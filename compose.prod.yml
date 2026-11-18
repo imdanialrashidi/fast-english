@@ -62,7 +62,7 @@ services:
 
       SESSION_DRIVER: database
       SESSION_LIFETIME: ${SESSION_LIFETIME:-120}
-      SESSION_ENCRYPT: "false"
+      SESSION_ENCRYPT: "true"
       SESSION_SECURE_COOKIE: "true"
       SESSION_HTTP_ONLY: "true"
       SESSION_SAME_SITE: lax

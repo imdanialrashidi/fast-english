@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ContentSecurityPolicy;
 use App\Http\Middleware\DisablePasswordResetWhenSmtpMissing;
 use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsureStaff;
@@ -32,7 +33,19 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // S9a: trust Coolify's TLS-terminating proxy so Laravel sees HTTPS
         // (SESSION_SECURE_COOKIE + APP_URL require it; scope section 19.1).
-        $middleware->trustProxies(at: '*');
+        // Only private/Docker and loopback ranges are trusted: the proxy runs
+        // on this host, and a direct public client can never spoof
+        // X-Forwarded-* (the app port is expose-only in compose).
+        $middleware->trustProxies(at: [
+            '127.0.0.1',
+            '::1',
+            '10.0.0.0/8',
+            '172.16.0.0/12',
+            '192.168.0.0/16',
+        ]);
+        // Defence-in-depth baseline for every HTML response (public, learner
+        // and panel). See the middleware for the exact directives.
+        $middleware->append(ContentSecurityPolicy::class);
         $middleware->alias([
             'reject.disabled' => RejectDisabledUsers::class,
             // Paid-only learner gate (owner requirement): staff +

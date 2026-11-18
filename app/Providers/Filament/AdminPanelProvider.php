@@ -7,6 +7,7 @@ use App\Http\Middleware\PrivateNoStore;
 use App\Http\Middleware\RejectDisabledUsers;
 use App\Http\Middleware\RequireStaffTwoFactor;
 use App\Http\Middleware\SetStaffLocale;
+use App\Support\Filament\LocalAvatarProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -39,6 +40,8 @@ class AdminPanelProvider extends PanelProvider
             // the staff English locale boundary must be attached here.
             ->middleware([SetStaffLocale::class], isPersistent: true)
             ->login()
+            // Never call ui-avatars.com: initials render as a local data URI.
+            ->defaultAvatarProvider(LocalAvatarProvider::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
