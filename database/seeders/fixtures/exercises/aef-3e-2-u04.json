@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-2-u04",
+  "book": "aef-3e-2",
+  "unit": 4,
+  "title": "American English File 2 · Unit 4",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 4,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "4A",
+      "4B",
+      "4C"
+    ],
+    "grammar_bank": "4A p.134, 4B p.134, 4C p.134",
+    "workbook": "4A, 4B, 4C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "present perfect: yet, already",
+      "title_fa": "حال کامل با yet و already",
+      "use_fa": "برای کارهای تازه و خبرهای نزدیک که زمانشان را نمی‌گوییم. yet در سؤال و منفی و already در مثبت می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "have/has + past participle\nI've cleaned the refrigerator."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "haven't / hasn't + past participle\nHe hasn't done the dishes."
+        },
+        {
+          "label_fa": "yet/already",
+          "text": "Have you finished yet?\nI've already seen it three times."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I've cleaned the refrigerator!",
+          "fa": "یخچال را تمیز کرده‌ام!"
+        },
+        {
+          "en": "He hasn't done the dishes.",
+          "fa": "او ظرف‌ها را نشسته است."
+        },
+        {
+          "en": "Have you turned off your phone?",
+          "fa": "تلفنت را خاموش کرده‌ای؟"
+        },
+        {
+          "en": "I've already seen it three times.",
+          "fa": "سه بار دیده‌ام."
+        }
+      ],
+      "notes_fa": "yet در پایان جمله می‌آید (Have you finished yet?) و already قبل از فعل اصلی (I've already seen it)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present perfect or simple past? (experiences)",
+      "title_fa": "حال کامل یا گذشتهٔ ساده؟ (تجربه‌ها)",
+      "use_fa": "حال کامل برای تجربه بدون زمان؛ گذشتهٔ ساده برای جزئیات و زمان مشخص. مکالمه معمولاً با حال کامل شروع و با گذشته ادامه می‌یابد.",
+      "formulas": [
+        {
+          "label_fa": "حال کامل",
+          "text": "Have you ever been to Mexico?\nI've never met her."
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "When did you go there?\nI went last year."
+        }
+      ],
+      "examples": [
+        {
+          "en": "She's been to New York three times.",
+          "fa": "او سه بار به نیویورک رفته است."
+        },
+        {
+          "en": "Have you ever been to Ikea?",
+          "fa": "تا حالا به ایکیا رفته‌ای؟"
+        },
+        {
+          "en": "When did you go there? — Last year.",
+          "fa": "کِی رفتی؟ — سال گذشته."
+        },
+        {
+          "en": "Mike has gone to Paris. He's there now.",
+          "fa": "مایک به پاریس رفته و الان آنجاست."
+        }
+      ],
+      "notes_fa": "been یعنی رفته و برگشته؛ gone یعنی رفته و هنوز آنجاست. با when و last year گذشتهٔ ساده می‌آید."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "something, anything, nothing, etc.",
+      "title_fa": "something، anything، nothing و مشابه‌ها",
+      "use_fa": "برای چیزها، افراد و مکان‌های نامشخص. some- در جملهٔ مثبت، any- در سؤال و منفی، و no- به معنی هیچ.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "Somebody has taken my pen.\nI bought something for dinner.\nLet's go somewhere."
+        },
+        {
+          "label_fa": "سؤال/منفی",
+          "text": "Did anybody call?\nI didn't do anything.\nIs there anywhere to park?"
+        },
+        {
+          "label_fa": "هیچ",
+          "text": "Nobody called.\nThere's nothing in the refrigerator."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Somebody has taken my pen!",
+          "fa": "یک نفر خودکارم را برداشته!"
+        },
+        {
+          "en": "I didn't speak to anybody all weekend.",
+          "fa": "تمام آخر هفته با هیچ‌کس حرف نزدم."
+        },
+        {
+          "en": "Is there anything in the refrigerator?",
+          "fa": "چیزی در یخچال هست؟"
+        },
+        {
+          "en": "There's nowhere to park.",
+          "fa": "هیچ‌جا برای پارک نیست."
+        }
+      ],
+      "notes_fa": "با nobody/nothing فعل مثبت است: Nobody called. (نه didn't call). any- در جملهٔ مثبت هم می‌آید به معنی «هر»."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u04-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I've ___ the refrigerator.",
+      "options": [
+        "cleaned",
+        "clean",
+        "cleaning"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have فعل پایه نمی‌آید.",
+        "2": "بعد از have فعل ing نمی‌آید."
+      },
+      "explanation_fa": "قسمت سوم clean: cleaned."
+    },
+    {
+      "external_id": "u04-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He ___ done the dishes.",
+      "options": [
+        "hasn't",
+        "haven't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "haven't برای جمع است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "منفی he: hasn't done."
+    },
+    {
+      "external_id": "u04-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Have you ___ off your phone?",
+      "options": [
+        "turned",
+        "turn",
+        "turning"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have فعل پایه نمی‌آید.",
+        "2": "بعد از have فعل ing نمی‌آید."
+      },
+      "explanation_fa": "قسمت سوم turn: turned."
+    },
+    {
+      "external_id": "u04-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "A package ___ arrived.",
+      "options": [
+        "has",
+        "have",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have برای جمع است.",
+        "2": "is برای be است."
+      },
+      "explanation_fa": "package مفرد: has arrived."
+    },
+    {
+      "external_id": "u04-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "Have you finished your homework ___?",
+      "options": [
+        "yet",
+        "already",
+        "still"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "already در مثبت می‌آید.",
+        "2": "still معنی «هنوز» با تأکید است."
+      },
+      "explanation_fa": "در سؤال yet در پایان می‌آید."
+    },
+    {
+      "external_id": "u04-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I've ___ seen it three times.",
+      "options": [
+        "already",
+        "yet",
+        "still"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "yet در سؤال و منفی است.",
+        "2": "still اینجا نمی‌آید."
+      },
+      "explanation_fa": "already قبل از فعل اصلی."
+    },
+    {
+      "external_id": "u04-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They ___ washing the dishes.",
+      "options": [
+        "haven't",
+        "hasn't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hasn't برای مفرد است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "منفی they: haven't."
+    },
+    {
+      "external_id": "u04-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Mary's ___ her baby!",
+      "options": [
+        "had",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have بعد از Mary's نمی‌آید.",
+        "2": "has برای سوم‌شخص است."
+      },
+      "explanation_fa": "قسمت سوم have: had."
+    },
+    {
+      "external_id": "u04-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "She's ___ to New York three times.",
+      "options": [
+        "been",
+        "gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gone یعنی هنوز آنجاست.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "تجربه: has been to."
+    },
+    {
+      "external_id": "u04-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Have you ever ___ to Ikea?",
+      "options": [
+        "been",
+        "gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gone یعنی هنوز آنجاست.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "تجربه: been to."
+    },
+    {
+      "external_id": "u04-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I've never ___ Nina's husband.",
+      "options": [
+        "met",
+        "meet",
+        "meeting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از never قسمت سوم می‌آید.",
+        "2": "meet پایه است."
+      },
+      "explanation_fa": "قسمت سوم meet: met."
+    },
+    {
+      "external_id": "u04-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ you ever been to Mexico?",
+      "options": [
+        "Have",
+        "Did",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Did با been نمی‌آید.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "تجربه: Have you ever been ...?"
+    },
+    {
+      "external_id": "u04-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "When ___ you go there?",
+      "options": [
+        "did",
+        "have",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با when حال کامل نمی‌آید.",
+        "2": "were برای be است."
+      },
+      "explanation_fa": "جزئیات: When did you go?"
+    },
+    {
+      "external_id": "u04-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I ___ last year.",
+      "options": [
+        "went",
+        "have gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با last year حال کامل نمی‌آید.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "گذشته: went."
+    },
+    {
+      "external_id": "u04-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "Mike has ___ to Paris. He's there now.",
+      "options": [
+        "gone",
+        "been",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "been یعنی برگشته است.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "الان آنجاست: gone."
+    },
+    {
+      "external_id": "u04-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "What did you think ___ it?",
+      "options": [
+        "of",
+        "for",
+        "to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "think for وجود ندارد.",
+        "2": "think to وجود ندارد."
+      },
+      "explanation_fa": "عبارت think of: What did you think of it?"
+    },
+    {
+      "external_id": "u04-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "___ has taken my pen!",
+      "options": [
+        "Somebody",
+        "Anybody",
+        "Nobody"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "anybody در منفی و سؤال است.",
+        "2": "nobody منفی است."
+      },
+      "explanation_fa": "مثبت نامشخص: Somebody."
+    },
+    {
+      "external_id": "u04-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I didn't speak to ___ all weekend.",
+      "options": [
+        "anybody",
+        "somebody",
+        "nobody"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "somebody در منفی نمی‌آید.",
+        "2": "nobody با didn't دو منفی است."
+      },
+      "explanation_fa": "منفی: anybody."
+    },
+    {
+      "external_id": "u04-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Did ___ call?",
+      "options": [
+        "anybody",
+        "somebody",
+        "nobody"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "somebody در سؤال معمولاً نمی‌آید.",
+        "2": "nobody در سؤال نمی‌آید."
+      },
+      "explanation_fa": "سؤال: anybody."
+    },
+    {
+      "external_id": "u04-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I bought ___ for dinner.",
+      "options": [
+        "something",
+        "anything",
+        "nothing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "anything در مثبت معمولاً نمی‌آید.",
+        "2": "nothing جمله را منفی می‌کند."
+      },
+      "explanation_fa": "مثبت: something."
+    },
+    {
+      "external_id": "u04-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I didn't do ___ on the weekend.",
+      "options": [
+        "anything",
+        "something",
+        "nothing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "something در منفی نمی‌آید.",
+        "2": "nothing با didn't دو منفی است."
+      },
+      "explanation_fa": "منفی: anything."
+    },
+    {
+      "external_id": "u04-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "There's ___ in the refrigerator. (هیچ چیز)",
+      "options": [
+        "nothing",
+        "anything",
+        "something"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "anything در جملهٔ مثبت «هر چیزی» است.",
+        "2": "something یعنی چیزی."
+      },
+      "explanation_fa": "هیچ چیز: nothing."
+    },
+    {
+      "external_id": "u04-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Let's go ___ this weekend.",
+      "options": [
+        "somewhere",
+        "anywhere",
+        "nowhere"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "anywhere در سؤال و منفی است.",
+        "2": "nowhere منفی است."
+      },
+      "explanation_fa": "مثبت: somewhere."
+    },
+    {
+      "external_id": "u04-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Is there ___ to park?",
+      "options": [
+        "anywhere",
+        "somewhere",
+        "nowhere"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "somewhere در سؤال معمولاً نمی‌آید.",
+        "2": "nowhere در سؤال نمی‌آید."
+      },
+      "explanation_fa": "سؤال: anywhere."
+    },
+    {
+      "external_id": "u04-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر فعل را به قسمت سومش وصل کن.",
+      "pairs": [
+        {
+          "left": "clean",
+          "right": "cleaned"
+        },
+        {
+          "left": "do",
+          "right": "done"
+        },
+        {
+          "left": "turn",
+          "right": "turned"
+        },
+        {
+          "left": "arrive",
+          "right": "arrived"
+        },
+        {
+          "left": "wash",
+          "right": "washed"
+        }
+      ],
+      "explanation_fa": "باقاعده‌ها ed می‌گیرند و do بی‌قاعده است: done."
+    },
+    {
+      "external_id": "u04-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Have you ever been to Mexico?",
+          "right": "Yes, I have."
+        },
+        {
+          "left": "When did you go there?",
+          "right": "Last year."
+        },
+        {
+          "left": "Have you seen his new movie?",
+          "right": "Yes, I saw it yesterday."
+        },
+        {
+          "left": "What did you think of it?",
+          "right": "I loved it."
+        },
+        {
+          "left": "Mike has gone to Paris.",
+          "right": "He's there now."
+        }
+      ],
+      "explanation_fa": "حال کامل برای تجربه و گذشته برای جزئیات."
+    },
+    {
+      "external_id": "u04-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Somebody has",
+          "right": "taken my pen."
+        },
+        {
+          "left": "I didn't do",
+          "right": "anything."
+        },
+        {
+          "left": "Is there anything",
+          "right": "in the refrigerator?"
+        },
+        {
+          "left": "Let's go",
+          "right": "somewhere."
+        },
+        {
+          "left": "We didn't go",
+          "right": "anywhere."
+        }
+      ],
+      "explanation_fa": "some- در مثبت، any- در سؤال و منفی."
+    }
+  ]
+}

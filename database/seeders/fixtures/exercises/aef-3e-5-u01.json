@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-5-u01",
+  "book": "aef-3e-5",
+  "unit": 1,
+  "title": "American English File 5 · Unit 1",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 1,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "1A",
+      "1B"
+    ],
+    "grammar_bank": "1A p.139, 1B p.140",
+    "workbook": "1A, 1B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "have: auxiliary or main verb?",
+      "title_fa": "have: فعل اصلی یا کمکی؟",
+      "use_fa": "have اصلی معنی «داشتن/انجام دادن» می‌دهد و با do/be سؤال و منفی می‌شود؛ have کمکی برای حال کامل، آیندهٔ کامل و شرطی است.",
+      "formulas": [
+        {
+          "label_fa": "اصلی",
+          "text": "We have a large family.\nDo you have money?\nI'm having problems."
+        },
+        {
+          "label_fa": "کمکی",
+          "text": "Have you got children?\nShe'll have finished.\nThey've been married for 15 years."
+        }
+      ],
+      "examples": [
+        {
+          "en": "We have a large extended family.",
+          "fa": "ما خانوادهٔ گستردهٔ بزرگی داریم."
+        },
+        {
+          "en": "Do you have any money on you?",
+          "fa": "هیچ پولی همرات داری؟"
+        },
+        {
+          "en": "I'm having problems with my Wi-fi.",
+          "fa": "با وای‌فای‌ام مشکل دارم."
+        },
+        {
+          "en": "She'll have finished lunch in a few minutes.",
+          "fa": "چند دقیقهٔ دیگر ناهارش تمام شده است."
+        }
+      ],
+      "notes_fa": "have اصلی در حالت مالکیت استمراری نمی‌شود (I'm having a car غلط است) ولی در معنی تجربه/عمل می‌شود: having lunch."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "discourse markers (1): linkers",
+      "title_fa": "نشانگرهای گفتمانی: پیوندها",
+      "use_fa": "so/as a result/therefore برای نتیجه؛ because/as/since + جمله و because of/due to/owing to + اسم برای دلیل؛ to/in order to/so as to و so that برای هدف.",
+      "formulas": [
+        {
+          "label_fa": "نتیجه",
+          "text": "so / as a result / therefore / consequently"
+        },
+        {
+          "label_fa": "دلیل",
+          "text": "because / as / since + clause\nbecause of / due to / owing to + noun"
+        },
+        {
+          "label_fa": "هدف",
+          "text": "to / in order to / so as to + base\nso that + clause"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I have a job interview next week, so I bought a suit.",
+          "fa": "هفتهٔ بعد مصاحبهٔ کاری دارم، پس کت‌وشلوار خریدم."
+        },
+        {
+          "en": "It had snowed all night. As a result, the airport was closed.",
+          "fa": "تمام شب برف آمده بود. در نتیجه فرودگاه بسته شد."
+        },
+        {
+          "en": "The plane was late because of the fog.",
+          "fa": "هواپیما به‌خاطر مه دیر بود."
+        },
+        {
+          "en": "I took a language course in order to improve my English.",
+          "fa": "دورهٔ زبان گرفتم تا انگلیسی‌ام را بهتر کنم."
+        }
+      ],
+      "notes_fa": "because of با اسم می‌آید و because با جمله: because of the fog / because it was foggy. therefore رسمی‌تر از so است."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "We ___ a large extended family.",
+      "options": [
+        "have",
+        "has",
+        "are having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با we فعل s نمی‌گیرد.",
+        "2": "have مالکیت استمراری نمی‌شود."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have."
+    },
+    {
+      "external_id": "u01-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Do you ___ any money on you?",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از do فعل پایه.",
+        "2": "having بعد از do نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. Do you have ...?"
+    },
+    {
+      "external_id": "u01-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "She ___ a really bad cold right now.",
+      "options": [
+        "has",
+        "have",
+        "is having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با she فعل has.",
+        "2": "have سرماخوردگی استمراری نمی‌شود."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has» است. has a cold."
+    },
+    {
+      "external_id": "u01-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "He doesn't ___ lunch at home.",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از doesn't فعل پایه.",
+        "2": "having بعد از doesn't نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. doesn't have lunch."
+    },
+    {
+      "external_id": "u01-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I'm ___ problems with my Wi-fi.",
+      "options": [
+        "having",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از am فعل ing.",
+        "2": "has با I نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «having» است. having problems."
+    },
+    {
+      "external_id": "u01-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Do we really ___ to spend Thanksgiving with your parents?",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از do فعل پایه.",
+        "2": "having بعد از do نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have to."
+    },
+    {
+      "external_id": "u01-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "We're going to ___ the kitchen repainted.",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل پایه.",
+        "2": "having بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have it repainted."
+    },
+    {
+      "external_id": "u01-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I ___ my eyes tested when I got my new glasses.",
+      "options": [
+        "had",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "has با I نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had tested."
+    },
+    {
+      "external_id": "u01-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Where do you ___ your hair cut?",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از do فعل پایه.",
+        "2": "having بعد از do نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have your hair cut."
+    },
+    {
+      "external_id": "u01-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "How many children ___ you got?",
+      "options": [
+        "have",
+        "has",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has با you نمی‌آید.",
+        "2": "are got وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have you got."
+    },
+    {
+      "external_id": "u01-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "They ___ got much money.",
+      "options": [
+        "haven't",
+        "hasn't",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hasn't با they نمی‌آید.",
+        "2": "don't got وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «haven't» است. haven't got."
+    },
+    {
+      "external_id": "u01-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She'll ___ finished lunch in a few minutes.",
+      "options": [
+        "have",
+        "has",
+        "be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has بعد از 'll نمی‌آید.",
+        "2": "be finished اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. will have finished."
+    },
+    {
+      "external_id": "u01-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I have a job interview next week, ___ I bought myself a suit!",
+      "options": [
+        "so",
+        "because",
+        "although"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because دلیل را می‌رساند.",
+        "2": "although تضاد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «so» است. so."
+    },
+    {
+      "external_id": "u01-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "It had snowed hard all night. ___ , the airport was closed.",
+      "options": [
+        "As a result",
+        "Because",
+        "Although"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because نیاز به جملهٔ دلیل دارد.",
+        "2": "although تضاد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «As a result» است. As a result."
+    },
+    {
+      "external_id": "u01-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "We regret that you do not have the qualifications, and ___ we are unable to offer you the job.",
+      "options": [
+        "therefore",
+        "so that",
+        "because of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "so that هدف است.",
+        "2": "because of اسم می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «therefore» است. therefore."
+    },
+    {
+      "external_id": "u01-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I have stopped writing to her ___ she never answers me.",
+      "options": [
+        "because",
+        "as a result",
+        "so"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "as a result نتیجه است.",
+        "2": "so نتیجه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «because» است. because."
+    },
+    {
+      "external_id": "u01-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "The plane was late ___ the fog.",
+      "options": [
+        "because of",
+        "because",
+        "so"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because جمله می‌خواهد.",
+        "2": "so نتیجه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «because of» است. because of + noun."
+    },
+    {
+      "external_id": "u01-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Flight 341 has been delayed ___ adverse weather conditions.",
+      "options": [
+        "due to",
+        "because",
+        "so"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because جمله می‌خواهد.",
+        "2": "so نتیجه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «due to» است. due to + noun."
+    },
+    {
+      "external_id": "u01-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "___ the rain hasn't stopped, we've decided not to go out.",
+      "options": [
+        "Since",
+        "Because of",
+        "Despite"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because of اسم می‌خواهد.",
+        "2": "despite اسم می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Since» است. Since + clause."
+    },
+    {
+      "external_id": "u01-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I took a language course ___ improve my English.",
+      "options": [
+        "in order to",
+        "because",
+        "so that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because جمله می‌خواهد.",
+        "2": "so that جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «in order to» است. in order to + base."
+    },
+    {
+      "external_id": "u01-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "She closed the door quietly ___ wake the baby.",
+      "options": [
+        "so as not to",
+        "because",
+        "so that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because دلیل است.",
+        "2": "so that جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «so as not to» است. so as not to."
+    },
+    {
+      "external_id": "u01-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Why did your boss resign? ___ his wife was sick.",
+      "options": [
+        "Because",
+        "Because of",
+        "As a result"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because of اسم می‌خواهد.",
+        "2": "as a result نتیجه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Because» است. Because."
+    },
+    {
+      "external_id": "u01-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "It was raining, ___ we stayed home.",
+      "options": [
+        "so",
+        "because",
+        "although"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because دلیل است.",
+        "2": "although تضاد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «so» است. so."
+    },
+    {
+      "external_id": "u01-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "He was late ___ the traffic.",
+      "options": [
+        "because of",
+        "because",
+        "so"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because جمله می‌خواهد.",
+        "2": "so نتیجه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «because of» است. because of the traffic."
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "We have",
+          "right": "a large extended family."
+        },
+        {
+          "left": "She has",
+          "right": "a bad cold."
+        },
+        {
+          "left": "I'm having",
+          "right": "problems with my Wi-Fi."
+        },
+        {
+          "left": "We're going to have",
+          "right": "the kitchen repainted."
+        },
+        {
+          "left": "I had",
+          "right": "my eyes tested."
+        }
+      ],
+      "explanation_fa": "have اصلی برای مالکیت/تجربه و ساخت have sth done.",
+      "position": 25
+    },
+    {
+      "external_id": "u01-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "It snowed all night.",
+          "right": "As a result, the airport closed."
+        },
+        {
+          "left": "I bought a suit",
+          "right": "so I'd have something to wear."
+        },
+        {
+          "left": "I stopped writing",
+          "right": "because she never answers."
+        },
+        {
+          "left": "The plane was late",
+          "right": "because of the fog."
+        },
+        {
+          "left": "I took a course",
+          "right": "in order to improve my English."
+        }
+      ],
+      "explanation_fa": "نتیجه، دلیل و هدف هر کدام پیوند خودشان را دارند.",
+      "position": 26
+    }
+  ]
+}

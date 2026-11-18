@@ -5,17 +5,17 @@ namespace App\Support;
 use Illuminate\Validation\ValidationException;
 
 /**
- * S3 glossary owner (scope §9.2, READ-02): at most 12 entries, stored as
- * validated JSON. Each entry requires `word` (English) and `meaning_fa`;
- * `example_en` is optional. No dictionary API, no user word lists.
+ * S3 glossary owner (scope §9.2, READ-02): validated JSON with no entry
+ * count limit (owner clarification 2026-11-15: an article may carry as
+ * many key words as it needs). Each entry requires `word` (English) and
+ * `meaning_fa`; `example_en` is optional. No dictionary API, no user word
+ * lists.
  *
  * Every Lesson write normalizes through here (model hook), and the
  * Filament form validates with the same rules — one definition, no copies.
  */
 final class Glossary
 {
-    public const MAX_ENTRIES = 12;
-
     public const MAX_WORD_LENGTH = 120;
 
     public const MAX_MEANING_LENGTH = 500;
@@ -37,12 +37,6 @@ final class Glossary
         if (! is_array($value) || array_is_list($value) === false) {
             throw ValidationException::withMessages([
                 'glossary' => 'The glossary must be a list of entries.',
-            ]);
-        }
-
-        if (count($value) > self::MAX_ENTRIES) {
-            throw ValidationException::withMessages([
-                'glossary' => 'The glossary must not contain more than '.self::MAX_ENTRIES.' entries.',
             ]);
         }
 

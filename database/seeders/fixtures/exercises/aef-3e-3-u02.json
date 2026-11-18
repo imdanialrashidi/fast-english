@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-3-u02",
+  "book": "aef-3e-3",
+  "unit": 2,
+  "title": "American English File 3 · Unit 2",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 2,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "2A",
+      "2B"
+    ],
+    "grammar_bank": "2A p.136, 2B p.137",
+    "workbook": "2A, 2B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "present perfect and simple past",
+      "title_fa": "حال کامل و گذشتهٔ ساده",
+      "use_fa": "حال کامل برای تجربه بدون زمان مشخص و کارهای تازه؛ گذشتهٔ ساده برای کار تمام‌شده با زمان مشخص.",
+      "formulas": [
+        {
+          "label_fa": "حال کامل",
+          "text": "have/has + past participle\nI've inherited some money.\nHave you ever lost your card?"
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "verb-ed / irregular\nThey got married last year.\nWhat time did you wake up?"
+        },
+        {
+          "label_fa": "قیدها",
+          "text": "ever/never/already before the verb\nyet at the end"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I've inherited some money, but I haven't spent it.",
+          "fa": "پولی به ارث برده‌ام ولی خرجش نکرده‌ام."
+        },
+        {
+          "en": "Have you ever lost your credit card?",
+          "fa": "تا حالا کارت اعتباریت را گم کرده‌ای؟"
+        },
+        {
+          "en": "They got married last year.",
+          "fa": "آن‌ها سال گذشته ازدواج کردند."
+        },
+        {
+          "en": "What time did you wake up this morning?",
+          "fa": "امروز صبح چه ساعتی بیدار شدی؟"
+        }
+      ],
+      "notes_fa": "با زمان مشخص (last year، yesterday) گذشتهٔ ساده می‌آید؛ با تجربهٔ بدون زمان، حال کامل: I've been to Miami twice."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present perfect + for / since, present perfect continuous",
+      "title_fa": "حال کامل با for/since و حال کامل استمراری",
+      "use_fa": "برای کاری که در گذشته شروع شده و هنوز ادامه دارد: for + مدت، since + نقطهٔ شروع. حال کامل استمراری روی ادامهٔ فعالیت تأکید دارد.",
+      "formulas": [
+        {
+          "label_fa": "حال کامل + for/since",
+          "text": "They've known each other for ten years.\nJulia's had that bag since college."
+        },
+        {
+          "label_fa": "حال کامل استمراری",
+          "text": "have/has been + verb-ing\nHow long have you been learning English?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "They've known each other for ten years.",
+          "fa": "ده سال است همدیگر را می‌شناسند."
+        },
+        {
+          "en": "Julia's had that bag since college.",
+          "fa": "جولیا از دوران دانشگاه آن کیف را دارد."
+        },
+        {
+          "en": "How long have you been learning English?",
+          "fa": "چند وقت است انگلیسی یاد می‌گیری؟"
+        },
+        {
+          "en": "Have you been crying? — No, I've been chopping onions.",
+          "fa": "گریه کرده‌ای؟ — نه، پیاز خرد می‌کردم."
+        }
+      ],
+      "notes_fa": "با for/since حال کامل می‌آید، نه حال ساده: They've known (نه They know) each other for ten years."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u02-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I've ___ some money, but I haven't spent it.",
+      "options": [
+        "inherited",
+        "inherit",
+        "inheriting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have قسمت سوم می‌آید.",
+        "2": "inheriting بعد از have نمی‌آید."
+      },
+      "explanation_fa": "قسمت سوم inherit: inherited."
+    },
+    {
+      "external_id": "u02-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Sally has ___ met Bill's ex-wife.",
+      "options": [
+        "never",
+        "ever",
+        "yet"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ever در سؤال می‌آید.",
+        "2": "yet در پایان جمله است."
+      },
+      "explanation_fa": "تجربهٔ منفی: never."
+    },
+    {
+      "external_id": "u02-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Have you ___ lost your credit card?",
+      "options": [
+        "ever",
+        "never",
+        "yet"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never در جملهٔ مثبت معنا ندارد.",
+        "2": "yet برای کار تازه است."
+      },
+      "explanation_fa": "سؤال تجربه: ever."
+    },
+    {
+      "external_id": "u02-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I've ___ seen this movie twice.",
+      "options": [
+        "already",
+        "yet",
+        "ever"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "yet در منفی و سؤال است.",
+        "2": "ever در سؤال است."
+      },
+      "explanation_fa": "already قبل از فعل."
+    },
+    {
+      "external_id": "u02-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "My brother hasn't found a new job ___.",
+      "options": [
+        "yet",
+        "already",
+        "ever"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "already در مثبت است.",
+        "2": "ever در سؤال است."
+      },
+      "explanation_fa": "yet در پایان منفی."
+    },
+    {
+      "external_id": "u02-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "They ___ married last year.",
+      "options": [
+        "got",
+        "have got",
+        "get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با last year حال کامل نمی‌آید.",
+        "2": "get حال است."
+      },
+      "explanation_fa": "گذشته: got married."
+    },
+    {
+      "external_id": "u02-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "What time ___ you wake up this morning?",
+      "options": [
+        "did",
+        "have",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have با wake پایه نمی‌آید.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "گذشته: did you wake up."
+    },
+    {
+      "external_id": "u02-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I've been to Miami ___.",
+      "options": [
+        "twice",
+        "two times ago",
+        "twice ago"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ago با حال کامل نمی‌آید.",
+        "2": "twice ago وجود ندارد."
+      },
+      "explanation_fa": "twice بدون ago."
+    },
+    {
+      "external_id": "u02-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I ___ there in 2010 and 2016.",
+      "options": [
+        "went",
+        "have been",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با سال مشخص حال کامل نمی‌آید.",
+        "2": "go حال است."
+      },
+      "explanation_fa": "گذشته: went."
+    },
+    {
+      "external_id": "u02-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Have you played the lottery ___?",
+      "options": [
+        "yet",
+        "already",
+        "never"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "already در مثبت است.",
+        "2": "never در سؤال نمی‌آید."
+      },
+      "explanation_fa": "yet در سؤال."
+    },
+    {
+      "external_id": "u02-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I've ___ finished my homework.",
+      "options": [
+        "already",
+        "yet",
+        "ever"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "yet در پایان منفی/سؤال است.",
+        "2": "ever در سؤال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «already» است. already."
+    },
+    {
+      "external_id": "u02-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "When ___ you buy that jacket?",
+      "options": [
+        "did",
+        "have",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با when حال کامل نمی‌آید.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "گذشته: did you buy."
+    },
+    {
+      "external_id": "u02-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "They've known each other ___ ten years.",
+      "options": [
+        "for",
+        "since",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "since برای نقطهٔ شروع است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "مدت: for."
+    },
+    {
+      "external_id": "u02-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Julia's had that bag ___ she was in college.",
+      "options": [
+        "since",
+        "for",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for مدت است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "نقطهٔ شروع: since."
+    },
+    {
+      "external_id": "u02-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "How long ___ you worked here?",
+      "options": [
+        "have",
+        "do",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال ساده است.",
+        "2": "did برای گذشته است."
+      },
+      "explanation_fa": "حال کامل: have you worked."
+    },
+    {
+      "external_id": "u02-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I've worked here ___ 2010.",
+      "options": [
+        "since",
+        "for",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for مدت است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «since» است. since 2010."
+    },
+    {
+      "external_id": "u02-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "How long has your brother ___ his motorcycle?",
+      "options": [
+        "had",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از has فعل پایه نمی‌آید.",
+        "2": "has دوباره نمی‌آید."
+      },
+      "explanation_fa": "قسمت سوم have: had."
+    },
+    {
+      "external_id": "u02-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "He's had it ___ about a year.",
+      "options": [
+        "for",
+        "since",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "since نقطهٔ شروع است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «for» است. for about a year."
+    },
+    {
+      "external_id": "u02-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "How long have you been ___ English?",
+      "options": [
+        "learning",
+        "learn",
+        "learned"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از been فعل پایه نمی‌آید.",
+        "2": "learned گذشته است."
+      },
+      "explanation_fa": "حال کامل استمراری: learning."
+    },
+    {
+      "external_id": "u02-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Nick has been ___ here since April.",
+      "options": [
+        "working",
+        "work",
+        "worked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از been فعل پایه نمی‌آید.",
+        "2": "worked گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «working» است. has been working."
+    },
+    {
+      "external_id": "u02-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Your eyes are red. Have you been ___?",
+      "options": [
+        "crying",
+        "cry",
+        "cried"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از been فعل پایه نمی‌آید.",
+        "2": "cried گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «crying» است. have you been crying."
+    },
+    {
+      "external_id": "u02-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "They've been going out ___ about three years.",
+      "options": [
+        "for",
+        "since",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "since نقطهٔ شروع است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «for» است. for about three years."
+    },
+    {
+      "external_id": "u02-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I've been chopping ___.",
+      "options": [
+        "onions",
+        "onion's",
+        "onions'"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "آپاستروف مالکیت است.",
+        "2": "این شکل جمع غلط است."
+      },
+      "explanation_fa": "onions جمع ساده."
+    },
+    {
+      "external_id": "u02-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She's been ___ for the test all morning.",
+      "options": [
+        "studying",
+        "study",
+        "studied"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از been فعل پایه نمی‌آید.",
+        "2": "studied گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «studying» است. has been studying."
+    },
+    {
+      "external_id": "u02-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر جمله را به معنی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "I've been to Miami twice.",
+          "right": "I went there in 2010 and 2016."
+        },
+        {
+          "left": "I've bought a new computer.",
+          "right": "I bought it last Saturday."
+        },
+        {
+          "left": "Have you ever lost your card?",
+          "right": "Yes, I have."
+        },
+        {
+          "left": "I haven't finished yet.",
+          "right": "I'm still working."
+        },
+        {
+          "left": "She's already seen it.",
+          "right": "She saw it last week."
+        }
+      ],
+      "explanation_fa": "حال کامل برای تجربه بدون زمان و گذشته برای زمان مشخص."
+    },
+    {
+      "external_id": "u02-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "How long have you worked here?",
+          "right": "Since 2010."
+        },
+        {
+          "left": "How long has he had his motorcycle?",
+          "right": "For about a year."
+        },
+        {
+          "left": "They've known each other",
+          "right": "for ten years."
+        },
+        {
+          "left": "Julia's had that bag",
+          "right": "since college."
+        },
+        {
+          "left": "Have you been crying?",
+          "right": "No, I've been chopping onions."
+        }
+      ],
+      "explanation_fa": "for + مدت، since + نقطهٔ شروع؛ حال کامل استمراری برای فعالیت ادامه‌دار."
+    }
+  ]
+}

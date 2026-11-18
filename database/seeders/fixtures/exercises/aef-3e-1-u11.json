@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-1-u11",
+  "book": "aef-3e-1",
+  "unit": 11,
+  "title": "American English File 1 · Unit 11",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 11,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "11A",
+      "11B",
+      "11C"
+    ],
+    "grammar_bank": "11A p.146, 11B p.146, 11C p.146",
+    "workbook": "11A, 11B, 11C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "adverbs (manner and modifiers)",
+      "title_fa": "قیدهای حالت و تشدیدکننده‌ها",
+      "use_fa": "قید حالت می‌گوید کاری چگونه انجام می‌شود و معمولاً بعد از فعل می‌آید. با very/really صفت یا قید را تقویت می‌کنیم.",
+      "formulas": [
+        {
+          "label_fa": "ساخت قید",
+          "text": "adjective + -ly\nslow → slowly\ncareful → carefully\neasy → easily"
+        },
+        {
+          "label_fa": "بی‌قاعده",
+          "text": "good → well\nfast → fast\nhard → hard"
+        },
+        {
+          "label_fa": "جای قید",
+          "text": "after the verb\nI speak English well.\nShe drives carefully."
+        }
+      ],
+      "examples": [
+        {
+          "en": "She wants to live independently.",
+          "fa": "او می‌خواهد مستقل زندگی کند."
+        },
+        {
+          "en": "He speaks English well.",
+          "fa": "او انگلیسی را خوب صحبت می‌کند."
+        },
+        {
+          "en": "She drives incredibly fast.",
+          "fa": "او باورنکردنی سریع رانندگی می‌کند."
+        },
+        {
+          "en": "It isn't very expensive.",
+          "fa": "خیلی گران نیست."
+        }
+      ],
+      "notes_fa": "صفت اسم را توصیف می‌کند (a careful driver) و قید فعل را (drive carefully). good قیدش well است، نه goodly."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "verb + infinitive",
+      "title_fa": "فعل + مصدر با to",
+      "use_fa": "بعد از برخی فعل‌ها مثل want، need، decide، learn و would like فعل به شکل to + پایه می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "want / need / decide / learn / plan / promise / try + to + base verb\nI want to travel.\nShe decided to go."
+        },
+        {
+          "label_fa": "would like",
+          "text": "would like + to + base verb\nI'd like to dance.\nWould you like to go?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I want to travel for six months.",
+          "fa": "می‌خواهم شش ماه سفر کنم."
+        },
+        {
+          "en": "She decided to go to Australia.",
+          "fa": "او تصمیم گرفت به استرالیا برود."
+        },
+        {
+          "en": "You need to practice every day.",
+          "fa": "باید هر روز تمرین کنی."
+        },
+        {
+          "en": "Would you like to go to Africa?",
+          "fa": "دوست داری به آفریقا بروی؟"
+        }
+      ],
+      "notes_fa": "would like یعنی «می‌خواهم» و مثل want با to می‌آید؛ ولی like به‌تنهایی با ing: I like dancing."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "definite article",
+      "title_fa": "حرف تعریف the",
+      "use_fa": "the وقتی است که شنونده می‌داند دربارهٔ چه چیزی حرف می‌زنیم. برای اشارهٔ کلی و بعضی عبارت‌های ثابت، مقاله نمی‌آید.",
+      "formulas": [
+        {
+          "label_fa": "با the",
+          "text": "Close the window.\nthe best restaurant\nthe internet"
+        },
+        {
+          "label_fa": "بدون مقاله",
+          "text": "Men are usually more interested in sports.\nWhat time did you have breakfast?\nJim goes to school by bus."
+        },
+        {
+          "label_fa": "a/an و the",
+          "text": "Let's have a pizza. The pizzas are very good here."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Can you close the window, please?",
+          "fa": "می‌شود پنجره را ببندی؟"
+        },
+        {
+          "en": "It's the best restaurant I know.",
+          "fa": "بهترین رستورانی است که می‌شناسم."
+        },
+        {
+          "en": "What time did you have breakfast?",
+          "fa": "چه ساعتی صبحانه خوردی؟"
+        },
+        {
+          "en": "Can you check their address on the internet?",
+          "fa": "می‌شود آدرسشان را در اینترنت چک کنی؟"
+        }
+      ],
+      "notes_fa": "برای چیز مشخص the می‌آید؛ برای اشارهٔ کلی جمع، مقاله نمی‌آید: Men are interested in sports. عبارت‌هایی مثل have breakfast، go to school بدون مقاله‌اند."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u11-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "She wants to live ___.",
+      "options": [
+        "independently",
+        "independent",
+        "independent's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت به‌تنهایی اینجا قید نمی‌سازد.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "قید حالت: independently."
+    },
+    {
+      "external_id": "u11-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He speaks English ___.",
+      "options": [
+        "well",
+        "good",
+        "goodly"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "good صفت است.",
+        "2": "goodly قید رایج نیست."
+      },
+      "explanation_fa": "قید good می‌شود well."
+    },
+    {
+      "external_id": "u11-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "She drives ___.",
+      "options": [
+        "carefully",
+        "careful",
+        "carefuly"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "careful صفت است.",
+        "2": "املای قید carefuly غلط است."
+      },
+      "explanation_fa": "قید careful می‌شود carefully."
+    },
+    {
+      "external_id": "u11-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They speak really ___.",
+      "options": [
+        "slowly",
+        "slow",
+        "slowness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "slow صفت است.",
+        "2": "slowness اسم است."
+      },
+      "explanation_fa": "قید: slowly."
+    },
+    {
+      "external_id": "u11-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "It isn't ___ expensive.",
+      "options": [
+        "very",
+        "very much",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "very much بعد از فعل می‌آید.",
+        "2": "much به‌تنهایی اینجا نمی‌آید."
+      },
+      "explanation_fa": "very + صفت: very expensive."
+    },
+    {
+      "external_id": "u11-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "He's a ___ driver.",
+      "options": [
+        "careful",
+        "carefully",
+        "carefulness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "قید قبل از اسم نمی‌آید.",
+        "2": "carefulness اسم است."
+      },
+      "explanation_fa": "صفت اسم را توصیف می‌کند: a careful driver."
+    },
+    {
+      "external_id": "u11-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She eats very ___.",
+      "options": [
+        "quickly",
+        "quick",
+        "quickness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "quick صفت است.",
+        "2": "quickness اسم است."
+      },
+      "explanation_fa": "قید: quickly."
+    },
+    {
+      "external_id": "u11-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "He works ___.",
+      "options": [
+        "hard",
+        "hardly",
+        "hardly ever"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hardly یعنی «به‌سختی».",
+        "2": "hardly ever یعنی «تقریباً هرگز»."
+      },
+      "explanation_fa": "hard هم صفت است هم قید: works hard."
+    },
+    {
+      "external_id": "u11-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I want ___ for six months.",
+      "options": [
+        "to travel",
+        "travel",
+        "traveling"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از want فعل پایه نمی‌آید.",
+        "2": "بعد از want فعل ing نمی‌آید."
+      },
+      "explanation_fa": "want + to + فعل: to travel."
+    },
+    {
+      "external_id": "u11-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She decided ___ to Australia.",
+      "options": [
+        "to go",
+        "going",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از decided فعل ing نمی‌آید.",
+        "2": "بعد از decided فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "بعد از decide فعل to می‌گیرد: decided to go."
+    },
+    {
+      "external_id": "u11-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "You need ___ every day.",
+      "options": [
+        "to practice",
+        "practice",
+        "practicing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از need فعل پایه نمی‌آید.",
+        "2": "بعد از need فعل ing نمی‌آید."
+      },
+      "explanation_fa": "بعد از need فعل to می‌گیرد: need to practice."
+    },
+    {
+      "external_id": "u11-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "When did you learn ___ the guitar?",
+      "options": [
+        "to play",
+        "playing",
+        "play"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از learn فعل ing نمی‌آید.",
+        "2": "بعد از learn فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "بعد از learn فعل to می‌گیرد: learn to play."
+    },
+    {
+      "external_id": "u11-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Would you like ___ to Africa?",
+      "options": [
+        "to go",
+        "going",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would like فعل ing نمی‌آید.",
+        "2": "بعد از would like فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "بعد از would like فعل to می‌گیرد: to go."
+    },
+    {
+      "external_id": "u11-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I wouldn't like ___ famous.",
+      "options": [
+        "to be",
+        "being",
+        "be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would like فعل ing نمی‌آید.",
+        "2": "بعد از would like فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "بعد از would like فعل to می‌گیرد: to be."
+    },
+    {
+      "external_id": "u11-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I'd like ___.",
+      "options": [
+        "to dance",
+        "dancing",
+        "dance"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would like فعل ing نمی‌آید.",
+        "2": "بعد از would like فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "بعد از would like فعل to می‌گیرد: to dance."
+    },
+    {
+      "external_id": "u11-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I enjoy ___.",
+      "options": [
+        "dancing",
+        "to dance",
+        "dance"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از enjoy فعل to‌دار نمی‌آید.",
+        "2": "بعد از enjoy فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "بعد از enjoy فعل ing می‌گیرد: dancing."
+    },
+    {
+      "external_id": "u11-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Can you close ___ window, please?",
+      "options": [
+        "the",
+        "a",
+        "—"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "پنجرهٔ مشخص است.",
+        "2": "بدون مقاله جمله ناقص است."
+      },
+      "explanation_fa": "پنجرهٔ مشخص: the window."
+    },
+    {
+      "external_id": "u11-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "It's ___ best restaurant I know.",
+      "options": [
+        "the",
+        "a",
+        "—"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "best صفت عالی است.",
+        "2": "صفت عالی با the می‌آید."
+      },
+      "explanation_fa": "صفت عالی best با the می‌آید: the best."
+    },
+    {
+      "external_id": "u11-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "___ men are usually more interested in sports.",
+      "options": [
+        "—",
+        "The",
+        "A"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اشارهٔ کلی به یک گروه است.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "اشارهٔ کلی: بدون مقاله."
+    },
+    {
+      "external_id": "u11-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "That's ___ Tom's chair.",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با اسم ملکی مقاله نمی‌آید.",
+        "2": "a با اسم ملکی نمی‌آید."
+      },
+      "explanation_fa": "Tom's chair بدون مقاله."
+    },
+    {
+      "external_id": "u11-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "What time did you have ___ breakfast?",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have breakfast عبارت ثابت است.",
+        "2": "a با breakfast نمی‌آید."
+      },
+      "explanation_fa": "بدون مقاله: have breakfast."
+    },
+    {
+      "external_id": "u11-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Jim goes to ___ school by bus.",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "go to school عبارت ثابت است.",
+        "2": "a با school در این معنا نمی‌آید."
+      },
+      "explanation_fa": "بدون مقاله: go to school."
+    },
+    {
+      "external_id": "u11-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Let's have ___ pizza.",
+      "options": [
+        "a",
+        "the",
+        "—"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اولین بار به پیتزا اشاره می‌شود.",
+        "2": "the برای اشارهٔ دوم است."
+      },
+      "explanation_fa": "a pizza (بار اول)."
+    },
+    {
+      "external_id": "u11-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Can you check their address on ___ internet?",
+      "options": [
+        "the",
+        "a",
+        "—"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a با internet نمی‌آید.",
+        "2": "the internet عبارت ثابت است."
+      },
+      "explanation_fa": "عبارت ثابت the internet است."
+    },
+    {
+      "external_id": "u11-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر صفت را به قیدش وصل کن.",
+      "pairs": [
+        {
+          "left": "slow",
+          "right": "slowly"
+        },
+        {
+          "left": "quick",
+          "right": "quickly"
+        },
+        {
+          "left": "careful",
+          "right": "carefully"
+        },
+        {
+          "left": "easy",
+          "right": "easily"
+        },
+        {
+          "left": "good",
+          "right": "well"
+        }
+      ],
+      "explanation_fa": "slowly، quickly، carefully، easily؛ good بی‌قاعده است و well می‌شود."
+    },
+    {
+      "external_id": "u11-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر فعل را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "want",
+          "right": "to travel"
+        },
+        {
+          "left": "need",
+          "right": "to practice"
+        },
+        {
+          "left": "decide",
+          "right": "to go"
+        },
+        {
+          "left": "learn",
+          "right": "to play"
+        },
+        {
+          "left": "would like",
+          "right": "to dance"
+        }
+      ],
+      "explanation_fa": "این فعل‌ها با to + فعل پایه می‌آیند."
+    },
+    {
+      "external_id": "u11-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Close",
+          "right": "the window."
+        },
+        {
+          "left": "Let's have",
+          "right": "a pizza."
+        },
+        {
+          "left": "That's",
+          "right": "Tom's chair."
+        },
+        {
+          "left": "Men are usually more interested",
+          "right": "in sports."
+        },
+        {
+          "left": "Check the address on",
+          "right": "the internet."
+        }
+      ],
+      "explanation_fa": "the برای چیز مشخص، a برای بار اول، و بدون مقاله برای اشارهٔ کلی."
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "external_id": "aef-3e-starter-u04",
+  "book": "aef-3e-starter",
+  "unit": 4,
+  "title": "تمرین یونیت 4 — خانواده و صفت‌ها",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u04-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "My mother's brother is my ___.",
+      "options": [
+        "uncle",
+        "aunt",
+        "cousin",
+        "brother"
+      ],
+      "answer": 0,
+      "explanation_fa": "برادر مادر می‌شود uncle (دایی)."
+    },
+    {
+      "external_id": "u04-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "My father's wife is my ___.",
+      "answer": [
+        "mother",
+        "mom",
+        "mum"
+      ],
+      "explanation_fa": "همسر پدر می‌شود mother."
+    },
+    {
+      "external_id": "u04-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "The sun is ___.",
+      "options": [
+        "blue",
+        "yellow",
+        "green",
+        "black"
+      ],
+      "answer": 1,
+      "explanation_fa": "خورشید زرد است: yellow."
+    },
+    {
+      "external_id": "u04-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "She has two sisters",
+      "explanation_fa": "ترتیب درست: She has two sisters."
+    },
+    {
+      "external_id": "u04-e05",
+      "position": 5,
+      "type": "choice",
+      "prompt": "He is 90 years old. He is ___.",
+      "options": [
+        "young",
+        "old",
+        "new",
+        "small"
+      ],
+      "answer": 1,
+      "explanation_fa": "۹۰ ساله یعنی old."
+    }
+  ]
+}

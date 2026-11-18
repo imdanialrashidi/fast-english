@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-4-u10",
+  "book": "aef-3e-4",
+  "unit": 10,
+  "title": "American English File 4 · Unit 10",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 10,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "10A",
+      "10B"
+    ],
+    "grammar_bank": "10A p.152, 10B p.153",
+    "workbook": "10A, 10B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "quantifiers: all, every, both, etc.",
+      "title_fa": "کمیت‌ها: all، every، both و غیره",
+      "use_fa": "all + جمع/غیرقابل‌شمارش؛ every + اسم مفرد؛ both برای دو چیز/نفر. all/both می‌توانند قبل از اسم یا با of بیایند.",
+      "formulas": [
+        {
+          "label_fa": "all",
+          "text": "All the students passed.\nAll the money was spent."
+        },
+        {
+          "label_fa": "every",
+          "text": "Every student has a book.\nI go every day."
+        },
+        {
+          "label_fa": "both",
+          "text": "Both of my parents are teachers.\nWe both like coffee."
+        }
+      ],
+      "examples": [
+        {
+          "en": "All the students passed.",
+          "fa": "همهٔ دانش‌آموزان قبول شدند."
+        },
+        {
+          "en": "Every student has a book.",
+          "fa": "هر دانش‌آموز یک کتاب دارد."
+        },
+        {
+          "en": "Both of my parents are teachers.",
+          "fa": "هر دو والدینم معلم هستند."
+        },
+        {
+          "en": "I go to the gym every day.",
+          "fa": "من هر روز به باشگاه می‌روم."
+        }
+      ],
+      "notes_fa": "every همیشه مفرد است: every student (نه every students). both فقط برای دو چیز است."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "articles",
+      "title_fa": "حرف‌های تعریف",
+      "use_fa": "a/an برای اسم مفرد نامشخص؛ the برای چیز مشخص، یگانه، ذکرشده یا صفت عالی؛ بدون مقاله برای اشارهٔ کلی.",
+      "formulas": [
+        {
+          "label_fa": "a/an",
+          "text": "a lawyer / an old man\nWhat an awful day!"
+        },
+        {
+          "label_fa": "the",
+          "text": "the dog / the Earth\nthe best restaurant\nthe theater"
+        },
+        {
+          "label_fa": "بدون مقاله",
+          "text": "I love weddings.\nI'm having dinner with friends."
+        }
+      ],
+      "examples": [
+        {
+          "en": "She's a lawyer.",
+          "fa": "او وکیل است."
+        },
+        {
+          "en": "The moon goes around the Earth.",
+          "fa": "ماه دور زمین می‌گردد."
+        },
+        {
+          "en": "It's the best restaurant in town.",
+          "fa": "بهترین رستوران شهر است."
+        },
+        {
+          "en": "I love weddings!",
+          "fa": "من عروسی‌ها را دوست دارم!"
+        }
+      ],
+      "notes_fa": "در عبارت‌هایی مثل have dinner، go to school، go home مقاله نمی‌آید؛ ولی the movies/the theater مقاله می‌گیرند."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u10-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ the students passed.",
+      "options": [
+        "All",
+        "Every",
+        "Both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every با مفرد می‌آید.",
+        "2": "both برای دو نفر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «All» است. All the students."
+    },
+    {
+      "external_id": "u10-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "___ student has a book.",
+      "options": [
+        "Every",
+        "All",
+        "Both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all با جمع می‌آید.",
+        "2": "both برای دو نفر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Every» است. Every student."
+    },
+    {
+      "external_id": "u10-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ of my parents are teachers.",
+      "options": [
+        "Both",
+        "All",
+        "Every"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all برای بیش از دو نفر است.",
+        "2": "every بعد از of اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Both» است. Both of."
+    },
+    {
+      "external_id": "u10-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I go to the gym ___ day.",
+      "options": [
+        "every",
+        "all",
+        "both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all با جمع/غیرقابل‌شمارش.",
+        "2": "both برای دو چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «every» است. every day."
+    },
+    {
+      "external_id": "u10-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ the money was spent.",
+      "options": [
+        "All",
+        "Every",
+        "Both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every با مفرد است ولی اینجا money غیرقابل‌شمارش است.",
+        "2": "both برای دو چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «All» است. All the money."
+    },
+    {
+      "external_id": "u10-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "She spends ___ her free time reading.",
+      "options": [
+        "all",
+        "every",
+        "both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every با مفرد می‌آید.",
+        "2": "both برای دو چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «all» است. all her free time."
+    },
+    {
+      "external_id": "u10-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "___ child had a gift.",
+      "options": [
+        "Every",
+        "All",
+        "Both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all با جمع می‌آید.",
+        "2": "both برای دو نفر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Every» است. Every child."
+    },
+    {
+      "external_id": "u10-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "We ___ like coffee.",
+      "options": [
+        "both",
+        "all",
+        "every"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all با we بعد از فعل نمی‌آید.",
+        "2": "every اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «both» است. We both like."
+    },
+    {
+      "external_id": "u10-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ the information was useful.",
+      "options": [
+        "All",
+        "Every",
+        "Both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every با مفرد است.",
+        "2": "both برای دو چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «All» است. All the information."
+    },
+    {
+      "external_id": "u10-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I've read ___ book in the series.",
+      "options": [
+        "every",
+        "all",
+        "both"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all با جمع می‌آید.",
+        "2": "both برای دو کتاب است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «every» است. every book."
+    },
+    {
+      "external_id": "u10-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "___ of them were tired.",
+      "options": [
+        "Both",
+        "Every",
+        "All"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every بعد از of نمی‌آید.",
+        "2": "all برای بیش از دو نفر است."
+      },
+      "explanation_fa": "Both of them (دو نفر)."
+    },
+    {
+      "external_id": "u10-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ of us were late.",
+      "options": [
+        "All",
+        "Both",
+        "Every"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "both برای دو نفر است.",
+        "2": "every بعد از of نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «All» است. All of us."
+    },
+    {
+      "external_id": "u10-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "She's ___ lawyer.",
+      "options": [
+        "a",
+        "an",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "lawyer با صامت شروع می‌شود.",
+        "2": "the برای مشخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a» است. a lawyer."
+    },
+    {
+      "external_id": "u10-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I saw ___ old man.",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "old با مصوت شروع می‌شود.",
+        "2": "the برای مشخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «an» است. an old man."
+    },
+    {
+      "external_id": "u10-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ dog was barking.",
+      "options": [
+        "The",
+        "A",
+        "An"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بار اول a می‌آید.",
+        "2": "an با dog نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «The» است. The dog."
+    },
+    {
+      "external_id": "u10-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "The moon goes around ___ Earth.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Earth یگانه است.",
+        "2": "an با Earth نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the Earth."
+    },
+    {
+      "external_id": "u10-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "It's ___ best restaurant in town.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت عالی با the.",
+        "2": "an با best نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the best."
+    },
+    {
+      "external_id": "u10-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I love ___ weddings!",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اشارهٔ کلی است.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "بدون مقاله."
+    },
+    {
+      "external_id": "u10-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "We go to ___ theater once a month.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a با theater اینجا نمی‌آید.",
+        "2": "an با theater نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the theater."
+    },
+    {
+      "external_id": "u10-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I'm having ___ dinner with friends.",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the اینجا نمی‌آید.",
+        "2": "a با dinner نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «—» است. have dinner."
+    },
+    {
+      "external_id": "u10-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "What ___ awful day!",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "awful با مصوت شروع می‌شود.",
+        "2": "the در تعجب نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «an» است. What an awful day!"
+    },
+    {
+      "external_id": "u10-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "I have classes three times ___ week.",
+      "options": [
+        "a",
+        "the",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the اینجا نمی‌آید.",
+        "2": "an با week نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a» است. three times a week."
+    },
+    {
+      "external_id": "u10-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "___ English are famous for drinking tea.",
+      "options": [
+        "The",
+        "A",
+        "An"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a با English نمی‌آید.",
+        "2": "an با English نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «The» است. The English."
+    },
+    {
+      "external_id": "u10-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "He's ___ rich man.",
+      "options": [
+        "a",
+        "the",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the برای مشخص است.",
+        "2": "an با rich نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a» است. a rich man."
+    },
+    {
+      "external_id": "u10-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "هر عبارت را کامل کن.",
+      "pairs": [
+        {
+          "left": "All the",
+          "right": "students passed."
+        },
+        {
+          "left": "Every",
+          "right": "student has a book."
+        },
+        {
+          "left": "Both of",
+          "right": "my parents are teachers."
+        },
+        {
+          "left": "All the",
+          "right": "money was spent."
+        },
+        {
+          "left": "Every",
+          "right": "child had a gift."
+        }
+      ],
+      "explanation_fa": "all با جمع/غیرقابل‌شمارش، every با مفرد، both برای دو.",
+      "position": 25
+    },
+    {
+      "external_id": "u10-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "She's a",
+          "right": "lawyer."
+        },
+        {
+          "left": "I saw an",
+          "right": "old man."
+        },
+        {
+          "left": "The dog",
+          "right": "was barking."
+        },
+        {
+          "left": "The moon goes around",
+          "right": "the Earth."
+        },
+        {
+          "left": "It's the best",
+          "right": "restaurant in town."
+        }
+      ],
+      "explanation_fa": "a/an بار اول و the برای مشخص و یگانه.",
+      "position": 26
+    }
+  ]
+}

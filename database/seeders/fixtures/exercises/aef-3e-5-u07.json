@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-5-u07",
+  "book": "aef-3e-5",
+  "unit": 7,
+  "title": "American English File 5 · Unit 7",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 7,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "7A",
+      "7B"
+    ],
+    "grammar_bank": "7A p.151, 7B p.152",
+    "workbook": "7A, 7B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "permission, obligation, and necessity",
+      "title_fa": "اجازه، اجبار و ضرورت",
+      "use_fa": "can برای اجازه؛ must برای اجبار قوی/قانون؛ have to برای اجبار بیرونی؛ don't have to/needn't یعنی لازم نیست؛ mustn't یعنی ممنوع؛ should/ought to برای توصیه و had better برای هشدار.",
+      "formulas": [
+        {
+          "label_fa": "اجازه/ممنوعیت",
+          "text": "Can I use your phone?\nYou mustn't park here."
+        },
+        {
+          "label_fa": "اجبار/عدم اجبار",
+          "text": "I had to work on Saturday.\nYou don't have to / needn't bring a towel."
+        },
+        {
+          "label_fa": "توصیه",
+          "text": "You should see a doctor.\nYou'd better leave now."
+        }
+      ],
+      "examples": [
+        {
+          "en": "You mustn't park here — it's not allowed.",
+          "fa": "اینجا نباید پارک کنی؛ مجاز نیست."
+        },
+        {
+          "en": "You don't have to bring a towel; the hotel provides them.",
+          "fa": "لازم نیست حوله بیاوری؛ هتل می‌دهد."
+        },
+        {
+          "en": "You should see a doctor.",
+          "fa": "باید دکتر بروی."
+        },
+        {
+          "en": "You'd better leave now, or you'll miss the train.",
+          "fa": "بهتر است الان بروی وگرنه قطار را از دست می‌دهی."
+        }
+      ],
+      "notes_fa": "mustn't با don't have to فرق دارد: اولی ممنوع و دومی لازم نیست. needn't هم یعنی لازم نیست."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "verbs of the senses",
+      "title_fa": "فعل‌های حسی با مفعول",
+      "use_fa": "hear/see/smell/feel/taste + مفعول + فعل پایه (کل عمل) یا ing (در جریان).",
+      "formulas": [
+        {
+          "label_fa": "فعل پایه",
+          "text": "I saw him cross the road."
+        },
+        {
+          "label_fa": "ing",
+          "text": "I heard her singing."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I saw him cross the road.",
+          "fa": "دیدم از خیابان رد شد."
+        },
+        {
+          "en": "I heard her singing in the shower.",
+          "fa": "شنیدم در حمام آواز می‌خواند."
+        },
+        {
+          "en": "We could smell the cake baking.",
+          "fa": "بوی کیک در حال پختن را حس می‌کردیم."
+        },
+        {
+          "en": "I felt the ground shake.",
+          "fa": "حس کردم زمین لرزید."
+        }
+      ],
+      "notes_fa": "با ing عمل در جریان است و با فعل پایه کل عمل دیده/شنیده می‌شود: saw him cross / saw him crossing."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u07-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "You ___ park here — it's not allowed.",
+      "options": [
+        "mustn't",
+        "don't have to",
+        "needn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't have to یعنی لازم نیست.",
+        "2": "needn't یعنی لازم نیست."
+      },
+      "explanation_fa": "ممنوعیت: mustn't."
+    },
+    {
+      "external_id": "u07-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "You ___ bring a towel; the hotel provides them.",
+      "options": [
+        "don't have to",
+        "mustn't",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mustn't یعنی ممنوع.",
+        "2": "can't یعنی غیرممکن."
+      },
+      "explanation_fa": "عدم نیاز: don't have to."
+    },
+    {
+      "external_id": "u07-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ I use your phone?",
+      "options": [
+        "Can",
+        "Must",
+        "Should"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Must برای اجبار است.",
+        "2": "Should برای توصیه است."
+      },
+      "explanation_fa": "اجازه: Can I ...?"
+    },
+    {
+      "external_id": "u07-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "You ___ see a doctor — you look terrible.",
+      "options": [
+        "should",
+        "mustn't",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mustn't ممنوعیت است.",
+        "2": "can't غیرممکن است."
+      },
+      "explanation_fa": "توصیه: should."
+    },
+    {
+      "external_id": "u07-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "You ___ to take an umbrella; it's going to rain.",
+      "options": [
+        "ought",
+        "had better",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had better بدون to است.",
+        "2": "must بدون to است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «ought» است. ought to."
+    },
+    {
+      "external_id": "u07-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "You ___ better leave now or you'll miss the train.",
+      "options": [
+        "had",
+        "would",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would better وجود ندارد.",
+        "2": "have better وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had better."
+    },
+    {
+      "external_id": "u07-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Visitors ___ not feed the animals.",
+      "options": [
+        "must",
+        "need",
+        "should"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "need not بدون to اینجا نمی‌آید.",
+        "2": "should not توصیه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must» است. must not."
+    },
+    {
+      "external_id": "u07-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I ___ to work on Saturday last week.",
+      "options": [
+        "had",
+        "have",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "must بدون to است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had to."
+    },
+    {
+      "external_id": "u07-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "You ___ have told me — I could have helped.",
+      "options": [
+        "should",
+        "shouldn't",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "shouldn't منفی است.",
+        "2": "must قطعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «should» است. should have told."
+    },
+    {
+      "external_id": "u07-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "We ___ hurry — the movie starts in ten minutes.",
+      "options": [
+        "had better",
+        "should have",
+        "needn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "should have برای گذشته است.",
+        "2": "needn't یعنی لازم نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had better» است. had better hurry."
+    },
+    {
+      "external_id": "u07-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "You ___ smoke in here; it's prohibited.",
+      "options": [
+        "can't",
+        "needn't",
+        "don't have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "needn't یعنی لازم نیست.",
+        "2": "don't have to یعنی لازم نیست."
+      },
+      "explanation_fa": "ممنوعیت: can't."
+    },
+    {
+      "external_id": "u07-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "There's no need — you ___ worry.",
+      "options": [
+        "needn't",
+        "mustn't",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mustn't ممنوعیت است.",
+        "2": "can't غیرممکن است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «needn't» است. needn't worry."
+    },
+    {
+      "external_id": "u07-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ him cross the road.",
+      "options": [
+        "saw",
+        "saw to",
+        "seen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "saw to وجود ندارد.",
+        "2": "seen بدون have است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «saw» است. saw him cross."
+    },
+    {
+      "external_id": "u07-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I ___ her singing in the shower.",
+      "options": [
+        "heard",
+        "heard to",
+        "hear"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "heard to وجود ندارد.",
+        "2": "hear حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «heard» است. heard her singing."
+    },
+    {
+      "external_id": "u07-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "We ___ the cake baking.",
+      "options": [
+        "could smell",
+        "could smell to",
+        "smelled to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "smell to وجود ندارد.",
+        "2": "smelled to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could smell» است. could smell."
+    },
+    {
+      "external_id": "u07-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I ___ the ground shake.",
+      "options": [
+        "felt",
+        "felt to",
+        "feel"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "felt to وجود ندارد.",
+        "2": "feel حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «felt» است. felt."
+    },
+    {
+      "external_id": "u07-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I ___ something burning.",
+      "options": [
+        "can smell",
+        "can smell to",
+        "smell to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "smell to وجود ندارد.",
+        "2": "smell to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can smell» است. can smell."
+    },
+    {
+      "external_id": "u07-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She ___ the door close.",
+      "options": [
+        "heard",
+        "heard to",
+        "hears"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "heard to وجود ندارد.",
+        "2": "hears حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «heard» است. heard."
+    },
+    {
+      "external_id": "u07-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I ___ him leave the room.",
+      "options": [
+        "saw",
+        "saw to",
+        "see to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "saw to وجود ندارد.",
+        "2": "see to معنی دیگری دارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «saw» است. saw."
+    },
+    {
+      "external_id": "u07-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "We ___ them arguing.",
+      "options": [
+        "heard",
+        "heard to",
+        "hear"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "heard to وجود ندارد.",
+        "2": "hear حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «heard» است. heard."
+    },
+    {
+      "external_id": "u07-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I ___ the coffee taste bitter.",
+      "options": [
+        "can taste",
+        "can taste to",
+        "taste to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "taste to وجود ندارد.",
+        "2": "taste to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can taste» است. can taste."
+    },
+    {
+      "external_id": "u07-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "He ___ the car move.",
+      "options": [
+        "felt",
+        "felt to",
+        "feels to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "felt to وجود ندارد.",
+        "2": "feels to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «felt» است. felt."
+    },
+    {
+      "external_id": "u07-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Did you ___ the phone ring?",
+      "options": [
+        "hear",
+        "heard",
+        "hearing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "heard بعد از did نمی‌آید.",
+        "2": "hearing بعد از did نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hear» است. hear."
+    },
+    {
+      "external_id": "u07-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "I ___ her walk in.",
+      "options": [
+        "saw",
+        "saw to",
+        "seen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "saw to وجود ندارد.",
+        "2": "seen بدون have است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «saw» است. saw."
+    },
+    {
+      "external_id": "u07-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "You mustn't",
+          "right": "park here."
+        },
+        {
+          "left": "You don't have to",
+          "right": "bring a towel."
+        },
+        {
+          "left": "You should",
+          "right": "see a doctor."
+        },
+        {
+          "left": "You had better",
+          "right": "leave now."
+        },
+        {
+          "left": "You needn't",
+          "right": "worry."
+        }
+      ],
+      "explanation_fa": "ممنوعیت، عدم نیاز، توصیه و هشدار.",
+      "position": 25
+    },
+    {
+      "external_id": "u07-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I saw him",
+          "right": "cross the road."
+        },
+        {
+          "left": "I heard her",
+          "right": "singing."
+        },
+        {
+          "left": "We could smell",
+          "right": "the cake baking."
+        },
+        {
+          "left": "I felt the ground",
+          "right": "shake."
+        },
+        {
+          "left": "I can taste",
+          "right": "something bitter."
+        }
+      ],
+      "explanation_fa": "فعل حسی + مفعول + فعل پایه/ing.",
+      "position": 26
+    }
+  ]
+}

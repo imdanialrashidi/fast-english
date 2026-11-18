@@ -75,6 +75,8 @@ Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `
 | READ-03 | Sentence audio cues (RETIRED 2026-10-21) | Owner removed sentence-level sync. Reader/sample/landing render plain paragraphs with the normal player; cue storage and editor were removed too. |
 | VOCAB-01 | Vocabulary notebook + SRS | Save lesson words with meaning/example/context; Again/Hard/Good/Easy review with deterministic next-review scheduling; due/learning/known states; owner-only |
 | PLAN-01 | Daily learning path | 5/10/15-minute goal with tasks (continue lesson, listen, review due words, next lesson) derived from persisted progress; respects level and premium access |
+| FLASH-01 | Book flashcards | One book unit = one text-prompt session (no card image): word + audio, explicit reveal of Persian meaning/IPA/example, two self-reports, previous/next, per-unit buckets and a two-grade Anki-style schedule; paid-only, private media |
+| EXER-01 | Book exercises | One published set per unit: choice/fill-blank/order, server marking, answer key only after submit, result with explanations and retry, unit entry with last score; paid-only, owner-scoped |
 | MEDIA-01 | Player | Play/pause, seek, ±10s, speed |
 | MEDIA-02 | Continue playback | In-layout navigation without unwanted stop; recoverable network error |
 | PROG-01 | Progress | Resume position + completed mark, independent per lesson version |
@@ -160,6 +162,93 @@ Owner-required product change (supersedes the public-sample-in-learner-shell beh
 2. **Both use approved MelliPayamak patterns** (`BaseServiceNumber`), so no sender line is purchased and recipients who blocked promotional SMS still receive them. The template text lives in the MelliPayamak panel: the code pattern takes `{0}` = the six-digit code; the activation pattern takes `{0}` = the plan snapshot name. `MELIPAYAMAK_OTP_BODY_ID` and `MELIPAYAMAK_SUBSCRIPTION_BODY_ID` are required; while either is missing `SmsStatus` is false, phone login/verification is hidden, and registration uses the email code path.
 3. **Delivery outcomes are explicit.** A documented provider refusal is `rejected` and safe to retry; a timeout, 5xx, HTML, or unreadable response is `unknown` and is never resent automatically. Every attempt is recorded in `sms_messages` with the receipt id as a string. `sms:check-deliveries` polls `GetDeliveries2` every ten minutes and never sends. `SMS_SUBSCRIPTION_NOTIFICATIONS=false` disables the activation confirmation only; login codes remain available.
 4. **Launch input still open:** MelliPayamak must approve the two patterns for the supplied panel account. The panel credentials are supplied and readable; live delivery is BLOCKED/UNPROVEN until `BaseServiceNumber` stops returning `-4`.
+
+## Owner request 2026-11-15 — book flashcards (authoritative; history above preserved)
+
+1. **Scope.** Fast English gets a dedicated book-flashcard surface for adult coursebooks, starting with **American English File Starter (Third Edition)**: 12 units, 258 cards. Family and Friends remains a **Kidotalks** feature (children-only) and is not duplicated here.
+2. **Learner flow.** One unit = one session. A picture appears; after three seconds the word, IPA and Persian meaning appear and the word audio plays. The four actions are **درست گفتم / درست نگفتم / گزینه قبلی / گزینه بعدی**; the first card has no previous action, the last card has no next action, and the slot is kept so the layout does not jump. A self-report advances. The end screen groups the latest self-report into **درست گفتم** and **درست نگفتم**, with a retry of the failed cards; the unit result page is the persistent two-bucket view.
+3. **Scheduling.** The two reports drive a two-grade Anki-style SM-2 schedule: learning steps 1 and 10 minutes, one-day graduation, relearning at 10 minutes, ease 2.5 (floor 1.3, ceiling 3), maximum interval 180 days. The daily due queue is capped at 100 and uses the Asia/Tehran day boundary for “today”; timestamps stay UTC.
+4. **Access and privacy.** The surface and every media file sit behind the active-subscription gate. Card images, word audio and covers are private, `no-store`, and never enter the service-worker cache, public HTML, Inertia payloads or logs. Progress is owner-scoped; another learner's schedule is never visible.
+5. **Content.** The owner-supplied dataset is imported by `php artisan flashcards:import`; learner state lives in separate tables and survives a content re-import. FF 1–6 and AEF 1–5 are **not produced yet**; their datasets are the next content step.
+6. **Not in this slice.** Offline review, push reminders, a four-grade UI, FSRS, an admin CRUD panel, and any book other than AEF Starter.
+
+## Owner clarification 2026-11-15 — podcast = the audio article, text-only cards, Woof audio
+
+Owner clarification of the same day's book-flashcard request. It supersedes the picture prompt and the three-second reveal in that request; the history above is preserved, not rewritten.
+
+1. **"Podcast" means the existing audio article.** A `topic` with its `lesson` text, MP3 and glossary is the podcast episode. No series/season/episode entities are introduced; the learner library may be labelled «پادکست‌ها».
+2. **A lesson's glossary is its flashcard deck.** An article with N glossary words yields N cards. There is no entry-count cap (the old 12-word limit was removed on 2026-11-15). The deck belongs to the active lesson version, so another level keeps its own glossary and its own cards.
+3. **Cards are text-first and image-free.** Article and book decks show the English word and an audio button; the Persian meaning, example and IPA (when known) appear after an explicit reveal. Card images are no longer part of the design. Book cards keep their word audio.
+4. **Flashcard word audio is produced offline with Underdog Woof** and stored as private files. Woof is the only source for flashcard audio; lesson/podcast audio stays human-recorded. Operator guide: `docs/ops/FLASHCARD_AUDIO_FA.md`.
+5. **Licence.** The owner confirmed the Underdog Woof commercial licence on 2026-11-15, so producing flashcard word audio with Woof is cleared. The licence record stays outside Git; Woof remains the only source for flashcard word audio, and lesson/podcast audio stays human-recorded.
+6. **Status.** Delivered in the working tree on 2026-11-15: the text-first player (word + audio, explicit answer reveal, no card image), the lesson vocabulary deck at `/app/lessons/{lesson}/flashcards` with the notebook's four-grade schedule, the retired card-image route, and `flashcards:audio:import` for reviewed Woof clips. The books hub and the exercise engine are not built yet.
+
+## Owner request 2026-11-15 — book exercises
+
+1. **Scope.** Every book unit may carry one exercise set authored from the coursebook's instructions. The unit hub offers a single entry with the question count and the learner's latest score; a unit without a published set shows a calm not-ready row and no session.
+2. **Types.** v1 supports three question types: **choice** (one correct option), **fill_blank** (typed answer with accepted variants) and **order** (tap shuffled tokens into a sentence). Listening, matching and speaking are not in v1.
+3. **Flow.** One question at a time, one submit at the end, a result page with per-question feedback, the correct answer and the Persian explanation, and a retry that creates a new attempt. The unit entry shows the latest score.
+4. **Marking and secrecy.** The server marks every response; the pre-submit payload contains no answer key and no explanation. A response that names an item outside the set is refused, and an attempt is visible only to its owner.
+5. **Access.** The set, the submit and the result sit behind the active-subscription gate; draft sets and draft books are unreachable.
+6. **Content.** Sets are imported from a reviewed JSON file by `php artisan exercises:import` (stable external ids, upsert, never deleting learner history). Operator contract: `docs/EXERCISES.md`.
+7. **Status.** Delivered in the working tree on 2026-11-15. All 12 AEF Starter units carry a five-item fixture set (60 items); a teacher review before production is still required. The lesson-exercise screen, an attempt-history page and the admin CRUD are not built yet.
+
+## Owner request 2026-11-15 — books section and unit hub
+
+1. **One books section.** The shelf is `/app/books`, the book page is `/app/books/{book:slug}`, and the fifth nav destination reads «کتابها». The old `/app/flashcards` shelf redirects to it.
+2. **The unit hub is the unit's home.** `/app/books/{book:slug}/{unit}` shows the unit title, the card progress and the two real paths: **فلشکارت** and **تمرین**. There is no third «درس» path in this slice because a book unit has no lesson text model yet; a dashed row says when the exercise set is not ready. Adding a book-lesson model is a later content decision, not a stub.
+3. **Child routes.** The player is `/app/books/{book:slug}/{unit}/flashcards` (`?only=again` for retry), its results are `/app/books/{book:slug}/{unit}/flashcards/results`, and the exercise session is `/app/books/{book:slug}/{unit}/exercises`. Every child returns to the hub, never to the book page.
+4. **Legacy links.** `/app/flashcards`, `/app/flashcards/{book}`, `/app/flashcards/{book}/{unit}`, its `/results`, and its `/exercises` paths redirect to the matching books URL, so a bookmark or an installed PWA link still lands correctly.
+5. **Card review stays card-level.** The daily queue and the idempotent card review write keep `/app/flashcards/review` and `/app/flashcards/reviews`; the future «مرور» destination will host them.
+6. **Status.** Delivered in the working tree on 2026-11-15 with the books routes, the unit hub, the exercise entry and the legacy redirects.
+
+## Owner request 2026-11-15 — cross-track progress
+
+1. **Book shelf.** Each book shows its exercise progress next to the card progress: `تمرین: X از Y یونیت` and the latest score when one exists. A book without exercise sets shows nothing extra.
+2. **Book page.** A unit row shows its exercise state: the latest score (`آخرین ۴ از ۵`) or `N سؤال آماده` when a published set has not been attempted.
+3. **Unit hub.** The exercise entry shows the latest result, the best score and the attempt count, so progress is readable without opening the result page.
+4. **Today.** An eligible learner gets exactly one exercise task: today's unfinished attempt (`مرور تمرین کتاب`), otherwise a fresh set (`تمرین کتاب`), otherwise an older unfinished attempt. A fully correct set creates no task. The task is derived from persisted attempts, never from a button.
+5. **No new stats page.** Progress lives on the shelf, the book, the hub and Today; there is no standalone dashboard, streak, points or leaderboard.
+6. **Status.** Delivered in the working tree on 2026-11-15. The unified review queue (words + cards + exercise mistakes in one surface) remains the next progress step.
+
+## Owner request 2026-11-15 — unified review hub
+
+1. **One read-only hub.** `/app/review` shows the three queues across both tracks: due vocabulary words, due book cards, and mistakes in the latest exercise attempt per set. It never starts a merged session: each queue keeps its own scheduler and UI.
+2. **Deterministic primary action.** Due words first, then due cards, then an exercise retry. An empty hub stays calm and points to the notebook; no fabricated queue.
+3. **Reachable from the surfaces learners already use.** Today has a «مرور همه» link and the books shelf has «مرور واژه‌ها و تمرین‌ها». No new navigation tab is introduced in this slice.
+4. **Today covers both tracks.** When book cards are due, the daily plan adds one `cards` task linked to the card queue; words and exercises already have their tasks.
+5. **Scope and privacy.** The hub is behind the active-subscription gate; counts are owner-scoped, exercise mistakes read only the latest attempt per set, and no answer or card body is rendered on the hub.
+6. **Status.** Delivered in the working tree on 2026-11-15. A single merged review session (one card model, one grader) remains a later design decision, not an implemented claim.
+
+## Owner request 2026-11-16 — grammar-first AEF exercises
+
+1. **Placement.** The exercises live inside `کتاب‌ها → American English File`, not in a new
+   navigation tab: six books (Starter, 1–5), each with its unit list, each unit with its own page.
+2. **One scrolling unit.** A unit page renders each grammar topic in the book's order — Persian use,
+   positive/negative/question formulas, short examples, one note — then that topic's questions, then
+   the next topic, and finally the unit's vocabulary deck.
+3. **Questions.** Multiple choice is the default (two or three options, one key, a Persian feedback
+   line for each distractor); matching is occasional variety (2–6 pairs, two taps, changeable before
+   checking). The key, the explanation and the chosen option's feedback appear only after the answer.
+4. **Progress.** Answered questions, counted once with the first answer (right or wrong); a retry
+   never raises the number. The unit page, the unit row and the book card read the same numbers;
+   there is no separate mistakes page and no score history.
+5. **Paid.** The books section, its units, questions and cards are subscriber-only; no free sample,
+   preview question or demo card exists.
+6. **Flashcards.** Every unit carries 15–25 high-frequency words from that unit's Student Book page,
+   text-first (word, IPA, Persian meaning, English definition, example, part of speech) with a
+   Woof-generated MP3. Vocabulary matching uses meaning, never a picture.
+7. **Content source.** Topics and their order come from the same lesson's Grammar Bank; exercises are
+   adapted from that lesson's Workbook GRAMMAR section. `source` on the set records edition, lessons,
+   Grammar Bank and Workbook references for internal review.
+8. **Replacement scope.** The old AEF card decks are replaced; articles, lessons, glossaries and
+   learner rows are not deleted.
+9. **Status.** Delivered in the working tree on 2026-11-16: the six-book catalog, the grammar-topic
+   model, in-place marking, answered-question progress, all 12 Starter units (216 questions),
+   all 12 Book 1 units (308), all 12 Book 2 units (324), all 10 Book 3 units (262), all
+   10 Book 4 units (260) and all 10 Book 5 units (260) — 64 units, 1,630 questions and
+   1,320 cards with Woof audio. New units follow the `aef-unit` skill and
+   `docs/ops/AEF_CONTENT_PIPELINE_FA.md`.
 
 ## Measurement and operations
 

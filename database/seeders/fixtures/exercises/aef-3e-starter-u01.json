@@ -1,0 +1,312 @@
+{
+  "external_id": "aef-3e-starter-u01",
+  "book": "aef-3e-starter",
+  "unit": 1,
+  "title": "American English File Starter · Unit 1",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 1,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": ["1A", "1B"],
+    "grammar_bank": "1A p.92, 1B p.93",
+    "workbook": "1A, 1B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "verb be (singular): I and you",
+      "title_fa": "فعل be (مفرد): I و you",
+      "use_fa": "با این ساختار خودمان را معرفی می‌کنیم یا کسی را که با او حرف می‌زنیم: اسممان، شغلمان یا جایی که هستیم. I am یعنی «من هستم» و You are یعنی «تو هستی» یا «شما هستید».",
+      "formulas": [
+        { "label_fa": "مثبت", "text": "I am (I'm) + ...\nYou are (You're) + ..." },
+        { "label_fa": "منفی", "text": "I am not (I'm not) + ...\nYou are not (You aren't / You're not) + ..." },
+        { "label_fa": "سؤالی", "text": "Am I ...?\nAre you ...?\nYes, I am. / No, I'm not.\nYes, you are. / No, you aren't." }
+      ],
+      "examples": [
+        { "en": "I'm Helen.", "fa": "من هلن هستم." },
+        { "en": "You're Tom.", "fa": "تو تام هستی." },
+        { "en": "I'm not Ellen.", "fa": "من الن نیستم." },
+        { "en": "Are you Mike?", "fa": "تو مایک هستی؟" },
+        { "en": "Yes, I am. / No, I'm not.", "fa": "بله، هستم. / نه، نیستم." }
+      ],
+      "notes_fa": "در گفتار، شکل کوتاه رایج است: I'm و You're. بعد از am/is/are اگر اسم شغل بیاید، a یا an لازم است: I'm a teacher."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "verb be (singular): he, she, it",
+      "title_fa": "فعل be (مفرد): he، she و it",
+      "use_fa": "دربارهٔ یک نفر دیگر (مرد یا زن) یا یک چیز و مکان حرف می‌زنیم: او اهل برزیل است، آن در چین است.",
+      "formulas": [
+        { "label_fa": "مثبت", "text": "He is (He's) + ...\nShe is (She's) + ...\nIt is (It's) + ..." },
+        { "label_fa": "منفی", "text": "He is not (He isn't / He's not) + ...\nShe is not (She isn't / She's not) + ...\nIt is not (It isn't / It's not) + ..." },
+        { "label_fa": "سؤالی", "text": "Is he / she / it ...?\nYes, he is. / No, he isn't.\nWhere's he from? — He's from Brazil." }
+      ],
+      "examples": [
+        { "en": "He's from Brazil.", "fa": "او اهل برزیل است." },
+        { "en": "She isn't from Mexico.", "fa": "او اهل مکزیک نیست." },
+        { "en": "Is Lila from Spain? — Yes, she is.", "fa": "لیلا اهل اسپانیاست؟ — بله، هست." },
+        { "en": "Where's Lima? — It's in Peru.", "fa": "لیما کجاست؟ — در پرو است." }
+      ],
+      "notes_fa": "برای شهر، کشور و چیزها از it استفاده می‌کنیم؛ برای انسان از he یا she. در سؤال با where ترتیب Where + is + فاعل است: Where's she from?"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Hello, I ___ Helen.",
+      "options": ["am", "is", "are"],
+      "answer": 0,
+      "feedback": {
+        "1": "با I از am استفاده می‌کنیم؛ is برای he/she/it است.",
+        "2": "are برای you و جمع است، نه برای I."
+      },
+      "explanation_fa": "فاعل I همیشه با am می‌آید: I am Helen. / I'm Helen."
+    },
+    {
+      "external_id": "u01-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "You ___ in room 4.",
+      "options": ["are", "am", "is"],
+      "answer": 0,
+      "feedback": {
+        "1": "am فقط با I می‌آید.",
+        "2": "is برای he/she/it است."
+      },
+      "explanation_fa": "فاعل you با are می‌آید: You are in room 4. / You're in room 4."
+    },
+    {
+      "external_id": "u01-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I ___ Tom. I'm Tony.",
+      "options": ["am not", "isn't", "aren't"],
+      "answer": 0,
+      "feedback": {
+        "1": "isn't برای he/she/it است.",
+        "2": "aren't برای you و جمع است."
+      },
+      "explanation_fa": "منفیِ I am، به‌صورت I'm not می‌آید: I'm not Tom."
+    },
+    {
+      "external_id": "u01-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "A: Are you Mike?\nB: Yes, ___.",
+      "options": ["I am", "I'm", "you are"],
+      "answer": 0,
+      "feedback": {
+        "1": "در پاسخ کوتاه، شکل کامل I am می‌آید؛ I'm در پایان جمله به‌تنهایی نمی‌آید.",
+        "2": "you are پاسخ به Am I ...? است، نه به Are you ...?"
+      },
+      "explanation_fa": "پاسخ کوتاه مثبت به Are you ...? می‌شود Yes, I am. و پاسخ منفی No, I'm not."
+    },
+    {
+      "external_id": "u01-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "A: Am I in room 2?\nB: No, ___.",
+      "options": ["you aren't", "I'm not", "you don't"],
+      "answer": 0,
+      "feedback": {
+        "1": "I'm not پاسخ به Are you ...? است.",
+        "2": "don't فعل کمکیِ حال ساده است و اینجا کاربرد ندارد."
+      },
+      "explanation_fa": "پاسخ کوتاه منفی به Am I ...? می‌شود No, you aren't."
+    },
+    {
+      "external_id": "u01-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "___ you Silvia?",
+      "options": ["Are", "Am", "Is"],
+      "answer": 0,
+      "feedback": {
+        "1": "Am فقط با I می‌آید.",
+        "2": "Is برای he/she/it است."
+      },
+      "explanation_fa": "برای سؤال با you، فعل be اول جمله می‌آید: Are you Silvia?"
+    },
+    {
+      "external_id": "u01-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "کدام جمله درست است؟",
+      "options": ["I'm not Ellen.", "I amn't Ellen.", "I not am Ellen."],
+      "answer": 0,
+      "feedback": {
+        "1": "شکل منفیِ am، amn't نیست؛ I'm not است.",
+        "2": "ترتیب جمله انگلیسی فاعل + فعل است و not بعد از فعل می‌آید."
+      },
+      "explanation_fa": "منفی: I am not = I'm not. نه amn't و نه not am."
+    },
+    {
+      "external_id": "u01-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Barista: What's your name?\nHelen: ___ Helen.",
+      "options": ["I'm", "You're", "She's"],
+      "answer": 0,
+      "feedback": {
+        "1": "You're دربارهٔ مخاطب است، نه خود گوینده.",
+        "2": "She's دربارهٔ یک زن دیگر است."
+      },
+      "explanation_fa": "وقتی خودمان را معرفی می‌کنیم می‌گوییم I'm Helen."
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "position": 9,
+      "type": "matching",
+      "prompt": "هر نیمهٔ جمله را به نیمهٔ درستش وصل کن.",
+      "pairs": [
+        { "left": "Hello, I'm", "right": "Maria." },
+        { "left": "Are you", "right": "Tony?" },
+        { "left": "Yes, I", "right": "am." },
+        { "left": "No, I'm", "right": "not." },
+        { "left": "You're in", "right": "room 4." }
+      ],
+      "explanation_fa": "با I'm خود را معرفی می‌کنیم، سؤال با Are you شروع می‌شود و پاسخ کوتاه با Yes, I am. یا No, I'm not. می‌آید."
+    },
+    {
+      "external_id": "u01-t2-q01",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Where ___ she from?",
+      "options": ["is", "are", "am"],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای you و جمع است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "فاعل she با is می‌آید: Where is she from? / Where's she from?"
+    },
+    {
+      "external_id": "u01-t2-q02",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "He ___ from Brazil.",
+      "options": ["is", "are", "am"],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای you و جمع است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "he با is می‌آید: He is from Brazil. / He's from Brazil."
+    },
+    {
+      "external_id": "u01-t2-q03",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "A: Is Lila from Mexico?\nB: No, she ___.",
+      "options": ["isn't", "aren't", "am not"],
+      "answer": 0,
+      "feedback": {
+        "1": "aren't برای you و جمع است.",
+        "2": "am not فقط با I می‌آید."
+      },
+      "explanation_fa": "پاسخ کوتاه منفی برای she می‌شود No, she isn't."
+    },
+    {
+      "external_id": "u01-t2-q04",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "___ he from Turkey?",
+      "options": ["Is", "Are", "Am"],
+      "answer": 0,
+      "feedback": {
+        "1": "Are برای you و جمع است.",
+        "2": "Am فقط با I می‌آید."
+      },
+      "explanation_fa": "سؤال دربارهٔ he با Is شروع می‌شود: Is he from Turkey?"
+    },
+    {
+      "external_id": "u01-t2-q05",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Osaka ___ in Japan.",
+      "options": ["is", "are", "be"],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است و Osaka یک شهر است.",
+        "2": "be شکل پایه است و اینجا فعل صرف‌شده لازم است."
+      },
+      "explanation_fa": "برای یک شهر از it استفاده می‌کنیم: Osaka is in Japan. / It's in Japan."
+    },
+    {
+      "external_id": "u01-t2-q06",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "A: Where's Lima?\nB: ___ in Peru.",
+      "options": ["It's", "He's", "She's"],
+      "answer": 0,
+      "feedback": {
+        "1": "He's برای یک مرد است.",
+        "2": "She's برای یک زن است."
+      },
+      "explanation_fa": "لیما یک شهر است، پس با it به آن اشاره می‌کنیم: It's in Peru."
+    },
+    {
+      "external_id": "u01-t2-q07",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "کدام جمله درست است؟",
+      "options": ["She's from Spain.", "She are from Spain.", "She am from Spain."],
+      "answer": 0,
+      "feedback": {
+        "1": "are با she نمی‌آید.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "she با is می‌آید: She is from Spain. / She's from Spain."
+    },
+    {
+      "external_id": "u01-t2-q08",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "A: Is she nice?\nB: Yes, she ___.",
+      "options": ["is", "are", "am"],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای you و جمع است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "پاسخ کوتاه مثبت برای she می‌شود Yes, she is."
+    },
+    {
+      "external_id": "u01-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر عبارت را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        { "left": "He's from", "right": "Brazil." },
+        { "left": "She's from", "right": "Spain." },
+        { "left": "Where's he", "right": "from?" },
+        { "left": "Is she from Mexico?", "right": "No, she isn't." },
+        { "left": "Where's Lima?", "right": "It's in Peru." }
+      ],
+      "explanation_fa": "برای افراد از he/she و برای شهر از it استفاده می‌کنیم؛ سؤال کوتاه با Yes/No پاسخ کوتاه می‌گیرد."
+    }
+  ]
+}

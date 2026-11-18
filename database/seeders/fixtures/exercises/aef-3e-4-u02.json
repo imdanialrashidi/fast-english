@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-4-u02",
+  "book": "aef-3e-4",
+  "unit": 2,
+  "title": "American English File 4 · Unit 2",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 2,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "2A",
+      "2B"
+    ],
+    "grammar_bank": "2A p.136, 2B p.137",
+    "workbook": "2A, 2B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "present perfect simple and continuous",
+      "title_fa": "حال کامل ساده و استمراری",
+      "use_fa": "حال کامل ساده برای تجربه و نتیجه؛ حال کامل استمراری برای فعالیتی که تا حالا ادامه داشته و بر طول آن تأکید دارد.",
+      "formulas": [
+        {
+          "label_fa": "ساده",
+          "text": "have/has + past participle\nI've known Keiko since childhood."
+        },
+        {
+          "label_fa": "استمراری",
+          "text": "have/has been + verb-ing\nHow long have you been waiting?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Have you ever broken a bone?",
+          "fa": "تا حالا استخوانت شکسته؟"
+        },
+        {
+          "en": "I've known Keiko since I was a child.",
+          "fa": "از بچگی کیکو را می‌شناسم."
+        },
+        {
+          "en": "How long have you been waiting?",
+          "fa": "چه مدت منتظر بوده‌ای؟"
+        },
+        {
+          "en": "It's been raining all day.",
+          "fa": "تمام روز باران باریده است."
+        }
+      ],
+      "notes_fa": "فعل‌های غیرکنشی مثل know با حال کامل ساده می‌آیند، نه استمراری. استمراری روی ادامهٔ فعالیت تأکید دارد."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "using adjectives as nouns, adjective order",
+      "title_fa": "صفت به‌جای اسم و ترتیب صفت‌ها",
+      "use_fa": "the + صفت برای اشاره به یک گروه (the young). ترتیب صفت‌ها: نظر، اندازه/سن، رنگ، جنس: a beautiful Italian leather belt.",
+      "formulas": [
+        {
+          "label_fa": "گروه",
+          "text": "the young / the poor / the unemployed\nthe English / the Chinese"
+        },
+        {
+          "label_fa": "ترتیب",
+          "text": "opinion + age + color + material\ncharming old house\nlong brown hair\nbeautiful Italian leather belt"
+        }
+      ],
+      "examples": [
+        {
+          "en": "The young still look up to the old.",
+          "fa": "جوان‌ها هنوز به بزرگ‌ترها احترام می‌گذارند."
+        },
+        {
+          "en": "The poor are getting poorer.",
+          "fa": "فقیرها فقیرتر می‌شوند."
+        },
+        {
+          "en": "We have a charming old house.",
+          "fa": "ما خانهٔ قدیمی دل‌انگیزی داریم."
+        },
+        {
+          "en": "She has long brown hair.",
+          "fa": "او موهای بلند قهوه‌ای دارد."
+        }
+      ],
+      "notes_fa": "برای یک نفر از a/an + صفت استفاده می‌کنیم: a Japanese woman (نه a Japanese). ترتیب صفت در انگلیسی ثابت است."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u02-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Have you ever ___ a bone?",
+      "options": [
+        "broken",
+        "break",
+        "broke"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have قسمت سوم می‌آید.",
+        "2": "broke گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «broken» است. broken."
+    },
+    {
+      "external_id": "u02-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "I've ___ seen him before.",
+      "options": [
+        "never",
+        "ever",
+        "yet"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ever در سؤال است.",
+        "2": "yet در پایان منفی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «never» است. never."
+    },
+    {
+      "external_id": "u02-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I've called for an ambulance, but it hasn't ___ yet.",
+      "options": [
+        "arrived",
+        "arrive",
+        "arriving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از hasn't قسمت سوم.",
+        "2": "arriving بعد از hasn't نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «arrived» است. arrived."
+    },
+    {
+      "external_id": "u02-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "It's the best book I've ___ read.",
+      "options": [
+        "ever",
+        "never",
+        "yet"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never در این ساختار معنا نمی‌دهد.",
+        "2": "yet برای کار تازه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «ever» است. ever."
+    },
+    {
+      "external_id": "u02-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I've ___ Keiko since I was a child.",
+      "options": [
+        "known",
+        "know",
+        "knowing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have قسمت سوم.",
+        "2": "knowing بعد از have نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «known» است. known."
+    },
+    {
+      "external_id": "u02-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "How long have you been ___?",
+      "options": [
+        "waiting",
+        "wait",
+        "waited"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "استمراری فعل ing می‌خواهد.",
+        "2": "waited قسمت سوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «waiting» است. waiting."
+    },
+    {
+      "external_id": "u02-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "He's been ___ his girlfriend all evening.",
+      "options": [
+        "messaging",
+        "message",
+        "messaged"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "استمراری فعل ing.",
+        "2": "messaged قسمت سوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «messaging» است. messaging."
+    },
+    {
+      "external_id": "u02-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I haven't been ___ well recently.",
+      "options": [
+        "sleeping",
+        "sleep",
+        "slept"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "استمراری فعل ing.",
+        "2": "slept قسمت سوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «sleeping» است. sleeping."
+    },
+    {
+      "external_id": "u02-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "It's been ___ all day.",
+      "options": [
+        "raining",
+        "rain",
+        "rained"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "استمراری فعل ing.",
+        "2": "rained قسمت سوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «raining» است. raining."
+    },
+    {
+      "external_id": "u02-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I've been ___ all morning.",
+      "options": [
+        "shopping",
+        "shop",
+        "shopped"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "استمراری فعل ing.",
+        "2": "shopped قسمت سوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «shopping» است. shopping."
+    },
+    {
+      "external_id": "u02-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "My sister has ___ sick for ten days.",
+      "options": [
+        "been",
+        "being",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "being بعد از has نمی‌آید.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «been» است. has been sick."
+    },
+    {
+      "external_id": "u02-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "They've seen each other ___ this week.",
+      "options": [
+        "twice",
+        "two times ago",
+        "twice ago"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ago با حال کامل نمی‌آید.",
+        "2": "twice ago وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «twice» است. twice."
+    },
+    {
+      "external_id": "u02-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "In most African countries, ___ still look up to the old.",
+      "options": [
+        "the young",
+        "young",
+        "the youngs"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون the گروه را نمی‌رساند.",
+        "2": "the youngs وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the young» است. the young."
+    },
+    {
+      "external_id": "u02-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "___ are getting poorer.",
+      "options": [
+        "The poor",
+        "Poor",
+        "The poors"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون the گروه نیست.",
+        "2": "جمع بستن صفت غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «The poor» است. The poor."
+    },
+    {
+      "external_id": "u02-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "The government needs to create jobs for ___.",
+      "options": [
+        "the unemployed",
+        "unemployed",
+        "the unemployeds"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون the گروه نیست.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the unemployed» است. the unemployed."
+    },
+    {
+      "external_id": "u02-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ are famous for drinking tea.",
+      "options": [
+        "The English",
+        "English",
+        "The Englishes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "English به‌تنهایی زبان است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «The English» است. The English."
+    },
+    {
+      "external_id": "u02-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "___ invented paper.",
+      "options": [
+        "The Chinese",
+        "Chinese",
+        "The Chineses"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Chinese به‌تنهایی صفت/زبان است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «The Chinese» است. The Chinese."
+    },
+    {
+      "external_id": "u02-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "We have a ___ house near the lake.",
+      "options": [
+        "charming old",
+        "old charming",
+        "charming old's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب صفت اشتباه است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «charming old» است. charming old."
+    },
+    {
+      "external_id": "u02-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "She has ___ hair.",
+      "options": [
+        "long brown",
+        "brown long",
+        "long brown's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب رنگ و اندازه اشتباه است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «long brown» است. long brown."
+    },
+    {
+      "external_id": "u02-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I bought a ___ belt.",
+      "options": [
+        "beautiful Italian leather",
+        "Italian beautiful leather",
+        "leather Italian beautiful"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب صفت اشتباه است.",
+        "2": "ترتیب صفت اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «beautiful Italian leather» است. beautiful Italian leather."
+    },
+    {
+      "external_id": "u02-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "___ people need help.",
+      "options": [
+        "Homeless",
+        "The homeless",
+        "Homeless the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با people نیازی به the نیست.",
+        "2": "ترتیب غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Homeless» است. Homeless people."
+    },
+    {
+      "external_id": "u02-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "He's ___ man.",
+      "options": [
+        "a rich",
+        "rich",
+        "a rich's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون a ناقص است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a rich» است. a rich man."
+    },
+    {
+      "external_id": "u02-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Most other nationality words are plural nouns: ___.",
+      "options": [
+        "the Brazilians",
+        "the Brazilian",
+        "Brazilians"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the Brazilian مفرد است.",
+        "2": "بدون the گروه نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the Brazilians» است. the Brazilians."
+    },
+    {
+      "external_id": "u02-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "___ are getting richer.",
+      "options": [
+        "The rich",
+        "Rich",
+        "The riches"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون the گروه نیست.",
+        "2": "riches اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «The rich» است. The rich."
+    },
+    {
+      "external_id": "u02-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Have you ever broken",
+          "right": "a bone?"
+        },
+        {
+          "left": "I've known Keiko",
+          "right": "since I was a child."
+        },
+        {
+          "left": "How long have you been",
+          "right": "waiting?"
+        },
+        {
+          "left": "It's been raining",
+          "right": "all day."
+        },
+        {
+          "left": "I've been shopping",
+          "right": "all morning."
+        }
+      ],
+      "explanation_fa": "حال کامل ساده و استمراری را از هم تشخیص بده.",
+      "position": 25
+    },
+    {
+      "external_id": "u02-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر عبارت را کامل کن.",
+      "pairs": [
+        {
+          "left": "a charming",
+          "right": "old house"
+        },
+        {
+          "left": "long",
+          "right": "brown hair"
+        },
+        {
+          "left": "a beautiful",
+          "right": "Italian leather belt"
+        },
+        {
+          "left": "the",
+          "right": "young"
+        },
+        {
+          "left": "the",
+          "right": "unemployed"
+        }
+      ],
+      "explanation_fa": "ترتیب صفت: نظر، سن، رنگ، جنس؛ the + صفت برای گروه.",
+      "position": 26
+    }
+  ]
+}

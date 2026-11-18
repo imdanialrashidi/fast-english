@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-2-u01",
+  "book": "aef-3e-2",
+  "unit": 1,
+  "title": "American English File 2 · Unit 1",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 1,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "1A",
+      "1B",
+      "1C"
+    ],
+    "grammar_bank": "1A p.128, 1B p.128, 1C p.128",
+    "workbook": "1A, 1B, 1C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "word order in questions",
+      "title_fa": "ترتیب کلمات در سؤال",
+      "use_fa": "در سؤال با be و can جای فاعل و فعل عوض می‌شود؛ در سؤال با فعل معمولی do/does/did قبل از فاعل و فعل پایه بعد از آن می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "با be/can",
+          "text": "Are you hungry?\nCan I sit here?\nWhere were you born?"
+        },
+        {
+          "label_fa": "با do/does/did",
+          "text": "Do you live with your parents?\nDid you go out last night?\nWhere did you go?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Are you hungry?",
+          "fa": "گرسنه‌ای؟"
+        },
+        {
+          "en": "Can I sit here?",
+          "fa": "می‌توانم اینجا بنشینم؟"
+        },
+        {
+          "en": "Where were you born?",
+          "fa": "کجا به دنیا آمدی؟"
+        },
+        {
+          "en": "Where did you go?",
+          "fa": "کجا رفتی؟"
+        }
+      ],
+      "notes_fa": "بعد از did فعل پایه می‌آید: Where did you go? (نه did you went). با be از do استفاده نمی‌کنیم."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "simple present",
+      "title_fa": "حال ساده",
+      "use_fa": "برای کارهای روزمره و چیزهایی که همیشه درست‌اند. با he/she/it فعل s می‌گیرد و منفی/سؤالی با do/does ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / You / We / They work\nHe / She / It works\nMy brother works in the city."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "don't / doesn't + base verb\nMy parents don't live near here."
+        },
+        {
+          "label_fa": "قید تکرار",
+          "text": "before the main verb, after be\nWe often go out.\nI'm never sick."
+        }
+      ],
+      "examples": [
+        {
+          "en": "My brother works in the city.",
+          "fa": "برادرم در شهر کار می‌کند."
+        },
+        {
+          "en": "I usually work at home.",
+          "fa": "من معمولاً خانه کار می‌کنم."
+        },
+        {
+          "en": "It doesn't often rain here.",
+          "fa": "اینجا معمولاً باران نمی‌بارد."
+        },
+        {
+          "en": "She gets up early every day.",
+          "fa": "او هر روز زود بیدار می‌شود."
+        }
+      ],
+      "notes_fa": "قید تکرار قبل از فعل اصلی و بعد از be می‌آید: She's never sick. با never فعل مثبت است."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "present continuous: be + verb + -ing",
+      "title_fa": "حال استمراری و مقایسه با حال ساده",
+      "use_fa": "برای کاری که همین حالا یا همین روزها در جریان است و برای توصیف تصویر. حال ساده برای عادت است.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I'm working.\nShe's working.\nThey're working."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I'm not working.\nHe isn't working.\nThey aren't working."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Are you working?\nWhat are you doing?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "What are you doing? — I'm sending a message.",
+          "fa": "چه کار می‌کنی؟ — دارم پیام می‌فرستم."
+        },
+        {
+          "en": "My brother is taking a two-month vacation.",
+          "fa": "برادرم دو ماه مرخصی می‌گیرد."
+        },
+        {
+          "en": "In this picture the woman is standing near a table.",
+          "fa": "در این تصویر زن کنار میزی ایستاده است."
+        },
+        {
+          "en": "What do you do? — I work for an IT company.",
+          "fa": "چه کار می‌کنی؟ — در یک شرکت IT کار می‌کنم."
+        }
+      ],
+      "notes_fa": "What do you do? یعنی «شغلت چیست؟» ولی What are you doing? یعنی «الان چه کار می‌کنی؟»"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ you hungry?",
+      "options": [
+        "Are",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "با صفت hungry فعل be: Are you hungry?"
+    },
+    {
+      "external_id": "u01-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "___ I sit here?",
+      "options": [
+        "Can",
+        "Do",
+        "Am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Am برای be است."
+      },
+      "explanation_fa": "اجازه: Can I sit here?"
+    },
+    {
+      "external_id": "u01-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you live with your parents?",
+      "options": [
+        "Do",
+        "Are",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Are برای be است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "با فعل live: Do you live ...?"
+    },
+    {
+      "external_id": "u01-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "___ you take a vacation last year?",
+      "options": [
+        "Did",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "گذشته: Did you take ...?"
+    },
+    {
+      "external_id": "u01-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "Where ___ you born?",
+      "options": [
+        "were",
+        "did",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "did با born نمی‌آید.",
+        "2": "do برای حال است."
+      },
+      "explanation_fa": "با born فعل be: Where were you born?"
+    },
+    {
+      "external_id": "u01-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Where ___ you go?",
+      "options": [
+        "did",
+        "were",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای be است.",
+        "2": "do برای حال است."
+      },
+      "explanation_fa": "گذشته: Where did you go?"
+    },
+    {
+      "external_id": "u01-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "What ___ that noise?",
+      "options": [
+        "was",
+        "did",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "did برای فعل معمولی است.",
+        "2": "do برای حال است."
+      },
+      "explanation_fa": "با noise و be: What was that noise?"
+    },
+    {
+      "external_id": "u01-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "___ she a teacher?",
+      "options": [
+        "Is",
+        "Does",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای فعل معمولی است.",
+        "2": "Do برای جمع است."
+      },
+      "explanation_fa": "با اسم teacher: Is she a teacher?"
+    },
+    {
+      "external_id": "u01-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "My brother ___ in the city.",
+      "options": [
+        "works",
+        "work",
+        "working"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با سوم‌شخص فعل s می‌گیرد.",
+        "2": "-ing برای حال استمراری است."
+      },
+      "explanation_fa": "با سوم‌شخص مفرد فعل s می‌گیرد: works."
+    },
+    {
+      "external_id": "u01-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I usually ___ at home.",
+      "options": [
+        "work",
+        "works",
+        "working"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با I فعل s نمی‌گیرد.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "با I فعل پایه می‌آید: I usually work."
+    },
+    {
+      "external_id": "u01-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "My parents ___ live near here.",
+      "options": [
+        "don't",
+        "doesn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای سوم‌شخص است.",
+        "2": "aren't برای be است."
+      },
+      "explanation_fa": "منفی جمع: don't."
+    },
+    {
+      "external_id": "u01-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "It ___ often rain here.",
+      "options": [
+        "doesn't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای جمع است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "منفی it: doesn't rain."
+    },
+    {
+      "external_id": "u01-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "___ he like pop music?",
+      "options": [
+        "Does",
+        "Do",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای جمع است.",
+        "2": "Is برای be است."
+      },
+      "explanation_fa": "سؤال سوم‌شخص: Does he like ...?"
+    },
+    {
+      "external_id": "u01-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I'm ___ sick.",
+      "options": [
+        "never",
+        "never am",
+        "not never"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب قید اشتباه است.",
+        "2": "دو منفی با هم نمی‌آید."
+      },
+      "explanation_fa": "قید بعد از be: I'm never sick."
+    },
+    {
+      "external_id": "u01-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "She gets up early ___.",
+      "options": [
+        "every day",
+        "every day's",
+        "all day"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "این شکل وجود ندارد.",
+        "2": "all day یعنی تمام روز."
+      },
+      "explanation_fa": "عبارت تکرار: every day."
+    },
+    {
+      "external_id": "u01-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "We ___ go out on Friday night.",
+      "options": [
+        "often",
+        "often are",
+        "are often"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "قید قبل از فعل اصلی می‌آید.",
+        "2": "are با go نمی‌آید."
+      },
+      "explanation_fa": "قید قبل از فعل: We often go out."
+    },
+    {
+      "external_id": "u01-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "What ___ you doing?",
+      "options": [
+        "are",
+        "do",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال ساده است.",
+        "2": "did برای گذشته است."
+      },
+      "explanation_fa": "حال استمراری: What are you doing?"
+    },
+    {
+      "external_id": "u01-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I'm ___ a message.",
+      "options": [
+        "sending",
+        "send",
+        "sent"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از am فعل پایه نمی‌آید.",
+        "2": "sent گذشته است."
+      },
+      "explanation_fa": "حال استمراری: sending."
+    },
+    {
+      "external_id": "u01-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "My brother is ___ a two-month vacation.",
+      "options": [
+        "taking",
+        "take",
+        "took"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is فعل پایه نمی‌آید.",
+        "2": "took گذشته است."
+      },
+      "explanation_fa": "حال استمراری: is taking a vacation."
+    },
+    {
+      "external_id": "u01-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "In this picture the woman is ___ near a table.",
+      "options": [
+        "standing",
+        "stand",
+        "stood"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is فعل پایه نمی‌آید.",
+        "2": "stood گذشته است."
+      },
+      "explanation_fa": "توصیف تصویر: is standing."
+    },
+    {
+      "external_id": "u01-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "They ___ working now.",
+      "options": [
+        "aren't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال ساده است.",
+        "2": "isn't برای مفرد است."
+      },
+      "explanation_fa": "منفی حال استمراری: aren't working."
+    },
+    {
+      "external_id": "u01-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "What ___ you do?",
+      "options": [
+        "do",
+        "are",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are یعنی «الان چه می‌کنی».",
+        "2": "did برای گذشته است."
+      },
+      "explanation_fa": "شغل: What do you do?"
+    },
+    {
+      "external_id": "u01-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "What ___ you doing?",
+      "options": [
+        "are",
+        "do",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do یعنی شغل.",
+        "2": "did برای گذشته است."
+      },
+      "explanation_fa": "الان: What are you doing?"
+    },
+    {
+      "external_id": "u01-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "He ___ working today.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل he با is می‌آید: He’s working."
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Are you hungry?",
+          "right": "No, I'm not."
+        },
+        {
+          "left": "Can I sit here?",
+          "right": "Yes, you can."
+        },
+        {
+          "left": "Did you go out last night?",
+          "right": "Yes, I did."
+        },
+        {
+          "left": "Where were you born?",
+          "right": "In Canada."
+        },
+        {
+          "left": "What did you do?",
+          "right": "I went home."
+        }
+      ],
+      "explanation_fa": "سؤال با be/can با همان فعل و سؤال با did با did پاسخ می‌گیرد."
+    },
+    {
+      "external_id": "u01-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I usually",
+          "right": "work at home."
+        },
+        {
+          "left": "My brother",
+          "right": "works in the city."
+        },
+        {
+          "left": "My parents don't",
+          "right": "live near here."
+        },
+        {
+          "left": "Does he like",
+          "right": "pop music?"
+        },
+        {
+          "left": "She gets up early",
+          "right": "every day."
+        }
+      ],
+      "explanation_fa": "حال ساده: سوم‌شخص s می‌گیرد و عبارت تکرار در پایان می‌آید."
+    },
+    {
+      "external_id": "u01-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm",
+          "right": "sending a message."
+        },
+        {
+          "left": "She's",
+          "right": "standing near a table."
+        },
+        {
+          "left": "They're",
+          "right": "working now."
+        },
+        {
+          "left": "He isn't",
+          "right": "working today."
+        },
+        {
+          "left": "What are you",
+          "right": "doing?"
+        }
+      ],
+      "explanation_fa": "حال استمراری: am/is/are + فعل ing."
+    }
+  ]
+}

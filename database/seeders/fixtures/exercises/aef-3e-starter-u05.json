@@ -1,0 +1,442 @@
+{
+  "external_id": "aef-3e-starter-u05",
+  "book": "aef-3e-starter",
+  "unit": 5,
+  "title": "American English File Starter · Unit 5",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 5,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "5A",
+      "5B"
+    ],
+    "grammar_bank": "5A p.100, 5B p.100",
+    "workbook": "5A pp.23-24, 5B pp.25-26"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple present [+] and [-]: I, you, we, they",
+      "title_fa": "حال ساده مثبت و منفی: I، you، we، they",
+      "use_fa": "برای عادت‌های روزمره و چیزهایی که همیشه درست‌اند. این ساختار برای I، you، we و they یک شکل دارد.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / You / We / They + base verb + ...\nI have cereal for breakfast."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I / You / We / They + don't + base verb + ...\nWe don't have tea.\n(don't = do not)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I have cereal for breakfast.",
+          "fa": "من صبحانه غلات می‌خورم."
+        },
+        {
+          "en": "You don't have pasta for lunch.",
+          "fa": "تو ناهار پاستا نمی‌خوری."
+        },
+        {
+          "en": "We have coffee for breakfast.",
+          "fa": "ما صبحانه قهوه می‌نوشیم."
+        },
+        {
+          "en": "They have fish for dinner.",
+          "fa": "آن‌ها شام ماهی می‌خورند."
+        }
+      ],
+      "notes_fa": "منفی با don't ساخته می‌شود و فعل بعد از آن به شکل پایه می‌آید: We don't have coffee. (نه We not have coffee.) در این درس he/she/it نیست."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "simple present [?]: I, you, we, they",
+      "title_fa": "حال ساده سؤالی: I، you، we، they",
+      "use_fa": "برای پرسیدن دربارهٔ عادت‌ها و کارهای روزمره. سؤال با Do شروع می‌شود و فعل به شکل پایه می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "سؤالی",
+          "text": "Do + I / you / we / they + base verb + ...?\nDo you live near here?"
+        },
+        {
+          "label_fa": "پاسخ کوتاه",
+          "text": "Yes, I / you / we / they do.\nNo, I / you / we / they don't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Do you live near here? — Yes, I do.",
+          "fa": "نزدیک اینجا زندگی می‌کنی؟ — بله."
+        },
+        {
+          "en": "Do they like children? — No, they don't.",
+          "fa": "آن‌ها بچه‌ها را دوست دارند؟ — نه."
+        },
+        {
+          "en": "Do we have good seats? — Yes, we do.",
+          "fa": "صندلی‌های خوبی داریم؟ — بله."
+        },
+        {
+          "en": "Do I need a ticket? — Yes, you do.",
+          "fa": "من بلیت لازم دارم؟ — بله."
+        }
+      ],
+      "notes_fa": "ترتیب سؤال: Do + فاعل + فعل پایه. خودِ do معنا ندارد؛ فقط سؤال را می‌سازد: Do you live here? (نه You live here?)"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u05-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ cereal for breakfast.",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has برای he/she/it است.",
+        "2": "بعد از فاعل، فعل پایه می‌آید نه -ing."
+      },
+      "explanation_fa": "با I فعل پایه می‌آید: I have cereal."
+    },
+    {
+      "external_id": "u05-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "We ___ have tea for breakfast.",
+      "options": [
+        "don't",
+        "doesn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای he/she/it است.",
+        "2": "aren't برای فعل be است، نه حال ساده."
+      },
+      "explanation_fa": "منفیِ I/you/we/they با don't ساخته می‌شود."
+    },
+    {
+      "external_id": "u05-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They ___ fish for dinner.",
+      "options": [
+        "have",
+        "has",
+        "haves"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has برای he/she/it است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "با they فعل پایه have می‌آید."
+    },
+    {
+      "external_id": "u05-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "You ___ have pasta for lunch.",
+      "options": [
+        "don't",
+        "doesn't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای he/she/it است.",
+        "2": "جمله به فعل کمکی نیاز دارد."
+      },
+      "explanation_fa": "منفی با you: You don't have pasta."
+    },
+    {
+      "external_id": "u05-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "In my country, we ___ a lot of rice.",
+      "options": [
+        "eat",
+        "eats",
+        "eating"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "eats برای he/she/it است.",
+        "2": "بعد از we فعل پایه می‌آید."
+      },
+      "explanation_fa": "we با فعل پایه: we eat a lot of rice."
+    },
+    {
+      "external_id": "u05-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I ___ coffee in the morning.",
+      "options": [
+        "drink",
+        "drinks",
+        "drinking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "drinks برای he/she/it است.",
+        "2": "-ing برای حال استمراری است."
+      },
+      "explanation_fa": "عادت روزمره با حال ساده: I drink coffee."
+    },
+    {
+      "external_id": "u05-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They don't ___ meat.",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از don't فعل پایه می‌آید.",
+        "2": "-ing بعد از don't نمی‌آید."
+      },
+      "explanation_fa": "بعد از don't همیشه فعل پایه: don't have."
+    },
+    {
+      "external_id": "u05-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "We ___ coffee. We have tea.",
+      "options": [
+        "don't have",
+        "doesn't have",
+        "not have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای he/she/it است.",
+        "2": "not به‌تنهایی فعل کمکی ندارد."
+      },
+      "explanation_fa": "منفی با we: We don't have coffee."
+    },
+    {
+      "external_id": "u05-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ you live near here?",
+      "options": [
+        "Do",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای he/she/it است.",
+        "2": "Are برای فعل be است."
+      },
+      "explanation_fa": "سؤال حال ساده با you با Do شروع می‌شود."
+    },
+    {
+      "external_id": "u05-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ they like children?",
+      "options": [
+        "Do",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای he/she/it است.",
+        "2": "Are فعل be است."
+      },
+      "explanation_fa": "با they سؤال با Do ساخته می‌شود."
+    },
+    {
+      "external_id": "u05-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "A: Do you need a ticket?\nB: Yes, ___.",
+      "options": [
+        "I do",
+        "I am",
+        "I don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "I am پاسخ به Are you ...? است.",
+        "2": "Yes با don't نمی‌آید."
+      },
+      "explanation_fa": "پاسخ کوتاه مثبت: Yes, I do."
+    },
+    {
+      "external_id": "u05-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "A: Do we have good seats?\nB: No, ___.",
+      "options": [
+        "we don't",
+        "we aren't",
+        "we do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "we aren't پاسخ به Are we ...? است.",
+        "2": "No با do نمی‌آید."
+      },
+      "explanation_fa": "پاسخ کوتاه منفی: No, we don't."
+    },
+    {
+      "external_id": "u05-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Do you ___ English?",
+      "options": [
+        "speak",
+        "speaks",
+        "speaking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "speaks برای he/she/it است.",
+        "2": "بعد از do فعل پایه می‌آید."
+      },
+      "explanation_fa": "در سؤال، فعل بعد از فاعل پایه است: Do you speak English?"
+    },
+    {
+      "external_id": "u05-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "___ I need a ticket?",
+      "options": [
+        "Do",
+        "Does",
+        "Am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای he/she/it است.",
+        "2": "Am برای فعل be است."
+      },
+      "explanation_fa": "با I سؤال حال ساده با Do ساخته می‌شود."
+    },
+    {
+      "external_id": "u05-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "Do they ___ TV?",
+      "options": [
+        "watch",
+        "watches",
+        "watching"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "watches برای he/she/it است.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "بعد از do فعل پایه: Do they watch TV?"
+    },
+    {
+      "external_id": "u05-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "A: Do you work here?\nB: No, I ___.",
+      "options": [
+        "don't",
+        "doesn't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای he/she/it است.",
+        "2": "پاسخ کوتاه به فعل کمکی نیاز دارد."
+      },
+      "explanation_fa": "پاسخ کوتاه منفی: No, I don't."
+    },
+    {
+      "external_id": "u05-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I have cereal",
+          "right": "for breakfast."
+        },
+        {
+          "left": "We don't have",
+          "right": "tea."
+        },
+        {
+          "left": "They have fish",
+          "right": "for dinner."
+        },
+        {
+          "left": "You don't have",
+          "right": "pasta."
+        },
+        {
+          "left": "In my country, we eat",
+          "right": "a lot of rice."
+        }
+      ],
+      "explanation_fa": "با I/you/we/they فعل پایه می‌آید؛ منفی با don't ساخته می‌شود."
+    },
+    {
+      "external_id": "u05-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخ کوتاهش وصل کن.",
+      "pairs": [
+        {
+          "left": "Do you live in London?",
+          "right": "Yes, I do."
+        },
+        {
+          "left": "Do you have children?",
+          "right": "No, we don't."
+        },
+        {
+          "left": "Do they like fish?",
+          "right": "Yes, they do."
+        },
+        {
+          "left": "Do we have good seats?",
+          "right": "Yes, we do."
+        },
+        {
+          "left": "Do I need a ticket?",
+          "right": "No, you don't."
+        }
+      ],
+      "explanation_fa": "پاسخ کوتاه با همان فاعل و do/don't می‌آید."
+    }
+  ]
+}

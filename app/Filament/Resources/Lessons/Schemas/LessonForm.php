@@ -44,7 +44,7 @@ class LessonForm
                     ->rows(10)
                     ->columnSpanFull(),
                 Repeater::make('glossary')
-                    ->label('Key words (max '.Glossary::MAX_ENTRIES.')')
+                    ->label('Key words')
                     ->schema([
                         TextInput::make('word')
                             ->required()
@@ -57,7 +57,6 @@ class LessonForm
                             ->label('Example (English, optional)')
                             ->maxLength(Glossary::MAX_EXAMPLE_LENGTH),
                     ])
-                    ->maxItems(Glossary::MAX_ENTRIES)
                     ->default([])
                     ->addActionLabel('Add word')
                     ->columnSpanFull(),

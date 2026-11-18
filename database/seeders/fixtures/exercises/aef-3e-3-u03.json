@@ -1,0 +1,630 @@
+{
+  "external_id": "aef-3e-3-u03",
+  "book": "aef-3e-3",
+  "unit": 3,
+  "title": "American English File 3 · Unit 3",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 3,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "3A",
+      "3B"
+    ],
+    "grammar_bank": "3A p.138, 3B p.139",
+    "workbook": "3A, 3B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "choosing between comparatives and superlatives",
+      "title_fa": "انتخاب بین مقایسه‌ای و عالی",
+      "use_fa": "مقایسه‌ای برای مقایسهٔ دو چیز (than / as...as) و عالی برای برجسته کردن یک چیز در گروه (the + est/most).",
+      "formulas": [
+        {
+          "label_fa": "مقایسه‌ای",
+          "text": "older than / more expensive than / less difficult than\nnot as comfortable as"
+        },
+        {
+          "label_fa": "عالی",
+          "text": "the fastest / the most beautiful / the best"
+        },
+        {
+          "label_fa": "بی‌قاعده",
+          "text": "good → better → the best\nbad → worse → the worst\nfar → farther → the farthest"
+        }
+      ],
+      "examples": [
+        {
+          "en": "My car is a little older than yours.",
+          "fa": "ماشین من کمی از مال تو قدیمی‌تر است."
+        },
+        {
+          "en": "San Francisco is more expensive than Chicago.",
+          "fa": "سان‌فرانسیسکو از شیکاگو گران‌تر است."
+        },
+        {
+          "en": "What's the fastest way to get around Florida?",
+          "fa": "سریع‌ترین راه گشتن در فلوریدا چیست؟"
+        },
+        {
+          "en": "This test is less difficult than the last one.",
+          "fa": "این آزمون از قبلی سخت‌تر نیست."
+        }
+      ],
+      "notes_fa": "بعد از than می‌توان ضمیر مفعولی آورد: taller than me یا taller than I am. the same as برای برابری است."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "articles: a / an, the, no article",
+      "title_fa": "حرف‌های تعریف: a/an، the و بدون مقاله",
+      "use_fa": "a/an برای اسم مفرد شمارش‌پذیر نامشخص؛ the برای چیز مشخص، یگانه یا ذکرشده؛ برای اشارهٔ کلی جمع مقاله نمی‌آید.",
+      "formulas": [
+        {
+          "label_fa": "a/an",
+          "text": "a nice house / an old man\nWhat an awful day!"
+        },
+        {
+          "label_fa": "the",
+          "text": "The dog was barking.\nthe moon / the Earth\nthe best restaurant"
+        },
+        {
+          "label_fa": "بدون مقاله",
+          "text": "I love weddings.\nI'm having dinner with friends."
+        }
+      ],
+      "examples": [
+        {
+          "en": "It's a nice house.",
+          "fa": "این خانهٔ قشنگی است."
+        },
+        {
+          "en": "I saw an old man with a dog.",
+          "fa": "پیرمردی را با یک سگ دیدم."
+        },
+        {
+          "en": "The moon goes around the Earth.",
+          "fa": "ماه دور زمین می‌گردد."
+        },
+        {
+          "en": "I love weddings!",
+          "fa": "من عروسی‌ها را دوست دارم!"
+        }
+      ],
+      "notes_fa": "بار اول a/an و بار دوم the: I saw a dog. The dog was barking. در عبارت‌هایی مثل have dinner، go to school مقاله نمی‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u03-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "My car is a little ___ than yours.",
+      "options": [
+        "older",
+        "oldest",
+        "old"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "مقایسه دو ماشین است.",
+        "2": "بدون er مقایسه نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «older» است. older than."
+    },
+    {
+      "external_id": "u03-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "San Francisco is ___ expensive than Chicago.",
+      "options": [
+        "more",
+        "most",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "most برای عالی است.",
+        "2": "much اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «more» است. more expensive than."
+    },
+    {
+      "external_id": "u03-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "This test is ___ difficult than the last one.",
+      "options": [
+        "less",
+        "least",
+        "little"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "least برای عالی است.",
+        "2": "little صفت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «less» است. less difficult than."
+    },
+    {
+      "external_id": "u03-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Olive oil is ___ for you than butter.",
+      "options": [
+        "better",
+        "best",
+        "good"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "best برای عالی است.",
+        "2": "good بدون تغییر مقایسه نمی‌سازد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «better» است. good → better."
+    },
+    {
+      "external_id": "u03-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "The new sofa isn't as ___ as the old one.",
+      "options": [
+        "comfortable",
+        "more comfortable",
+        "comfortablest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "as...as با صفت پایه است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «comfortable» است. as comfortable as."
+    },
+    {
+      "external_id": "u03-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "What's the ___ way to get around Florida?",
+      "options": [
+        "fastest",
+        "faster",
+        "fast"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "faster مقایسه دو چیز است.",
+        "2": "fast بدون est عالی نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «fastest» است. the fastest."
+    },
+    {
+      "external_id": "u03-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I think skiing is ___ than horseback riding.",
+      "options": [
+        "easier",
+        "easy",
+        "easiest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "easy بدون er نیست.",
+        "2": "easiest عالی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «easier» است. easier than."
+    },
+    {
+      "external_id": "u03-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "This is ___ train I've ever been on.",
+      "options": [
+        "the hottest",
+        "hotter",
+        "hottest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hotter مقایسه‌ای است.",
+        "2": "بدون the عالی کامل نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the hottest» است. the hottest."
+    },
+    {
+      "external_id": "u03-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "A motorcycle is ___ than a scooter.",
+      "options": [
+        "more powerful",
+        "most powerful",
+        "powerful"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "most عالی است.",
+        "2": "powerful بدون more نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «more powerful» است. more powerful than."
+    },
+    {
+      "external_id": "u03-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I drive ___ than my partner.",
+      "options": [
+        "more slowly",
+        "slowest",
+        "slow"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "slowest عالی است.",
+        "2": "slow صفت است."
+      },
+      "explanation_fa": "قید: more slowly."
+    },
+    {
+      "external_id": "u03-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "The ___ time to travel is on holiday weekends.",
+      "options": [
+        "worst",
+        "worse",
+        "bad"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "worse مقایسه‌ای است.",
+        "2": "bad بدون تغییر عالی نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «worst» است. bad → the worst."
+    },
+    {
+      "external_id": "u03-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "The London Underground is ___ than the subway in New York.",
+      "options": [
+        "older",
+        "oldest",
+        "old"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "oldest عالی است.",
+        "2": "old بدون er نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «older» است. older than."
+    },
+    {
+      "external_id": "u03-t1-q13",
+      "topic": "t1",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Traveling by train is ___ than flying.",
+      "options": [
+        "more relaxing",
+        "most relaxing",
+        "relaxing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "most عالی است.",
+        "2": "relaxing بدون more نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «more relaxing» است. more relaxing than."
+    },
+    {
+      "external_id": "u03-t2-q01",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "It's ___ nice house.",
+      "options": [
+        "a",
+        "an",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "house با صامت شروع می‌شود.",
+        "2": "the برای چیز مشخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a» است. a nice house."
+    },
+    {
+      "external_id": "u03-t2-q02",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "She's ___ lawyer.",
+      "options": [
+        "a",
+        "an",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "lawyer با صامت شروع می‌شود.",
+        "2": "the برای چیز مشخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a» است. a lawyer."
+    },
+    {
+      "external_id": "u03-t2-q03",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I saw ___ old man with a dog.",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "old با مصوت شروع می‌شود.",
+        "2": "the برای چیز مشخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «an» است. an old man."
+    },
+    {
+      "external_id": "u03-t2-q04",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "___ dog was barking.",
+      "options": [
+        "The",
+        "A",
+        "An"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بار اول a می‌آید.",
+        "2": "an با صامت نمی‌آید."
+      },
+      "explanation_fa": "بار دوم: The dog."
+    },
+    {
+      "external_id": "u03-t2-q05",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "What ___ awful day!",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "awful با مصوت شروع می‌شود.",
+        "2": "the در تعجب نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «an» است. What an awful day!"
+    },
+    {
+      "external_id": "u03-t2-q06",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I have classes three times ___ week.",
+      "options": [
+        "a",
+        "the",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the در این عبارت نمی‌آید.",
+        "2": "an با week نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a» است. three times a week."
+    },
+    {
+      "external_id": "u03-t2-q07",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "The moon goes around ___ Earth.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Earth یگانه است.",
+        "2": "an با Earth نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the Earth."
+    },
+    {
+      "external_id": "u03-t2-q08",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I'm going to ___ movies tonight.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a با movies جمع نمی‌آید.",
+        "2": "an با movies نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the movies."
+    },
+    {
+      "external_id": "u03-t2-q09",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "It's ___ best restaurant in town.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت عالی با the می‌آید.",
+        "2": "an با best نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the best restaurant."
+    },
+    {
+      "external_id": "u03-t2-q10",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I love ___ weddings!",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اشارهٔ کلی به جمع است.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "بدون مقاله: weddings."
+    },
+    {
+      "external_id": "u03-t2-q11",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "My wife likes ___ love stories.",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اشارهٔ کلی است.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "بدون مقاله."
+    },
+    {
+      "external_id": "u03-t2-q12",
+      "topic": "t2",
+      "position": 25,
+      "type": "choice",
+      "prompt": "We go to ___ theater about once a month.",
+      "options": [
+        "the",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a با theater در این عبارت نمی‌آید.",
+        "2": "an با theater نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the» است. the theater."
+    },
+    {
+      "external_id": "u03-t2-q13",
+      "topic": "t2",
+      "position": 26,
+      "type": "choice",
+      "prompt": "I'm having ___ dinner with friends.",
+      "options": [
+        "—",
+        "the",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the در این عبارت نمی‌آید.",
+        "2": "a با dinner نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «—» است. have dinner."
+    },
+    {
+      "external_id": "u03-t1-m01",
+      "topic": "t1",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر صفت را به شکل درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "good",
+          "right": "better"
+        },
+        {
+          "left": "bad",
+          "right": "worse"
+        },
+        {
+          "left": "easy",
+          "right": "easier"
+        },
+        {
+          "left": "modern",
+          "right": "more modern"
+        },
+        {
+          "left": "fast",
+          "right": "the fastest"
+        }
+      ],
+      "explanation_fa": "good→better، bad→worse، easy→easier، modern→more modern، fast→the fastest."
+    },
+    {
+      "external_id": "u03-t2-m01",
+      "topic": "t2",
+      "position": 28,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "It's a",
+          "right": "nice house."
+        },
+        {
+          "left": "I saw an",
+          "right": "old man."
+        },
+        {
+          "left": "The dog",
+          "right": "was barking."
+        },
+        {
+          "left": "The moon goes around",
+          "right": "the Earth."
+        },
+        {
+          "left": "It's the best",
+          "right": "restaurant in town."
+        }
+      ],
+      "explanation_fa": "a/an بار اول، the برای مشخص و یگانه."
+    }
+  ]
+}

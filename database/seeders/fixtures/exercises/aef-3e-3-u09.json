@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-3-u09",
+  "book": "aef-3e-3",
+  "unit": 9,
+  "title": "American English File 3 · Unit 9",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 9,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "9A",
+      "9B"
+    ],
+    "grammar_bank": "9A p.150, 9B p.151",
+    "workbook": "9A, 9B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "third conditional",
+      "title_fa": "شرطی نوع سوم",
+      "use_fa": "برای موقعیت خیالی در گذشته که اتفاق نیفتاده و نتیجهٔ خیالی‌اش. با if + past perfect و would have + قسمت سوم.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "If + had + past participle, would have + past participle\nIf I'd known, I would have helped."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "If she hadn't driven fast, she wouldn't have crashed."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If I'd known you had a problem, I would have helped you.",
+          "fa": "اگر می‌دانستم مشکلی داری، کمکت می‌کردم."
+        },
+        {
+          "en": "If she had studied harder, she would have passed.",
+          "fa": "اگر بیشتر درس می‌خواند، قبول می‌شد."
+        },
+        {
+          "en": "I would have called you if I had had your number.",
+          "fa": "اگر شماره‌ات را داشتم زنگ می‌زدم."
+        },
+        {
+          "en": "He wouldn't have crashed if he hadn't driven so fast.",
+          "fa": "اگر این‌قدر سریع رانندگی نمی‌کرد تصادف نمی‌کرد."
+        }
+      ],
+      "notes_fa": "در شرطی سوم هر دو نیمه گذشتهٔ کامل دارند: had known ... would have helped. will و would تنها در نیمهٔ نتیجه می‌آیند."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "quantifiers",
+      "title_fa": "کمیت‌ها",
+      "use_fa": "a lot of/lots of در مثبت؛ much/many در منفی و سؤال؛ a little/little با ناشمارش و a few/few با جمع؛ less/fewer برای مقایسه.",
+      "formulas": [
+        {
+          "label_fa": "بزرگ",
+          "text": "a lot of / lots of / plenty of\nmuch / many (negative, questions)"
+        },
+        {
+          "label_fa": "کوچک",
+          "text": "a little / little + uncountable\na few / few + plural"
+        },
+        {
+          "label_fa": "مقایسه",
+          "text": "less + uncountable\nfewer + plural"
+        }
+      ],
+      "examples": [
+        {
+          "en": "My daughter has a lot of apps on her phone.",
+          "fa": "دخترم اپ‌های زیادی روی گوشی‌اش دارد."
+        },
+        {
+          "en": "There aren't many cafés near here.",
+          "fa": "اینجا کافه‌های زیادی نیست."
+        },
+        {
+          "en": "I have very little time for myself.",
+          "fa": "وقت خیلی کمی برای خودم دارم."
+        },
+        {
+          "en": "There are fewer flights in the winter.",
+          "fa": "زمستان پروازهای کمتری هست."
+        }
+      ],
+      "notes_fa": "a lot وقتی اسم بعدش نیست: He talks a lot. much/many بیشتر در منفی و سؤال می‌آیند."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u09-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "If I'd known you had a problem, I ___ helped you.",
+      "options": [
+        "would have",
+        "would",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would بدون have کامل نیست.",
+        "2": "had فقط برای نیمهٔ if است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would have» است. would have helped."
+    },
+    {
+      "external_id": "u09-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "If she ___ harder, she would have passed.",
+      "options": [
+        "had studied",
+        "studied",
+        "would study"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "studied گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had studied» است. had studied."
+    },
+    {
+      "external_id": "u09-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I would have called you if I ___ your number.",
+      "options": [
+        "had had",
+        "have had",
+        "would have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have had حال کامل است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had had» است. had had."
+    },
+    {
+      "external_id": "u09-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "If we ___ earlier, we wouldn't have missed the train.",
+      "options": [
+        "had left",
+        "left",
+        "would leave"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "left گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had left» است. had left."
+    },
+    {
+      "external_id": "u09-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "He wouldn't have crashed if he ___ so fast.",
+      "options": [
+        "hadn't driven",
+        "didn't drive",
+        "wouldn't drive"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't drive گذشتهٔ ساده است.",
+        "2": "wouldn't در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't driven» است. hadn't driven."
+    },
+    {
+      "external_id": "u09-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "If you had told me, I ___ come.",
+      "options": [
+        "would have",
+        "will have",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will have برای آینده است.",
+        "2": "had ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would have» است. would have come."
+    },
+    {
+      "external_id": "u09-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They would have won if they ___ better.",
+      "options": [
+        "had played",
+        "played",
+        "would play"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "played گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had played» است. had played."
+    },
+    {
+      "external_id": "u09-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "What ___ you have done if you had seen it?",
+      "options": [
+        "would",
+        "will",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای آینده است.",
+        "2": "did با have done نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would you have done."
+    },
+    {
+      "external_id": "u09-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "If I had known you had a problem, I ___ helped.",
+      "options": [
+        "would have",
+        "would",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would بدون have کامل نیست.",
+        "2": "will برای آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would have» است. would have."
+    },
+    {
+      "external_id": "u09-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She wouldn't have gone if she ___ about the weather.",
+      "options": [
+        "had known",
+        "knew",
+        "would know"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "knew گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had known» است. had known."
+    },
+    {
+      "external_id": "u09-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "If it ___ rained, we would have gone.",
+      "options": [
+        "hadn't",
+        "had",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had مثبت است.",
+        "2": "didn't با rained نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't» است. hadn't rained."
+    },
+    {
+      "external_id": "u09-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "I would have said yes if he ___ me.",
+      "options": [
+        "had asked",
+        "asked",
+        "would ask"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "asked گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had asked» است. had asked."
+    },
+    {
+      "external_id": "u09-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "My daughter has ___ apps on her phone.",
+      "options": [
+        "a lot of",
+        "much",
+        "a lot"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "much در مثبت رایج نیست.",
+        "2": "a lot بدون of با اسم نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a lot of» است. a lot of apps."
+    },
+    {
+      "external_id": "u09-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Nina has ___ clothes.",
+      "options": [
+        "lots of",
+        "much",
+        "many of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "much با جمع نمی‌آید.",
+        "2": "many of اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «lots of» است. lots of clothes."
+    },
+    {
+      "external_id": "u09-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "James eats ___.",
+      "options": [
+        "a lot",
+        "a lot of",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a lot of اسم می‌خواهد.",
+        "2": "much در مثبت رایج نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a lot» است. eats a lot."
+    },
+    {
+      "external_id": "u09-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "There aren't ___ cafés near here.",
+      "options": [
+        "many",
+        "much",
+        "a lot of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "cafés جمع است.",
+        "2": "much با جمع نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «many» است. not many cafés."
+    },
+    {
+      "external_id": "u09-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Do you watch ___ TV?",
+      "options": [
+        "much",
+        "many",
+        "a lot of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "TV ناشمارش است.",
+        "2": "many با ناشمارش نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «much» است. much TV."
+    },
+    {
+      "external_id": "u09-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Don't run. We have ___ time.",
+      "options": [
+        "plenty of",
+        "many",
+        "much of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "many با ناشمارش نمی‌آید.",
+        "2": "much of اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «plenty of» است. plenty of time."
+    },
+    {
+      "external_id": "u09-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Do you want some more ice cream? Just ___.",
+      "options": [
+        "a little",
+        "a few",
+        "few"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ice cream ناشمارش است.",
+        "2": "few با جمع است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a little» است. a little."
+    },
+    {
+      "external_id": "u09-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "The town only has ___ movie theaters.",
+      "options": [
+        "a few",
+        "a little",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "theaters جمع است.",
+        "2": "much با جمع نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a few» است. a few."
+    },
+    {
+      "external_id": "u09-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I'm so busy that I have very ___ time for myself.",
+      "options": [
+        "little",
+        "few",
+        "many"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "time ناشمارش است.",
+        "2": "many با ناشمارش نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «little» است. very little time."
+    },
+    {
+      "external_id": "u09-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Sarah isn't popular and she has very ___ friends.",
+      "options": [
+        "few",
+        "little",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "friends جمع است.",
+        "2": "much با جمع نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «few» است. very few friends."
+    },
+    {
+      "external_id": "u09-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I have ___ free time than I used to have.",
+      "options": [
+        "less",
+        "fewer",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "time ناشمارش است.",
+        "2": "much بدون مقایسه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «less» است. less free time."
+    },
+    {
+      "external_id": "u09-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "There are ___ flights in the winter than in the summer.",
+      "options": [
+        "fewer",
+        "less",
+        "little"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "flights جمع است.",
+        "2": "little با جمع نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «fewer» است. fewer flights."
+    },
+    {
+      "external_id": "u09-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های شرطی را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If I'd known",
+          "right": "I would have helped you."
+        },
+        {
+          "left": "If she had studied",
+          "right": "she would have passed."
+        },
+        {
+          "left": "I would have called",
+          "right": "if I had had your number."
+        },
+        {
+          "left": "If we had left earlier",
+          "right": "we wouldn't have missed the train."
+        },
+        {
+          "left": "He wouldn't have crashed",
+          "right": "if he hadn't driven so fast."
+        }
+      ],
+      "explanation_fa": "if + گذشتهٔ کامل، نتیجه با would have.",
+      "position": 25
+    },
+    {
+      "external_id": "u09-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر کمیت را به اسم مناسبش وصل کن.",
+      "pairs": [
+        {
+          "left": "a lot of",
+          "right": "apps"
+        },
+        {
+          "left": "many",
+          "right": "cafés"
+        },
+        {
+          "left": "much",
+          "right": "TV"
+        },
+        {
+          "left": "a little",
+          "right": "ice cream"
+        },
+        {
+          "left": "a few",
+          "right": "movie theaters"
+        }
+      ],
+      "explanation_fa": "much با ناشمارش و many با جمع؛ a little و a few مقدار کم.",
+      "position": 26
+    }
+  ]
+}

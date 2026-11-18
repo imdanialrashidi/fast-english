@@ -1,0 +1,69 @@
+{
+  "external_id": "aef-3e-starter-u05",
+  "book": "aef-3e-starter",
+  "unit": 5,
+  "title": "تمرین یونیت 5 — غذا و نوشیدنی",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u05-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'd like a ___ of water.",
+      "options": [
+        "cup",
+        "glass",
+        "plate",
+        "bowl"
+      ],
+      "answer": 1,
+      "explanation_fa": "یک لیوان آب می‌شود a glass of water."
+    },
+    {
+      "external_id": "u05-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "We have breakfast in the ___.",
+      "answer": [
+        "morning"
+      ],
+      "explanation_fa": "صبحانه در morning است."
+    },
+    {
+      "external_id": "u05-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you like coffee?",
+      "options": [
+        "Do",
+        "Does",
+        "Is",
+        "Are"
+      ],
+      "answer": 0,
+      "explanation_fa": "با you از Do استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u05-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "I would like a coffee",
+      "explanation_fa": "ترتیب درست: I would like a coffee."
+    },
+    {
+      "external_id": "u05-e05",
+      "position": 5,
+      "type": "choice",
+      "prompt": "Which one is a drink?",
+      "options": [
+        "bread",
+        "cheese",
+        "tea",
+        "rice"
+      ],
+      "answer": 2,
+      "explanation_fa": "tea نوشیدنی است."
+    }
+  ]
+}

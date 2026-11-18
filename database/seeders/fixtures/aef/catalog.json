@@ -1,0 +1,12 @@
+{
+  "series": "American English File",
+  "edition": "3rd",
+  "books": [
+    { "slug": "aef-3e-starter", "title_en": "American English File Starter", "title_fa": "امریکن اینگلیش فایل استارتر", "level": "A1", "sort_order": 0, "units": 12 },
+    { "slug": "aef-3e-1", "title_en": "American English File 1", "title_fa": "امریکن اینگلیش فایل ۱", "level": "A1-A2", "sort_order": 1, "units": 12 },
+    { "slug": "aef-3e-2", "title_en": "American English File 2", "title_fa": "امریکن اینگلیش فایل ۲", "level": "A2-B1", "sort_order": 2, "units": 12 },
+    { "slug": "aef-3e-3", "title_en": "American English File 3", "title_fa": "امریکن اینگلیش فایل ۳", "level": "B1-B2", "sort_order": 3, "units": 10 },
+    { "slug": "aef-3e-4", "title_en": "American English File 4", "title_fa": "امریکن اینگلیش فایل ۴", "level": "B2-C1", "sort_order": 4, "units": 10 },
+    { "slug": "aef-3e-5", "title_en": "American English File 5", "title_fa": "امریکن اینگلیش فایل ۵", "level": "C1", "sort_order": 5, "units": 10 }
+  ]
+}

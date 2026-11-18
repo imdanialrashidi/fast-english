@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import type { GlobalEvent } from '@inertiajs/core';
-import { BookOpen, Compass, House, Languages, User } from 'lucide-react';
+import { BookOpen, Compass, House, Languages, Library, User } from 'lucide-react';
 import * as React from 'react';
 import { AudioPlayer } from '@/components/AudioPlayer';
 import { PageSkeleton } from '@/components/PageSkeleton';
@@ -12,8 +12,8 @@ import type { SharedProps } from '@/types';
  *
  * App-like frame — no repeated brand bar: each screen owns a contextual
  * ScreenHeader (title, back, one action), the desktop rail keeps the
- * owner lockup, and the mobile tab bar carries the four destinations
- * (امروز / کشف مطالب / واژه‌ها / حساب) with the single persistent studio
+ * owner lockup, and the mobile tab bar carries the five destinations
+ * (امروز / کشف مطالب / واژه‌ها / کتاب‌ها / حساب) with the single persistent studio
  * player above them. The layout instance survives Inertia visits
  * (persistent layout), so the audio element is never destroyed by
  * in-app navigation; only a full reload (logout) stops it.
@@ -52,6 +52,13 @@ const DESTINATIONS: Destination[] = [
         shortLabel: 'واژه‌ها',
         icon: <Languages size={20} aria-hidden="true" />,
         match: (url) => url.startsWith('/app/words'),
+    },
+    {
+        href: '/app/books',
+        label: 'کتاب‌ها',
+        shortLabel: 'کتاب‌ها',
+        icon: <Library size={20} aria-hidden="true" />,
+        match: (url) => url.startsWith('/app/books') || url.startsWith('/app/flashcards'),
     },
     {
         href: '/app/account',
@@ -135,7 +142,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
             />
 
             <div className="mx-auto grid w-full max-w-[1120px] gap-8 px-4 lg:grid-cols-[13rem_1fr] lg:gap-10">
-                {/* Desktop rail: the same four destinations as the mobile tabs,
+                {/* Desktop rail: the same five destinations as the mobile tabs,
                     and the one place the app shell keeps the brand lockup. */}
                 <aside className="fe-sidebar hidden lg:block" aria-label="ناوبری اصلی">
                     <Link href="/app/today" dir="ltr" className="mb-2 inline-flex min-h-11 items-center no-underline" aria-label="Fast English — صفحه اصلی">
@@ -235,7 +242,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <AudioPlayer />
                 </div>
                 <nav aria-label="بخش‌های یادگیری" className="fe-bottomnav border-t border-line bg-surface lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-                    <ul className="m-0 grid list-none grid-cols-4 p-0">
+                    <ul className="m-0 grid list-none grid-cols-5 p-0">
                         {DESTINATIONS.map((destination) => {
                             const active = destination.match(url);
                             return (

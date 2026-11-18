@@ -67,7 +67,7 @@ final class Importer
             'errors' => [],
         ];
 
-        $coverPath = $this->importCover($source, $slug, $report);
+        $coverPath = $this->importCover($this->resolveCoverSource($source, $slug, $units), $slug);
 
         $write = ! $this->dryRun;
         $work = function () use ($source, $slug, $bookData, $units, $study, $coverPath, &$report, $write): void {
@@ -211,11 +211,62 @@ final class Importer
         return is_array($deck['study'] ?? null) ? $deck['study'] : null;
     }
 
-    /** @param array<string, mixed> $report */
-    private function importCover(string $source, string $slug, array &$report): ?string
+    /**
+     * The dataset's cover.jpg is a contact sheet, not a book cover. Prefer
+     * the index.json cover (the first unit's hero image), then the first
+     * card's front artwork, and only fall back to cover.jpg.
+     *
+     * @param  list<mixed>  $units
+     */
+    private function resolveCoverSource(string $source, string $slug, array $units): ?string
     {
-        $from = $source.'/cover.jpg';
-        if (! is_file($from)) {
+        $indexPath = dirname($source).'/index.json';
+        if (is_file($indexPath)) {
+            $index = json_decode((string) file_get_contents($indexPath), true);
+            foreach ((array) ($index['decks'] ?? []) as $deck) {
+                if (! is_array($deck) || (string) ($deck['id'] ?? '') !== $slug) {
+                    continue;
+                }
+
+                $cover = trim((string) ($deck['cover'] ?? ''));
+                $path = $cover === '' ? '' : dirname($source).'/'.ltrim($cover, '/');
+                if ($path !== '' && is_file($path)) {
+                    return $path;
+                }
+            }
+        }
+
+        foreach ($units as $unitRef) {
+            if (! is_array($unitRef)) {
+                continue;
+            }
+
+            $file = trim((string) ($unitRef['file'] ?? ''));
+            if ($file === '') {
+                continue;
+            }
+
+            $unitPath = $source.'/'.ltrim($file, '/');
+            if (! is_file($unitPath)) {
+                continue;
+            }
+
+            $unit = json_decode((string) file_get_contents($unitPath), true);
+            $front = trim((string) ($unit['cards'][0]['images']['front'] ?? ''));
+            $path = $front === '' ? '' : $source.'/'.ltrim($front, '/');
+            if ($path !== '' && is_file($path)) {
+                return $path;
+            }
+        }
+
+        $fallback = $source.'/cover.jpg';
+
+        return is_file($fallback) ? $fallback : null;
+    }
+
+    private function importCover(?string $from, string $slug): ?string
+    {
+        if ($from === null || ! is_file($from)) {
             return null;
         }
 
@@ -259,7 +310,7 @@ final class Importer
         }
 
         $bytes = (string) file_get_contents($from);
-        if (! $this->looksLikeMp3($bytes)) {
+        if (! Mp3::looksLike($bytes)) {
             throw new RuntimeException("The card audio is not an MP3: {$from}.");
         }
 
@@ -381,21 +432,6 @@ final class Importer
 
         Storage::disk('local')->makeDirectory(dirname($dest));
         Storage::disk('local')->put($dest, $webp);
-    }
-
-    private function looksLikeMp3(string $bytes): bool
-    {
-        if (strlen($bytes) < 128) {
-            return false;
-        }
-
-        if (str_starts_with($bytes, 'ID3')) {
-            return true;
-        }
-
-        $first = ord($bytes[0]);
-
-        return $first === 0xFF && (ord($bytes[1]) & 0xE0) === 0xE0;
     }
 
     private function nullable(mixed $value): ?string

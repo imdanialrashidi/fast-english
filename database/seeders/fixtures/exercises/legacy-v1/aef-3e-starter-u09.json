@@ -1,0 +1,67 @@
+{
+  "external_id": "aef-3e-starter-u09",
+  "book": "aef-3e-starter",
+  "unit": 9,
+  "title": "تمرین یونیت 9 — سفر و لباس",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u09-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "At the airport, they check your ___.",
+      "options": [
+        "passport",
+        "shirt",
+        "shoes",
+        "keys"
+      ],
+      "answer": 0,
+      "explanation_fa": "در فرودگاه پاسپورت را بررسی می‌کنند."
+    },
+    {
+      "external_id": "u09-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "I'm wearing a ___ and jeans.",
+      "answer": [
+        "shirt",
+        "T-shirt",
+        "tshirt"
+      ],
+      "explanation_fa": "پیراهن می‌شود shirt."
+    },
+    {
+      "external_id": "u09-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "The plane ___ at 9:00.",
+      "options": [
+        "leaves",
+        "leave",
+        "leaving",
+        "left"
+      ],
+      "answer": 0,
+      "explanation_fa": "برای برنامهٔ هواپیما از حال ساده استفاده می‌کنیم: leaves."
+    },
+    {
+      "external_id": "u09-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "I am wearing a blue shirt",
+      "explanation_fa": "ترتیب درست: I am wearing a blue shirt."
+    },
+    {
+      "external_id": "u09-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "A ___ is a bag for your clothes when you travel.",
+      "answer": [
+        "suitcase"
+      ],
+      "explanation_fa": "چمدان می‌شود suitcase."
+    }
+  ]
+}

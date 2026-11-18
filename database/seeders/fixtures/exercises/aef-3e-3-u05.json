@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-3-u05",
+  "book": "aef-3e-3",
+  "unit": 5,
+  "title": "American English File 3 · Unit 5",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 5,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "5A",
+      "5B"
+    ],
+    "grammar_bank": "5A p.142, 5B p.143",
+    "workbook": "5A, 5B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "past tenses: simple, continuous, perfect",
+      "title_fa": "زمان‌های گذشته: ساده، استمراری و کامل",
+      "use_fa": "گذشتهٔ ساده برای کار تمام‌شده؛ استمراری برای کار در جریان در لحظهٔ گذشته؛ کامل برای کاری که قبل از گذشتهٔ دیگر رخ داده.",
+      "formulas": [
+        {
+          "label_fa": "ساده",
+          "text": "They were in Mexico in 2016.\nA South African won the race."
+        },
+        {
+          "label_fa": "استمراری",
+          "text": "I was driving when it started snowing.\nWhile I was doing housework, they were playing."
+        },
+        {
+          "label_fa": "کامل",
+          "text": "had + past participle\nHe had cheated on the exam."
+        }
+      ],
+      "examples": [
+        {
+          "en": "They were in Mexico in 2016.",
+          "fa": "آن‌ها در ۲۰۱۶ در مکزیک بودند."
+        },
+        {
+          "en": "I was driving along the freeway when it started snowing.",
+          "fa": "در بزرگراه رانندگی می‌کردم که برف شروع شد."
+        },
+        {
+          "en": "While I was doing the housework, the children were playing.",
+          "fa": "وقتی کار خانه می‌کردم، بچه‌ها بازی می‌کردند."
+        },
+        {
+          "en": "He had cheated on the exam.",
+          "fa": "او در امتحان تقلب کرده بود."
+        }
+      ],
+      "notes_fa": "گذشتهٔ استمراری با فعل‌های غیرکنشی نمی‌آید: we were needing غلط است. برای کار طولانی از استمراری و کار کوتاه از ساده استفاده کن."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "past and present habits and states",
+      "title_fa": "عادت‌ها و وضعیت‌های گذشته و حال",
+      "use_fa": "used to برای عادت یا وضعیت گذشته که الان معمولاً نیست؛ برای عادت حال از usually + حال ساده استفاده می‌کنیم.",
+      "formulas": [
+        {
+          "label_fa": "گذشته",
+          "text": "used to / didn't use to + base verb\nI used to teach English."
+        },
+        {
+          "label_fa": "حال",
+          "text": "usually + simple present\nI usually meet my friends."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I used to teach English when I was living abroad.",
+          "fa": "وقتی خارج زندگی می‌کردم انگلیسی درس می‌دادم."
+        },
+        {
+          "en": "He didn't use to exercise at all.",
+          "fa": "او قبلاً اصلاً ورزش نمی‌کرد."
+        },
+        {
+          "en": "We used to be close friends.",
+          "fa": "ما قبلاً دوستان نزدیک بودیم."
+        },
+        {
+          "en": "I usually meet my friends on the weekends.",
+          "fa": "من آخر هفته‌ها معمولاً دوستانم را می‌بینم."
+        }
+      ],
+      "notes_fa": "used to در حال وجود ندارد؛ برای حالا از usually استفاده کن. بعد از didn't و Did شکل use to می‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u05-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "They ___ in Mexico in 2016.",
+      "options": [
+        "were",
+        "are",
+        "have been"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are حال است.",
+        "2": "با سال مشخص حال کامل نمی‌آید."
+      },
+      "explanation_fa": "گذشته: were."
+    },
+    {
+      "external_id": "u05-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "A South African ___ the race.",
+      "options": [
+        "won",
+        "wins",
+        "has won"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "wins حال است.",
+        "2": "این خبر گذشته است."
+      },
+      "explanation_fa": "گذشته: won."
+    },
+    {
+      "external_id": "u05-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "The plane ___ arrive on time.",
+      "options": [
+        "didn't",
+        "doesn't",
+        "hasn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't حال است.",
+        "2": "hasn't با arrive نمی‌آید."
+      },
+      "explanation_fa": "گذشتهٔ منفی: didn't."
+    },
+    {
+      "external_id": "u05-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "What time ___ you get up this morning?",
+      "options": [
+        "did",
+        "do",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do حال است.",
+        "2": "have با get up نمی‌آید."
+      },
+      "explanation_fa": "گذشته: did you get up."
+    },
+    {
+      "external_id": "u05-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "What ___ you doing at six o'clock last night?",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are حال است."
+      },
+      "explanation_fa": "گذشتهٔ استمراری: were doing."
+    },
+    {
+      "external_id": "u05-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I ___ driving along the freeway when it started snowing.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "am حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. I was driving."
+    },
+    {
+      "external_id": "u05-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "While I was doing the housework, the children ___ in the yard.",
+      "options": [
+        "were playing",
+        "played",
+        "play"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "played ساده است.",
+        "2": "play حال است."
+      },
+      "explanation_fa": "دو کار هم‌زمان: were playing."
+    },
+    {
+      "external_id": "u05-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "It was a cold night and it ___ raining.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. was raining."
+    },
+    {
+      "external_id": "u05-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "We didn't win although we ___ every evening.",
+      "options": [
+        "had trained",
+        "trained",
+        "train"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "trained ترتیب را نشان نمی‌دهد.",
+        "2": "train حال است."
+      },
+      "explanation_fa": "گذشتهٔ کامل: had trained."
+    },
+    {
+      "external_id": "u05-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Mike had an accident while he ___ to work.",
+      "options": [
+        "was driving",
+        "drove",
+        "drives"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "drove کار کوتاه است.",
+        "2": "drives حال است."
+      },
+      "explanation_fa": "در جریان: was driving."
+    },
+    {
+      "external_id": "u05-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "The teacher gave Robbie a zero because he ___ on the exam.",
+      "options": [
+        "had cheated",
+        "cheated",
+        "cheats"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "cheated ترتیب را نشان نمی‌دهد.",
+        "2": "cheats حال است."
+      },
+      "explanation_fa": "گذشتهٔ کامل: had cheated."
+    },
+    {
+      "external_id": "u05-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "When I lived in Los Angeles, I often ___ to watch the Lakers.",
+      "options": [
+        "went",
+        "go",
+        "have gone"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "go حال است.",
+        "2": "have gone با when گذشته نمی‌آید."
+      },
+      "explanation_fa": "گذشته: went."
+    },
+    {
+      "external_id": "u05-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ teach English when I was living abroad.",
+      "options": [
+        "used to",
+        "use to",
+        "used"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون did غلط است.",
+        "2": "used به‌تنهایی to می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to teach."
+    },
+    {
+      "external_id": "u05-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "He didn't ___ exercise at all.",
+      "options": [
+        "use to",
+        "used to",
+        "uses to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't شکل used نمی‌آید.",
+        "2": "uses to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «use to» است. didn't use to."
+    },
+    {
+      "external_id": "u05-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I never ___ like soccer.",
+      "options": [
+        "used to",
+        "use to",
+        "used"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون did غلط است.",
+        "2": "used بدون to ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. never used to."
+    },
+    {
+      "external_id": "u05-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "We ___ be close friends, but we don't talk now.",
+      "options": [
+        "used to",
+        "use to",
+        "are used to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون did غلط است.",
+        "2": "are used to یعنی عادت کرده‌ایم."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to be."
+    },
+    {
+      "external_id": "u05-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "That hotel ___ have a swimming pool.",
+      "options": [
+        "used to",
+        "use to",
+        "uses to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون did غلط است.",
+        "2": "uses to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to have."
+    },
+    {
+      "external_id": "u05-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Did they ___ live downtown?",
+      "options": [
+        "use to",
+        "used to",
+        "using to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did شکل used نمی‌آید.",
+        "2": "using to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «use to» است. Did they use to."
+    },
+    {
+      "external_id": "u05-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "___ you use to have long hair?",
+      "options": [
+        "Didn't",
+        "Don't",
+        "Aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Don't برای حال است.",
+        "2": "Aren't برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Didn't» است. Didn't you use to ...?"
+    },
+    {
+      "external_id": "u05-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I ___ meet my friends on the weekends.",
+      "options": [
+        "usually",
+        "used to",
+        "use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used to برای گذشته است.",
+        "2": "use to بدون did غلط است."
+      },
+      "explanation_fa": "عادت حال: usually."
+    },
+    {
+      "external_id": "u05-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I don't ___ go out during the week.",
+      "options": [
+        "usually",
+        "used to",
+        "use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used to برای گذشته است.",
+        "2": "use to با don't نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «usually» است. usually."
+    },
+    {
+      "external_id": "u05-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Do you ___ walk to work?",
+      "options": [
+        "usually",
+        "used to",
+        "use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used to برای گذشته است.",
+        "2": "use to با Do you نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «usually» است. usually."
+    },
+    {
+      "external_id": "u05-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "We often ___ to the beach when I was a child.",
+      "options": [
+        "went",
+        "go",
+        "have gone"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "go حال است.",
+        "2": "have gone با when گذشته نمی‌آید."
+      },
+      "explanation_fa": "گذشته: went."
+    },
+    {
+      "external_id": "u05-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Houses in the suburbs ___ have yards.",
+      "options": [
+        "usually",
+        "used to",
+        "use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used to برای گذشته است.",
+        "2": "use to بدون did غلط است."
+      },
+      "explanation_fa": "عادت حال: usually."
+    },
+    {
+      "external_id": "u05-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "They were in Mexico",
+          "right": "in 2016."
+        },
+        {
+          "left": "I was driving",
+          "right": "when it started snowing."
+        },
+        {
+          "left": "While I was doing housework",
+          "right": "the children were playing."
+        },
+        {
+          "left": "He had cheated",
+          "right": "so he got a zero."
+        },
+        {
+          "left": "What were you doing",
+          "right": "at six o'clock?"
+        }
+      ],
+      "explanation_fa": "ساده، استمراری و کامل را از هم تشخیص بده."
+    },
+    {
+      "external_id": "u05-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I used to",
+          "right": "teach English abroad."
+        },
+        {
+          "left": "He didn't use to",
+          "right": "exercise."
+        },
+        {
+          "left": "I never used to",
+          "right": "like soccer."
+        },
+        {
+          "left": "We used to",
+          "right": "be close friends."
+        },
+        {
+          "left": "That hotel used to",
+          "right": "have a swimming pool."
+        }
+      ],
+      "explanation_fa": "used to برای عادت و وضعیت گذشته."
+    }
+  ]
+}

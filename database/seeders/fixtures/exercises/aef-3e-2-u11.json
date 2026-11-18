@@ -1,0 +1,657 @@
+{
+  "external_id": "aef-3e-2-u11",
+  "book": "aef-3e-2",
+  "unit": 11,
+  "title": "American English File 2 · Unit 11",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 11,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "11A",
+      "11B",
+      "11C"
+    ],
+    "grammar_bank": "11A p.148, 11B p.148, 11C p.148",
+    "workbook": "11A, 11B, 11C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "used to / didn't use to",
+      "title_fa": "used to و didn't use to",
+      "use_fa": "برای عادت‌ها و وضعیت‌هایی که در گذشته تکرار می‌شدند یا مدت طولانی true بودند ولی الان معمولاً نیستند.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + used to + base verb\nI used to play on the street."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "didn't use to + base verb\nNick didn't use to go out much."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Did you use to wear a uniform?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "When I was a child, I used to play on the street.",
+          "fa": "بچه که بودم، کوچه بازی می‌کردم."
+        },
+        {
+          "en": "My brother used to have very long hair.",
+          "fa": "برادرم قبلاً موهای خیلی بلند داشت."
+        },
+        {
+          "en": "Nick didn't use to go out much.",
+          "fa": "نیک قبلاً زیاد بیرون نمی‌رفت."
+        },
+        {
+          "en": "Did you use to wear a uniform at school?",
+          "fa": "قبلاً مدرسه لباس فرم می‌پوشیدی؟"
+        }
+      ],
+      "notes_fa": "بعد از didn't و Did شکل used to نمی‌آید: didn't use to / Did you use to. used to فقط برای گذشته است؛ برای عادت حالا از usually استفاده می‌کنیم."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "might / might not (possibility)",
+      "title_fa": "might و might not (احتمال)",
+      "use_fa": "برای گفتن اینکه شاید کاری انجام شود یا نشود. با might/might not + فعل پایه و برای همهٔ فاعل‌ها یک شکل.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + might + base verb\nWe might have a picnic."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "subject + might not + base verb\nI might not take my laptop."
+        }
+      ],
+      "examples": [
+        {
+          "en": "We might have a picnic tomorrow.",
+          "fa": "شاید فردا پیکنیک برویم."
+        },
+        {
+          "en": "Karen might come with us.",
+          "fa": "شاید کارن با ما بیاید."
+        },
+        {
+          "en": "I might not take my laptop on vacation.",
+          "fa": "شاید لپ‌تاپم را به سفر نبرم."
+        },
+        {
+          "en": "We might not see the boss today.",
+          "fa": "شاید امروز رئیس را نبینیم."
+        }
+      ],
+      "notes_fa": "might not معمولاً کوتاه نمی‌شود. بعد از might فعل پایه می‌آید: might come (نه might comes)."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "so, neither + auxiliaries",
+      "title_fa": "so و neither با فعل کمکی",
+      "use_fa": "برای گفتن اینکه با کسی وجه اشتراک داریم: So + auxiliary + I برای جملهٔ مثبت و Neither + auxiliary + I برای منفی.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "So do I. / So am I. / So did I.\nSo can I. / So have I."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "Neither do I. / Neither am I. / Neither did I.\nNeither can I. / Neither have I."
+        }
+      ],
+      "examples": [
+        {
+          "en": "A: I love classical music. B: So do I.",
+          "fa": "من موسیقی کلاسیک دوست دارم. — من هم."
+        },
+        {
+          "en": "A: I'm not married. B: Neither am I.",
+          "fa": "من متأهل نیستم. — من هم نه."
+        },
+        {
+          "en": "A: I went to a concert. B: So did I.",
+          "fa": "من به کنسرت رفتم. — من هم."
+        },
+        {
+          "en": "A: I've been to Brazil. B: So have I.",
+          "fa": "من به برزیل رفته‌ام. — من هم."
+        }
+      ],
+      "notes_fa": "فعل کمکی جملهٔ قبلی را تکرار می‌کنیم: do/does/did/am/is/are/can/have. ترتیب: So + auxiliary + I."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u11-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "When I was a child, I ___ play on the street.",
+      "options": [
+        "used to",
+        "use to",
+        "used"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از I شکل use to نمی‌آید.",
+        "2": "used به‌تنهایی to می‌خواهد."
+      },
+      "explanation_fa": "used to + فعل پایه."
+    },
+    {
+      "external_id": "u11-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "My brother ___ have very long hair.",
+      "options": [
+        "used to",
+        "use to",
+        "uses to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون diciembre d غلط است.",
+        "2": "uses to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to have."
+    },
+    {
+      "external_id": "u11-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Nick ___ go out much.",
+      "options": [
+        "didn't use to",
+        "didn't used to",
+        "doesn't use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't شکل used نمی‌آید.",
+        "2": "doesn't برای حال است."
+      },
+      "explanation_fa": "منفی گذشته: didn't use to."
+    },
+    {
+      "external_id": "u11-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I ___ like vegetables, but now I love them.",
+      "options": [
+        "didn't use to",
+        "didn't used to",
+        "don't use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't used غلط است.",
+        "2": "don't برای حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't use to» است. didn't use to."
+    },
+    {
+      "external_id": "u11-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ you use to wear a uniform?",
+      "options": [
+        "Did",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "سؤال گذشته: Did you use to?"
+    },
+    {
+      "external_id": "u11-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Did you ___ like your teachers?",
+      "options": [
+        "use to",
+        "used to",
+        "using to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did شکل used نمی‌آید.",
+        "2": "using to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «use to» است. did you use to."
+    },
+    {
+      "external_id": "u11-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I ___ cook in the evenings.",
+      "options": [
+        "usually",
+        "use to",
+        "used to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون used غلط است.",
+        "2": "used to برای گذشته است."
+      },
+      "explanation_fa": "عادت حال: usually."
+    },
+    {
+      "external_id": "u11-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "She ___ to have long hair.",
+      "options": [
+        "used",
+        "use",
+        "uses"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use بدون d غلط است.",
+        "2": "uses to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used» است. used to have."
+    },
+    {
+      "external_id": "u11-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "We ___ have a picnic tomorrow.",
+      "options": [
+        "might",
+        "might not",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله احتمال مثبت است.",
+        "2": "will قطعی است."
+      },
+      "explanation_fa": "احتمال: might."
+    },
+    {
+      "external_id": "u11-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Karen ___ come with us.",
+      "options": [
+        "might",
+        "must",
+        "should"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must یعنی باید.",
+        "2": "should یعنی بهتر است."
+      },
+      "explanation_fa": "احتمال: might."
+    },
+    {
+      "external_id": "u11-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I ___ take my laptop on vacation.",
+      "options": [
+        "might not",
+        "might not to",
+        "don't might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از might not فعل to نمی‌آید.",
+        "2": "don't might وجود ندارد."
+      },
+      "explanation_fa": "منفی: might not."
+    },
+    {
+      "external_id": "u11-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "We ___ see the boss today.",
+      "options": [
+        "might not",
+        "might not to",
+        "aren't might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از might not to نمی‌آید.",
+        "2": "aren't might وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might not» است. might not see."
+    },
+    {
+      "external_id": "u11-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "She ___ be at home.",
+      "options": [
+        "might",
+        "mights",
+        "might to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "might برای همهٔ فاعل‌ها یک شکل است.",
+        "2": "might to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might» است. might be."
+    },
+    {
+      "external_id": "u11-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "It ___ rain later.",
+      "options": [
+        "might",
+        "might to",
+        "is might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "might to وجود ندارد.",
+        "2": "is might وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might» است. might rain."
+    },
+    {
+      "external_id": "u11-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I ___ go to the party. I'm not sure.",
+      "options": [
+        "might",
+        "will",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will قطعی است.",
+        "2": "am با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "شاید: might."
+    },
+    {
+      "external_id": "u11-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "He ___ not come.",
+      "options": [
+        "might",
+        "maybe",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "maybe قید است، نه فعل کمکی.",
+        "2": "will not قطعی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might» است. might not come."
+    },
+    {
+      "external_id": "u11-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "A: I love classical music. B: ___.",
+      "options": [
+        "So do I",
+        "Neither do I",
+        "So am I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "فعل کمکی do است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «So do I» است. So do I."
+    },
+    {
+      "external_id": "u11-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "A: I'm not married. B: ___.",
+      "options": [
+        "Neither am I",
+        "So am I",
+        "Neither do I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله منفی است.",
+        "2": "فعل کمکی am است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Neither am I» است. Neither am I."
+    },
+    {
+      "external_id": "u11-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "A: I went to a concert. B: ___.",
+      "options": [
+        "So did I",
+        "So do I",
+        "Neither did I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته است.",
+        "2": "جمله مثبت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «So did I» است. So did I."
+    },
+    {
+      "external_id": "u11-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "A: I don't want to get married. B: ___.",
+      "options": [
+        "Neither do I",
+        "So do I",
+        "Neither am I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله منفی است.",
+        "2": "فعل کمکی am است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Neither do I» است. Neither do I."
+    },
+    {
+      "external_id": "u11-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "A: I can swim. B: ___.",
+      "options": [
+        "So can I",
+        "So do I",
+        "Neither can I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فعل کمکی can است.",
+        "2": "جمله مثبت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «So can I» است. So can I."
+    },
+    {
+      "external_id": "u11-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "A: I didn't like the movie. B: ___.",
+      "options": [
+        "Neither did I",
+        "So did I",
+        "Neither do I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله منفی است.",
+        "2": "گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Neither did I» است. Neither did I."
+    },
+    {
+      "external_id": "u11-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "A: I've been to Brazil. B: ___.",
+      "options": [
+        "So have I",
+        "So did I",
+        "Neither have I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "حال کامل است.",
+        "2": "جمله مثبت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «So have I» است. So have I."
+    },
+    {
+      "external_id": "u11-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "A: I was very tired. B: ___.",
+      "options": [
+        "So was I",
+        "So did I",
+        "Neither was I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فعل be است.",
+        "2": "جمله مثبت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «So was I» است. So was I."
+    },
+    {
+      "external_id": "u11-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "When I was a child",
+          "right": "I used to play on the street."
+        },
+        {
+          "left": "My brother",
+          "right": "used to have long hair."
+        },
+        {
+          "left": "Nick didn't use to",
+          "right": "go out much."
+        },
+        {
+          "left": "Did you use to",
+          "right": "wear a uniform?"
+        },
+        {
+          "left": "I didn't use to",
+          "right": "like vegetables."
+        }
+      ],
+      "explanation_fa": "used to برای عادت گذشته؛ منفی و سؤال با did."
+    },
+    {
+      "external_id": "u11-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "We might have a picnic",
+          "right": "tomorrow."
+        },
+        {
+          "left": "Karen might come",
+          "right": "with us."
+        },
+        {
+          "left": "I might not take",
+          "right": "my laptop."
+        },
+        {
+          "left": "We might not see",
+          "right": "the boss today."
+        },
+        {
+          "left": "She might be",
+          "right": "at home."
+        }
+      ],
+      "explanation_fa": "might/might not + فعل پایه برای احتمال."
+    },
+    {
+      "external_id": "u11-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر جمله را به پاسخ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "I love classical music.",
+          "right": "So do I."
+        },
+        {
+          "left": "I'm not married.",
+          "right": "Neither am I."
+        },
+        {
+          "left": "I went to a concert.",
+          "right": "So did I."
+        },
+        {
+          "left": "I can swim.",
+          "right": "So can I."
+        },
+        {
+          "left": "I've been to Brazil.",
+          "right": "So have I."
+        }
+      ],
+      "explanation_fa": "So/Neither + فعل کمکی + I."
+    }
+  ]
+}

@@ -1,0 +1,611 @@
+{
+  "external_id": "aef-3e-1-u02",
+  "book": "aef-3e-1",
+  "unit": 2,
+  "title": "American English File 1 · Unit 2",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 2,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "2A",
+      "2B",
+      "2C"
+    ],
+    "grammar_bank": "2A p.128, 2B p.128, 2C p.128",
+    "workbook": "2A, 2B, 2C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "singular and plural nouns",
+      "title_fa": "اسم‌های مفرد و جمع",
+      "use_fa": "a/an قبل از اسم مفرد می‌آید و برای جمع استفاده نمی‌شود. جمع با s/es/ies ساخته می‌شود و some اسم‌ها بی‌قاعده‌اند.",
+      "formulas": [
+        {
+          "label_fa": "مفرد",
+          "text": "a book / an umbrella\na + consonant sound\nan + vowel sound"
+        },
+        {
+          "label_fa": "جمع",
+          "text": "book → books\nwatch → watches\ncity → cities\nman → men / woman → women / child → children / person → people"
+        },
+        {
+          "label_fa": "the",
+          "text": "the board (مشخص)\nthe + singular or plural"
+        }
+      ],
+      "examples": [
+        {
+          "en": "It's a book.",
+          "fa": "این یک کتاب است."
+        },
+        {
+          "en": "They're watches.",
+          "fa": "این‌ها ساعت مچی‌اند."
+        },
+        {
+          "en": "They're dictionaries.",
+          "fa": "این‌ها فرهنگ لغت‌اند."
+        },
+        {
+          "en": "Two children are in the room.",
+          "fa": "دو کودک در اتاق هستند."
+        }
+      ],
+      "notes_fa": "با جمع، a/an نمی‌آید: They're books. (نه They're a books.) در اسم‌های دوکلمه‌ای فقط کلمهٔ دوم جمع می‌شود: credit cards."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "adjectives",
+      "title_fa": "صفت‌ها",
+      "use_fa": "صفت قبل از اسم یا بعد از فعل be می‌آید، برای مفرد و جمع یک شکل دارد و با very/really تقویت می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "قبل از اسم",
+          "text": "adjective + noun\nIt's a beautiful picture.\nThey're blue jeans."
+        },
+        {
+          "label_fa": "بعد از be",
+          "text": "subject + be + adjective\nMy car's new.\nThe computer isn't cheap."
+        },
+        {
+          "label_fa": "تقویت",
+          "text": "very / really + adjective\nHe's very tall."
+        }
+      ],
+      "examples": [
+        {
+          "en": "It's a beautiful picture.",
+          "fa": "این یک تصویر زیباست."
+        },
+        {
+          "en": "They're blue jeans.",
+          "fa": "این شلوار جین آبی است."
+        },
+        {
+          "en": "Is your car new?",
+          "fa": "ماشینت نو است؟"
+        },
+        {
+          "en": "We're really tired.",
+          "fa": "ما واقعاً خسته‌ایم."
+        }
+      ],
+      "notes_fa": "صفت جمع بسته نمی‌شود: blue jeans (نه blues jeans). ترتیب: صفت قبل از اسم، نه بعد از آن: a beautiful picture (نه a picture beautiful)."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "imperatives, let's",
+      "title_fa": "امری و let's",
+      "use_fa": "برای دستور و راهنمایی. امری با فعل پایه شروع می‌شود و منفی‌اش Don't است. let's برای پیشنهاد کار گروهی است.",
+      "formulas": [
+        {
+          "label_fa": "امری",
+          "text": "base verb + ...\nOpen the door.\nBe quiet, please."
+        },
+        {
+          "label_fa": "امری منفی",
+          "text": "Don't + base verb\nDon't worry.\nDon't stop."
+        },
+        {
+          "label_fa": "پیشنهاد",
+          "text": "Let's + base verb\nLet's go home.\nLet's not stop."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Open the door.",
+          "fa": "در را باز کن."
+        },
+        {
+          "en": "Don't worry.",
+          "fa": "نگران نباش."
+        },
+        {
+          "en": "Be quiet, please.",
+          "fa": "لطفاً ساکت باش."
+        },
+        {
+          "en": "Let's go home.",
+          "fa": "بیا خانه برویم."
+        }
+      ],
+      "notes_fa": "در امری فاعل نمی‌آید. let's منفی می‌شود let's not: Let's not stop."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u02-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "It's ___ book.",
+      "options": [
+        "a",
+        "an",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "book با صامت شروع می‌شود.",
+        "2": "the برای چیز مشخص است."
+      },
+      "explanation_fa": "book با صدای صامت: a book."
+    },
+    {
+      "external_id": "u02-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "It's ___ umbrella.",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "umbrella با مصوت شروع می‌شود.",
+        "2": "the برای اشارهٔ مشخص است."
+      },
+      "explanation_fa": "umbrella با صدای مصوت: an umbrella."
+    },
+    {
+      "external_id": "u02-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They're ___.",
+      "options": [
+        "books",
+        "book",
+        "a books"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله جمع است.",
+        "2": "با جمع a نمی‌آید."
+      },
+      "explanation_fa": "جمع: books."
+    },
+    {
+      "external_id": "u02-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They're ___.",
+      "options": [
+        "watches",
+        "watchs",
+        "watch"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از ch باید es بیاید.",
+        "2": "جمله جمع است."
+      },
+      "explanation_fa": "جمع watch می‌شود watches (بعد از ch)."
+    },
+    {
+      "external_id": "u02-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "They're ___.",
+      "options": [
+        "dictionaries",
+        "dictionarys",
+        "dictionary"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "y بعد از صامت ies می‌شود.",
+        "2": "جمله جمع است."
+      },
+      "explanation_fa": "جمع dictionary می‌شود dictionaries (y بعد از صامت)."
+    },
+    {
+      "external_id": "u02-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Two ___ are in the room.",
+      "options": [
+        "children",
+        "childs",
+        "child"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "child جمع بی‌قاعده دارد.",
+        "2": "two جمع لازم دارد."
+      },
+      "explanation_fa": "جمع child می‌شود children (بی‌قاعده)."
+    },
+    {
+      "external_id": "u02-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "___ board is big.",
+      "options": [
+        "The",
+        "A",
+        "An"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a برای چیز نامشخص است.",
+        "2": "board با صامت شروع می‌شود."
+      },
+      "explanation_fa": "board مشخص است: The board."
+    },
+    {
+      "external_id": "u02-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "It's a ___ picture.",
+      "options": [
+        "beautiful",
+        "beautifully",
+        "beauty"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "beautifully قید است.",
+        "2": "beauty اسم است."
+      },
+      "explanation_fa": "صفت قبل از اسم: a beautiful picture."
+    },
+    {
+      "external_id": "u02-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "It's ___ old book.",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "old با مصوت شروع می‌شود.",
+        "2": "the برای چیز مشخص است."
+      },
+      "explanation_fa": "قبل از old که با مصوت شروع می‌شود an می‌آید: an old book."
+    },
+    {
+      "external_id": "u02-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "They're ___ jeans.",
+      "options": [
+        "blue",
+        "blues",
+        "blue's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت جمع بسته نمی‌شود.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "blue jeans (صفت بدون s)."
+    },
+    {
+      "external_id": "u02-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "My car ___ new.",
+      "options": [
+        "is",
+        "are",
+        "be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "car مفرد است.",
+        "2": "be شکل پایه است."
+      },
+      "explanation_fa": "car مفرد: is new."
+    },
+    {
+      "external_id": "u02-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "The computer ___ cheap.",
+      "options": [
+        "isn't",
+        "aren't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "computer مفرد است.",
+        "2": "not فعل کمکی ندارد."
+      },
+      "explanation_fa": "computer مفرد است، پس isn’t می‌آید."
+    },
+    {
+      "external_id": "u02-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Is your car ___?",
+      "options": [
+        "new",
+        "newly",
+        "news"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "newly قید است.",
+        "2": "news اسم است."
+      },
+      "explanation_fa": "صفت new بعد از be: Is your car new?"
+    },
+    {
+      "external_id": "u02-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "He's ___ tall.",
+      "options": [
+        "very",
+        "very much",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "very much بعد از فعل می‌آید.",
+        "2": "much به‌تنهایی اینجا نمی‌آید."
+      },
+      "explanation_fa": "very + صفت: very tall."
+    },
+    {
+      "external_id": "u02-t3-q01",
+      "topic": "t3",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ the door.",
+      "options": [
+        "Open",
+        "Opens",
+        "Opening"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "در امری فعل s نمی‌گیرد.",
+        "2": "-ing برای امری نیست."
+      },
+      "explanation_fa": "امری: Open the door."
+    },
+    {
+      "external_id": "u02-t3-q02",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ worry.",
+      "options": [
+        "Don't",
+        "Doesn't",
+        "Not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Doesn't برای سوم‌شخص است.",
+        "2": "Not به‌تنهایی منفی نمی‌سازد."
+      },
+      "explanation_fa": "امری منفی: Don't worry."
+    },
+    {
+      "external_id": "u02-t3-q03",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "___ quiet, please.",
+      "options": [
+        "Be",
+        "Are",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Are برای جمع است.",
+        "2": "Is برای سوم‌شخص است."
+      },
+      "explanation_fa": "امری فعل be: Be quiet."
+    },
+    {
+      "external_id": "u02-t3-q04",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "___ go home.",
+      "options": [
+        "Let's",
+        "Lets",
+        "Let"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Lets بدون آپاستروف فعل است.",
+        "2": "Let to + فعل نمی‌آید."
+      },
+      "explanation_fa": "پیشنهاد: Let's go home."
+    },
+    {
+      "external_id": "u02-t3-q05",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Let's ___ stop.",
+      "options": [
+        "not",
+        "no",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "no قبل از اسم می‌آید.",
+        "2": "don't با let's نمی‌آید."
+      },
+      "explanation_fa": "منفی let's: Let's not stop."
+    },
+    {
+      "external_id": "u02-t3-q06",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "___ you help me?",
+      "options": [
+        "Can",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای سؤال عادی است.",
+        "2": "Are برای فعل be است."
+      },
+      "explanation_fa": "درخواست مؤدبانه: Can you help me?"
+    },
+    {
+      "external_id": "u02-t3-q07",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Please ___ down.",
+      "options": [
+        "sit",
+        "sits",
+        "sitting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "در امری فعل s نمی‌گیرد.",
+        "2": "-ing برای امری نیست."
+      },
+      "explanation_fa": "امری: sit down."
+    },
+    {
+      "external_id": "u02-t1-m01",
+      "topic": "t1",
+      "position": 22,
+      "type": "matching",
+      "prompt": "هر اسم مفرد را به جمعش وصل کن.",
+      "pairs": [
+        {
+          "left": "man",
+          "right": "men"
+        },
+        {
+          "left": "woman",
+          "right": "women"
+        },
+        {
+          "left": "child",
+          "right": "children"
+        },
+        {
+          "left": "person",
+          "right": "people"
+        },
+        {
+          "left": "book",
+          "right": "books"
+        }
+      ],
+      "explanation_fa": "جمع‌های بی‌قاعده: man→men، woman→women، child→children، person→people."
+    },
+    {
+      "external_id": "u02-t2-m01",
+      "topic": "t2",
+      "position": 23,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "The White House",
+          "right": "is in Washington, D.C."
+        },
+        {
+          "left": "It's a beautiful",
+          "right": "picture."
+        },
+        {
+          "left": "They're blue",
+          "right": "jeans."
+        },
+        {
+          "left": "We're new",
+          "right": "students."
+        },
+        {
+          "left": "He's very",
+          "right": "tall."
+        }
+      ],
+      "explanation_fa": "صفت قبل از اسم یا بعد از be می‌آید."
+    },
+    {
+      "external_id": "u02-t3-m01",
+      "topic": "t3",
+      "position": 24,
+      "type": "matching",
+      "prompt": "نیمه‌های امری را کامل کن.",
+      "pairs": [
+        {
+          "left": "Open",
+          "right": "the door."
+        },
+        {
+          "left": "Turn",
+          "right": "right."
+        },
+        {
+          "left": "Don't",
+          "right": "worry."
+        },
+        {
+          "left": "Be",
+          "right": "quiet, please."
+        },
+        {
+          "left": "Let's",
+          "right": "go home."
+        }
+      ],
+      "explanation_fa": "امری با فعل پایه، منفی با Don't و پیشنهاد با Let's."
+    }
+  ]
+}

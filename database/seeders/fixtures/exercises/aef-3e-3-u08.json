@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-3-u08",
+  "book": "aef-3e-3",
+  "unit": 8,
+  "title": "American English File 3 · Unit 8",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 8,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "8A",
+      "8B"
+    ],
+    "grammar_bank": "8A p.148, 8B p.149",
+    "workbook": "8A, 8B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "choosing between gerunds and infinitives",
+      "title_fa": "انتخاب بین اسم مصدر و مصدر با to",
+      "use_fa": "اسم مصدر (ing) بعد از حرف اضافه، فعل‌های خاص و به‌عنوان فاعل می‌آید؛ مصدر با to بعد از صفت، برخی فعل‌ها و برای بیان هدف.",
+      "formulas": [
+        {
+          "label_fa": "اسم مصدر",
+          "text": "good at working\ngiven up eating\ndoing\nnot being"
+        },
+        {
+          "label_fa": "مصدر با to",
+          "text": "easy to find\nsaving money to buy\nlearned to drive"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm not very good at working on a team.",
+          "fa": "در کار تیمی خیلی خوب نیستم."
+        },
+        {
+          "en": "Katie's given up eating junk food.",
+          "fa": "کیتی خوردن فست‌فود را ترک کرده است."
+        },
+        {
+          "en": "My apartment is very easy to find.",
+          "fa": "آپارتمان من خیلی راحت پیدا می‌شود."
+        },
+        {
+          "en": "Simon is saving money to buy a new car.",
+          "fa": "سایمون برای خرید ماشین نو پول پس‌انداز می‌کند."
+        }
+      ],
+      "notes_fa": "بعد از حرف اضافه همیشه ing: good at working. بعد از صفت to: easy to find. منفی ing با not می‌آید: not being."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "reported speech: sentences and questions",
+      "title_fa": "نقل قول غیرمستقیم: جمله‌ها و سؤال‌ها",
+      "use_fa": "برای گفتن حرف دیگران. وقتی فعل گزارش گذشته است، زمان جمله یک پله عقب می‌رود و ضمیرها تغییر می‌کنند.",
+      "formulas": [
+        {
+          "label_fa": "تغییر زمان",
+          "text": "present → past\nwill → would\npast/present perfect → past perfect"
+        },
+        {
+          "label_fa": "افعال",
+          "text": "said (that) ...\ntold + person (that) ..."
+        }
+      ],
+      "examples": [
+        {
+          "en": "She said (that) she liked traveling.",
+          "fa": "او گفت سفر کردن را دوست دارد."
+        },
+        {
+          "en": "He told her (that) he was leaving the next day.",
+          "fa": "او به او گفت فردای آن روز می‌رود."
+        },
+        {
+          "en": "She said she couldn't come.",
+          "fa": "او گفت نمی‌تواند بیاید."
+        },
+        {
+          "en": "He said he had to go.",
+          "fa": "او گفت باید برود."
+        }
+      ],
+      "notes_fa": "say بدون مفعول و tell با مفعول: She said (that) ... / She told me (that) ... عبارت‌های زمانی هم عوض می‌شوند: tomorrow → the next day."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u08-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'm not very good at ___ on a team.",
+      "options": [
+        "working",
+        "work",
+        "to work"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از at فعل ing می‌آید.",
+        "2": "to work بعد از at نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «working» است. good at working."
+    },
+    {
+      "external_id": "u08-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Katie's given up ___ junk food.",
+      "options": [
+        "eating",
+        "eat",
+        "to eat"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از give up فعل ing.",
+        "2": "to eat بعد از up نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «eating» است. given up eating."
+    },
+    {
+      "external_id": "u08-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ is my favorite thing to do on weekends.",
+      "options": [
+        "Shopping",
+        "Shop",
+        "To shop"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فاعل باید اسم باشد.",
+        "2": "to shop هم ممکن است ولی الگوی درس ing است."
+      },
+      "explanation_fa": "فاعل ing: Shopping."
+    },
+    {
+      "external_id": "u08-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I hate ___ on time for things.",
+      "options": [
+        "not being",
+        "not be",
+        "to not be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از hate فعل ing.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not being» است. not being."
+    },
+    {
+      "external_id": "u08-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I don't mind ___ up early.",
+      "options": [
+        "getting",
+        "get",
+        "to get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از mind فعل ing.",
+        "2": "to get بعد از mind نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «getting» است. getting up."
+    },
+    {
+      "external_id": "u08-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "My apartment is very easy ___.",
+      "options": [
+        "to find",
+        "find",
+        "finding"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از صفت to می‌آید.",
+        "2": "finding بعد از easy نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to find» است. easy to find."
+    },
+    {
+      "external_id": "u08-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Simon is saving money ___ a new car.",
+      "options": [
+        "to buy",
+        "buy",
+        "buying"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "هدف با to بیان می‌شود.",
+        "2": "buying هدف را نشان نمی‌دهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to buy» است. to buy."
+    },
+    {
+      "external_id": "u08-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "My sister has never learned ___.",
+      "options": [
+        "to drive",
+        "drive",
+        "driving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از learn مصدر با to.",
+        "2": "driving بعد از learn نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to drive» است. learned to drive."
+    },
+    {
+      "external_id": "u08-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Try ___ a noise.",
+      "options": [
+        "not to make",
+        "not make",
+        "to not make"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "منفی مصدر not to است.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not to make» است. try not to make."
+    },
+    {
+      "external_id": "u08-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I'm in charge of ___ new staff.",
+      "options": [
+        "recruiting",
+        "recruit",
+        "to recruit"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از of فعل ing.",
+        "2": "to recruit بعد از of نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «recruiting» است. recruiting."
+    },
+    {
+      "external_id": "u08-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "It's important for me ___ time with family.",
+      "options": [
+        "to spend",
+        "spend",
+        "spending"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از صفت to.",
+        "2": "spending اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to spend» است. to spend."
+    },
+    {
+      "external_id": "u08-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She suggested ___ a break.",
+      "options": [
+        "taking",
+        "take",
+        "to take"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از suggest فعل ing.",
+        "2": "to take بعد از suggest نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «taking» است. suggested taking."
+    },
+    {
+      "external_id": "u08-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "'I like traveling.' She said she ___ traveling.",
+      "options": [
+        "liked",
+        "likes",
+        "would like"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "likes حال است.",
+        "2": "would like معنی می‌دهد «می‌خواست»."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «liked» است. present → past: liked."
+    },
+    {
+      "external_id": "u08-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "'I'm leaving tomorrow.' He told her he ___ the next day.",
+      "options": [
+        "was leaving",
+        "is leaving",
+        "left"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is leaving حال است.",
+        "2": "left گذشتهٔ ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was leaving» است. was leaving."
+    },
+    {
+      "external_id": "u08-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "'I'll always love you.' He said he ___ always love me.",
+      "options": [
+        "would",
+        "will",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will زمان اصلی است.",
+        "2": "was با love نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. will → would."
+    },
+    {
+      "external_id": "u08-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "'I passed the exam!' She told me she ___ the exam.",
+      "options": [
+        "had passed",
+        "passed",
+        "has passed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "passed زمان اصلی است.",
+        "2": "has passed حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had passed» است. past → past perfect."
+    },
+    {
+      "external_id": "u08-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "'I've forgotten my keys.' He said he ___ his keys.",
+      "options": [
+        "had forgotten",
+        "has forgotten",
+        "forgot"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has forgotten زمان اصلی است.",
+        "2": "forgot گذشتهٔ ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had forgotten» است. present perfect → past perfect."
+    },
+    {
+      "external_id": "u08-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "'I can't come.' She said she ___ come.",
+      "options": [
+        "couldn't",
+        "can't",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't زمان اصلی است.",
+        "2": "didn't با come نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «couldn't» است. can't → couldn't."
+    },
+    {
+      "external_id": "u08-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "'I may be late.' He said he ___ be late.",
+      "options": [
+        "might",
+        "may",
+        "would"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "may زمان اصلی است.",
+        "2": "would معنی متفاوتی دارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might» است. may → might."
+    },
+    {
+      "external_id": "u08-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "'I must go.' She said she ___ go.",
+      "options": [
+        "had to",
+        "must",
+        "has to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must زمان اصلی است.",
+        "2": "has to حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had to» است. must → had to."
+    },
+    {
+      "external_id": "u08-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "She ___ me that she was tired.",
+      "options": [
+        "told",
+        "said",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "said بدون مفعول است.",
+        "2": "says حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «told» است. told me."
+    },
+    {
+      "external_id": "u08-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "He ___ that he loved me.",
+      "options": [
+        "said",
+        "told",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "told مفعول می‌خواهد.",
+        "2": "says حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «said» است. said that."
+    },
+    {
+      "external_id": "u08-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "'I don't want to go.' Jack told Anna he ___ want to go.",
+      "options": [
+        "didn't",
+        "doesn't",
+        "won't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't حال است.",
+        "2": "won't آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't» است. don't → didn't."
+    },
+    {
+      "external_id": "u08-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "'I'm tired.' She told me she ___ tired.",
+      "options": [
+        "was",
+        "is",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "were با she نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. was tired."
+    },
+    {
+      "external_id": "u08-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "هر عبارت را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "good at",
+          "right": "working"
+        },
+        {
+          "left": "given up",
+          "right": "eating"
+        },
+        {
+          "left": "easy",
+          "right": "to find"
+        },
+        {
+          "left": "saving money",
+          "right": "to buy a car"
+        },
+        {
+          "left": "learned",
+          "right": "to drive"
+        }
+      ],
+      "explanation_fa": "بعد از حرف اضافه ing و بعد از صفت/هدف to.",
+      "position": 25
+    },
+    {
+      "external_id": "u08-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر جملهٔ مستقیم را به نقل غیرمستقیم وصل کن.",
+      "pairs": [
+        {
+          "left": "'I like traveling.'",
+          "right": "She said she liked traveling."
+        },
+        {
+          "left": "'I'll always love you.'",
+          "right": "He said he would always love me."
+        },
+        {
+          "left": "'I passed the exam!'",
+          "right": "She told me she had passed."
+        },
+        {
+          "left": "'I can't come.'",
+          "right": "She said she couldn't come."
+        },
+        {
+          "left": "'I must go.'",
+          "right": "She said she had to go."
+        }
+      ],
+      "explanation_fa": "در نقل قول، زمان یک پله عقب می‌رود.",
+      "position": 26
+    }
+  ]
+}

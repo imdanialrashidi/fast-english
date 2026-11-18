@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-4-u09",
+  "book": "aef-3e-4",
+  "unit": 9,
+  "title": "American English File 4 · Unit 9",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 9,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "9A",
+      "9B"
+    ],
+    "grammar_bank": "9A p.150, 9B p.151",
+    "workbook": "9A, 9B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "clauses of contrast and purpose",
+      "title_fa": "جمله‌های تضاد و هدف",
+      "use_fa": "although/though/even though + جمله؛ in spite of/despite + اسم/ing/the fact that. هدف با to/in order to/so as to/for/so that بیان می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "تضاد",
+          "text": "Although it rained, we went out.\nDespite the rain, we went out.\nEven though I'd repaired it, it broke."
+        },
+        {
+          "label_fa": "هدف",
+          "text": "in order to talk / so as not to forget\nfor a meeting / so that I could talk"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Although the ad said it would last for years, it stopped working.",
+          "fa": "با اینکه تبلیغ می‌گفت سال‌ها دوام می‌آورد، از کار افتاد."
+        },
+        {
+          "en": "In spite of her age, my mother is still very active.",
+          "fa": "با وجود سنش، مادرم هنوز خیلی فعال است."
+        },
+        {
+          "en": "I went to the bank in order to talk to the manager.",
+          "fa": "به بانک رفتم تا با مدیر صحبت کنم."
+        },
+        {
+          "en": "I wrote down what he said so as not to forget it.",
+          "fa": "حرف‌هایش را نوشتم تا فراموش نکنم."
+        }
+      ],
+      "notes_fa": "بعد از despite/ in spite of اسم یا ing می‌آید، نه جمله. برای هدف منفی از so as not to / in order not to استفاده کن."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "uncountable and plural nouns",
+      "title_fa": "اسم‌های غیرقابل‌شمارش و جمع",
+      "use_fa": "اسم‌های غیرقابل‌شمارش جمع نمی‌بندند و با a/an نمی‌آیند؛ برای مقدار از some/a piece of/little استفاده می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "غیرقابل‌شمارش",
+          "text": "weather, traffic, scenery, advice, information, furniture, luggage, news, progress"
+        },
+        {
+          "label_fa": "مقدار",
+          "text": "some advice\na piece of information\nvery little traffic"
+        }
+      ],
+      "examples": [
+        {
+          "en": "The weather is fantastic there.",
+          "fa": "هوا آنجا عالی است."
+        },
+        {
+          "en": "There's very little traffic.",
+          "fa": "ترافیک خیلی کمی هست."
+        },
+        {
+          "en": "Could you give me some advice?",
+          "fa": "می‌توانی کمی نصیحت به من بدهی؟"
+        },
+        {
+          "en": "One useful piece of advice is to get a metro card.",
+          "fa": "یک توصیهٔ مفید گرفتن کارت مترو است."
+        }
+      ],
+      "notes_fa": "این اسم‌ها s جمع نمی‌گیرند و فعل مفرد می‌گیرند: The scenery is beautiful (نه are). برای شمارش از piece of استفاده کن."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u09-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ the ad said it would last for years, it stopped working.",
+      "options": [
+        "Although",
+        "Despite",
+        "In spite of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "despite اسم می‌خواهد.",
+        "2": "in spite of اسم می‌خواهد."
+      },
+      "explanation_fa": "although + جمله."
+    },
+    {
+      "external_id": "u09-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "It stopped working ___ the ad said it would last.",
+      "options": [
+        "although",
+        "despite",
+        "in spite of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "despite اسم می‌خواهد.",
+        "2": "in spite of اسم می‌خواهد."
+      },
+      "explanation_fa": "although + جمله."
+    },
+    {
+      "external_id": "u09-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "It stopped again ___ I'd had it repaired.",
+      "options": [
+        "even though",
+        "despite",
+        "despite of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "despite اسم می‌خواهد.",
+        "2": "despite of وجود ندارد."
+      },
+      "explanation_fa": "even though + جمله."
+    },
+    {
+      "external_id": "u09-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "___ her age, my mother is still very active.",
+      "options": [
+        "In spite of",
+        "Although",
+        "Even though"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "although جمله می‌خواهد.",
+        "2": "even though جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «In spite of» است. In spite of + noun."
+    },
+    {
+      "external_id": "u09-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ being 85, my mother is still very active.",
+      "options": [
+        "Despite",
+        "Although",
+        "Though"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "although جمله می‌خواهد.",
+        "2": "though جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Despite» است. Despite + ing."
+    },
+    {
+      "external_id": "u09-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "___ the fact that she's 85, she's still active.",
+      "options": [
+        "Despite",
+        "Although",
+        "Even"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "although خودش جمله می‌سازد.",
+        "2": "even به‌تنهایی اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Despite» است. Despite the fact that."
+    },
+    {
+      "external_id": "u09-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I went to the bank ___ talk to the manager.",
+      "options": [
+        "in order to",
+        "for",
+        "so that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for اسم می‌خواهد.",
+        "2": "so that جمله می‌خواهد."
+      },
+      "explanation_fa": "in order to + فعل پایه."
+    },
+    {
+      "external_id": "u09-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I went to the bank ___ a meeting with the manager.",
+      "options": [
+        "for",
+        "in order to",
+        "so that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in order to فعل می‌خواهد.",
+        "2": "so that جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «for» است. for + noun."
+    },
+    {
+      "external_id": "u09-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I went to the bank ___ I could talk to the manager.",
+      "options": [
+        "so that",
+        "in order to",
+        "for"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in order to فعل می‌خواهد.",
+        "2": "for اسم می‌خواهد."
+      },
+      "explanation_fa": "so that + جمله."
+    },
+    {
+      "external_id": "u09-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I wrote down what he said ___ forget it.",
+      "options": [
+        "so as not to",
+        "in order to not",
+        "to not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب in order to not غلط است.",
+        "2": "to not در این الگو نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «so as not to» است. so as not to forget."
+    },
+    {
+      "external_id": "u09-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "We bought a new car ___ the children would have more space.",
+      "options": [
+        "so that",
+        "to",
+        "for"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "to با فاعل جدید نمی‌آید.",
+        "2": "for اسم می‌خواهد."
+      },
+      "explanation_fa": "so that + جمله."
+    },
+    {
+      "external_id": "u09-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "This liquid is ___ cleaning metal.",
+      "options": [
+        "for",
+        "in order to",
+        "so that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in order to فعل پایه می‌خواهد.",
+        "2": "so that جمله می‌خواهد."
+      },
+      "explanation_fa": "for + ing (کاربرد)."
+    },
+    {
+      "external_id": "u09-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "The weather ___ fantastic there.",
+      "options": [
+        "is",
+        "are",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "weather جمع است؟ نه.",
+        "2": "were گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is."
+    },
+    {
+      "external_id": "u09-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "There's very little ___.",
+      "options": [
+        "traffic",
+        "traffics",
+        "a traffic"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "traffic جمع نمی‌شود.",
+        "2": "a با غیرقابل‌شمارش نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «traffic» است. traffic."
+    },
+    {
+      "external_id": "u09-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "The scenery ___ beautiful here.",
+      "options": [
+        "is",
+        "are",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "scenery جمع بسته نمی‌شود.",
+        "2": "were گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is."
+    },
+    {
+      "external_id": "u09-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Could you give me some ___?",
+      "options": [
+        "advice",
+        "advices",
+        "an advice"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "advice جمع نمی‌شود.",
+        "2": "a با noncount نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «advice» است. advice."
+    },
+    {
+      "external_id": "u09-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "One useful ___ of advice is to get a metro card.",
+      "options": [
+        "piece",
+        "pieces",
+        "part"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "one با pieces نمی‌آید.",
+        "2": "part of advice رایج نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «piece» است. a piece of advice."
+    },
+    {
+      "external_id": "u09-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "The opera house is made mainly of ___.",
+      "options": [
+        "glass",
+        "a glass",
+        "glasses"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a glass یعنی لیوان.",
+        "2": "glasses یعنی عینک."
+      },
+      "explanation_fa": "ماده: glass."
+    },
+    {
+      "external_id": "u09-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Can I have a ___ of tap water?",
+      "options": [
+        "glass",
+        "glasses",
+        "glassy"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "glasses جمع است.",
+        "2": "glassy صفت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «glass» است. a glass of water."
+    },
+    {
+      "external_id": "u09-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "___ is always uncountable.",
+      "options": [
+        "Behavior",
+        "Behaviors",
+        "A behavior"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "behaviors جمع است.",
+        "2": "a با noncount نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Behavior» است. Behavior."
+    },
+    {
+      "external_id": "u09-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Don't use a/an with ___ nouns.",
+      "options": [
+        "uncountable",
+        "countable",
+        "plural"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "countable با a می‌آید.",
+        "2": "plural با a نمی‌آید ولی موضوع غیرقابل‌شمارش است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «uncountable» است. uncountable."
+    },
+    {
+      "external_id": "u09-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "These nouns are also uncountable: ___.",
+      "options": [
+        "information",
+        "informations",
+        "an information"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "informations وجود ندارد.",
+        "2": "a با noncount نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «information» است. information."
+    },
+    {
+      "external_id": "u09-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I need some ___ about the course.",
+      "options": [
+        "information",
+        "informations",
+        "an information"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "informations وجود ندارد.",
+        "2": "a با noncount نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «information» است. information."
+    },
+    {
+      "external_id": "u09-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "We bought new ___ for the living room.",
+      "options": [
+        "furniture",
+        "furnitures",
+        "a furniture"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "furnitures وجود ندارد.",
+        "2": "a با noncount نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «furniture» است. furniture."
+    },
+    {
+      "external_id": "u09-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Although the ad said it would last",
+          "right": "it stopped working."
+        },
+        {
+          "left": "In spite of her age",
+          "right": "my mother is still active."
+        },
+        {
+          "left": "I went to the bank",
+          "right": "in order to talk to the manager."
+        },
+        {
+          "left": "I wrote it down",
+          "right": "so as not to forget."
+        },
+        {
+          "left": "We bought a car",
+          "right": "so that the children would have space."
+        }
+      ],
+      "explanation_fa": "although/despite برای تضاد و to/so that برای هدف.",
+      "position": 25
+    },
+    {
+      "external_id": "u09-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر عبارت را کامل کن.",
+      "pairs": [
+        {
+          "left": "some",
+          "right": "advice"
+        },
+        {
+          "left": "a piece of",
+          "right": "information"
+        },
+        {
+          "left": "very little",
+          "right": "traffic"
+        },
+        {
+          "left": "beautiful",
+          "right": "scenery"
+        },
+        {
+          "left": "new",
+          "right": "furniture"
+        }
+      ],
+      "explanation_fa": "اسم‌های غیرقابل‌شمارش با مقدار و piece of.",
+      "position": 26
+    }
+  ]
+}

@@ -1,0 +1,657 @@
+{
+  "external_id": "aef-3e-1-u12",
+  "book": "aef-3e-1",
+  "unit": 12,
+  "title": "American English File 1 · Unit 12",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 12,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "12A",
+      "12B",
+      "12C"
+    ],
+    "grammar_bank": "12A p.148, 12B p.148, 12C review",
+    "workbook": "12A, 12B, 12C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "present perfect",
+      "title_fa": "حال کامل",
+      "use_fa": "برای کارهایی در گذشته که زمانشان را نمی‌گوییم: تجربه‌های زندگی یا کارهای تازه. با have/has + قسمت سوم فعل ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / You / We / They have + past participle\nHe / She / It has + past participle\nI've seen that movie."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "haven't / hasn't + past participle\nShe hasn't read any books in English."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Have you ...?\nHas he ...?\nHave you ever been to Japan?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Have you seen the new movie?",
+          "fa": "فیلم جدید را دیده‌ای؟"
+        },
+        {
+          "en": "I've never worked in an office.",
+          "fa": "من هرگز در دفتر کار نکرده‌ام."
+        },
+        {
+          "en": "Your parents have arrived.",
+          "fa": "والدینت رسیده‌اند."
+        },
+        {
+          "en": "I've seen it ten times.",
+          "fa": "من آن را ده بار دیده‌ام."
+        }
+      ],
+      "notes_fa": "past participle فعل‌های باقاعده همان ed است (worked) ولی بی‌قاعده‌ها شکل سوم دارند: see→seen، eat→eaten، write→written."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present perfect or simple past?",
+      "title_fa": "حال کامل یا گذشتهٔ ساده؟",
+      "use_fa": "حال کامل برای تجربه یا خبر بدون زمان؛ گذشتهٔ ساده برای جزئیات و وقتی زمان را می‌گوییم. با when و زمان گذشته همیشه گذشتهٔ ساده.",
+      "formulas": [
+        {
+          "label_fa": "حال کامل",
+          "text": "Have you been to that restaurant?\nYes, I have.\n(بدون زمان)"
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "When did you go there?\nI went last weekend.\n(با زمان مشخص)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Have you been to that new restaurant?",
+          "fa": "به آن رستوران جدید رفته‌ای؟"
+        },
+        {
+          "en": "When did you go there? — Last weekend.",
+          "fa": "کِی رفتی؟ — آخر هفتهٔ گذشته."
+        },
+        {
+          "en": "Who did you go with?",
+          "fa": "با چه کسی رفتی؟"
+        },
+        {
+          "en": "I saw it last week.",
+          "fa": "هفتهٔ گذشته آن را دیدم."
+        }
+      ],
+      "notes_fa": "با when و with last week/yesterday گذشتهٔ ساده می‌آید: When did you see it? (نه When have you seen it?)"
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "been or gone?",
+      "title_fa": "been یا gone؟",
+      "use_fa": "been یعنی جایی رفته و برگشته؛ gone یعنی رفته و هنوز آنجاست.",
+      "formulas": [
+        {
+          "label_fa": "been",
+          "text": "has/have been to a place = visited and came back\nI've been to Tokyo three times."
+        },
+        {
+          "label_fa": "gone",
+          "text": "has/have gone to a place = is there now\nShe's gone to Japan."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Have you ever been to Japan?",
+          "fa": "تا حالا به ژاپن رفته‌ای؟"
+        },
+        {
+          "en": "My sister has gone to Japan to study.",
+          "fa": "خواهرم برای درس به ژاپن رفته است."
+        },
+        {
+          "en": "I've been to Tokyo three times.",
+          "fa": "سه بار به توکیو رفته‌ام."
+        },
+        {
+          "en": "She isn't here. She's gone to the store.",
+          "fa": "او اینجا نیست. به فروشگاه رفته است."
+        }
+      ],
+      "notes_fa": "been با بازگشت همراه است و gone با بودن در مقصد: Nick has been to Paris (برگشته) / Nick has gone to Paris (الان آنجاست)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u12-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ you seen the new movie?",
+      "options": [
+        "Have",
+        "Has",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Has برای سوم‌شخص است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "با you: Have you seen ...?"
+    },
+    {
+      "external_id": "u12-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ read any books in English.",
+      "options": [
+        "hasn't",
+        "haven't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "haven't برای جمع است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "منفی she: hasn't read."
+    },
+    {
+      "external_id": "u12-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I've ___ worked in an office.",
+      "options": [
+        "never",
+        "ever",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ever در سؤال می‌آید.",
+        "2": "not بعد از have اینجا نمی‌آید."
+      },
+      "explanation_fa": "تجربهٔ منفی: never."
+    },
+    {
+      "external_id": "u12-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Have you ___ read a Russian novel?",
+      "options": [
+        "ever",
+        "never",
+        "yet"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never در جملهٔ مثبت معنا نمی‌دهد.",
+        "2": "yet برای کارهای تازه است."
+      },
+      "explanation_fa": "سؤال تجربه: ever."
+    },
+    {
+      "external_id": "u12-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "Your parents have ___.",
+      "options": [
+        "arrived",
+        "arrive",
+        "arriving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have فعل پایه نمی‌آید.",
+        "2": "بعد از have فعل ing نمی‌آید."
+      },
+      "explanation_fa": "قسمت سوم arrive می‌شود arrived."
+    },
+    {
+      "external_id": "u12-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "He ___ finished the exercise.",
+      "options": [
+        "has",
+        "have",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have برای جمع است.",
+        "2": "is برای be است."
+      },
+      "explanation_fa": "فاعل he با has می‌آید: has finished."
+    },
+    {
+      "external_id": "u12-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I've ___ that movie ten times.",
+      "options": [
+        "seen",
+        "saw",
+        "see"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "saw گذشتهٔ ساده است.",
+        "2": "see پایه است."
+      },
+      "explanation_fa": "قسمت سوم see می‌شود seen."
+    },
+    {
+      "external_id": "u12-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "A: Have you finished the exercise?\nB: Yes, I ___.",
+      "options": [
+        "have",
+        "has",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has برای سوم‌شخص است.",
+        "2": "do پاسخ حال ساده است."
+      },
+      "explanation_fa": "پاسخ کوتاه: Yes, I have."
+    },
+    {
+      "external_id": "u12-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ you been to that new restaurant?",
+      "options": [
+        "Have",
+        "Did",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Did با been نمی‌آید.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "تجربه بدون زمان: Have you been ...?"
+    },
+    {
+      "external_id": "u12-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "When ___ you go there?",
+      "options": [
+        "did",
+        "have",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با when حال کامل نمی‌آید.",
+        "2": "were برای be است."
+      },
+      "explanation_fa": "جزئیات گذشته: When did you go?"
+    },
+    {
+      "external_id": "u12-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I ___ last weekend.",
+      "options": [
+        "went",
+        "have gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با زمان گذشته حال کامل نمی‌آید.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "گذشتهٔ ساده: went."
+    },
+    {
+      "external_id": "u12-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "When did you ___ the movie?",
+      "options": [
+        "see",
+        "seen",
+        "saw"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did قسمت سوم نمی‌آید.",
+        "2": "saw گذشته است."
+      },
+      "explanation_fa": "بعد از did فعل پایه: see."
+    },
+    {
+      "external_id": "u12-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ it last week.",
+      "options": [
+        "saw",
+        "have seen",
+        "see"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با last week حال کامل نمی‌آید.",
+        "2": "see پایه است."
+      },
+      "explanation_fa": "گذشته: saw."
+    },
+    {
+      "external_id": "u12-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "با حال کامل، زمان دقیق را ___.",
+      "options": [
+        "نمی‌گوییم",
+        "می‌گوییم",
+        "باید بگوییم"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "حال کامل زمان مشخص ندارد.",
+        "2": "با زمان مشخص گذشته می‌آید."
+      },
+      "explanation_fa": "حال کامل برای تجربه بدون زمان است."
+    },
+    {
+      "external_id": "u12-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I saw it ___ week.",
+      "options": [
+        "last",
+        "the last",
+        "ago"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "the last با week اینجا نمی‌آید.",
+        "2": "ago بعد از اسم می‌آید."
+      },
+      "explanation_fa": "عبارت گذشته: last week."
+    },
+    {
+      "external_id": "u12-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ you ever been to Japan?",
+      "options": [
+        "Have",
+        "Did",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Did با been نمی‌آید.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "سؤال تجربه با Have you ever been ...?"
+    },
+    {
+      "external_id": "u12-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Have you ever ___ to Japan?",
+      "options": [
+        "been",
+        "gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gone یعنی هنوز آنجاست.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "تجربهٔ سفر و برگشت: been."
+    },
+    {
+      "external_id": "u12-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "My sister has ___ to Japan to study.",
+      "options": [
+        "gone",
+        "been",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "been یعنی برگشته است.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "او الان آنجاست: gone."
+    },
+    {
+      "external_id": "u12-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I've ___ to Tokyo three times.",
+      "options": [
+        "been",
+        "gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gone یعنی هنوز آنجاست.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "تجربه: been to Tokyo."
+    },
+    {
+      "external_id": "u12-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Nick has ___ to Paris. He's in Paris now.",
+      "options": [
+        "gone",
+        "been",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "been یعنی برگشته است.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "الان آنجاست: gone."
+    },
+    {
+      "external_id": "u12-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Nick has ___ to Paris. He came back last year.",
+      "options": [
+        "been",
+        "gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gone یعنی هنوز آنجاست.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "برگشته است: been."
+    },
+    {
+      "external_id": "u12-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "My parents have ___ to the US for vacation.",
+      "options": [
+        "gone",
+        "been",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "been یعنی برگشته‌اند.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "در سفرند: gone."
+    },
+    {
+      "external_id": "u12-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Have you ___ to the new restaurant?",
+      "options": [
+        "been",
+        "gone",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gone یعنی هنوز آنجاست.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "تجربه: been."
+    },
+    {
+      "external_id": "u12-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She isn't here. She's ___ to the store.",
+      "options": [
+        "gone",
+        "been",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "been یعنی برگشته است.",
+        "2": "go پایه است."
+      },
+      "explanation_fa": "الان در فروشگاه است: gone."
+    },
+    {
+      "external_id": "u12-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر فعل را به قسمت سومش وصل کن.",
+      "pairs": [
+        {
+          "left": "like",
+          "right": "liked"
+        },
+        {
+          "left": "read",
+          "right": "read"
+        },
+        {
+          "left": "see",
+          "right": "seen"
+        },
+        {
+          "left": "eat",
+          "right": "eaten"
+        },
+        {
+          "left": "write",
+          "right": "written"
+        }
+      ],
+      "explanation_fa": "باقاعده: liked؛ بی‌قاعده: read→read، see→seen، eat→eaten، write→written."
+    },
+    {
+      "external_id": "u12-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Have you been to that restaurant?",
+          "right": "Yes, I went last month."
+        },
+        {
+          "left": "When did you go there?",
+          "right": "Last weekend."
+        },
+        {
+          "left": "Who did you go with?",
+          "right": "Some people from work."
+        },
+        {
+          "left": "Have you ever been to Japan?",
+          "right": "Yes, three times."
+        },
+        {
+          "left": "When did you see the movie?",
+          "right": "I saw it last week."
+        }
+      ],
+      "explanation_fa": "حال کامل برای تجربه، گذشته برای جزئیات و زمان مشخص."
+    },
+    {
+      "external_id": "u12-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Nick has been to Paris.",
+          "right": "He came back."
+        },
+        {
+          "left": "Nick has gone to Paris.",
+          "right": "He is in Paris now."
+        },
+        {
+          "left": "Have you ever been",
+          "right": "to Japan?"
+        },
+        {
+          "left": "They've gone",
+          "right": "to the US."
+        },
+        {
+          "left": "I've been",
+          "right": "to Tokyo three times."
+        }
+      ],
+      "explanation_fa": "been با بازگشت و gone با بودن در مقصد."
+    }
+  ]
+}

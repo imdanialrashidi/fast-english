@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-2-u02",
+  "book": "aef-3e-2",
+  "unit": 2,
+  "title": "American English File 2 · Unit 2",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 2,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "2A",
+      "2B",
+      "2C"
+    ],
+    "grammar_bank": "2A p.130, 2B p.130, 2C p.130",
+    "workbook": "2A, 2B, 2C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple past: regular and irregular verbs",
+      "title_fa": "گذشتهٔ ساده: افعال باقاعده و بی‌قاعده",
+      "use_fa": "برای کارهای تمام‌شده در گذشته. باقاعده‌ها ed می‌گیرند، بی‌قاعده‌ها شکل خودشان را دارند و سؤال/منفی با did/didn't و فعل پایه ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "stay → stayed\ngo → went\nsee → saw"
+        },
+        {
+          "label_fa": "منفی",
+          "text": "didn't + base verb\nHe didn't stay with friends."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Did + subject + base verb?\nDid you stay?\nWhere did you stay?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "We stayed at a hotel last summer.",
+          "fa": "تابستان گذشته در هتل ماندیم."
+        },
+        {
+          "en": "I went to Turkey twice last year.",
+          "fa": "سال گذشته دو بار به ترکیه رفتم."
+        },
+        {
+          "en": "Where did you stay?",
+          "fa": "کجا ماندی؟"
+        },
+        {
+          "en": "She didn't go to Thailand.",
+          "fa": "او به تایلند نرفت."
+        }
+      ],
+      "notes_fa": "بعد از did/didn't فعل پایه می‌آید: Did you go? (نه Did you went?) قواعد ed: stay→stayed، like→liked، study→studied، stop→stopped."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "past continuous: was / were + verb + -ing",
+      "title_fa": "گذشتهٔ استمراری",
+      "use_fa": "برای کاری که در یک لحظهٔ مشخص در گذشته در جریان بود. با was/were + فعل ing ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / He / She / It was + verb-ing\nYou / We / They were + verb-ing"
+        },
+        {
+          "label_fa": "منفی",
+          "text": "wasn't / weren't + verb-ing\nIt wasn't raining."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Was he working?\nWhat were you doing?\nYes, I was. / No, I wasn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "At 8:45 last Saturday I was walking in the park.",
+          "fa": "شنبهٔ گذشته ساعت ۸:۴۵ در پارک قدم می‌زدم."
+        },
+        {
+          "en": "The birds were singing.",
+          "fa": "پرنده‌ها آواز می‌خواندند."
+        },
+        {
+          "en": "What were you doing at 11 o'clock?",
+          "fa": "ساعت ۱۱ چه کار می‌کردی؟"
+        },
+        {
+          "en": "It wasn't raining.",
+          "fa": "باران نمی‌بارید."
+        }
+      ],
+      "notes_fa": "گذشتهٔ استمراری برای لحظهٔ مشخص در گذشته است، نه عادت. با at 8:45، at that moment و when می‌آید."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "simple past or past continuous? time sequencers",
+      "title_fa": "گذشتهٔ ساده یا استمراری؟ ترتیب زمان",
+      "use_fa": "گذشتهٔ استمراری کار طولانی پس‌زمینه است و گذشتهٔ ساده کار کوتاه که آن را قطع می‌کند. ترتیب رویدادها با then، after that، later و the next day بیان می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "ترکیب",
+          "text": "past continuous + when + simple past\nWe were walking when he took a photo."
+        },
+        {
+          "label_fa": "ترتیب",
+          "text": "On their first date ...\nAfter that ...\nTwo minutes later ...\nThe next day ..."
+        },
+        {
+          "label_fa": "ربط",
+          "text": "because = reason\nso = result\nbut / although = contrast"
+        }
+      ],
+      "examples": [
+        {
+          "en": "We were walking in the gardens when he took a photo.",
+          "fa": "در باغ قدم می‌زدیم که او عکس گرفت."
+        },
+        {
+          "en": "My sister arrived when I was having lunch.",
+          "fa": "خواهرم وقتی ناهار می‌خوردم رسید."
+        },
+        {
+          "en": "Two minutes later my phone rang.",
+          "fa": "دو دقیقه بعد تلفنم زنگ خورد."
+        },
+        {
+          "en": "She was in a hurry, so she was driving fast.",
+          "fa": "او عجله داشت، برای همین سریع رانندگی می‌کرد."
+        }
+      ],
+      "notes_fa": "then و after that ترتیب را نشان می‌دهند (نه after). because دلیل و so نتیجه است؛ but و although تضاد."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u02-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "We ___ at a hotel last summer.",
+      "options": [
+        "stayed",
+        "stay",
+        "stays"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "stays حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ stay: stayed."
+    },
+    {
+      "external_id": "u02-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He ___ stay with friends.",
+      "options": [
+        "didn't",
+        "don't",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "doesn't برای سوم‌شخص حال است."
+      },
+      "explanation_fa": "منفی گذشته: didn't stay."
+    },
+    {
+      "external_id": "u02-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you stay for the weekend?",
+      "options": [
+        "Did",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "سؤال گذشته: Did you stay?"
+    },
+    {
+      "external_id": "u02-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I ___ to Turkey twice last year.",
+      "options": [
+        "went",
+        "go",
+        "goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "goes حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ go: went."
+    },
+    {
+      "external_id": "u02-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "She ___ go to Thailand.",
+      "options": [
+        "didn't",
+        "don't",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "doesn't برای حال است."
+      },
+      "explanation_fa": "منفی گذشته: didn't go."
+    },
+    {
+      "external_id": "u02-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Where ___ you stay?",
+      "options": [
+        "did",
+        "do",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال است.",
+        "2": "were برای be است."
+      },
+      "explanation_fa": "گذشته: Where did you stay?"
+    },
+    {
+      "external_id": "u02-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They ___ the movie last night.",
+      "options": [
+        "saw",
+        "see",
+        "sees"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "sees حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ see: saw."
+    },
+    {
+      "external_id": "u02-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "He ___ work yesterday.",
+      "options": [
+        "didn't",
+        "don't",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "doesn't برای حال است."
+      },
+      "explanation_fa": "منفی گذشته: didn't work."
+    },
+    {
+      "external_id": "u02-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "At 8:45 last Saturday I ___ walking in the park.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "am زمان حال است."
+      },
+      "explanation_fa": "با I از was استفاده می‌کنیم: I was walking."
+    },
+    {
+      "external_id": "u02-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "The birds ___ singing.",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "birds جمع: were singing."
+    },
+    {
+      "external_id": "u02-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "It ___ raining.",
+      "options": [
+        "wasn't",
+        "weren't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "weren't برای جمع است.",
+        "2": "isn't زمان حال است."
+      },
+      "explanation_fa": "منفی was: wasn't raining."
+    },
+    {
+      "external_id": "u02-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ it raining when you got up?",
+      "options": [
+        "Was",
+        "Were",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Were برای جمع است.",
+        "2": "Is زمان حال است."
+      },
+      "explanation_fa": "سؤال مفرد: Was it raining?"
+    },
+    {
+      "external_id": "u02-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "What ___ you doing at 11 o'clock?",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "با you: were doing."
+    },
+    {
+      "external_id": "u02-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I ___ watching TV.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "am زمان حال است."
+      },
+      "explanation_fa": "با I از was استفاده می‌کنیم: I was watching."
+    },
+    {
+      "external_id": "u02-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "They ___ working at 8:00.",
+      "options": [
+        "weren't",
+        "wasn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "wasn't برای مفرد است.",
+        "2": "aren't زمان حال است."
+      },
+      "explanation_fa": "منفی جمع: weren't working."
+    },
+    {
+      "external_id": "u02-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ he working?",
+      "options": [
+        "Was",
+        "Were",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Were برای جمع است.",
+        "2": "Is زمان حال است."
+      },
+      "explanation_fa": "سؤال مفرد: Was he working?"
+    },
+    {
+      "external_id": "u02-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "We were walking in the gardens when he ___ a photo.",
+      "options": [
+        "took",
+        "take",
+        "takes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشتهٔ ساده لازم است.",
+        "2": "takes حال ساده است."
+      },
+      "explanation_fa": "کار کوتاه: took a photo."
+    },
+    {
+      "external_id": "u02-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "My sister arrived when I ___ having lunch.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "am زمان حال است."
+      },
+      "explanation_fa": "کار طولانی: was having lunch."
+    },
+    {
+      "external_id": "u02-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "___ their first date, they went to a restaurant.",
+      "options": [
+        "On",
+        "In",
+        "At"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "In برای ماه و سال است.",
+        "2": "At برای ساعت است."
+      },
+      "explanation_fa": "برای تاریخ و روز از on استفاده می‌کنیم: On their first date."
+    },
+    {
+      "external_id": "u02-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "___ that they started meeting every day.",
+      "options": [
+        "After",
+        "Then",
+        "When"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Then به‌تنهایی قبل از that نمی‌آید.",
+        "2": "When برای زمان است."
+      },
+      "explanation_fa": "After that = بعد از آن."
+    },
+    {
+      "external_id": "u02-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "The next day I ___ to look for a new job.",
+      "options": [
+        "decided",
+        "decide",
+        "decides"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "decides حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ decide: decided."
+    },
+    {
+      "external_id": "u02-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Two minutes ___, my phone rang.",
+      "options": [
+        "later",
+        "late",
+        "after"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "late صفت است.",
+        "2": "after به این شکل نمی‌آید."
+      },
+      "explanation_fa": "عبارت زمانی: two minutes later."
+    },
+    {
+      "external_id": "u02-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "She was driving fast ___ she was in a hurry.",
+      "options": [
+        "because",
+        "so",
+        "but"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "so نتیجه را نشان می‌دهد.",
+        "2": "but تضاد است."
+      },
+      "explanation_fa": "دلیل: because."
+    },
+    {
+      "external_id": "u02-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She was in a hurry, ___ she was driving fast.",
+      "options": [
+        "so",
+        "because",
+        "although"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "because دلیل را نشان می‌دهد.",
+        "2": "although تضاد است."
+      },
+      "explanation_fa": "نتیجه: so."
+    },
+    {
+      "external_id": "u02-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر فعل را به گذشته‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "stay",
+          "right": "stayed"
+        },
+        {
+          "left": "go",
+          "right": "went"
+        },
+        {
+          "left": "see",
+          "right": "saw"
+        },
+        {
+          "left": "stop",
+          "right": "stopped"
+        },
+        {
+          "left": "study",
+          "right": "studied"
+        }
+      ],
+      "explanation_fa": "stay→stayed، go→went، see→saw، stop→stopped، study→studied."
+    },
+    {
+      "external_id": "u02-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "At 8:45 I was",
+          "right": "walking in the park."
+        },
+        {
+          "left": "The birds were",
+          "right": "singing."
+        },
+        {
+          "left": "It wasn't",
+          "right": "raining."
+        },
+        {
+          "left": "What were you",
+          "right": "doing?"
+        },
+        {
+          "left": "They were",
+          "right": "working."
+        }
+      ],
+      "explanation_fa": "گذشتهٔ استمراری: was/were + فعل ing."
+    },
+    {
+      "external_id": "u02-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "We were walking when",
+          "right": "he took a photo."
+        },
+        {
+          "left": "She arrived when",
+          "right": "I was having lunch."
+        },
+        {
+          "left": "Then / After that",
+          "right": "we went home."
+        },
+        {
+          "left": "She was driving fast because",
+          "right": "she was in a hurry."
+        },
+        {
+          "left": "She was tired, but",
+          "right": "she couldn't sleep."
+        }
+      ],
+      "explanation_fa": "کار طولانی با گذشتهٔ استمراری و کار کوتاه با گذشتهٔ ساده؛ because دلیل، but تضاد."
+    }
+  ]
+}

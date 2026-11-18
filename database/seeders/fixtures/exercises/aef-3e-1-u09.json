@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-1-u09",
+  "book": "aef-3e-1",
+  "unit": 9,
+  "title": "American English File 1 · Unit 9",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 9,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "9A",
+      "9B",
+      "9C"
+    ],
+    "grammar_bank": "9A p.142, 9B p.142, 9C p.142",
+    "workbook": "9A, 9B, 9C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "countable / uncountable nouns, a/an, some/any",
+      "title_fa": "اسم شمارش‌پذیر و ناشمارش، a/an، some/any",
+      "use_fa": "اسم‌های شمارش‌پذیر مفرد و جمع می‌شوند؛ ناشمارش‌ها جمع بسته نمی‌شوند. a/an با مفرد شمارش‌پذیر، some در مثبت و any در منفی و سؤال.",
+      "formulas": [
+        {
+          "label_fa": "a/an",
+          "text": "an apple / a tomato\na/an + singular countable noun"
+        },
+        {
+          "label_fa": "some",
+          "text": "some butter / some tomatoes\nمثبت با جمع و ناشمارش"
+        },
+        {
+          "label_fa": "any",
+          "text": "We don't need any tomatoes.\nDo we need any sugar?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "We need an apple.",
+          "fa": "به یک سیب نیاز داریم."
+        },
+        {
+          "en": "We need some butter.",
+          "fa": "به کمی کره نیاز داریم."
+        },
+        {
+          "en": "We don't need any tomatoes.",
+          "fa": "به هیچ گوجه‌ای نیاز نداریم."
+        },
+        {
+          "en": "Would you like some coffee?",
+          "fa": "کمی قهوه میل داری؟"
+        }
+      ],
+      "notes_fa": "اسم ناشمارش را جمع نمی‌بندیم: rice (نه two rices). در درخواست و تعارف بعضی وقت‌ها some می‌آید: Would you like some coffee?"
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "quantifiers",
+      "title_fa": "کمیت‌ها: how much/many، a lot of، a little/few",
+      "use_fa": "برای پرسیدن و گفتن مقدار. how much با ناشمارش و how many با جمع؛ a little با ناشمارش و a few با جمع.",
+      "formulas": [
+        {
+          "label_fa": "پرسش مقدار",
+          "text": "How much sugar do you eat?\nHow many cookies do you eat?"
+        },
+        {
+          "label_fa": "مقدار",
+          "text": "a lot of / lots of\na little / not much + uncountable\na few / not many + plural countable\nnot any = zero"
+        }
+      ],
+      "examples": [
+        {
+          "en": "How much sugar do you eat?",
+          "fa": "چقدر شکر می‌خوری؟"
+        },
+        {
+          "en": "I eat a lot of sugar.",
+          "fa": "من زیاد شکر می‌خورم."
+        },
+        {
+          "en": "I eat a few cookies.",
+          "fa": "کمی شیرینی می‌خورم."
+        },
+        {
+          "en": "I don't drink much water.",
+          "fa": "من آب زیادی نمی‌نوشم."
+        }
+      ],
+      "notes_fa": "a little برای ناشمارش (a little sugar) و a few برای جمع (a few cookies). در جملهٔ منفی و سؤال معمولاً much/many می‌آید."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "comparative adjectives",
+      "title_fa": "صفت‌های مقایسه‌ای",
+      "use_fa": "برای مقایسهٔ دو چیز: صفت کوتاه er می‌گیرد و صفت بلند با more می‌آید. بعد از مقایسه than می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "کوتاه",
+          "text": "old → older\nbig → bigger\nhot → hotter\neasy → easier"
+        },
+        {
+          "label_fa": "بلند",
+          "text": "expensive → more expensive\ndifficult → more difficult\nstressed → more stressed"
+        },
+        {
+          "label_fa": "بی‌قاعده",
+          "text": "good → better\nbad → worse\nfar → farther / further"
+        }
+      ],
+      "examples": [
+        {
+          "en": "A whale is louder than a lion.",
+          "fa": "نهنگ از شیر پرصداتر است."
+        },
+        {
+          "en": "Canada is bigger than the US.",
+          "fa": "کانادا از آمریکا بزرگ‌تر است."
+        },
+        {
+          "en": "K2 is more difficult to climb than Everest.",
+          "fa": "صعود به K2 از اورست سخت‌تر است."
+        },
+        {
+          "en": "My new job is better than my old one.",
+          "fa": "شغل جدیدم از قبلی بهتر است."
+        }
+      ],
+      "notes_fa": "good و bad بی‌قاعده‌اند: better و worse. صفت دو هجایی که به y ختم می‌شود y را به i تبدیل می‌کند: easy → easier."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u09-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "We need ___ apple.",
+      "options": [
+        "an",
+        "a",
+        "some"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "apple با صدای مصوت شروع می‌شود.",
+        "2": "apple مفرد شمارش‌پذیر است."
+      },
+      "explanation_fa": "قبل از مصوت an: an apple."
+    },
+    {
+      "external_id": "u09-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "We need ___ butter.",
+      "options": [
+        "some",
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "butter ناشمارش است.",
+        "2": "an فقط با مفرد شمارش‌پذیر است."
+      },
+      "explanation_fa": "ناشمارش با some: some butter."
+    },
+    {
+      "external_id": "u09-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "We don't need ___ tomatoes.",
+      "options": [
+        "any",
+        "some",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "some در منفی نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "منفی جمع: any."
+    },
+    {
+      "external_id": "u09-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Do we need ___ sugar?",
+      "options": [
+        "any",
+        "some",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "some در سؤال معمولاً نمی‌آید.",
+        "2": "a با ناشمارش نمی‌آید."
+      },
+      "explanation_fa": "سؤال با ناشمارش: any."
+    },
+    {
+      "external_id": "u09-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I'd like ___ orange.",
+      "options": [
+        "an",
+        "a",
+        "some"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "orange با مصوت شروع می‌شود.",
+        "2": "orange مفرد است."
+      },
+      "explanation_fa": "orange با صدای مصوت شروع می‌شود، پس an می‌آید: an orange."
+    },
+    {
+      "external_id": "u09-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "There are ___ apples.",
+      "options": [
+        "some",
+        "any",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "any در مثبت نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "مثبت جمع: some."
+    },
+    {
+      "external_id": "u09-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "There isn't ___ meat.",
+      "options": [
+        "any",
+        "some",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "some در منفی نمی‌آید.",
+        "2": "a با ناشمارش نمی‌آید."
+      },
+      "explanation_fa": "منفی ناشمارش: any."
+    },
+    {
+      "external_id": "u09-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Would you like ___ coffee?",
+      "options": [
+        "some",
+        "any",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "در این تعارف any نمی‌آید.",
+        "2": "coffee ناشمارش است."
+      },
+      "explanation_fa": "در تعارف some می‌آید: some coffee."
+    },
+    {
+      "external_id": "u09-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ sugar do you eat?",
+      "options": [
+        "How much",
+        "How many",
+        "How long"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sugar ناشمارش است.",
+        "2": "How long برای مدت است."
+      },
+      "explanation_fa": "ناشمارش: How much."
+    },
+    {
+      "external_id": "u09-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ cookies do you eat?",
+      "options": [
+        "How many",
+        "How much",
+        "How long"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "cookies جمع است.",
+        "2": "How long برای مدت است."
+      },
+      "explanation_fa": "جمع: How many."
+    },
+    {
+      "external_id": "u09-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I eat ___ sugar.",
+      "options": [
+        "a lot of",
+        "many",
+        "a few"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "many با ناشمارش نمی‌آید.",
+        "2": "a few با جمع می‌آید."
+      },
+      "explanation_fa": "ناشمارش با a lot of."
+    },
+    {
+      "external_id": "u09-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "I eat ___ cookies.",
+      "options": [
+        "a few",
+        "a little",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a little با ناشمارش است.",
+        "2": "much با جمع نمی‌آید."
+      },
+      "explanation_fa": "جمع با a few."
+    },
+    {
+      "external_id": "u09-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I don't drink ___ water.",
+      "options": [
+        "much",
+        "many",
+        "a few"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "many با ناشمارش نمی‌آید.",
+        "2": "a few با جمع است."
+      },
+      "explanation_fa": "منفی ناشمارش: much."
+    },
+    {
+      "external_id": "u09-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I don't eat ___ vegetables.",
+      "options": [
+        "many",
+        "much",
+        "a little"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "much با جمع نمی‌آید.",
+        "2": "a little با ناشمارش است."
+      },
+      "explanation_fa": "منفی جمع: many."
+    },
+    {
+      "external_id": "u09-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "There's ___ butter.",
+      "options": [
+        "a little",
+        "a few",
+        "many"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a few با جمع است.",
+        "2": "many با ناشمارش نمی‌آید."
+      },
+      "explanation_fa": "ناشمارش: a little."
+    },
+    {
+      "external_id": "u09-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "There are ___ eggs.",
+      "options": [
+        "a few",
+        "a little",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a little با ناشمارش است.",
+        "2": "much با جمع نمی‌آید."
+      },
+      "explanation_fa": "جمع: a few."
+    },
+    {
+      "external_id": "u09-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "A whale is ___ than a lion.",
+      "options": [
+        "louder",
+        "loud",
+        "more loud"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "مقایسه بدون er کامل نیست.",
+        "2": "loud یک‌هجایی است."
+      },
+      "explanation_fa": "صفت یک‌هجایی loud با er مقایسه می‌شود: louder."
+    },
+    {
+      "external_id": "u09-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Canada is ___ than the US.",
+      "options": [
+        "bigger",
+        "big",
+        "more big"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "مقایسه بدون er نیست.",
+        "2": "big یک‌هجایی است."
+      },
+      "explanation_fa": "big → bigger (صامت دوبرابر)."
+    },
+    {
+      "external_id": "u09-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "K2 is ___ to climb than Everest.",
+      "options": [
+        "more difficult",
+        "difficulter",
+        "difficult"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت بلند er نمی‌گیرد.",
+        "2": "مقایسه بدون more نیست."
+      },
+      "explanation_fa": "صفت بلند difficult با more مقایسه می‌شود: more difficult."
+    },
+    {
+      "external_id": "u09-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "My new job is ___ than my old one.",
+      "options": [
+        "better",
+        "gooder",
+        "more good"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "good بی‌قاعده است.",
+        "2": "more good وجود ندارد."
+      },
+      "explanation_fa": "good بی‌قاعده است و better می‌شود."
+    },
+    {
+      "external_id": "u09-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "The traffic is ___ in the evening.",
+      "options": [
+        "worse",
+        "worser",
+        "more bad"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "bad بی‌قاعده است.",
+        "2": "more bad وجود ندارد."
+      },
+      "explanation_fa": "bad بی‌قاعده است و worse می‌شود."
+    },
+    {
+      "external_id": "u09-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "This book is ___ than that one.",
+      "options": [
+        "more interesting",
+        "interestinger",
+        "interesting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت بلند er نمی‌گیرد.",
+        "2": "مقایسه بدون more نیست."
+      },
+      "explanation_fa": "صفت بلند interesting با more مقایسه می‌شود."
+    },
+    {
+      "external_id": "u09-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Today is ___ than yesterday.",
+      "options": [
+        "hotter",
+        "hot",
+        "more hot"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "مقایسه بدون er نیست.",
+        "2": "hot یک‌هجایی است."
+      },
+      "explanation_fa": "hot صامت آخر را دوبرابر می‌کند: hotter."
+    },
+    {
+      "external_id": "u09-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She's ___ than her brother.",
+      "options": [
+        "taller",
+        "tall",
+        "more tall"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "مقایسه بدون er نیست.",
+        "2": "tall یک‌هجایی است."
+      },
+      "explanation_fa": "tall با er مقایسه می‌شود: taller."
+    },
+    {
+      "external_id": "u09-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "We need some",
+          "right": "butter."
+        },
+        {
+          "left": "We don't need any",
+          "right": "tomatoes."
+        },
+        {
+          "left": "Do we need any",
+          "right": "sugar?"
+        },
+        {
+          "left": "Can I have an",
+          "right": "orange?"
+        },
+        {
+          "left": "Would you like some",
+          "right": "coffee?"
+        }
+      ],
+      "explanation_fa": "some در مثبت و تعارف، any در منفی و سؤال، a/an با مفرد شمارش‌پذیر."
+    },
+    {
+      "external_id": "u09-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "How much sugar?",
+          "right": "A little."
+        },
+        {
+          "left": "How many cookies?",
+          "right": "A few."
+        },
+        {
+          "left": "Do you eat a lot of sugar?",
+          "right": "No, not much."
+        },
+        {
+          "left": "Do you eat many cookies?",
+          "right": "No, not many."
+        },
+        {
+          "left": "How much water?",
+          "right": "None."
+        }
+      ],
+      "explanation_fa": "much با ناشمارش، many با جمع؛ a little و a few مقدار کم."
+    },
+    {
+      "external_id": "u09-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر صفت را به مقایسه‌ای‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "old",
+          "right": "older"
+        },
+        {
+          "left": "big",
+          "right": "bigger"
+        },
+        {
+          "left": "easy",
+          "right": "easier"
+        },
+        {
+          "left": "expensive",
+          "right": "more expensive"
+        },
+        {
+          "left": "good",
+          "right": "better"
+        }
+      ],
+      "explanation_fa": "old→older، big→bigger، easy→easier، expensive→more expensive، good→better."
+    }
+  ]
+}

@@ -1,0 +1,643 @@
+{
+  "external_id": "aef-3e-1-u07",
+  "book": "aef-3e-1",
+  "unit": 7,
+  "title": "American English File 1 · Unit 7",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 7,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "7A",
+      "7B",
+      "7C"
+    ],
+    "grammar_bank": "7A p.138, 7B p.138, 7C p.138",
+    "workbook": "7A, 7B, 7C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple past of be: was / were",
+      "title_fa": "گذشتهٔ فعل be: was و were",
+      "use_fa": "برای صحبت دربارهٔ گذشته: was برای I/he/she/it و were برای you/we/they. با born هم was/were می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / He / She / It was ...\nYou / We / They were ...\nI was born in Canada."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "wasn't / weren't\nShe wasn't in class yesterday."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Was he Dutch?\nWere you at home?\nYes, I was. / No, I wasn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Van Gogh was an artist.",
+          "fa": "ون گوگ نقاش بود."
+        },
+        {
+          "en": "The Beatles were famous in the 1960s.",
+          "fa": "بیتلز در دههٔ ۱۹۶۰ مشهور بودند."
+        },
+        {
+          "en": "Where were you last night?",
+          "fa": "دیشب کجا بودی؟"
+        },
+        {
+          "en": "She wasn't in class yesterday.",
+          "fa": "او دیروز سر کلاس نبود."
+        }
+      ],
+      "notes_fa": "was برای مفرد و were برای جمع و you. عبارات گذشته: yesterday، last night، in 2014."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "simple past: regular verbs",
+      "title_fa": "گذشتهٔ ساده: افعال باقاعده",
+      "use_fa": "برای کارهایی که در گذشته تمام شده‌اند. فعل ed می‌گیرد و برای همهٔ فاعل‌ها یک شکل است. سؤال و منفی با did/didn't و فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + verb-ed\nI booked the flights.\nWe arrived at 10:00."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "didn't + base verb\nThey didn't arrive until very late."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Did + subject + base verb?\nDid you watch the game?\nYes, I did. / No, I didn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I booked the flights yesterday.",
+          "fa": "دیروز پروازها را رزرو کردم."
+        },
+        {
+          "en": "We arrived at the airport at 10:00.",
+          "fa": "ساعت ۱۰ به فرودگاه رسیدیم."
+        },
+        {
+          "en": "She worked as a waiter last summer.",
+          "fa": "او تابستان گذشته پیشخدمت بود."
+        },
+        {
+          "en": "Did you watch the game last night?",
+          "fa": "دیشب بازی را دیدی؟"
+        }
+      ],
+      "notes_fa": "قواعد ed: watch→watched، arrive→arrived، study→studied، stop→stopped. بعد از did/didn't فعل پایه می‌آید."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "simple past: irregular verbs",
+      "title_fa": "گذشتهٔ ساده: افعال بی‌قاعده",
+      "use_fa": "بسیاری از افعال پرکاربرد شکل گذشتهٔ خودشان را دارند: go→went، buy→bought، have→had. سؤال و منفی همچنان با did/didn't و فعل پایه است.",
+      "formulas": [
+        {
+          "label_fa": "گذشته‌های رایج",
+          "text": "buy → bought\ncome → came\nfeel → felt\nget → got\ngo → went\nhave → had\nknow → knew\nsay → said\ntake → took\nthink → thought\nwear → wore"
+        },
+        {
+          "label_fa": "منفی/سؤالی",
+          "text": "didn't go\nDid you go to a party?\nWho did you go with?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I went to Iceland in December.",
+          "fa": "دسامبر به ایسلند رفتم."
+        },
+        {
+          "en": "She bought a new car.",
+          "fa": "او ماشین نو خرید."
+        },
+        {
+          "en": "We had a great time.",
+          "fa": "خیلی خوش گذشت."
+        },
+        {
+          "en": "I didn't go to New York.",
+          "fa": "من به نیویورک نرفتم."
+        }
+      ],
+      "notes_fa": "بعد از did/didn't شکل گذشته نمی‌آید: Did you go ...? (نه Did you went ...?) و didn't go (نه didn't went)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u07-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Van Gogh ___ an artist.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "is زمان حال است."
+      },
+      "explanation_fa": "فاعل مفرد: was an artist."
+    },
+    {
+      "external_id": "u07-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ in class yesterday.",
+      "options": [
+        "wasn't",
+        "weren't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "weren't برای جمع است.",
+        "2": "isn't زمان حال است."
+      },
+      "explanation_fa": "منفی was برای she: wasn't."
+    },
+    {
+      "external_id": "u07-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "The Beatles ___ famous in the 1960s.",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "جمع: were famous."
+    },
+    {
+      "external_id": "u07-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Where ___ you last night?",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "با you: were."
+    },
+    {
+      "external_id": "u07-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I ___ born in Canada.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "am زمان حال است."
+      },
+      "explanation_fa": "با born از was استفاده می‌کنیم: I was born in Canada."
+    },
+    {
+      "external_id": "u07-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "They ___ at home.",
+      "options": [
+        "weren't",
+        "wasn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "wasn't برای مفرد است.",
+        "2": "aren't زمان حال است."
+      },
+      "explanation_fa": "منفی were: weren't."
+    },
+    {
+      "external_id": "u07-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "___ he Dutch or French?",
+      "options": [
+        "Was",
+        "Were",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Were برای جمع است.",
+        "2": "Is زمان حال است."
+      },
+      "explanation_fa": "سؤال مفرد: Was he ...?"
+    },
+    {
+      "external_id": "u07-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I ___ the flights yesterday.",
+      "options": [
+        "booked",
+        "book",
+        "books"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "books حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ book: booked."
+    },
+    {
+      "external_id": "u07-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "We ___ at the airport at 10:00.",
+      "options": [
+        "arrived",
+        "arrive",
+        "arrives"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "arrives حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ arrive: arrived."
+    },
+    {
+      "external_id": "u07-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I ___ TV every night when I was young.",
+      "options": [
+        "watched",
+        "watch",
+        "watches"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "watches حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ watch: watched."
+    },
+    {
+      "external_id": "u07-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "She ___ as a waiter last summer.",
+      "options": [
+        "worked",
+        "work",
+        "works"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "works حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ work: worked."
+    },
+    {
+      "external_id": "u07-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "They ___ arrive until very late.",
+      "options": [
+        "didn't",
+        "don't",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "doesn't برای سوم‌شخص است."
+      },
+      "explanation_fa": "منفی گذشته: didn't + فعل پایه."
+    },
+    {
+      "external_id": "u07-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "___ you watch the game last night?",
+      "options": [
+        "Did",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "سؤال گذشته: Did you watch ...?"
+    },
+    {
+      "external_id": "u07-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "He ___ in 2014.",
+      "options": [
+        "died",
+        "die",
+        "dies"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "dies حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ die: died."
+    },
+    {
+      "external_id": "u07-t2-q08",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "We ___ the concert.",
+      "options": [
+        "didn't enjoy",
+        "don't enjoy",
+        "doesn't enjoy"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "doesn't برای سوم‌شخص است."
+      },
+      "explanation_fa": "منفی گذشته: didn't enjoy."
+    },
+    {
+      "external_id": "u07-t3-q01",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I ___ to Iceland in December.",
+      "options": [
+        "went",
+        "go",
+        "goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "goes حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ go: went."
+    },
+    {
+      "external_id": "u07-t3-q02",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "She ___ a new car.",
+      "options": [
+        "bought",
+        "buy",
+        "buys"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "buys حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ buy: bought."
+    },
+    {
+      "external_id": "u07-t3-q03",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "We ___ a great time.",
+      "options": [
+        "had",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "has حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ have: had."
+    },
+    {
+      "external_id": "u07-t3-q04",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "He ___ the answer.",
+      "options": [
+        "knew",
+        "know",
+        "knows"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "knows حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ know: knew."
+    },
+    {
+      "external_id": "u07-t3-q05",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "They ___ on the sofa.",
+      "options": [
+        "slept",
+        "sleep",
+        "sleeps"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "sleeps حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ sleep: slept."
+    },
+    {
+      "external_id": "u07-t3-q06",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I didn't ___ to New York.",
+      "options": [
+        "go",
+        "went",
+        "goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't گذشته نمی‌آید.",
+        "2": "goes حال ساده است."
+      },
+      "explanation_fa": "بعد از didn't فعل پایه: go."
+    },
+    {
+      "external_id": "u07-t3-q07",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "What did you ___?",
+      "options": [
+        "say",
+        "said",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did گذشته نمی‌آید.",
+        "2": "says حال ساده است."
+      },
+      "explanation_fa": "بعد از did: say."
+    },
+    {
+      "external_id": "u07-t3-q08",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "She ___ a red dress.",
+      "options": [
+        "wore",
+        "wear",
+        "wears"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "wears حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ wear: wore."
+    },
+    {
+      "external_id": "u07-t1-m01",
+      "topic": "t1",
+      "position": 24,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Van Gogh was",
+          "right": "an artist."
+        },
+        {
+          "left": "The Beatles were",
+          "right": "famous in the 1960s."
+        },
+        {
+          "left": "I was born",
+          "right": "in Canada."
+        },
+        {
+          "left": "Where were you",
+          "right": "last night?"
+        },
+        {
+          "left": "She wasn't",
+          "right": "in class yesterday."
+        }
+      ],
+      "explanation_fa": "was برای مفرد و were برای جمع؛ born با was/were می‌آید."
+    },
+    {
+      "external_id": "u07-t2-m01",
+      "topic": "t2",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر فعل را به گذشته‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "watch",
+          "right": "watched"
+        },
+        {
+          "left": "play",
+          "right": "played"
+        },
+        {
+          "left": "arrive",
+          "right": "arrived"
+        },
+        {
+          "left": "study",
+          "right": "studied"
+        },
+        {
+          "left": "stop",
+          "right": "stopped"
+        }
+      ],
+      "explanation_fa": "قواعد ed: watch→watched، play→played، arrive→arrived، study→studied، stop→stopped."
+    },
+    {
+      "external_id": "u07-t3-m01",
+      "topic": "t3",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر فعل را به گذشته‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "buy",
+          "right": "bought"
+        },
+        {
+          "left": "come",
+          "right": "came"
+        },
+        {
+          "left": "feel",
+          "right": "felt"
+        },
+        {
+          "left": "get",
+          "right": "got"
+        },
+        {
+          "left": "take",
+          "right": "took"
+        }
+      ],
+      "explanation_fa": "گذشتهٔ بی‌قاعده: buy→bought، come→came، feel→felt، get→got، take→took."
+    }
+  ]
+}

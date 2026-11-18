@@ -1,0 +1,66 @@
+{
+  "external_id": "aef-3e-starter-u06",
+  "book": "aef-3e-starter",
+  "unit": 6,
+  "title": "تمرین یونیت 6 — شغل‌ها و روز معمولی",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u06-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "She works in a hospital. She is a ___.",
+      "options": [
+        "teacher",
+        "nurse",
+        "waiter",
+        "driver"
+      ],
+      "answer": 1,
+      "explanation_fa": "کسی که در بیمارستان کار می‌کند nurse است."
+    },
+    {
+      "external_id": "u06-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "I ___ up at seven o'clock.",
+      "answer": [
+        "wake",
+        "get"
+      ],
+      "explanation_fa": "wake up / get up یعنی بیدار شدن."
+    },
+    {
+      "external_id": "u06-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "He works in a school. He is a ___.",
+      "options": [
+        "teacher",
+        "doctor",
+        "chef",
+        "pilot"
+      ],
+      "answer": 0,
+      "explanation_fa": "کسی که در مدرسه کار می‌کند teacher است."
+    },
+    {
+      "external_id": "u06-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "She works in a hospital",
+      "explanation_fa": "ترتیب درست: She works in a hospital."
+    },
+    {
+      "external_id": "u06-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "I go to work ___ bus.",
+      "answer": [
+        "by"
+      ],
+      "explanation_fa": "با اتوبوس می‌شود by bus."
+    }
+  ]
+}

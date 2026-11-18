@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-2-u06",
+  "book": "aef-3e-2",
+  "unit": 6,
+  "title": "American English File 2 · Unit 6",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 6,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "6A",
+      "6B",
+      "6C"
+    ],
+    "grammar_bank": "6A p.138, 6B p.138, 6C p.138",
+    "workbook": "6A, 6B, 6C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "will / won't (predictions)",
+      "title_fa": "will و won't برای پیش‌بینی",
+      "use_fa": "برای گفتن چیزی که فکر می‌کنیم یا حدس می‌زنیم در آینده اتفاق می‌افتد. با will/won't + فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + will + base verb\nShe'll be late.\nI think it will rain."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "won't + base verb\nWe won't understand anything."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Will you be late?\nYes, I will. / No, I won't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "She'll be late.",
+          "fa": "او دیر می‌رسد."
+        },
+        {
+          "en": "We won't understand anything.",
+          "fa": "ما چیزی نمی‌فهمیم."
+        },
+        {
+          "en": "I think it will rain tomorrow.",
+          "fa": "فکر می‌کنم فردا باران می‌آید."
+        },
+        {
+          "en": "I'm sure you'll like it.",
+          "fa": "مطمئنم خوشت می‌آید."
+        }
+      ],
+      "notes_fa": "با I think / I'm sure می‌توان will آورد؛ با I don't think هم will می‌آید: I don't think he'll pass."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "will / won't (other uses)",
+      "title_fa": "will و won't برای تصمیم، پیشنهاد و قول",
+      "use_fa": "will برای تصمیم لحظه‌ای، پیشنهاد کمک و قول دادن؛ shall در سؤال با I/we برای پیشنهاد.",
+      "formulas": [
+        {
+          "label_fa": "پیشنهاد/قول",
+          "text": "I'll help you.\nI won't tell anybody."
+        },
+        {
+          "label_fa": "تصمیم",
+          "text": "I think I'll go home early.\nI won't stay for dinner."
+        },
+        {
+          "label_fa": "پیشنهاد با shall",
+          "text": "Shall we go for a walk?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'll help you with those bags.",
+          "fa": "با آن کیف‌ها کمکت می‌کنم."
+        },
+        {
+          "en": "I won't tell anybody.",
+          "fa": "به هیچ‌کس نمی‌گویم."
+        },
+        {
+          "en": "I think I'll go home early.",
+          "fa": "فکر می‌کنم زودتر خانه بروم."
+        },
+        {
+          "en": "Shall we go for a walk?",
+          "fa": "برویم قدم بزنیم؟"
+        }
+      ],
+      "notes_fa": "برای تصمیم لحظه‌ای از will استفاده می‌کنیم، نه حال ساده: I'll open the door (نه I open)."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "review of verb forms: present, past, and future",
+      "title_fa": "مرور زمان‌ها: حال، گذشته و آینده",
+      "use_fa": "مرور کاربرد زمان‌ها: عادت (حال ساده)، همین حالا (استمراری)، گذشتهٔ ساده/استمراری، برنامه و پیش‌بینی آینده.",
+      "formulas": [
+        {
+          "label_fa": "حال",
+          "text": "I live downtown. (always)\nHe's looking for a job. (now)"
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "We saw a movie last night.\nHe was working at 7:00."
+        },
+        {
+          "label_fa": "آینده",
+          "text": "I'm leaving tomorrow. (arrangement)\nI'm going to see Tom. (plan)\nIt's going to snow. (prediction)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I live downtown.",
+          "fa": "من مرکز شهر زندگی می‌کنم."
+        },
+        {
+          "en": "He's looking for a new job.",
+          "fa": "او دنبال کار جدید است."
+        },
+        {
+          "en": "We saw a good movie last night.",
+          "fa": "دیشب فیلم خوبی دیدیم."
+        },
+        {
+          "en": "Look! It's going to snow.",
+          "fa": "نگاه کن! دارد برف می‌آید."
+        }
+      ],
+      "notes_fa": "برای قرار آینده حال استمراری (I'm leaving tomorrow) و برای برنامه be going to؛ برای پیش‌بینی از روی شواهد هم be going to."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u06-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'm sure you ___ like it.",
+      "options": [
+        "will",
+        "won't",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't منفی است.",
+        "2": "are با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "پیش‌بینی مثبت: will like."
+    },
+    {
+      "external_id": "u06-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "We ___ understand anything. It's in French.",
+      "options": [
+        "won't",
+        "don't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال ساده است.",
+        "2": "aren't برای be است."
+      },
+      "explanation_fa": "پیش‌بینی منفی: won't understand."
+    },
+    {
+      "external_id": "u06-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I think it ___ rain tomorrow.",
+      "options": [
+        "will",
+        "won't",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't منفی است.",
+        "2": "is با rain نمی‌آید."
+      },
+      "explanation_fa": "با I think برای پیش‌بینی will می‌آید."
+    },
+    {
+      "external_id": "u06-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They're playing very well. They ___ win.",
+      "options": [
+        "will",
+        "won't",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با شواهد مثبت، won't غلط است.",
+        "2": "are با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "پیش‌بینی: will win."
+    },
+    {
+      "external_id": "u06-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I don't think he ___ pass.",
+      "options": [
+        "will",
+        "won't",
+        "passes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از I don't think منفی نمی‌آید.",
+        "2": "passes حال ساده است."
+      },
+      "explanation_fa": "بعد از I don’t think هم will می‌آید، نه won’t."
+    },
+    {
+      "external_id": "u06-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "___ you be late?",
+      "options": [
+        "Will",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال ساده است.",
+        "2": "Are با be می‌آید."
+      },
+      "explanation_fa": "سؤال آینده: Will you be late?"
+    },
+    {
+      "external_id": "u06-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She ___ be late; she's always on time.",
+      "options": [
+        "won't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای جمع است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "پیش‌بینی منفی: won't."
+    },
+    {
+      "external_id": "u06-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I'm sure they ___ win.",
+      "options": [
+        "will",
+        "are",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are با فعل پایه نمی‌آید.",
+        "2": "do برای حال ساده است."
+      },
+      "explanation_fa": "پیش‌بینی: will win."
+    },
+    {
+      "external_id": "u06-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I ___ help you with those bags.",
+      "options": [
+        "will",
+        "won't",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't منفی است.",
+        "2": "am با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "پیشنهاد کمک: I'll help."
+    },
+    {
+      "external_id": "u06-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I ___ tell anybody.",
+      "options": [
+        "won't",
+        "don't",
+        "am not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال ساده است.",
+        "2": "am not برای be است."
+      },
+      "explanation_fa": "قول منفی: won't tell."
+    },
+    {
+      "external_id": "u06-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I think I ___ go home early.",
+      "options": [
+        "will",
+        "won't",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't منفی است.",
+        "2": "am با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "تصمیم: I'll go."
+    },
+    {
+      "external_id": "u06-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ we go for a walk?",
+      "options": [
+        "Shall",
+        "Will",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Will با we برای پیشنهاد رایج نیست.",
+        "2": "Do برای حال ساده است."
+      },
+      "explanation_fa": "پیشنهاد با Shall we ...?"
+    },
+    {
+      "external_id": "u06-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ stay for dinner.",
+      "options": [
+        "won't",
+        "don't",
+        "am not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال ساده است.",
+        "2": "am not برای be است."
+      },
+      "explanation_fa": "تصمیم منفی: won't stay."
+    },
+    {
+      "external_id": "u06-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I'll always ___ you.",
+      "options": [
+        "love",
+        "loving",
+        "loved"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از will فعل ing نمی‌آید.",
+        "2": "loved گذشته است."
+      },
+      "explanation_fa": "بعد از will فعل پایه: love."
+    },
+    {
+      "external_id": "u06-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I ___ open the door for you.",
+      "options": [
+        "will",
+        "won't",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't منفی است.",
+        "2": "am با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "پیشنهاد: I'll open."
+    },
+    {
+      "external_id": "u06-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Don't worry. I ___ be there.",
+      "options": [
+        "will",
+        "won't",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't منفی است.",
+        "2": "am با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "قول: I'll be there."
+    },
+    {
+      "external_id": "u06-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I ___ downtown.",
+      "options": [
+        "live",
+        "am living",
+        "lived"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am living برای همین حالاست.",
+        "2": "lived گذشته است."
+      },
+      "explanation_fa": "عادت همیشگی: live."
+    },
+    {
+      "external_id": "u06-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "He ___ for a new job.",
+      "options": [
+        "is looking",
+        "looks",
+        "looked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "looks عادت را می‌رساند.",
+        "2": "looked گذشته است."
+      },
+      "explanation_fa": "همین حالا: is looking."
+    },
+    {
+      "external_id": "u06-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I ___ tomorrow.",
+      "options": [
+        "am leaving",
+        "leave",
+        "left"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "leave برای عادت است.",
+        "2": "left گذشته است."
+      },
+      "explanation_fa": "قرار آینده: am leaving."
+    },
+    {
+      "external_id": "u06-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "We ___ a good movie last night.",
+      "options": [
+        "saw",
+        "see",
+        "have seen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "see حال است.",
+        "2": "با last night حال کامل نمی‌آید."
+      },
+      "explanation_fa": "گذشته: saw."
+    },
+    {
+      "external_id": "u06-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "He ___ in Chiang Mai.",
+      "options": [
+        "was working",
+        "works",
+        "worked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "works حال است.",
+        "2": "worked ساده است."
+      },
+      "explanation_fa": "در جریان در گذشته: was working."
+    },
+    {
+      "external_id": "u06-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "What ___ you doing at 7:00?",
+      "options": [
+        "were",
+        "are",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای حال است.",
+        "2": "do برای حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ استمراری: were doing."
+    },
+    {
+      "external_id": "u06-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I ___ see Tom tonight.",
+      "options": [
+        "am going to",
+        "will",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای این برنامهٔ از قبل تعیین‌شده نیست.",
+        "2": "go حال ساده است."
+      },
+      "explanation_fa": "برنامه: am going to see."
+    },
+    {
+      "external_id": "u06-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Look! It ___ snow.",
+      "options": [
+        "is going to",
+        "will",
+        "won't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با شواهد، be going to رایج است.",
+        "2": "won't منفی است."
+      },
+      "explanation_fa": "پیش‌بینی با شواهد: is going to snow."
+    },
+    {
+      "external_id": "u06-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I think it will",
+          "right": "rain tomorrow."
+        },
+        {
+          "left": "We won't",
+          "right": "understand anything."
+        },
+        {
+          "left": "She'll",
+          "right": "be late."
+        },
+        {
+          "left": "They're going to",
+          "right": "win."
+        },
+        {
+          "left": "I don't think he'll",
+          "right": "pass."
+        }
+      ],
+      "explanation_fa": "will/won't + فعل پایه برای پیش‌بینی."
+    },
+    {
+      "external_id": "u06-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر جمله را به کارکردش وصل کن.",
+      "pairs": [
+        {
+          "left": "I'll help you.",
+          "right": "offer"
+        },
+        {
+          "left": "I won't tell anybody.",
+          "right": "promise"
+        },
+        {
+          "left": "I'll have the fish.",
+          "right": "instant decision"
+        },
+        {
+          "left": "Shall we go?",
+          "right": "suggestion"
+        },
+        {
+          "left": "I think he'll fail.",
+          "right": "prediction"
+        }
+      ],
+      "explanation_fa": "will برای پیشنهاد، قول و تصمیم؛ shall برای پیشنهاد."
+    },
+    {
+      "external_id": "u06-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر زمان را به کاربردش وصل کن.",
+      "pairs": [
+        {
+          "left": "simple present",
+          "right": "things that always happen"
+        },
+        {
+          "left": "present continuous",
+          "right": "arranged future"
+        },
+        {
+          "left": "simple past",
+          "right": "finished actions"
+        },
+        {
+          "left": "past continuous",
+          "right": "action in progress at a past time"
+        },
+        {
+          "left": "be going to",
+          "right": "future plans"
+        }
+      ],
+      "explanation_fa": "هر زمان کاربرد خودش را دارد: عادت، قرار آینده، گذشته، در جریان بودن و برنامه."
+    }
+  ]
+}

@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-1-u10",
+  "book": "aef-3e-1",
+  "unit": 10,
+  "title": "American English File 1 · Unit 10",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 10,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "10A",
+      "10B",
+      "10C"
+    ],
+    "grammar_bank": "10A p.144, 10B p.144, 10C p.144",
+    "workbook": "10A, 10B, 10C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "superlative adjectives",
+      "title_fa": "صفت‌های عالی",
+      "use_fa": "برای گفتن اینکه چیزی در یک گروه بهترین/بزرگ‌ترین است. با the + صفت عالی می‌آید و برای مکان‌ها in استفاده می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "کوتاه",
+          "text": "cold → the coldest\nbig → the biggest\nsunny → the sunniest"
+        },
+        {
+          "label_fa": "بلند",
+          "text": "dangerous → the most dangerous\ninteresting → the most interesting"
+        },
+        {
+          "label_fa": "بی‌قاعده",
+          "text": "good → the best\nbad → the worst\nfar → the farthest"
+        }
+      ],
+      "examples": [
+        {
+          "en": "It's the oldest bridge in the world.",
+          "fa": "این قدیمی‌ترین پل جهان است."
+        },
+        {
+          "en": "It's the most popular shopping mall in the US.",
+          "fa": "این محبوب‌ترین مرکز خرید آمریکاست."
+        },
+        {
+          "en": "She's the best student in the class.",
+          "fa": "او بهترین دانش‌آموز کلاس است."
+        },
+        {
+          "en": "Monday is the worst day of the week.",
+          "fa": "دوشنبه بدترین روز هفته است."
+        }
+      ],
+      "notes_fa": "بعد از صفت عالی همیشه the می‌آید. برای مکان in: the tallest building in New York (نه of New York)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "be going to (plans), future time expressions",
+      "title_fa": "be going to برای برنامه‌ها و عبارت‌های زمان آینده",
+      "use_fa": "برای برنامه‌هایی که قبلاً تصمیم گرفته‌ایم. با am/is/are + going to + فعل پایه و عبارت‌های زمانی آینده.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I'm going to take a vacation.\nShe's going to study English."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I'm not going to study.\nThey aren't going to come."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Are you going to fly to Paris?\nYes, I am. / No, I'm not."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm going to take a vacation next month.",
+          "fa": "ماه آینده به تعطیلات می‌روم."
+        },
+        {
+          "en": "She isn't going to study English.",
+          "fa": "او قصد ندارد انگلیسی بخواند."
+        },
+        {
+          "en": "Are you going to fly to Paris?",
+          "fa": "قصد داری به پاریس پرواز کنی؟"
+        },
+        {
+          "en": "We're going to start next week.",
+          "fa": "هفتهٔ آینده شروع می‌کنیم."
+        }
+      ],
+      "notes_fa": "بعد از going to فعل پایه می‌آید: going to take (نه going to taking). عبارت‌ها: tomorrow، next week، next month."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "be going to (predictions)",
+      "title_fa": "be going to برای پیش‌بینی",
+      "use_fa": "برای پیش‌بینی چیزی که فکر می‌کنیم یا می‌بینیم اتفاق می‌افتد.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "subject + be + going to + base verb\nI think it's going to rain.\nThey're going to win."
+        },
+        {
+          "label_fa": "نشانه",
+          "text": "I think ... / I'm sure ... / Look at the sky!"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I think it's going to rain.",
+          "fa": "فکر می‌کنم باران می‌آید."
+        },
+        {
+          "en": "You're going to be very happy.",
+          "fa": "خیلی خوشحال خواهی شد."
+        },
+        {
+          "en": "I'm sure they're going to win.",
+          "fa": "مطمئنم آن‌ها برنده می‌شوند."
+        },
+        {
+          "en": "Look at the sky! It's going to snow.",
+          "fa": "آسمان را ببین! برف می‌آید."
+        }
+      ],
+      "notes_fa": "برای پیش‌بینی هم از be going to استفاده می‌کنیم؛ بعد از آن فعل پایه: going to be (نه going to is)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u10-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "It's the ___ bridge in the world.",
+      "options": [
+        "oldest",
+        "older",
+        "most old"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "older مقایسهٔ دو چیز است.",
+        "2": "old یک‌هجایی است."
+      },
+      "explanation_fa": "صفت عالی: the oldest."
+    },
+    {
+      "external_id": "u10-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "It's the ___ shopping mall in the US.",
+      "options": [
+        "most popular",
+        "more popular",
+        "popularest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "more popular مقایسه‌ای است.",
+        "2": "صفت بلند est نمی‌گیرد."
+      },
+      "explanation_fa": "popular صفت بلند است، پس the most popular می‌آید."
+    },
+    {
+      "external_id": "u10-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "She's the ___ student in the class.",
+      "options": [
+        "best",
+        "better",
+        "goodest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "better مقایسه‌ای است.",
+        "2": "good بی‌قاعده است."
+      },
+      "explanation_fa": "good بی‌قاعده است و عالی‌اش the best می‌شود."
+    },
+    {
+      "external_id": "u10-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Monday is the ___ day of the week.",
+      "options": [
+        "worst",
+        "worse",
+        "baddest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "worse مقایسه‌ای است.",
+        "2": "bad بی‌قاعده است."
+      },
+      "explanation_fa": "bad بی‌قاعده است و عالی‌اش the worst می‌شود."
+    },
+    {
+      "external_id": "u10-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "It's the ___ building in New York.",
+      "options": [
+        "tallest",
+        "taller",
+        "most tall"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "taller مقایسه‌ای است.",
+        "2": "tall یک‌هجایی است."
+      },
+      "explanation_fa": "tall یک‌هجایی است: the tallest."
+    },
+    {
+      "external_id": "u10-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "This is the ___ book.",
+      "options": [
+        "most interesting",
+        "more interesting",
+        "interestingest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "more interesting مقایسه‌ای است.",
+        "2": "صفت بلند est نمی‌گیرد."
+      },
+      "explanation_fa": "interesting صفت بلند است: the most interesting."
+    },
+    {
+      "external_id": "u10-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "It's the ___ place in the world.",
+      "options": [
+        "most dangerous",
+        "more dangerous",
+        "dangerousest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "more dangerous مقایسه‌ای است.",
+        "2": "صفت بلند est نمی‌گیرد."
+      },
+      "explanation_fa": "dangerous صفت بلند است: the most dangerous."
+    },
+    {
+      "external_id": "u10-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "It's the ___ road in the world.",
+      "options": [
+        "longest",
+        "longer",
+        "most long"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "longer مقایسه‌ای است.",
+        "2": "long یک‌هجایی است."
+      },
+      "explanation_fa": "long یک‌هجایی است: the longest."
+    },
+    {
+      "external_id": "u10-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I'm going to ___ a vacation next month.",
+      "options": [
+        "take",
+        "taking",
+        "took"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "took گذشته است."
+      },
+      "explanation_fa": "بعد از going to فعل پایه: take."
+    },
+    {
+      "external_id": "u10-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She isn't going to ___ English.",
+      "options": [
+        "study",
+        "studying",
+        "studied"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "studied گذشته است."
+      },
+      "explanation_fa": "بعد از going to: study."
+    },
+    {
+      "external_id": "u10-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "___ you going to fly to Paris?",
+      "options": [
+        "Are",
+        "Do",
+        "Will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do با going to نمی‌آید.",
+        "2": "Will با going to ترکیب نمی‌شود."
+      },
+      "explanation_fa": "سؤال: Are you going to ...?"
+    },
+    {
+      "external_id": "u10-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "We ___ going to take a vacation.",
+      "options": [
+        "are",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای مفرد است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل we با are می‌آید: We’re going to."
+    },
+    {
+      "external_id": "u10-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "He ___ going to study tonight.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل he با is می‌آید: He’s going to."
+    },
+    {
+      "external_id": "u10-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I'm ___ to take a vacation.",
+      "options": [
+        "going",
+        "go",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "go بعد از am نمی‌آید.",
+        "2": "will با am ترکیب نمی‌شود."
+      },
+      "explanation_fa": "الگو: I'm going to."
+    },
+    {
+      "external_id": "u10-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "They aren't going to ___.",
+      "options": [
+        "come",
+        "came",
+        "coming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to گذشته نمی‌آید.",
+        "2": "coming بعد از to نمی‌آید."
+      },
+      "explanation_fa": "بعد از going to فعل پایه: come."
+    },
+    {
+      "external_id": "u10-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ she going to study?",
+      "options": [
+        "Is",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای حال ساده است.",
+        "2": "Are برای جمع است."
+      },
+      "explanation_fa": "سؤال با she: Is she going to ...?"
+    },
+    {
+      "external_id": "u10-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I think it's going to ___.",
+      "options": [
+        "rain",
+        "raining",
+        "rained"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "rained گذشته است."
+      },
+      "explanation_fa": "بعد از going to: rain."
+    },
+    {
+      "external_id": "u10-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "You're going to ___ very happy.",
+      "options": [
+        "be",
+        "being",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "was گذشته است."
+      },
+      "explanation_fa": "بعد از going to: be."
+    },
+    {
+      "external_id": "u10-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I'm sure they're going to ___.",
+      "options": [
+        "win",
+        "winning",
+        "won"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "won گذشته است."
+      },
+      "explanation_fa": "بعد از going to: win."
+    },
+    {
+      "external_id": "u10-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Look at the sky! It ___ going to rain.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل it با is می‌آید: It’s going to rain."
+    },
+    {
+      "external_id": "u10-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "She's going to ___ a doctor.",
+      "options": [
+        "be",
+        "being",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "was گذشته است."
+      },
+      "explanation_fa": "بعد از going to: be."
+    },
+    {
+      "external_id": "u10-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "We're going to ___ late.",
+      "options": [
+        "be",
+        "being",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "were گذشته است."
+      },
+      "explanation_fa": "بعد از going to: be."
+    },
+    {
+      "external_id": "u10-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I think he's going to ___.",
+      "options": [
+        "fail",
+        "failing",
+        "failed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "failed گذشته است."
+      },
+      "explanation_fa": "بعد از going to: fail."
+    },
+    {
+      "external_id": "u10-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "They're going to ___ the game.",
+      "options": [
+        "lose",
+        "losing",
+        "lost"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "lost گذشته است."
+      },
+      "explanation_fa": "بعد از going to: lose."
+    },
+    {
+      "external_id": "u10-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر صفت را به عالی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "cold",
+          "right": "the coldest"
+        },
+        {
+          "left": "big",
+          "right": "the biggest"
+        },
+        {
+          "left": "sunny",
+          "right": "the sunniest"
+        },
+        {
+          "left": "dangerous",
+          "right": "the most dangerous"
+        },
+        {
+          "left": "good",
+          "right": "the best"
+        }
+      ],
+      "explanation_fa": "cold→the coldest، big→the biggest، sunny→the sunniest، dangerous→the most dangerous، good→the best."
+    },
+    {
+      "external_id": "u10-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm going to",
+          "right": "take a vacation."
+        },
+        {
+          "left": "She's going to",
+          "right": "study English."
+        },
+        {
+          "left": "Are you going to",
+          "right": "fly to Paris?"
+        },
+        {
+          "left": "We aren't going to",
+          "right": "stay home."
+        },
+        {
+          "left": "He's going to",
+          "right": "start a new job."
+        }
+      ],
+      "explanation_fa": "be going to + فعل پایه برای برنامه‌های آینده."
+    },
+    {
+      "external_id": "u10-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I think it's going to",
+          "right": "rain."
+        },
+        {
+          "left": "You're going to",
+          "right": "be very happy."
+        },
+        {
+          "left": "I'm sure they're going to",
+          "right": "win."
+        },
+        {
+          "left": "Look at the sky! It's going to",
+          "right": "snow."
+        },
+        {
+          "left": "She's going to",
+          "right": "be a doctor."
+        }
+      ],
+      "explanation_fa": "be going to برای پیش‌بینی آینده."
+    }
+  ]
+}

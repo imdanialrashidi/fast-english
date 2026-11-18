@@ -1,0 +1,599 @@
+{
+  "external_id": "aef-3e-1-u03",
+  "book": "aef-3e-1",
+  "unit": 3,
+  "title": "American English File 1 · Unit 3",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 3,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "3A",
+      "3B",
+      "3C"
+    ],
+    "grammar_bank": "3A p.130, 3B p.130, 3C p.130",
+    "workbook": "3A, 3B, 3C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple present [+] and [-]",
+      "title_fa": "حال ساده مثبت و منفی",
+      "use_fa": "برای عادت‌ها و چیزهایی که به‌طور کلی درست‌اند. با he/she/it فعل s می‌گیرد و منفی با don't/doesn't ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / You / We / They + base verb\nHe / She / It + verb-s\nShe watches TV."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I / You / We / They + don't + base verb\nHe / She / It + doesn't + base verb\nHe doesn't play the guitar."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I speak English.",
+          "fa": "من انگلیسی صحبت می‌کنم."
+        },
+        {
+          "en": "My mother cooks great food.",
+          "fa": "مادرم غذای عالی می‌پزد."
+        },
+        {
+          "en": "He doesn't play the guitar.",
+          "fa": "او گیتار نمی‌زند."
+        },
+        {
+          "en": "They like fast food.",
+          "fa": "آن‌ها فست‌فود دوست دارند."
+        }
+      ],
+      "notes_fa": "بعد از doesn't فعل پایه می‌آید: He doesn't work. (نه doesn't works.) سوم‌شخص مثل جمع اسم است: watch→watches، study→studies، go→goes."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "simple present [?]",
+      "title_fa": "حال ساده سؤالی",
+      "use_fa": "برای پرسیدن دربارهٔ عادت‌ها. سؤال با Do یا Does شروع می‌شود و فعل پایه می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "سؤالی",
+          "text": "Do + I / you / we / they + base verb?\nDoes + he / she / it + base verb?\nDoes he work at night?"
+        },
+        {
+          "label_fa": "پاسخ کوتاه",
+          "text": "Yes, I do. / No, I don't.\nYes, he does. / No, he doesn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Do you live in New York?",
+          "fa": "در نیویورک زندگی می‌کنی؟"
+        },
+        {
+          "en": "Does he work at night?",
+          "fa": "او شب‌ها کار می‌کند؟"
+        },
+        {
+          "en": "Yes, I do. / No, he doesn't.",
+          "fa": "بله. / نه."
+        },
+        {
+          "en": "Where does he live?",
+          "fa": "او کجا زندگی می‌کند؟"
+        }
+      ],
+      "notes_fa": "در سؤال، فعل بعد از فاعل پایه است: Does she live ...? (نه Does she lives.)"
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "word order in questions",
+      "title_fa": "ترتیب کلمات در سؤال",
+      "use_fa": "در سؤال با be، فعل قبل از فاعل می‌آید؛ در سؤال با فعل معمولی، do/does قبل از فاعل و فعل پایه بعد از آن.",
+      "formulas": [
+        {
+          "label_fa": "با be",
+          "text": "be + subject + ...?\nIs she from Peru?\nWhere's your office?"
+        },
+        {
+          "label_fa": "با do/does",
+          "text": "question word + do/does + subject + base verb?\nWhere does he live?\nWhat do you do?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Is she from Peru?",
+          "fa": "او اهل پروست؟"
+        },
+        {
+          "en": "Where's your office?",
+          "fa": "دفترت کجاست؟"
+        },
+        {
+          "en": "What do you do?",
+          "fa": "چه کار می‌کنی؟"
+        },
+        {
+          "en": "How many children do you have?",
+          "fa": "چند فرزند داری؟"
+        }
+      ],
+      "notes_fa": "با فعل be از do استفاده نمی‌کنیم: Is she ...? (نه Does she be ...?). کلمهٔ پرسشی اول جمله می‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u03-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ English.",
+      "options": [
+        "speak",
+        "speaks",
+        "speaking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با I فعل s نمی‌گیرد.",
+        "2": "-ing برای حال استمراری است."
+      },
+      "explanation_fa": "با I فعل به شکل پایه می‌آید: I speak English."
+    },
+    {
+      "external_id": "u03-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "My mother ___ great food.",
+      "options": [
+        "cooks",
+        "cook",
+        "cooking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mother سوم‌شخص است.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "فاعل سوم‌شخص است، پس cooks می‌آید."
+    },
+    {
+      "external_id": "u03-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "He ___ play the guitar.",
+      "options": [
+        "doesn't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای I/you/we/they است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "منفی he: doesn't + فعل پایه."
+    },
+    {
+      "external_id": "u03-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They ___ fast food.",
+      "options": [
+        "like",
+        "likes",
+        "liking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با they فعل s نمی‌گیرد.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "با they فعل پایه like می‌آید."
+    },
+    {
+      "external_id": "u03-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "She ___ TV every evening.",
+      "options": [
+        "watches",
+        "watch",
+        "watching"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با she فعل s می‌گیرد.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "watch در سوم‌شخص watches می‌شود."
+    },
+    {
+      "external_id": "u03-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "We ___ live in a large city.",
+      "options": [
+        "don't",
+        "doesn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای سوم‌شخص است.",
+        "2": "aren't برای be است."
+      },
+      "explanation_fa": "منفی we: don't."
+    },
+    {
+      "external_id": "u03-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "He ___ yoga every day.",
+      "options": [
+        "does",
+        "do",
+        "doing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با he فعل s می‌گیرد.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "do در سوم‌شخص does می‌شود."
+    },
+    {
+      "external_id": "u03-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "___ you live in New York?",
+      "options": [
+        "Do",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای سوم‌شخص است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "با you سؤال با Do."
+    },
+    {
+      "external_id": "u03-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ he work at night?",
+      "options": [
+        "Does",
+        "Do",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای I/you/we/they است.",
+        "2": "Is برای be است."
+      },
+      "explanation_fa": "با he سؤال با Does."
+    },
+    {
+      "external_id": "u03-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "A: Do you speak English?\nB: Yes, I ___.",
+      "options": [
+        "do",
+        "does",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای سوم‌شخص است.",
+        "2": "am برای be است."
+      },
+      "explanation_fa": "پاسخ کوتاه: Yes, I do."
+    },
+    {
+      "external_id": "u03-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "A: Does she live here?\nB: No, she ___.",
+      "options": [
+        "doesn't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای جمع است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "پاسخ منفی: No, she doesn't."
+    },
+    {
+      "external_id": "u03-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ they like animals?",
+      "options": [
+        "Do",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای سوم‌شخص است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "با they: Do."
+    },
+    {
+      "external_id": "u03-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Where ___ he live?",
+      "options": [
+        "does",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای جمع است.",
+        "2": "is برای be است."
+      },
+      "explanation_fa": "سؤال با he: Where does he live?"
+    },
+    {
+      "external_id": "u03-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "What ___ you do?",
+      "options": [
+        "do",
+        "does",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای سوم‌شخص است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "با you: What do you do?"
+    },
+    {
+      "external_id": "u03-t3-q01",
+      "topic": "t3",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ she from Peru?",
+      "options": [
+        "Is",
+        "Does",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای فعل معمولی است.",
+        "2": "Do برای جمع است."
+      },
+      "explanation_fa": "سؤال با be: Is she from Peru?"
+    },
+    {
+      "external_id": "u03-t3-q02",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Where ___ your office?",
+      "options": [
+        "is",
+        "does",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای فعل معمولی است.",
+        "2": "do برای جمع است."
+      },
+      "explanation_fa": "با office و be: Where is your office?"
+    },
+    {
+      "external_id": "u03-t3-q03",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "How old ___ she?",
+      "options": [
+        "is",
+        "does",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای فعل معمولی است.",
+        "2": "do برای جمع است."
+      },
+      "explanation_fa": "برای سن از How old + is استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t3-q04",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "What ___ you do?",
+      "options": [
+        "do",
+        "does",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای سوم‌شخص است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "سؤال با what و you: What do you do?"
+    },
+    {
+      "external_id": "u03-t3-q05",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "How many children ___ you have?",
+      "options": [
+        "do",
+        "does",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای سوم‌شخص است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "با you: do you have."
+    },
+    {
+      "external_id": "u03-t3-q06",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "What kind of music ___ she like?",
+      "options": [
+        "does",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای جمع است.",
+        "2": "is برای be است."
+      },
+      "explanation_fa": "با she: does she like."
+    },
+    {
+      "external_id": "u03-t3-q07",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "___ your friends here?",
+      "options": [
+        "Are",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "با friends و be: Are your friends here?"
+    },
+    {
+      "external_id": "u03-t1-m01",
+      "topic": "t1",
+      "position": 22,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Americans",
+          "right": "like fast food."
+        },
+        {
+          "left": "My mother",
+          "right": "cooks great food."
+        },
+        {
+          "left": "He doesn't",
+          "right": "play the guitar."
+        },
+        {
+          "left": "I don't",
+          "right": "drink tea."
+        },
+        {
+          "left": "She",
+          "right": "watches TV."
+        }
+      ],
+      "explanation_fa": "با سوم‌شخص فعل s می‌گیرد؛ منفی با don't/doesn't."
+    },
+    {
+      "external_id": "u03-t2-m01",
+      "topic": "t2",
+      "position": 23,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Do you live here?",
+          "right": "Yes, I do."
+        },
+        {
+          "left": "Does he work at night?",
+          "right": "No, he doesn't."
+        },
+        {
+          "left": "Do they like animals?",
+          "right": "Yes, they do."
+        },
+        {
+          "left": "Does she speak German?",
+          "right": "No, she doesn't."
+        },
+        {
+          "left": "Where does he live?",
+          "right": "In New York."
+        }
+      ],
+      "explanation_fa": "پاسخ کوتاه با do/does و همان فاعل می‌آید."
+    },
+    {
+      "external_id": "u03-t3-m01",
+      "topic": "t3",
+      "position": 24,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Is she from Peru?",
+          "right": "Yes, she is."
+        },
+        {
+          "left": "Where's your office?",
+          "right": "On Main Street."
+        },
+        {
+          "left": "What do you do?",
+          "right": "I'm a teacher."
+        },
+        {
+          "left": "How old is she?",
+          "right": "She's 25."
+        },
+        {
+          "left": "Where does he live?",
+          "right": "In New York."
+        }
+      ],
+      "explanation_fa": "سؤال با be با be پاسخ می‌گیرد و سؤال با do/does با do/does."
+    }
+  ]
+}

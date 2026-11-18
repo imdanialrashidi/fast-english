@@ -1,0 +1,66 @@
+{
+  "external_id": "aef-3e-starter-u07",
+  "book": "aef-3e-starter",
+  "unit": 7,
+  "title": "تمرین یونیت 7 — اوقات فراغت و ماه‌ها",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u07-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "The month after June is ___.",
+      "options": [
+        "May",
+        "July",
+        "August",
+        "April"
+      ],
+      "answer": 1,
+      "explanation_fa": "بعد از June ماه July است."
+    },
+    {
+      "external_id": "u07-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "I like watching ___ at the cinema.",
+      "answer": [
+        "movies",
+        "films"
+      ],
+      "explanation_fa": "فیلم دیدن می‌شود watching movies/films."
+    },
+    {
+      "external_id": "u07-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you like horror movies?",
+      "options": [
+        "Do",
+        "Does",
+        "Are",
+        "Is"
+      ],
+      "answer": 0,
+      "explanation_fa": "با you از Do استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u07-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "I go to the movies on Friday",
+      "explanation_fa": "ترتیب درست: I go to the movies on Friday."
+    },
+    {
+      "external_id": "u07-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "The first month of the year is ___.",
+      "answer": [
+        "January"
+      ],
+      "explanation_fa": "اولین ماه سال January است."
+    }
+  ]
+}

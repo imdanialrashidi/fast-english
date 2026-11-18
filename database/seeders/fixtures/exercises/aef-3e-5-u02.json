@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-5-u02",
+  "book": "aef-3e-5",
+  "unit": 2,
+  "title": "American English File 5 · Unit 2",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 2,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "2A",
+      "2B"
+    ],
+    "grammar_bank": "2A p.141, 2B p.142",
+    "workbook": "2A, 2B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "pronouns",
+      "title_fa": "ضمیرها",
+      "use_fa": "you/one/they برای اشاره به مردم به‌طور کلی؛ ضمیرهای بازتابی (myself, yourself, himself...) و متقابل (each other).",
+      "formulas": [
+        {
+          "label_fa": "کلی",
+          "text": "You can learn faster if you live there.\nOne tends to have problems.\nThey always say ..."
+        },
+        {
+          "label_fa": "بازتابی",
+          "text": "Take care of yourself.\nHe talks about himself.\nI was proud of myself."
+        },
+        {
+          "label_fa": "متقابل",
+          "text": "They helped each other."
+        }
+      ],
+      "examples": [
+        {
+          "en": "You can learn a language faster if you go to live in the country.",
+          "fa": "اگر برای زندگی به آن کشور بروی سریع‌تر زبان یاد می‌گیری."
+        },
+        {
+          "en": "One tends to have problems understanding strong accents.",
+          "fa": "آدم معمولاً در فهم لهجه‌های غلیظ مشکل دارد."
+        },
+        {
+          "en": "He always talks about himself.",
+          "fa": "او همیشه دربارهٔ خودش حرف می‌زند."
+        },
+        {
+          "en": "They helped each other.",
+          "fa": "آن‌ها به همدیگر کمک کردند."
+        }
+      ],
+      "notes_fa": "each other برای دو طرف و themselves برای خودشان است. they/them/their برای یک شخص نامشخص هم به کار می‌رود."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "the past: habitual events and specific incidents",
+      "title_fa": "گذشته: عادت‌ها و رویدادهای مشخص",
+      "use_fa": "برای روایت یک اتفاق از گذشتهٔ ساده (کارهای اصلی)، استمراری (صحنه) و کامل/کامل استمراری (گذشتهٔ قبل‌تر) استفاده می‌کنیم؛ used to/would برای عادت‌های گذشته.",
+      "formulas": [
+        {
+          "label_fa": "روایت",
+          "text": "My father had gone away.\nWe were sleeping.\nI woke up and screamed."
+        },
+        {
+          "label_fa": "عادت",
+          "text": "used to / would + base\nMy sister used to live on her own.\nWe would go every summer."
+        }
+      ],
+      "examples": [
+        {
+          "en": "My father had gone away on business for a few days.",
+          "fa": "پدرم چند روز برای کار رفته بود."
+        },
+        {
+          "en": "We were sleeping in my parents' bedroom.",
+          "fa": "در اتاق والدینم خواب بودیم."
+        },
+        {
+          "en": "I had been reading a very scary story.",
+          "fa": "داشتم داستان ترسناکی می‌خواندم."
+        },
+        {
+          "en": "My sister used to live on her own.",
+          "fa": "خواهرم قبلاً تنها زندگی می‌کرد."
+        }
+      ],
+      "notes_fa": "would فقط برای عادت‌های کنشی است و با فعل‌های حالتی مثل be/live نمی‌آید؛ برای آن‌ها used to به کار ببر."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u02-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "You can learn a language faster if ___ go to live in the country.",
+      "options": [
+        "you",
+        "one",
+        "they"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "one رسمی است.",
+        "2": "they برای گروه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «you» است. you."
+    },
+    {
+      "external_id": "u02-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "___ tends to have problems understanding very strong accents.",
+      "options": [
+        "One",
+        "You",
+        "They"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "you محاوره‌ای است.",
+        "2": "they جمع است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «One» است. One."
+    },
+    {
+      "external_id": "u02-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ always say that it's never too late to learn.",
+      "options": [
+        "They",
+        "One",
+        "You"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "one با say جمع نمی‌آید.",
+        "2": "you اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «They» است. They."
+    },
+    {
+      "external_id": "u02-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "___ should make it a requirement to learn two languages.",
+      "options": [
+        "They",
+        "One",
+        "It"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "one با should make نمی‌آید.",
+        "2": "it اشاره به چیزی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «They» است. They."
+    },
+    {
+      "external_id": "u02-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "If someone goes to live abroad, ___ will have to get used to a different way of life.",
+      "options": [
+        "they",
+        "he",
+        "one"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "he فقط مرد است.",
+        "2": "one با someone هم‌خوان نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «they» است. they."
+    },
+    {
+      "external_id": "u02-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Could the person who left ___ bag in the library come and see me?",
+      "options": [
+        "their",
+        "his",
+        "one's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "his فقط مرد است.",
+        "2": "one's اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «their» است. their."
+    },
+    {
+      "external_id": "u02-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "You need to take care of ___ with that cold.",
+      "options": [
+        "yourself",
+        "you",
+        "your"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "you ضمیر فاعلی است.",
+        "2": "your صفت ملکی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «yourself» است. yourself."
+    },
+    {
+      "external_id": "u02-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "He's very egocentric. He always talks about ___.",
+      "options": [
+        "himself",
+        "him",
+        "he"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "him مفعولی است.",
+        "2": "he فاعلی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «himself» است. himself."
+    },
+    {
+      "external_id": "u02-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I managed to complete the puzzle! I was really proud of ___.",
+      "options": [
+        "myself",
+        "me",
+        "I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "me مفعولی است.",
+        "2": "I فاعلی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «myself» است. myself."
+    },
+    {
+      "external_id": "u02-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "They helped ___ with the project.",
+      "options": [
+        "each other",
+        "themselves",
+        "them"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "themselves یعنی خودشان.",
+        "2": "them ضمیر مفعولی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «each other» است. each other."
+    },
+    {
+      "external_id": "u02-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "We write to ___ every week.",
+      "options": [
+        "each other",
+        "ourselves",
+        "us"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ourselves یعنی خودمان.",
+        "2": "us ضمیر مفعولی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «each other» است. each other."
+    },
+    {
+      "external_id": "u02-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She hurt ___.",
+      "options": [
+        "herself",
+        "her",
+        "she"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "her مفعولی است.",
+        "2": "she فاعلی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «herself» است. herself."
+    },
+    {
+      "external_id": "u02-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "My father ___ away on business for a few days.",
+      "options": [
+        "had gone",
+        "has gone",
+        "went"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has gone حال کامل است.",
+        "2": "went ترتیب زمانی را نمی‌رساند."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had gone» است. had gone."
+    },
+    {
+      "external_id": "u02-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "My brother and I ___ in my parents' bedroom.",
+      "options": [
+        "were sleeping",
+        "slept",
+        "had slept"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "slept کار کوتاه است.",
+        "2": "had slept قبل‌تر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were sleeping» است. were sleeping."
+    },
+    {
+      "external_id": "u02-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "Before we went to bed that night, I ___ a very scary story.",
+      "options": [
+        "had been reading",
+        "was reading",
+        "read"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was reading در جریان است.",
+        "2": "read ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had been reading» است. had been reading."
+    },
+    {
+      "external_id": "u02-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "In the middle of the night, I ___ up suddenly.",
+      "options": [
+        "woke",
+        "had woken",
+        "was waking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had woken قبل‌تر است.",
+        "2": "was waking در جریان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «woke» است. woke."
+    },
+    {
+      "external_id": "u02-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I saw that a figure in a dark coat ___ at the end of my bed.",
+      "options": [
+        "was standing",
+        "stood",
+        "had stood"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "stood ساده است.",
+        "2": "had stood قبل‌تر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was standing» است. was standing."
+    },
+    {
+      "external_id": "u02-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I ___ at the top of my lungs.",
+      "options": [
+        "screamed",
+        "had screamed",
+        "was screaming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had screamed قبل‌تر است.",
+        "2": "was screaming در جریان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «screamed» است. screamed."
+    },
+    {
+      "external_id": "u02-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "When I came into the room, my aunt ___ with her back to me.",
+      "options": [
+        "was sitting",
+        "sat",
+        "had sat"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sat ساده است.",
+        "2": "had sat قبل‌تر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was sitting» است. was sitting."
+    },
+    {
+      "external_id": "u02-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "When she turned around, I could see that she ___.",
+      "options": [
+        "had been crying",
+        "had cried",
+        "was crying"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had cried فقط نتیجه است.",
+        "2": "was crying در جریان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had been crying» است. had been crying."
+    },
+    {
+      "external_id": "u02-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "My sister ___ live on her own, but then she bought a house.",
+      "options": [
+        "used to",
+        "would",
+        "use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would با live حالتی نمی‌آید.",
+        "2": "use to بدون did غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to live."
+    },
+    {
+      "external_id": "u02-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "We ___ go to the beach every summer when I was a child.",
+      "options": [
+        "would",
+        "used",
+        "use"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used بدون to ناقص است.",
+        "2": "use بدون to است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would."
+    },
+    {
+      "external_id": "u02-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "My brother didn't ___ look at all like my father.",
+      "options": [
+        "use to",
+        "used to",
+        "uses to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't شکل used نمی‌آید.",
+        "2": "uses to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «use to» است. didn't use to."
+    },
+    {
+      "external_id": "u02-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "My parents ___ punish me by not letting me play with my friends.",
+      "options": [
+        "would",
+        "will",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will آینده است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would."
+    },
+    {
+      "external_id": "u02-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "You need to take care of",
+          "right": "yourself."
+        },
+        {
+          "left": "He always talks about",
+          "right": "himself."
+        },
+        {
+          "left": "I was proud of",
+          "right": "myself."
+        },
+        {
+          "left": "They helped",
+          "right": "each other with the project."
+        },
+        {
+          "left": "We write to",
+          "right": "each other every week."
+        }
+      ],
+      "explanation_fa": "ضمیر بازتابی به فاعل برمی‌گردد و each other برای دو طرف است.",
+      "position": 25
+    },
+    {
+      "external_id": "u02-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "My father had gone away",
+          "right": "on business."
+        },
+        {
+          "left": "We were sleeping",
+          "right": "in my parents' bedroom."
+        },
+        {
+          "left": "I woke up",
+          "right": "and saw a figure."
+        },
+        {
+          "left": "She had been crying",
+          "right": "before she turned around."
+        },
+        {
+          "left": "My sister used to",
+          "right": "live on her own."
+        }
+      ],
+      "explanation_fa": "گذشتهٔ کامل برای قبل‌تر، استمراری برای صحنه و used to برای عادت.",
+      "position": 26
+    }
+  ]
+}

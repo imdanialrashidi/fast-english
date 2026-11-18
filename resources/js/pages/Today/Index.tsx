@@ -252,8 +252,8 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                             <div className="min-w-0">
                                 <h2 className="m-0 text-[0.9375rem] leading-6 font-bold">هدف امروز: {fa(plan.goal_minutes)} دقیقه مطالعه</h2>
                                 <p className="m-0 mt-1 text-[0.8125rem] leading-6 text-muted">{fa(plan.learned_minutes)} دقیقه از برنامه امروز انجام شده.</p>
-                                {plan.due_words > 0 && (
-                                    <p className="m-0 mt-2">
+                                <p className="m-0 mt-2 flex flex-wrap gap-2">
+                                    {plan.due_words > 0 && (
                                         <Link
                                             href="/app/words/review"
                                             className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2 font-bold text-ink no-underline hover:bg-surface"
@@ -261,8 +261,15 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                                             <Languages size={20} aria-hidden="true" />
                                             مرور {fa(plan.due_words)} واژه
                                         </Link>
-                                    </p>
-                                )}
+                                    )}
+                                    <Link
+                                        href="/app/review"
+                                        className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2 font-bold text-ink no-underline hover:bg-surface"
+                                    >
+                                        مرور همه
+                                        <ArrowLeft size={18} aria-hidden="true" />
+                                    </Link>
+                                </p>
                             </div>
                         </section>
 

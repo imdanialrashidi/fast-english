@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Bookmark, BookOpen, Check, Clock, Gauge, Headphones, RotateCcw } from 'lucide-react';
+import { Bookmark, BookOpen, Check, Clock, Gauge, Headphones, Layers, RotateCcw } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -393,6 +393,17 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                         <BookOpen size={20} aria-hidden="true" />
                         واژه‌های کلیدی
                     </h2>
+                    {!isGuest && glossary.length > 0 && (
+                        <div className="pb-3">
+                            <Link
+                                href={`/app/lessons/${lesson.id}/flashcards`}
+                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                            >
+                                <Layers size={18} aria-hidden="true" />
+                                فلش‌کارت این درس ({glossary.length.toLocaleString('fa-IR')} واژه)
+                            </Link>
+                        </div>
+                    )}
                     {glossary.length > 0 ? (
                         <dl className="m-0">
                             {glossary.map((entry) => (

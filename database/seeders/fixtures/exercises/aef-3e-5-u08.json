@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-5-u08",
+  "book": "aef-3e-5",
+  "unit": 8,
+  "title": "American English File 5 · Unit 8",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 8,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "8A",
+      "8B"
+    ],
+    "grammar_bank": "8A p.153, 8B p.154",
+    "workbook": "8A, 8B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "gerunds and infinitives",
+      "title_fa": "اسم مصدر و مصدر (پیشرفته)",
+      "use_fa": "بعد از حرف اضافه و برخی عبارت‌ها ing می‌آید (apologize for, look forward to, no use, can't help)؛ بعد از too/enough و decide/suggest (ساختار مناسب) to؛ بعد از would rather/better فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "ing",
+          "text": "used to getting up early\napologized for being late\ndenied taking it\nno use complaining"
+        },
+        {
+          "label_fa": "to / پایه",
+          "text": "too tired to walk\nold enough to drive\nI'd rather stay"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm used to getting up early.",
+          "fa": "به زود بیدار شدن عادت دارم."
+        },
+        {
+          "en": "She apologized for being late.",
+          "fa": "او برای دیر رسیدن عذرخواهی کرد."
+        },
+        {
+          "en": "He denied taking the money.",
+          "fa": "او انکار کرد که پول را گرفته است."
+        },
+        {
+          "en": "It's no use complaining about it.",
+          "fa": "شکایت کردن دربارهٔ آن فایده‌ای ندارد."
+        }
+      ],
+      "notes_fa": "بعد از look forward to و used to (عادت) فعل ing می‌آید، نه مصدر."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "expressing future plans and arrangements",
+      "title_fa": "برنامه‌ها و قرارهای آینده",
+      "use_fa": "حال استمراری برای قرار قطعی با زمان/مکان؛ be going to برای قصد و پیش‌بینی با شواهد؛ will برای تصمیم لحظه‌ای/قول؛ حال ساده برای برنامهٔ زمانی.",
+      "formulas": [
+        {
+          "label_fa": "قرار",
+          "text": "I'm seeing friends tonight.\nWe're meeting at 10:00."
+        },
+        {
+          "label_fa": "قصد/شواهد",
+          "text": "We're going to Spain.\nIt's going to rain."
+        },
+        {
+          "label_fa": "برنامه/قول",
+          "text": "The train leaves at 7:00.\nI'll help you."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm seeing some friends after class tonight.",
+          "fa": "امشب بعد از کلاس چند دوست را می‌بینم."
+        },
+        {
+          "en": "We're going to Spain next summer.",
+          "fa": "تابستان بعد به اسپانیا می‌رویم."
+        },
+        {
+          "en": "The train leaves at 7:00.",
+          "fa": "قطار ساعت ۷ حرکت می‌کند."
+        },
+        {
+          "en": "I'll help you with that bag.",
+          "fa": "با آن کیف کمکت می‌کنم."
+        }
+      ],
+      "notes_fa": "برای برنامهٔ رسمی/زمان‌بندی‌شده حال ساده می‌آید: The train leaves at 7:00."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u08-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'm used to ___ up early.",
+      "options": [
+        "getting",
+        "get",
+        "to get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از used to (عادت) فعل ing.",
+        "2": "to get اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «getting» است. getting up."
+    },
+    {
+      "external_id": "u08-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She apologized for ___ late.",
+      "options": [
+        "being",
+        "be",
+        "to be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از for فعل ing.",
+        "2": "to be بعد از for نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «being» است. being late."
+    },
+    {
+      "external_id": "u08-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "He denied ___ the money.",
+      "options": [
+        "taking",
+        "take",
+        "to take"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از deny فعل ing.",
+        "2": "to take بعد از deny نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «taking» است. taking."
+    },
+    {
+      "external_id": "u08-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I'm looking forward to ___ you.",
+      "options": [
+        "seeing",
+        "see",
+        "to see"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل ing.",
+        "2": "to see بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seeing» است. seeing."
+    },
+    {
+      "external_id": "u08-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "It's no use ___ about it.",
+      "options": [
+        "complaining",
+        "complain",
+        "to complain"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از no use فعل ing.",
+        "2": "to complain نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «complaining» است. complaining."
+    },
+    {
+      "external_id": "u08-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I'd rather ___ at home tonight.",
+      "options": [
+        "stay",
+        "to stay",
+        "staying"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would rather فعل پایه.",
+        "2": "staying نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «stay» است. stay."
+    },
+    {
+      "external_id": "u08-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She's too tired ___.",
+      "options": [
+        "to walk",
+        "walk",
+        "walking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از too صفت to می‌آید.",
+        "2": "walking نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to walk» است. to walk."
+    },
+    {
+      "external_id": "u08-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "He's old enough ___.",
+      "options": [
+        "to drive",
+        "drive",
+        "driving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از enough to می‌آید.",
+        "2": "driving نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to drive» است. to drive."
+    },
+    {
+      "external_id": "u08-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I can't help ___.",
+      "options": [
+        "laughing",
+        "laugh",
+        "to laugh"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از can't help فعل ing.",
+        "2": "to laugh نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «laughing» است. laughing."
+    },
+    {
+      "external_id": "u08-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "We decided ___ early.",
+      "options": [
+        "to leave",
+        "leave",
+        "leaving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از decide مصدر با to.",
+        "2": "leaving نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to leave» است. to leave."
+    },
+    {
+      "external_id": "u08-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "She suggested ___ a taxi.",
+      "options": [
+        "taking",
+        "take",
+        "to take"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از suggest فعل ing.",
+        "2": "to take نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «taking» است. taking."
+    },
+    {
+      "external_id": "u08-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "You'd better ___ now.",
+      "options": [
+        "go",
+        "to go",
+        "going"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از had better فعل پایه.",
+        "2": "going نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «go» است. go."
+    },
+    {
+      "external_id": "u08-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ some friends after class tonight.",
+      "options": [
+        "am seeing",
+        "see",
+        "will see"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "see حال ساده است.",
+        "2": "will see تصمیم لحظه‌ای است."
+      },
+      "explanation_fa": "قرار: am seeing."
+    },
+    {
+      "external_id": "u08-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "We ___ to Spain next summer.",
+      "options": [
+        "are going",
+        "go",
+        "will go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "go حال ساده است.",
+        "2": "will go تصمیم لحظه‌ای است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are going» است. are going."
+    },
+    {
+      "external_id": "u08-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "The train ___ at 7:00.",
+      "options": [
+        "leaves",
+        "is leaving",
+        "will leave"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is leaving قرار شخصی است.",
+        "2": "will leave اینجا نمی‌آید."
+      },
+      "explanation_fa": "برنامهٔ زمانی: leaves."
+    },
+    {
+      "external_id": "u08-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I ___ you with that bag.",
+      "options": [
+        "will help",
+        "am helping",
+        "help"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am helping یعنی الان.",
+        "2": "help عادت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will help» است. will help."
+    },
+    {
+      "external_id": "u08-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "She ___ married in June.",
+      "options": [
+        "is getting",
+        "gets",
+        "will get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "gets حال ساده است.",
+        "2": "will get تصمیم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is getting» است. is getting married."
+    },
+    {
+      "external_id": "u08-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Look at those clouds! It ___.",
+      "options": [
+        "is going to rain",
+        "will rain",
+        "rains"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "شواهد دیده می‌شود.",
+        "2": "rains حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is going to rain» است. is going to rain."
+    },
+    {
+      "external_id": "u08-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I ___ dinner tonight — I promise.",
+      "options": [
+        "will make",
+        "am making",
+        "make"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am making قرار است.",
+        "2": "make حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will make» است. will make."
+    },
+    {
+      "external_id": "u08-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "We ___ at 10:00 tomorrow in Jack's office.",
+      "options": [
+        "are meeting",
+        "meet",
+        "met"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "meet عادت است.",
+        "2": "met گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are meeting» است. are meeting."
+    },
+    {
+      "external_id": "u08-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "The film ___ at 8:30.",
+      "options": [
+        "starts",
+        "is starting",
+        "will start"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is starting قرار است.",
+        "2": "will start اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «starts» است. starts."
+    },
+    {
+      "external_id": "u08-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "I think she ___ the job.",
+      "options": [
+        "will get",
+        "is getting",
+        "gets"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is getting قرار است.",
+        "2": "gets حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will get» است. will get."
+    },
+    {
+      "external_id": "u08-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "They ___ a baby in May.",
+      "options": [
+        "are having",
+        "have",
+        "will have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "will have تصمیم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are having» است. are having."
+    },
+    {
+      "external_id": "u08-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Don't worry, I ___ forget.",
+      "options": [
+        "won't",
+        "don't",
+        "am not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't حال است.",
+        "2": "am not با forget نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «won't» است. won't."
+    },
+    {
+      "external_id": "u08-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "هر عبارت را کامل کن.",
+      "pairs": [
+        {
+          "left": "I'm used to",
+          "right": "getting up early."
+        },
+        {
+          "left": "She apologized for",
+          "right": "being late."
+        },
+        {
+          "left": "He denied",
+          "right": "taking the money."
+        },
+        {
+          "left": "It's no use",
+          "right": "complaining."
+        },
+        {
+          "left": "I'd rather",
+          "right": "stay at home."
+        }
+      ],
+      "explanation_fa": "حرف اضافه + ing و would rather + فعل پایه.",
+      "position": 25
+    },
+    {
+      "external_id": "u08-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm seeing",
+          "right": "some friends tonight."
+        },
+        {
+          "left": "We're going",
+          "right": "to Spain next summer."
+        },
+        {
+          "left": "The train leaves",
+          "right": "at 7:00."
+        },
+        {
+          "left": "It's going to",
+          "right": "rain."
+        },
+        {
+          "left": "I'll help",
+          "right": "you with that bag."
+        }
+      ],
+      "explanation_fa": "قرار، قصد، برنامهٔ زمانی و قول.",
+      "position": 26
+    }
+  ]
+}

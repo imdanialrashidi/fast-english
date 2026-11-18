@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-5-u04",
+  "book": "aef-3e-5",
+  "unit": 4,
+  "title": "American English File 5 · Unit 4",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 4,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "4A",
+      "4B"
+    ],
+    "grammar_bank": "4A p.145, 4B p.146",
+    "workbook": "4A, 4B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "speculation and deduction",
+      "title_fa": "حدس و استنتاج",
+      "use_fa": "must/can't برای قطعیت در حال، must have/can't have برای گذشته، may/might/could برای احتمال، should/ought to برای انتظار.",
+      "formulas": [
+        {
+          "label_fa": "حال",
+          "text": "must be / can't be / may be"
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "must have seen / can't have spent / may have taken"
+        },
+        {
+          "label_fa": "انتظار",
+          "text": "should arrive / should have arrived"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Ariana must be very well off — she has an enormous house.",
+          "fa": "آریانا باید خیلی پولدار باشد؛ خانهٔ بزرگی دارد."
+        },
+        {
+          "en": "You must have seen him — he was standing in front of you!",
+          "fa": "حتماً او را دیده‌ای؛ جلوی تو ایستاده بود!"
+        },
+        {
+          "en": "They can't be playing very well — they're losing 3-0.",
+          "fa": "نمی‌توانند خوب بازی کنند؛ ۳-۰ عقب‌اند."
+        },
+        {
+          "en": "It should have arrived by now.",
+          "fa": "باید تا حالا رسیده باشد."
+        }
+      ],
+      "notes_fa": "must be برای حال و must have been برای گذشته؛ can't به‌جای mustn't برای نفی قطعی می‌آید."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "adding emphasis (1): inversion",
+      "title_fa": "تأکید با وارونگی",
+      "use_fa": "وقتی جمله با قید منفی/محدود (never, rarely, hardly, no sooner, not only, not until, little) شروع شود، فعل کمکی قبل از فاعل می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "Never have I heard ...\nRarely have I seen ...\nNo sooner had he left than ..."
+        },
+        {
+          "label_fa": "not only",
+          "text": "Not only is the plot great, but it's also well written."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Not only is the plot great, but it's also very well written.",
+          "fa": "نه‌تنها داستان عالی است، بلکه خیلی خوب هم نوشته شده."
+        },
+        {
+          "en": "Never have I heard such a ridiculous argument.",
+          "fa": "هرگز چنین استدلال مسخره‌ای نشنیده‌ام."
+        },
+        {
+          "en": "No sooner had the game started than it began to snow.",
+          "fa": "به‌محض شروع بازی برف شروع شد."
+        },
+        {
+          "en": "Not until you behave like an adult will we treat you like an adult.",
+          "fa": "تا وقتی مثل بزرگسال رفتار نکنی، مثل بزرگسال با تو رفتار نمی‌کنیم."
+        }
+      ],
+      "notes_fa": "در وارونگی، فعل کمکی (is/have/had/did/will) قبل از فاعل می‌آید: Never have I seen (نه Never I have seen)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u04-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Ariana ___ be very well off — she has an enormous house.",
+      "options": [
+        "must",
+        "must have",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must have برای گذشته است.",
+        "2": "can't یعنی غیرممکن."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must» است. must be."
+    },
+    {
+      "external_id": "u04-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "You ___ seen him — he was standing right in front of you!",
+      "options": [
+        "must have",
+        "must",
+        "can't have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must بدون have برای حال است.",
+        "2": "can't have غیرممکن است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must have» است. must have seen."
+    },
+    {
+      "external_id": "u04-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They ___ be playing very well — they're losing 3-0.",
+      "options": [
+        "can't",
+        "must",
+        "may"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعیت مثبت است.",
+        "2": "may احتمال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't» است. can't be."
+    },
+    {
+      "external_id": "u04-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "You ___ spent very long on this essay — you've only written 100 words.",
+      "options": [
+        "can't have",
+        "must have",
+        "may have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must have قطعیت مثبت است.",
+        "2": "may have احتمال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't have» است. can't have spent."
+    },
+    {
+      "external_id": "u04-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I haven't seen the sales manager today. He ___ be out of the office.",
+      "options": [
+        "may",
+        "may have",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "may have برای گذشته است.",
+        "2": "must قطعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «may» است. may be."
+    },
+    {
+      "external_id": "u04-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "The keys have disappeared. Do you think someone ___ taken them?",
+      "options": [
+        "may have",
+        "may",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "may بدون have برای حال است.",
+        "2": "must قطعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «may have» است. may have taken."
+    },
+    {
+      "external_id": "u04-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "He ___ heard the message I left.",
+      "options": [
+        "may not have",
+        "may not",
+        "must not have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "may not بدون have برای حال است.",
+        "2": "must not have اجباری نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «may not have» است. may not have heard."
+    },
+    {
+      "external_id": "u04-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "If I mail the letter today, it ___ arrive on Friday.",
+      "options": [
+        "should",
+        "should have",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "should have برای گذشته است.",
+        "2": "must قطعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «should» است. should arrive."
+    },
+    {
+      "external_id": "u04-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I mailed the letter a week ago. It ___ arrived by now.",
+      "options": [
+        "should have",
+        "should",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "should بدون have برای حال است.",
+        "2": "must قطعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «should have» است. should have arrived."
+    },
+    {
+      "external_id": "u04-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "must + base form expresses certainty about ___.",
+      "options": [
+        "the present",
+        "the past",
+        "the future"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "برای گذشته must have می‌آید.",
+        "2": "برای آینده should/will."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the present» است. the present."
+    },
+    {
+      "external_id": "u04-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "can't have + past participle means something ___.",
+      "options": [
+        "didn't happen",
+        "happened",
+        "will happen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't یعنی غیرممکن.",
+        "2": "آینده نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't happen» است. didn't happen."
+    },
+    {
+      "external_id": "u04-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She ___ be at home — the lights are on.",
+      "options": [
+        "must",
+        "must have",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must have برای گذشته است.",
+        "2": "can't یعنی غیرممکن."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must» است. must be."
+    },
+    {
+      "external_id": "u04-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Not only ___ the plot great, but it's also well written.",
+      "options": [
+        "is",
+        "is it",
+        "it is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب وارونه لازم است.",
+        "2": "فاعل بعد از فعل کمکی می‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. Not only is ..."
+    },
+    {
+      "external_id": "u04-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Never ___ I heard such a ridiculous argument.",
+      "options": [
+        "have",
+        "have I",
+        "did I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جای فاعل اشتباه است.",
+        "2": "did با heard نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. Never have I heard."
+    },
+    {
+      "external_id": "u04-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "No sooner ___ the game started than it began to snow.",
+      "options": [
+        "had",
+        "has",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has حال است.",
+        "2": "did با started نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had."
+    },
+    {
+      "external_id": "u04-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Not until you behave like an adult ___ we treat you like an adult.",
+      "options": [
+        "will",
+        "we will",
+        "would"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب وارونه لازم است.",
+        "2": "would زمان را عوض می‌کند."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will» است. will we."
+    },
+    {
+      "external_id": "u04-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Not only ___ you forget to shut the window, but you also forgot the door.",
+      "options": [
+        "did",
+        "do",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "have با forget نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did» است. did."
+    },
+    {
+      "external_id": "u04-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Rarely ___ such a beautiful sunset.",
+      "options": [
+        "have I seen",
+        "I have seen",
+        "did I saw"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب وارونه لازم است.",
+        "2": "did I saw غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have I seen» است. have I seen."
+    },
+    {
+      "external_id": "u04-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Hardly ___ we arrived when it started raining.",
+      "options": [
+        "had",
+        "have",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "did با arrived نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had."
+    },
+    {
+      "external_id": "u04-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Little ___ he know about the surprise.",
+      "options": [
+        "did",
+        "does",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does حال است ولی وارونگی لازم است.",
+        "2": "had با know نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did» است. did he know."
+    },
+    {
+      "external_id": "u04-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Never ___ such a thing!",
+      "options": [
+        "have I seen",
+        "I have seen",
+        "did I seen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب وارونه لازم است.",
+        "2": "did I seen غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have I seen» است. have I seen."
+    },
+    {
+      "external_id": "u04-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "No sooner had he left ___ the phone rang.",
+      "options": [
+        "than",
+        "then",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "then قید زمان است.",
+        "2": "when اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «than» است. than."
+    },
+    {
+      "external_id": "u04-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Not only is she talented, ___ she's also kind.",
+      "options": [
+        "but",
+        "and",
+        "or"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "and این الگو را کامل نمی‌کند.",
+        "2": "or منفی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «but» است. but."
+    },
+    {
+      "external_id": "u04-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Only then ___ understand the problem.",
+      "options": [
+        "did I",
+        "I did",
+        "I"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب وارونه لازم است.",
+        "2": "بدون فعل کمکی ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did I» است. did I."
+    },
+    {
+      "external_id": "u04-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های استنتاج را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "She has an enormous house.",
+          "right": "She must be well off."
+        },
+        {
+          "left": "He was standing in front of you.",
+          "right": "You must have seen him."
+        },
+        {
+          "left": "They're losing 3-0.",
+          "right": "They can't be playing well."
+        },
+        {
+          "left": "He's not in the office.",
+          "right": "He may be out."
+        },
+        {
+          "left": "The letter was mailed a week ago.",
+          "right": "It should have arrived."
+        }
+      ],
+      "explanation_fa": "must/can't/may/should برای استنتاج حال و گذشته.",
+      "position": 25
+    },
+    {
+      "external_id": "u04-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Not only is the plot great",
+          "right": "but it's also well written."
+        },
+        {
+          "left": "Never have I",
+          "right": "heard such an argument."
+        },
+        {
+          "left": "No sooner had the game started",
+          "right": "than it began to snow."
+        },
+        {
+          "left": "Not until you behave",
+          "right": "will we treat you like an adult."
+        },
+        {
+          "left": "Rarely have I",
+          "right": "seen such a sunset."
+        }
+      ],
+      "explanation_fa": "بعد از قید منفی، فعل کمکی قبل از فاعل می‌آید.",
+      "position": 26
+    }
+  ]
+}

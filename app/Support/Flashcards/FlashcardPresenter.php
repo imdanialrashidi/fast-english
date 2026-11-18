@@ -6,6 +6,8 @@ use App\Models\Flashcard;
 use App\Models\FlashcardBook;
 use App\Models\FlashcardUnit;
 use App\Models\UserFlashcard;
+use App\Models\VocabularyWord;
+use App\Models\WordAudio;
 
 /**
  * One shape per flashcard payload. Controllers never hand-build card or
@@ -18,7 +20,7 @@ final class FlashcardPresenter
      * @param  array{total: int, known: int, unknown: int, due: int, fresh: int}  $counts
      * @return array<string, mixed>
      */
-    public static function book(FlashcardBook $book, array $counts, int $unitsCount = 0): array
+    public static function book(FlashcardBook $book, array $counts, int $unitsCount = 0, ?array $exercise = null): array
     {
         return [
             'slug' => (string) $book->slug,
@@ -35,6 +37,7 @@ final class FlashcardPresenter
             'unknown_count' => $counts['unknown'],
             'due_count' => $counts['due'],
             'fresh_count' => $counts['fresh'],
+            'exercise' => $exercise,
             'url' => route('flashcards.book', ['book' => $book->slug]),
         ];
     }
@@ -43,7 +46,7 @@ final class FlashcardPresenter
      * @param  array{total: int, known: int, unknown: int, due: int, fresh: int}  $counts
      * @return array<string, mixed>
      */
-    public static function unit(FlashcardUnit $unit, array $counts): array
+    public static function unit(FlashcardUnit $unit, array $counts, ?array $exercise = null): array
     {
         return [
             'number' => (int) $unit->number,
@@ -55,7 +58,12 @@ final class FlashcardPresenter
             'unknown_count' => $counts['unknown'],
             'due_count' => $counts['due'],
             'fresh_count' => $counts['fresh'],
+            'exercise' => $exercise,
             'url' => route('flashcards.unit', [
+                'book' => $unit->book->slug,
+                'unit' => $unit->number,
+            ]),
+            'hub_url' => route('books.unit', [
                 'book' => $unit->book->slug,
                 'unit' => $unit->number,
             ]),
@@ -80,12 +88,46 @@ final class FlashcardPresenter
             'definition_en' => $card->definition_en,
             'example_en' => $card->example_en,
             'part_of_speech' => $card->part_of_speech,
-            'image_url' => route('media.flashcard.image', ['flashcard' => $card->id]),
             'audio_url' => route('media.flashcard.audio', ['flashcard' => $card->id]),
             'last_rating' => $state?->last_rating,
             'phase' => $state?->phase,
             'due_at' => $state?->due_at?->toIso8601String(),
             'is_new' => $state === null || $state->phase === 'new',
+        ];
+    }
+
+    /**
+     * One glossary card on a lesson deck. Cards are vocabulary state, not
+     * book content: the same word keeps one schedule wherever it appears.
+     * A word without an approved clip is still a valid card; the player
+     * simply hides the speaker action.
+     *
+     * @param  array{word: string, meaning_fa: string, example_en: ?string}  $entry
+     * @return array<string, mixed>
+     */
+    public static function vocabCard(
+        array $entry,
+        string $key,
+        int $position,
+        ?VocabularyWord $state = null,
+        ?WordAudio $audio = null,
+    ): array {
+        return [
+            'id' => $position,
+            'word_key' => $key,
+            'word' => (string) $entry['word'],
+            'headword' => (string) $entry['word'],
+            'phonetic' => null,
+            'translation_fa' => (string) $entry['meaning_fa'],
+            'definition_en' => null,
+            'example_en' => $entry['example_en'] ?? null,
+            'part_of_speech' => null,
+            'audio_url' => $audio !== null ? route('media.word.audio', ['wordAudio' => $audio->id]) : null,
+            'status' => $state?->status ?? 'new',
+            'last_rating' => null,
+            'phase' => $state?->status,
+            'due_at' => $state?->due_at?->toIso8601String(),
+            'is_new' => $state === null,
         ];
     }
 

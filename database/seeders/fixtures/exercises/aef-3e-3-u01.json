@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-3-u01",
+  "book": "aef-3e-3",
+  "unit": 1,
+  "title": "American English File 3 · Unit 1",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 1,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "1A",
+      "1B"
+    ],
+    "grammar_bank": "1A p.134, 1B p.135",
+    "workbook": "1A, 1B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple present and continuous, action and nonaction verbs",
+      "title_fa": "حال ساده و استمراری، فعل‌های کنشی و غیرکنشی",
+      "use_fa": "حال ساده برای عادت و حقیقت همیشگی؛ حال استمراری برای کاری که همین حالا در جریان است. برخی فعل‌ها (believe، want، seem) در حال استمراری نمی‌آیند.",
+      "formulas": [
+        {
+          "label_fa": "حال ساده",
+          "text": "I live in New York.\nShe works in a restaurant.\nDo you know David?"
+        },
+        {
+          "label_fa": "حال استمراری",
+          "text": "The phone's ringing.\nHouse prices are going up."
+        },
+        {
+          "label_fa": "غیرکنشی",
+          "text": "I don't believe it. (نه I'm not believing)\nKate doesn't want dinner."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I live in New York.",
+          "fa": "من در نیویورک زندگی می‌کنم."
+        },
+        {
+          "en": "The phone's ringing.",
+          "fa": "تلفن زنگ می‌خورد."
+        },
+        {
+          "en": "I don't believe that you cooked this.",
+          "fa": "باور نمی‌کنم این را خودت پخته باشی."
+        },
+        {
+          "en": "The check seems very high.",
+          "fa": "صورت‌حساب خیلی زیاد به نظر می‌رسد."
+        }
+      ],
+      "notes_fa": "فعل‌های حالت مثل believe، want، seem، know در حال استمراری نمی‌آیند: I don't believe (نه I'm not believing)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "future forms: present continuous, be going to, will / won't",
+      "title_fa": "شکل‌های آینده: حال استمراری، be going to و will",
+      "use_fa": "be going to برای تصمیم گرفته‌شده و پیش‌بینی با شواهد؛ حال استمراری برای قرار با زمان و مکان مشخص؛ will برای نظر، پیشنهاد و تصمیم لحظه‌ای.",
+      "formulas": [
+        {
+          "label_fa": "be going to",
+          "text": "My sister is going to adopt a child.\nLook at those clouds — it's going to rain."
+        },
+        {
+          "label_fa": "حال استمراری",
+          "text": "We're meeting at 10:00 tomorrow.\nJane's leaving on Friday."
+        },
+        {
+          "label_fa": "will/won't",
+          "text": "I think it will rain.\nI'll help you with that."
+        }
+      ],
+      "examples": [
+        {
+          "en": "My sister is going to adopt a child.",
+          "fa": "خواهرم قصد دارد بچه به فرزندی بگیرد."
+        },
+        {
+          "en": "We're meeting at 10:00 tomorrow.",
+          "fa": "فردا ساعت ۱۰ همدیگر را می‌بینیم."
+        },
+        {
+          "en": "Look at those black clouds! It's going to rain.",
+          "fa": "آن ابرهای سیاه را ببین! باران می‌آید."
+        },
+        {
+          "en": "I think it will rain tomorrow.",
+          "fa": "فکر می‌کنم فردا باران می‌آید."
+        }
+      ],
+      "notes_fa": "برای برنامهٔ از قبل تصمیم‌گرفته‌شده will نمی‌آید: My sister is going to adopt (نه will adopt)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ in New York.",
+      "options": [
+        "live",
+        "am living",
+        "lived"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am living موقت است.",
+        "2": "lived گذشته است."
+      },
+      "explanation_fa": "حقیقت همیشگی: live."
+    },
+    {
+      "external_id": "u01-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ in a restaurant.",
+      "options": [
+        "works",
+        "is working",
+        "work"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is working یعنی همین حالا.",
+        "2": "با she فعل s می‌گیرد."
+      },
+      "explanation_fa": "عادت: works."
+    },
+    {
+      "external_id": "u01-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "We ___ meat.",
+      "options": [
+        "don't eat",
+        "aren't eating",
+        "doesn't eat"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "aren't eating یعنی الان.",
+        "2": "doesn't با we نمی‌آید."
+      },
+      "explanation_fa": "عادت منفی: don't eat."
+    },
+    {
+      "external_id": "u01-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Where ___ you live?",
+      "options": [
+        "do",
+        "are",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای حال استمراری است.",
+        "2": "did برای گذشته است."
+      },
+      "explanation_fa": "سؤال حال ساده: do you live."
+    },
+    {
+      "external_id": "u01-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "The phone ___! Can you answer it?",
+      "options": [
+        "is ringing",
+        "rings",
+        "rang"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "rings عادت است.",
+        "2": "rang گذشته است."
+      },
+      "explanation_fa": "همین حالا: is ringing."
+    },
+    {
+      "external_id": "u01-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "House prices ___ up very fast right now.",
+      "options": [
+        "are going",
+        "go",
+        "went"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "go عادت است.",
+        "2": "went گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are going» است. right now: are going."
+    },
+    {
+      "external_id": "u01-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I ___ that you cooked this meal.",
+      "options": [
+        "don't believe",
+        "am not believing",
+        "doesn't believe"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "believe فعل غیرکنشی است.",
+        "2": "doesn't با I نمی‌آید."
+      },
+      "explanation_fa": "فعل حالت: don't believe."
+    },
+    {
+      "external_id": "u01-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Kate ___ to have dinner now.",
+      "options": [
+        "doesn't want",
+        "isn't wanting",
+        "don't want"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "want فعل غیرکنشی است.",
+        "2": "don't با she نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «doesn't want» است. doesn't want."
+    },
+    {
+      "external_id": "u01-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "The check ___ very high.",
+      "options": [
+        "seems",
+        "is seeming",
+        "seem"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "seem فعل غیرکنشی است.",
+        "2": "با check فعل s می‌گیرد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seems» است. seems."
+    },
+    {
+      "external_id": "u01-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "He ___ glasses.",
+      "options": [
+        "doesn't wear",
+        "isn't wearing",
+        "don't wear"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "wearing برای همین حالاست.",
+        "2": "don't با he نمی‌آید."
+      },
+      "explanation_fa": "عادت: doesn't wear."
+    },
+    {
+      "external_id": "u01-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "She usually ___ cereal for breakfast.",
+      "options": [
+        "has",
+        "is having",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "usually نشانهٔ حال ساده است.",
+        "2": "have با she نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has» است. has cereal."
+    },
+    {
+      "external_id": "u01-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Come on, let's order. The waiter ___.",
+      "options": [
+        "is coming",
+        "comes",
+        "came"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "comes عادت است.",
+        "2": "came گذشته است."
+      },
+      "explanation_fa": "همین حالا: is coming."
+    },
+    {
+      "external_id": "u01-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "My sister ___ adopt a child.",
+      "options": [
+        "is going to",
+        "will",
+        "goes to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای تصمیم از قبل نیست.",
+        "2": "goes to غلط است."
+      },
+      "explanation_fa": "برنامه: is going to."
+    },
+    {
+      "external_id": "u01-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Are you going to ___ a new car?",
+      "options": [
+        "buy",
+        "buying",
+        "bought"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "bought گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «buy» است. going to buy."
+    },
+    {
+      "external_id": "u01-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I'm not going to ___ to New York.",
+      "options": [
+        "go",
+        "going",
+        "went"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "went گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «go» است. going to go."
+    },
+    {
+      "external_id": "u01-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "The Yankees ___ win. They're playing really well.",
+      "options": [
+        "are going to",
+        "will go to",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will go to غلط است.",
+        "2": "are بدون going to نیست."
+      },
+      "explanation_fa": "پیش‌بینی با شواهد: are going to."
+    },
+    {
+      "external_id": "u01-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Look at those black clouds! It ___ rain.",
+      "options": [
+        "is going to",
+        "will",
+        "rains"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "شواهد دیده می‌شود.",
+        "2": "rains حال است."
+      },
+      "explanation_fa": "be going to برای پیش‌بینی با شواهد."
+    },
+    {
+      "external_id": "u01-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Lorna and James ___ married in October.",
+      "options": [
+        "are getting",
+        "will get",
+        "gets"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will get تصمیم نیست.",
+        "2": "gets با جمع نمی‌آید."
+      },
+      "explanation_fa": "قرار: are getting married."
+    },
+    {
+      "external_id": "u01-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "We ___ at 10:00 tomorrow in Jack's office.",
+      "options": [
+        "are meeting",
+        "meet",
+        "met"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "meet عادت است.",
+        "2": "met گذشته است."
+      },
+      "explanation_fa": "قرار با زمان و مکان: are meeting."
+    },
+    {
+      "external_id": "u01-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Jane ___ on Friday and coming back on Tuesday.",
+      "options": [
+        "is leaving",
+        "leaves",
+        "left"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "leaves عادت است.",
+        "2": "left گذشته است."
+      },
+      "explanation_fa": "قرار سفر: is leaving."
+    },
+    {
+      "external_id": "u01-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I think it ___ rain tomorrow.",
+      "options": [
+        "will",
+        "is going to",
+        "rains"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تصمیم/شواهد لازم نیست.",
+        "2": "rains حال است."
+      },
+      "explanation_fa": "نظر شخصی: will."
+    },
+    {
+      "external_id": "u01-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "I ___ you with those bags.",
+      "options": [
+        "will help",
+        "am helping",
+        "help"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am helping یعنی الان.",
+        "2": "help عادت است."
+      },
+      "explanation_fa": "پیشنهاد: will help."
+    },
+    {
+      "external_id": "u01-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "The meeting ___ canceled, so I'm not going.",
+      "options": [
+        "is",
+        "will be",
+        "is being"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will be آینده است.",
+        "2": "is being اینجا نمی‌آید."
+      },
+      "explanation_fa": "خبر قطعی: is canceled."
+    },
+    {
+      "external_id": "u01-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Don't worry. I ___ tell anyone.",
+      "options": [
+        "won't",
+        "don't",
+        "am not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "am not با tell نمی‌آید."
+      },
+      "explanation_fa": "قول منفی: won't tell."
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I live",
+          "right": "in New York."
+        },
+        {
+          "left": "She works",
+          "right": "in a restaurant."
+        },
+        {
+          "left": "The phone's",
+          "right": "ringing."
+        },
+        {
+          "left": "House prices are",
+          "right": "going up."
+        },
+        {
+          "left": "I don't",
+          "right": "believe it."
+        }
+      ],
+      "explanation_fa": "حال ساده برای عادت و حال استمراری برای همین حالا."
+    },
+    {
+      "external_id": "u01-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "My sister is going to",
+          "right": "adopt a child."
+        },
+        {
+          "left": "We're meeting",
+          "right": "at 10:00 tomorrow."
+        },
+        {
+          "left": "Look at those clouds — it's going to",
+          "right": "rain."
+        },
+        {
+          "left": "I think it",
+          "right": "will rain."
+        },
+        {
+          "left": "I'll help you",
+          "right": "with those bags."
+        }
+      ],
+      "explanation_fa": "be going to برای برنامه/شواهد، حال استمراری برای قرار، will برای نظر و پیشنهاد."
+    }
+  ]
+}

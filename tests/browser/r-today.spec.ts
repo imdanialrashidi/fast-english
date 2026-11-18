@@ -27,10 +27,11 @@ test('R5 today at 390px: greeting, goal default, empty plan, tab bar', async ({ 
   const { scroll, inner } = await noHorizontalScroll(page);
   expect(scroll).toBeLessThanOrEqual(inner);
 
-  // Mobile tab bar: exactly the four student destinations.
+  // Mobile tab bar: exactly the five student destinations (owner request
+  // 2026-11-15 added «کتاب‌ها»).
   const tabs = page.locator('.fe-bottomnav a');
-  await expect(tabs).toHaveCount(4);
-  for (const name of ['امروز', 'کشف', 'واژه‌ها', 'حساب']) {
+  await expect(tabs).toHaveCount(5);
+  for (const name of ['امروز', 'کشف', 'واژه‌ها', 'کتاب‌ها', 'حساب']) {
     await expect(page.locator('.fe-bottomnav').getByRole('link', { name })).toBeVisible();
   }
 

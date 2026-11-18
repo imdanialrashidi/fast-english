@@ -1,0 +1,643 @@
+{
+  "external_id": "aef-3e-1-u05",
+  "book": "aef-3e-1",
+  "unit": 5,
+  "title": "American English File 1 · Unit 5",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 5,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "5A",
+      "5B",
+      "5C"
+    ],
+    "grammar_bank": "5A p.134, 5B p.134, 5C p.134",
+    "workbook": "5A, 5B, 5C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "can / can't",
+      "title_fa": "can و can't",
+      "use_fa": "برای توانایی، امکان و اجازه. can برای همهٔ فاعل‌ها یک شکل دارد و بعد از آن فعل پایه می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + can + base verb\nI can sing.\nYou can park here."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "subject + can't + base verb\nI can't dance.\n(can't = cannot)"
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Can + subject + base verb?\nCan you help me?\nYes, I can. / No, I can't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I can sing, but I can't dance.",
+          "fa": "می‌توانم بخوانم، ولی نمی‌توانم برقصم."
+        },
+        {
+          "en": "Can you help me?",
+          "fa": "می‌توانی کمکم کنی؟"
+        },
+        {
+          "en": "You can park here.",
+          "fa": "می‌توانی اینجا پارک کنی."
+        },
+        {
+          "en": "She can't come on Wednesday.",
+          "fa": "او چهارشنبه نمی‌تواند بیاید."
+        }
+      ],
+      "notes_fa": "can با هیچ فاعلی s نمی‌گیرد و بعد از آن to نمی‌آید: I can swim. (نه I can to swim.)"
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present continuous",
+      "title_fa": "حال استمراری",
+      "use_fa": "برای کاری که همین حالا یا همین روزها در جریان است. با am/is/are + فعل ing ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I'm + verb-ing\nYou / We / They are + verb-ing\nHe / She / It is + verb-ing"
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I'm not + verb-ing\nYou aren't + verb-ing\nHe isn't + verb-ing"
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Are you + verb-ing?\nIs he + verb-ing?\nWhat are you doing?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "They're having a party.",
+          "fa": "آن‌ها مهمانی دارند."
+        },
+        {
+          "en": "The baby's crying.",
+          "fa": "بچه گریه می‌کند."
+        },
+        {
+          "en": "It's raining.",
+          "fa": "باران می‌بارد."
+        },
+        {
+          "en": "What are you doing? — I'm waiting for my brother.",
+          "fa": "چه کار می‌کنی؟ — منتظر برادرم هستم."
+        }
+      ],
+      "notes_fa": "قواعد ing: cook→cooking، dance→dancing، shop→shopping (صامت آخر دوبرابر). حال استمراری برای «همین حالا» است."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "simple present or present continuous?",
+      "title_fa": "حال ساده یا حال استمراری؟",
+      "use_fa": "حال ساده برای عادت و کارهای همیشگی؛ حال استمراری برای همین حالا یا دورهٔ موقت. نشانه‌های زمانی کمک می‌کنند.",
+      "formulas": [
+        {
+          "label_fa": "حال ساده",
+          "text": "always / usually / every day + simple present\nIt always snows here.\nMy sister works in a bank."
+        },
+        {
+          "label_fa": "حال استمراری",
+          "text": "now / at the moment / today + present continuous\nLook! It's snowing.\nToday she's working at home."
+        }
+      ],
+      "examples": [
+        {
+          "en": "It always snows here in the winter.",
+          "fa": "اینجا زمستان‌ها همیشه برف می‌بارد."
+        },
+        {
+          "en": "Look! It's snowing.",
+          "fa": "نگاه کن! دارد برف می‌بارد."
+        },
+        {
+          "en": "What do you do? — I'm a teacher.",
+          "fa": "چه کار می‌کنی؟ — معلمم."
+        },
+        {
+          "en": "What are you doing? — I'm waiting for a friend.",
+          "fa": "چه کار می‌کنی؟ — منتظر دوستم هستم."
+        }
+      ],
+      "notes_fa": "What do you do? یعنی «شغلت چیست؟» ولی What are you doing? یعنی «الان چه کار می‌کنی؟»"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u05-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ sing, but I can't dance.",
+      "options": [
+        "can",
+        "cans",
+        "can to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can با هیچ فاعلی s نمی‌گیرد.",
+        "2": "بعد از can حرف to نمی‌آید."
+      },
+      "explanation_fa": "can + فعل پایه: I can sing."
+    },
+    {
+      "external_id": "u05-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ come on Wednesday.",
+      "options": [
+        "can't",
+        "can't to",
+        "don't can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از can't حرف to نمی‌آید.",
+        "2": "don't can وجود ندارد."
+      },
+      "explanation_fa": "منفی: can't come."
+    },
+    {
+      "external_id": "u05-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you help me?",
+      "options": [
+        "Can",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "درخواست: Can you help me?"
+    },
+    {
+      "external_id": "u05-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "You ___ park here. It's OK.",
+      "options": [
+        "can",
+        "can't",
+        "cannot"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله می‌گوید مجاز است.",
+        "2": "cannot منفی است."
+      },
+      "explanation_fa": "اجازه: You can park here."
+    },
+    {
+      "external_id": "u05-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "He ___ swim.",
+      "options": [
+        "can",
+        "cans",
+        "can to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can با he هم بدون s است.",
+        "2": "بعد از can to نمی‌آید."
+      },
+      "explanation_fa": "can برای he هم بدون s می‌آید: He can swim."
+    },
+    {
+      "external_id": "u05-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "___ I open the window?",
+      "options": [
+        "Can",
+        "Do",
+        "Am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Am برای be است."
+      },
+      "explanation_fa": "اجازه خواستن: Can I open the window?"
+    },
+    {
+      "external_id": "u05-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They ___ come. They're busy.",
+      "options": [
+        "can't",
+        "can",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله می‌گوید ممکن نیست.",
+        "2": "don't به فعل کمکی نیاز دارد."
+      },
+      "explanation_fa": "عدم امکان: can't come."
+    },
+    {
+      "external_id": "u05-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "They ___ having a party.",
+      "options": [
+        "are",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای مفرد است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل they با are می‌آید: They’re having a party."
+    },
+    {
+      "external_id": "u05-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "The baby ___ crying.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "baby مفرد: is crying."
+    },
+    {
+      "external_id": "u05-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "It ___ raining.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل it با is می‌آید: It’s raining."
+    },
+    {
+      "external_id": "u05-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "What ___ you doing?",
+      "options": [
+        "are",
+        "is",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای مفرد است.",
+        "2": "do برای حال ساده است."
+      },
+      "explanation_fa": "سؤال با فاعل you: What are you doing?"
+    },
+    {
+      "external_id": "u05-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "I'm ___ for my brother.",
+      "options": [
+        "waiting",
+        "wait",
+        "waits"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از am فعل پایه نمی‌آید.",
+        "2": "waits برای سوم‌شخص است."
+      },
+      "explanation_fa": "حال استمراری: waiting."
+    },
+    {
+      "external_id": "u05-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "She ___ working today.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل she با is می‌آید: She’s working today."
+    },
+    {
+      "external_id": "u05-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "We ___ watching TV.",
+      "options": [
+        "aren't",
+        "isn't",
+        "amn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "isn't برای مفرد است.",
+        "2": "amn't وجود ندارد."
+      },
+      "explanation_fa": "منفی we: aren't watching."
+    },
+    {
+      "external_id": "u05-t2-q08",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ he working?",
+      "options": [
+        "Is",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای حال ساده است.",
+        "2": "Are برای جمع است."
+      },
+      "explanation_fa": "سؤال حال استمراری: Is he working?"
+    },
+    {
+      "external_id": "u05-t3-q01",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "It always ___ here in winter.",
+      "options": [
+        "snows",
+        "is snowing",
+        "snow"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "always نشانهٔ حال استمراری نیست.",
+        "2": "با it فعل s می‌گیرد."
+      },
+      "explanation_fa": "عادت: It always snows."
+    },
+    {
+      "external_id": "u05-t3-q02",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Look! It ___.",
+      "options": [
+        "is snowing",
+        "snows",
+        "snow"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Look نشانهٔ همین حالاست.",
+        "2": "snow با it s می‌گیرد."
+      },
+      "explanation_fa": "همین حالا: It's snowing."
+    },
+    {
+      "external_id": "u05-t3-q03",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "What ___ you usually do at work?",
+      "options": [
+        "do",
+        "are",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای حال استمراری است.",
+        "2": "does برای سوم‌شخص است."
+      },
+      "explanation_fa": "با usually و you: do."
+    },
+    {
+      "external_id": "u05-t3-q04",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "My sister ___ in a bank.",
+      "options": [
+        "works",
+        "is working",
+        "work"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "این عادت همیشگی است.",
+        "2": "با she فعل s می‌گیرد."
+      },
+      "explanation_fa": "عادت: works in a bank."
+    },
+    {
+      "external_id": "u05-t3-q05",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Today she ___ at home.",
+      "options": [
+        "is working",
+        "works",
+        "work"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "today نشانهٔ حال استمراری است.",
+        "2": "work برای جمع است."
+      },
+      "explanation_fa": "امروز: is working at home."
+    },
+    {
+      "external_id": "u05-t3-q06",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "What ___ you do?",
+      "options": [
+        "do",
+        "are",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are یعنی «الان چه می‌کنی».",
+        "2": "does برای سوم‌شخص است."
+      },
+      "explanation_fa": "شغل: What do you do?"
+    },
+    {
+      "external_id": "u05-t3-q07",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "What ___ you doing?",
+      "options": [
+        "are",
+        "do",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do یعنی شغل.",
+        "2": "does برای سوم‌شخص است."
+      },
+      "explanation_fa": "الان: What are you doing?"
+    },
+    {
+      "external_id": "u05-t3-q08",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "She usually ___ coffee.",
+      "options": [
+        "drinks",
+        "is drinking",
+        "drink"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "usually نشانهٔ حال ساده است.",
+        "2": "با she فعل s می‌گیرد."
+      },
+      "explanation_fa": "عادت: drinks coffee."
+    },
+    {
+      "external_id": "u05-t1-m01",
+      "topic": "t1",
+      "position": 24,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I can sing",
+          "right": "but I can't dance."
+        },
+        {
+          "left": "Can you",
+          "right": "help me?"
+        },
+        {
+          "left": "You can",
+          "right": "park here."
+        },
+        {
+          "left": "She can't",
+          "right": "come on Wednesday."
+        },
+        {
+          "left": "Can I",
+          "right": "open the window?"
+        }
+      ],
+      "explanation_fa": "can/can't + فعل پایه؛ برای همهٔ فاعل‌ها یک شکل."
+    },
+    {
+      "external_id": "u05-t2-m01",
+      "topic": "t2",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm",
+          "right": "waiting for my brother."
+        },
+        {
+          "left": "They're",
+          "right": "having a party."
+        },
+        {
+          "left": "It's",
+          "right": "raining."
+        },
+        {
+          "left": "The baby's",
+          "right": "crying."
+        },
+        {
+          "left": "What are you",
+          "right": "doing?"
+        }
+      ],
+      "explanation_fa": "حال استمراری: am/is/are + فعل ing."
+    },
+    {
+      "external_id": "u05-t3-m01",
+      "topic": "t3",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "It always snows",
+          "right": "here in the winter."
+        },
+        {
+          "left": "Look! It's",
+          "right": "snowing."
+        },
+        {
+          "left": "My sister works",
+          "right": "in a bank."
+        },
+        {
+          "left": "Today she's working",
+          "right": "at home."
+        },
+        {
+          "left": "What are you",
+          "right": "doing now?"
+        }
+      ],
+      "explanation_fa": "عادت با حال ساده، همین حالا با حال استمراری."
+    }
+  ]
+}

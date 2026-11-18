@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-3-u06",
+  "book": "aef-3e-3",
+  "unit": 6,
+  "title": "American English File 3 · Unit 6",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 6,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "6A",
+      "6B"
+    ],
+    "grammar_bank": "6A p.144, 6B p.145",
+    "workbook": "6A, 6B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "passive (all tenses)",
+      "title_fa": "مجهول در همهٔ زمان‌ها",
+      "use_fa": "وقتی مهم نیست یا نمی‌دانیم چه کسی کار را کرده. با be + قسمت سوم فعل در زمان مناسب ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "حال",
+          "text": "are shot / is being repaired"
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "was directed / was being made"
+        },
+        {
+          "label_fa": "کامل/آینده/وجهی",
+          "text": "has been stolen\nwill be opened\nhas to be paid"
+        }
+      ],
+      "examples": [
+        {
+          "en": "A lot of movies are shot on location.",
+          "fa": "بسیاری از فیلم‌ها در لوکیشن فیلم‌برداری می‌شوند."
+        },
+        {
+          "en": "Andy's bike has been stolen.",
+          "fa": "دوچرخهٔ اندی دزدیده شده است."
+        },
+        {
+          "en": "Gladiator was directed by Ridley Scott.",
+          "fa": "گلادیاتور را ریدلی اسکات کارگردانی کرد."
+        },
+        {
+          "en": "This bill has to be paid tomorrow.",
+          "fa": "این صورت‌حساب باید فردا پرداخت شود."
+        }
+      ],
+      "notes_fa": "در مجهول، مفعول جملهٔ معلوم فاعل می‌شود. اگر کنندهٔ کار مهم باشد با by می‌آید: by Ridley Scott."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "modals of deduction: might, can't, must",
+      "title_fa": "استنتاج با might، can't و must",
+      "use_fa": "must وقتی مطمئنیم چیزی درست است؛ can't وقتی مطمئنیم ممکن نیست؛ might وقتی احتمال می‌دهیم.",
+      "formulas": [
+        {
+          "label_fa": "احتمال",
+          "text": "might / might not + base verb\nHe might be American."
+        },
+        {
+          "label_fa": "قطعیت",
+          "text": "must + base verb\nHe must be cold."
+        },
+        {
+          "label_fa": "عدم امکان",
+          "text": "can't + base verb\nHe can't be a college student."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Tony's phone is off. He might be on the plane.",
+          "fa": "تلفن تونی خاموش است. شاید در هواپیما باشد."
+        },
+        {
+          "en": "There aren't any lights on. The neighbors must be out.",
+          "fa": "هیچ چراغی روشن نیست. همسایه‌ها باید بیرون باشند."
+        },
+        {
+          "en": "Jack's wife has dark hair. That woman can't be his wife.",
+          "fa": "همسر جک موی تیره دارد. آن زن نمی‌تواند همسرش باشد."
+        },
+        {
+          "en": "He's only 16. He can't be a college student.",
+          "fa": "او فقط ۱۶ سال دارد. نمی‌تواند دانشجو باشد."
+        }
+      ],
+      "notes_fa": "برای استنتاج از شواهد استفاده می‌کنیم: must = مطمئناً، can't = غیرممکن، might = شاید. بعد از آن‌ها فعل پایه می‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u06-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "A lot of movies ___ on location.",
+      "options": [
+        "are shot",
+        "shoot",
+        "are shooting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "shoot معلوم است.",
+        "2": "are shooting یعنی دارند فیلم‌برداری می‌کنند."
+      },
+      "explanation_fa": "مجهول حال: are shot."
+    },
+    {
+      "external_id": "u06-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "When ___ our car being repaired?",
+      "options": [
+        "is",
+        "does",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does با being نمی‌آید.",
+        "2": "car مفرد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is our car being repaired?"
+    },
+    {
+      "external_id": "u06-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Andy's bike ___ stolen.",
+      "options": [
+        "has been",
+        "has",
+        "have been"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has بدون been کامل نیست.",
+        "2": "bike مفرد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has been» است. has been stolen."
+    },
+    {
+      "external_id": "u06-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "The director died when the movie ___.",
+      "options": [
+        "was being made",
+        "was making",
+        "made"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was making معلوم است.",
+        "2": "made معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was being made» است. was being made."
+    },
+    {
+      "external_id": "u06-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "You'll ___ at the airport by one of our staff.",
+      "options": [
+        "be picked up",
+        "pick up",
+        "picked up"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "pick up معلوم است.",
+        "2": "picked up بدون be نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be picked up» است. will be picked up."
+    },
+    {
+      "external_id": "u06-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "This bill has to ___ tomorrow.",
+      "options": [
+        "be paid",
+        "pay",
+        "paid"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "pay معلوم است.",
+        "2": "paid بدون be نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be paid» است. has to be paid."
+    },
+    {
+      "external_id": "u06-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I love ___ a massage.",
+      "options": [
+        "being given",
+        "give",
+        "giving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "give معلوم است.",
+        "2": "giving معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «being given» است. being given."
+    },
+    {
+      "external_id": "u06-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "The new concert hall will ___ by the president.",
+      "options": [
+        "be opened",
+        "open",
+        "opening"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "open معلوم است.",
+        "2": "opening بدون be نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be opened» است. will be opened."
+    },
+    {
+      "external_id": "u06-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Gladiator ___ by Ridley Scott.",
+      "options": [
+        "was directed",
+        "directed",
+        "was directing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "directed معلوم است.",
+        "2": "was directing معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was directed» است. was directed."
+    },
+    {
+      "external_id": "u06-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "The costumes for the show ___ by hand.",
+      "options": [
+        "are being made",
+        "are making",
+        "make"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are making معلوم است.",
+        "2": "make معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are being made» است. are being made."
+    },
+    {
+      "external_id": "u06-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "This castle ___ for almost a century.",
+      "options": [
+        "hasn't been inhabited",
+        "hasn't inhabited",
+        "isn't inhabiting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hasn't inhabited معلوم است.",
+        "2": "isn't inhabiting معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hasn't been inhabited» است. hasn't been inhabited."
+    },
+    {
+      "external_id": "u06-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "The movie will ___ in the fall.",
+      "options": [
+        "be shot",
+        "shoot",
+        "shooting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "shoot معلوم است.",
+        "2": "shooting بدون be نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be shot» است. will be shot."
+    },
+    {
+      "external_id": "u06-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Tony's phone is off. He ___ be on the plane now.",
+      "options": [
+        "might",
+        "must",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعی است.",
+        "2": "can't یعنی غیرممکن."
+      },
+      "explanation_fa": "احتمال: might."
+    },
+    {
+      "external_id": "u06-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Laura ___ like that skirt — it's not her style.",
+      "options": [
+        "might not",
+        "must not",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must not ممنوعیت است.",
+        "2": "can't یعنی غیرممکن."
+      },
+      "explanation_fa": "احتمال منفی: might not."
+    },
+    {
+      "external_id": "u06-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "Brandon lives with his parents. He ___ earn much money.",
+      "options": [
+        "can't",
+        "must",
+        "might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعی مثبت است.",
+        "2": "might فقط احتمال است."
+      },
+      "explanation_fa": "غیرممکن: can't."
+    },
+    {
+      "external_id": "u06-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Jack's wife has dark hair. That woman ___ be his wife.",
+      "options": [
+        "can't",
+        "must",
+        "might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعی مثبت است.",
+        "2": "might احتمال است."
+      },
+      "explanation_fa": "غیرممکن: can't."
+    },
+    {
+      "external_id": "u06-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "There aren't any lights on. The neighbors ___ be out.",
+      "options": [
+        "must",
+        "might not",
+        "can't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "شواهد قطعی است.",
+        "2": "can't غیرممکن است."
+      },
+      "explanation_fa": "قطعیت: must."
+    },
+    {
+      "external_id": "u06-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She drives a Porsche. She ___ have a lot of money.",
+      "options": [
+        "must",
+        "can't",
+        "might not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't غیرممکن است.",
+        "2": "might not احتمال منفی است."
+      },
+      "explanation_fa": "قطعیت: must."
+    },
+    {
+      "external_id": "u06-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "He speaks with an American accent. He ___ be American.",
+      "options": [
+        "must",
+        "can't",
+        "might not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't غیرممکن است.",
+        "2": "might not احتمال منفی است."
+      },
+      "explanation_fa": "قطعیت: must."
+    },
+    {
+      "external_id": "u06-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "He's only 16. He ___ be a college student.",
+      "options": [
+        "can't",
+        "must",
+        "might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعی مثبت است.",
+        "2": "might احتمال است."
+      },
+      "explanation_fa": "غیرممکن: can't."
+    },
+    {
+      "external_id": "u06-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "He's carrying a gym bag. He ___ be going to the gym.",
+      "options": [
+        "might",
+        "can't",
+        "must not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't غیرممکن است.",
+        "2": "must not ممنوعیت است."
+      },
+      "explanation_fa": "احتمال: might."
+    },
+    {
+      "external_id": "u06-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "He has a camera and a map. He ___ be a tourist.",
+      "options": [
+        "must",
+        "can't",
+        "might not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't غیرممکن است.",
+        "2": "might not احتمال منفی است."
+      },
+      "explanation_fa": "قطعیت: must."
+    },
+    {
+      "external_id": "u06-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "He's yawning. He ___ be enjoying the party.",
+      "options": [
+        "can't",
+        "must",
+        "might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعی مثبت است.",
+        "2": "might احتمال است."
+      },
+      "explanation_fa": "غیرممکن: can't."
+    },
+    {
+      "external_id": "u06-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "He's wearing a ring. He ___ be married.",
+      "options": [
+        "must",
+        "can't",
+        "might not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't غیرممکن است.",
+        "2": "might not احتمال منفی است."
+      },
+      "explanation_fa": "قطعیت: must."
+    },
+    {
+      "external_id": "u06-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر جملهٔ معلوم را به مجهولش وصل کن.",
+      "pairs": [
+        {
+          "left": "Somebody stole Andy's bike.",
+          "right": "Andy's bike has been stolen."
+        },
+        {
+          "left": "Ridley Scott directed Gladiator.",
+          "right": "Gladiator was directed by Ridley Scott."
+        },
+        {
+          "left": "They shoot movies on location.",
+          "right": "Movies are shot on location."
+        },
+        {
+          "left": "The president will open the hall.",
+          "right": "The hall will be opened."
+        },
+        {
+          "left": "Somebody is repairing our car.",
+          "right": "Our car is being repaired."
+        }
+      ],
+      "explanation_fa": "مجهول: be + قسمت سوم فعل در همان زمان."
+    },
+    {
+      "external_id": "u06-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "He might be",
+          "right": "American."
+        },
+        {
+          "left": "He can't be",
+          "right": "a college student."
+        },
+        {
+          "left": "He must be",
+          "right": "cold."
+        },
+        {
+          "left": "He might be going",
+          "right": "to the gym."
+        },
+        {
+          "left": "He can't be enjoying",
+          "right": "the party."
+        }
+      ],
+      "explanation_fa": "might احتمال، must قطعیت و can't غیرممکن."
+    }
+  ]
+}

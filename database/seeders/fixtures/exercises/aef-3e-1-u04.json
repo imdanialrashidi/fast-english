@@ -1,0 +1,611 @@
+{
+  "external_id": "aef-3e-1-u04",
+  "book": "aef-3e-1",
+  "unit": 4,
+  "title": "American English File 1 · Unit 4",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 4,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "4A",
+      "4B",
+      "4C"
+    ],
+    "grammar_bank": "4A p.132, 4B p.132, 4C p.132",
+    "workbook": "4A, 4B, 4C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "possessive 's, Whose...?",
+      "title_fa": "مالکیت با 's و Whose",
+      "use_fa": "برای گفتن اینکه چیزی مال کیست: اسم شخص + 's. برای جمعی که به s ختم می‌شود فقط آپاستروف می‌آید. Whose برای پرسیدن مالکیت است.",
+      "formulas": [
+        {
+          "label_fa": "مالکیت",
+          "text": "person + 's + noun\nMaria's car\nJames's laptop"
+        },
+        {
+          "label_fa": "جمع",
+          "text": "plural + ' + noun\nmy parents' car\nirregular plural + 's: the children's room"
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Whose bag is this?\nIt's Maria's.\nWho's = Who is"
+        }
+      ],
+      "examples": [
+        {
+          "en": "He's Brad Pitt's brother.",
+          "fa": "او برادر برد پیت است."
+        },
+        {
+          "en": "It's my parents' car.",
+          "fa": "این ماشین والدین من است."
+        },
+        {
+          "en": "Whose bag is this? — It's Maria's.",
+          "fa": "این کیف کیست؟ — مال ماریاست."
+        },
+        {
+          "en": "The children's room is big.",
+          "fa": "اتاق بچه‌ها بزرگ است."
+        }
+      ],
+      "notes_fa": "برای چیزها معمولاً 's نمی‌آید: the end of the movie (نه the movie's end). Who's یعنی who is ولی Whose یعنی «مالِ کی»."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "prepositions of time and place",
+      "title_fa": "حروف اضافهٔ زمان و مکان",
+      "use_fa": "in برای بخش‌های روز، ماه، سال و فصل؛ on برای روزها و تاریخ؛ at برای ساعت و مکان‌های ثابت مثل home و work. to برای حرکت.",
+      "formulas": [
+        {
+          "label_fa": "زمان",
+          "text": "in the morning / in 2018 / in December\non Monday / on the weekend\nat three o'clock / at night"
+        },
+        {
+          "label_fa": "مکان",
+          "text": "at work / at home / at school\nin an office / in a room\nto the gym (movement)"
+        },
+        {
+          "label_fa": "home",
+          "text": "go home (بدون to)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I watch TV in the evening.",
+          "fa": "من عصرها تلویزیون تماشا می‌کنم."
+        },
+        {
+          "en": "We have English on Monday.",
+          "fa": "ما دوشنبه‌ها انگلیسی داریم."
+        },
+        {
+          "en": "The class starts at three o'clock.",
+          "fa": "کلاس ساعت سه شروع می‌شود."
+        },
+        {
+          "en": "She goes to the gym.",
+          "fa": "او به باشگاه می‌رود."
+        }
+      ],
+      "notes_fa": "قبل از home حرف to نمی‌آید: go home. برای مکان‌های عمومی گاهی in و at هر دو می‌آیند: at the restaurant / in a restaurant."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "position of adverbs, expressions of frequency",
+      "title_fa": "جای قید تکرار و عبارت‌های تکرار",
+      "use_fa": "می‌گویند کاری چند وقت یک‌بار انجام می‌شود. قید قبل از فعل اصلی و بعد از be می‌آید؛ عبارت‌هایی مثل twice a week در پایان جمله‌اند.",
+      "formulas": [
+        {
+          "label_fa": "جای قید",
+          "text": "subject + adverb + main verb\nI always watch TV.\nShe doesn't often go to bed late."
+        },
+        {
+          "label_fa": "با be",
+          "text": "subject + be + adverb\nHe's never stressed.\nAre you usually here?"
+        },
+        {
+          "label_fa": "عبارت تکرار",
+          "text": "at the end: twice a week / every day"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I always watch TV in the evening.",
+          "fa": "من همیشه عصرها تلویزیون تماشا می‌کنم."
+        },
+        {
+          "en": "She sometimes plays sports.",
+          "fa": "او گاهی ورزش می‌کند."
+        },
+        {
+          "en": "He's never stressed.",
+          "fa": "او هرگز استرس ندارد."
+        },
+        {
+          "en": "I have English classes twice a week.",
+          "fa": "من هفته‌ای دو بار کلاس انگلیسی دارم."
+        }
+      ],
+      "notes_fa": "با never و hardly ever فعل مثبت است: He never eats meat. (نه doesn't never). قید بعد از be می‌آید: He's never late."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u04-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "This is ___ car.",
+      "options": [
+        "Maria's",
+        "Maria",
+        "Marias"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون 's مالکیت معلوم نیست.",
+        "2": "اسم + s بدون آپاستروف جمع است."
+      },
+      "explanation_fa": "مالکیت: Maria's car."
+    },
+    {
+      "external_id": "u04-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "It's my ___ car.",
+      "options": [
+        "parents'",
+        "parent's",
+        "parents"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "parent's برای یک والد است.",
+        "2": "بدون آپاستروف مالکیت ندارد."
+      },
+      "explanation_fa": "جمع parents: parents' car."
+    },
+    {
+      "external_id": "u04-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ bag is this?",
+      "options": [
+        "Whose",
+        "Who's",
+        "Who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Who's یعنی who is.",
+        "2": "Who برای پرسیدن شخص است."
+      },
+      "explanation_fa": "مالکیت با Whose."
+    },
+    {
+      "external_id": "u04-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "A: Whose bag is this?\nB: It's ___.",
+      "options": [
+        "Maria's",
+        "Maria",
+        "Marias"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بدون 's پاسخ مالکیت را نشان نمی‌دهد.",
+        "2": "Marias شکل درستی نیست."
+      },
+      "explanation_fa": "پاسخ: It's Maria's."
+    },
+    {
+      "external_id": "u04-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ room is upstairs.",
+      "options": [
+        "The children's",
+        "The childrens'",
+        "The childrens"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "children جمع بی‌قاعده است و 's می‌گیرد.",
+        "2": "childrens وجود ندارد."
+      },
+      "explanation_fa": "جمع بی‌قاعده: the children's room."
+    },
+    {
+      "external_id": "u04-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "It's ___ laptop.",
+      "options": [
+        "James's",
+        "James'",
+        "James"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اسم مفرد با s's می‌آید.",
+        "2": "بدون آپاستروف مالکیت ندارد."
+      },
+      "explanation_fa": "اسم James مفرد است و s’s می‌گیرد: James’s laptop."
+    },
+    {
+      "external_id": "u04-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "The ___ of the movie is fantastic.",
+      "options": [
+        "end",
+        "end's",
+        "ends"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "برای چیزها 's نمی‌آید.",
+        "2": "ends جمع است."
+      },
+      "explanation_fa": "برای چیزها s’ نمی‌آید؛ می‌گوییم the end of the movie."
+    },
+    {
+      "external_id": "u04-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I watch TV ___ the evening.",
+      "options": [
+        "in",
+        "on",
+        "at"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "on برای روزهاست.",
+        "2": "at برای ساعت است."
+      },
+      "explanation_fa": "بخش روز: in the evening."
+    },
+    {
+      "external_id": "u04-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "He has lunch ___ work.",
+      "options": [
+        "at",
+        "in",
+        "on"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in برای مکان‌های دیگر است.",
+        "2": "on برای روز است."
+      },
+      "explanation_fa": "با work از at استفاده می‌کنیم: at work."
+    },
+    {
+      "external_id": "u04-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She goes ___ the gym.",
+      "options": [
+        "to",
+        "at",
+        "in"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "at برای مکان ثابت است.",
+        "2": "in برای داخل است."
+      },
+      "explanation_fa": "حرکت: to the gym."
+    },
+    {
+      "external_id": "u04-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "We have English ___ Monday.",
+      "options": [
+        "on",
+        "in",
+        "at"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in برای ماه و سال است.",
+        "2": "at برای ساعت است."
+      },
+      "explanation_fa": "روز هفته: on Monday."
+    },
+    {
+      "external_id": "u04-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "The class starts ___ three o'clock.",
+      "options": [
+        "at",
+        "in",
+        "on"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in برای بخش روز است.",
+        "2": "on برای روز است."
+      },
+      "explanation_fa": "ساعت: at three o'clock."
+    },
+    {
+      "external_id": "u04-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I go ___ home at 5:00.",
+      "options": [
+        "—",
+        "to",
+        "at"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "قبل از home حرف to نمی‌آید.",
+        "2": "at برای مکان است."
+      },
+      "explanation_fa": "go home (بدون to)."
+    },
+    {
+      "external_id": "u04-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "He works ___ an office.",
+      "options": [
+        "in",
+        "at",
+        "on"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "at برای work/home است.",
+        "2": "on برای روز است."
+      },
+      "explanation_fa": "داخل دفتر با in: in an office."
+    },
+    {
+      "external_id": "u04-t3-q01",
+      "topic": "t3",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I ___ watch TV in the evening. (۱۰۰٪)",
+      "options": [
+        "always",
+        "sometimes",
+        "never"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sometimes یعنی گاهی.",
+        "2": "never یعنی هرگز."
+      },
+      "explanation_fa": "always = همیشه."
+    },
+    {
+      "external_id": "u04-t3-q02",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "She ___ plays sports. (گاهی)",
+      "options": [
+        "sometimes",
+        "always",
+        "never"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "always یعنی همیشه.",
+        "2": "never یعنی هرگز."
+      },
+      "explanation_fa": "sometimes = گاهی."
+    },
+    {
+      "external_id": "u04-t3-q03",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "He is ___ late. (تقریباً هرگز)",
+      "options": [
+        "hardly ever",
+        "always",
+        "often"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "always یعنی همیشه.",
+        "2": "often یعنی غالباً."
+      },
+      "explanation_fa": "hardly ever = تقریباً هرگز."
+    },
+    {
+      "external_id": "u04-t3-q04",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She doesn't ___ go to bed late.",
+      "options": [
+        "often",
+        "never",
+        "hardly ever"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never خودش منفی است.",
+        "2": "hardly ever با doesn't نمی‌آید."
+      },
+      "explanation_fa": "قید بعد از doesn't و قبل از فعل: doesn't often go."
+    },
+    {
+      "external_id": "u04-t3-q05",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Are you ___ in this classroom?",
+      "options": [
+        "usually",
+        "usual",
+        "usually are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "usual صفت است.",
+        "2": "are دوباره نمی‌آید."
+      },
+      "explanation_fa": "قید بعد از be: Are you usually ...?"
+    },
+    {
+      "external_id": "u04-t3-q06",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I have English classes ___ a week.",
+      "options": [
+        "twice",
+        "two",
+        "second"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "two عدد است، نه قید تکرار.",
+        "2": "second ترتیبی است."
+      },
+      "explanation_fa": "twice a week = هفته‌ای دو بار."
+    },
+    {
+      "external_id": "u04-t3-q07",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "He's ___ stressed.",
+      "options": [
+        "never",
+        "not never",
+        "hardly"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "not never دو منفی است.",
+        "2": "hardly به‌تنهایی «به‌سختی» است."
+      },
+      "explanation_fa": "never بعد از be: He's never stressed."
+    },
+    {
+      "external_id": "u04-t1-m01",
+      "topic": "t1",
+      "position": 22,
+      "type": "matching",
+      "prompt": "هر عبارت را به معنی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "Brad Pitt's brother",
+          "right": "his brother."
+        },
+        {
+          "left": "my parents' car",
+          "right": "the car of my parents."
+        },
+        {
+          "left": "Whose bag is this?",
+          "right": "It's Maria's."
+        },
+        {
+          "left": "Who's that girl?",
+          "right": "She's my sister."
+        },
+        {
+          "left": "the children's room",
+          "right": "the room of the children."
+        }
+      ],
+      "explanation_fa": "'s مالکیت را نشان می‌دهد؛ Whose برای مالکیت و Who's برای هویت است."
+    },
+    {
+      "external_id": "u04-t2-m01",
+      "topic": "t2",
+      "position": 23,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I watch TV",
+          "right": "in the evening."
+        },
+        {
+          "left": "He has lunch",
+          "right": "at work."
+        },
+        {
+          "left": "She goes",
+          "right": "to the gym."
+        },
+        {
+          "left": "We have English",
+          "right": "on Monday."
+        },
+        {
+          "left": "The class starts",
+          "right": "at three o'clock."
+        }
+      ],
+      "explanation_fa": "in برای بخش روز، at برای مکان/ساعت، on برای روز و to برای حرکت."
+    },
+    {
+      "external_id": "u04-t3-m01",
+      "topic": "t3",
+      "position": 24,
+      "type": "matching",
+      "prompt": "هر قید را به درصدش وصل کن.",
+      "pairs": [
+        {
+          "left": "always",
+          "right": "100%"
+        },
+        {
+          "left": "usually",
+          "right": "80%"
+        },
+        {
+          "left": "sometimes",
+          "right": "50%"
+        },
+        {
+          "left": "hardly ever",
+          "right": "10%"
+        },
+        {
+          "left": "never",
+          "right": "0%"
+        }
+      ],
+      "explanation_fa": "always 100%، usually 80%، sometimes 50%، hardly ever 10%، never 0%."
+    }
+  ]
+}

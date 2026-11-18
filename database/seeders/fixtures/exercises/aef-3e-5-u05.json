@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-5-u05",
+  "book": "aef-3e-5",
+  "unit": 5,
+  "title": "American English File 5 · Unit 5",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 5,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "5A",
+      "5B"
+    ],
+    "grammar_bank": "5A p.147, 5B p.148",
+    "workbook": "5A, 5B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "distancing",
+      "title_fa": "فاصله گرفتن از اطلاعات",
+      "use_fa": "برای گفتن اطلاعات بدون قطعیت از seem/appear و مجهول فعل‌های گفتن (it is said, is expected to) استفاده می‌کنیم تا فاصله بگیریم.",
+      "formulas": [
+        {
+          "label_fa": "seem/appear",
+          "text": "It seems that ...\nShe seems to be friendly.\nThere seems to be a mistake."
+        },
+        {
+          "label_fa": "مجهول",
+          "text": "It is said that ...\nThe director is expected to resign.\nThere are thought to be ..."
+        }
+      ],
+      "examples": [
+        {
+          "en": "It seems that when people multitask, they do one thing after another.",
+          "fa": "به نظر می‌رسد وقتی مردم هم‌زمان چند کار می‌کنند، یکی پس از دیگری انجام می‌دهند."
+        },
+        {
+          "en": "The new manager seems to be very friendly.",
+          "fa": "مدیر جدید به نظر خیلی خوش‌برخورد می‌آید."
+        },
+        {
+          "en": "It is said that using a washing machine saves 47 minutes a day.",
+          "fa": "می‌گویند استفاده از ماشین لباسشویی روزی ۴۷ دقیقه صرفه‌جویی می‌کند."
+        },
+        {
+          "en": "The director is expected to resign.",
+          "fa": "انتظار می‌رود مدیر استعفا دهد."
+        }
+      ],
+      "notes_fa": "It would seem/appear رسمی‌تر و محتاطانه‌تر است. در مجهول، that-clause یا to + فعل می‌آید."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "unreal uses of past tenses",
+      "title_fa": "کاربردهای غیرواقعی زمان گذشته",
+      "use_fa": "wish/if only + گذشته برای آرزوی حال و + گذشتهٔ کامل برای پشیمانی از گذشته؛ would rather + گذشته برای ترجیح؛ it's time + گذشته یعنی وقتش رسیده.",
+      "formulas": [
+        {
+          "label_fa": "آرزو",
+          "text": "I wish I could afford it.\nI wish you hadn't spoken like that.\nIf only he were less stubborn."
+        },
+        {
+          "label_fa": "ترجیح/زمان",
+          "text": "I'd rather you left your dog outside.\nIt's time you found a job."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I wish I could afford it!",
+          "fa": "ای کاش می‌توانستم پولش را داشته باشم!"
+        },
+        {
+          "en": "I wish you hadn't spoken to Jane like that.",
+          "fa": "ای کاش با جین آن‌طور حرف نمی‌زدی."
+        },
+        {
+          "en": "I'd rather you left your dog outside.",
+          "fa": "ترجیح می‌دهم سگت را بیرون بگذاری."
+        },
+        {
+          "en": "It's time you found a job.",
+          "fa": "وقتش رسیده کار پیدا کنی."
+        }
+      ],
+      "notes_fa": "بعد از I'd rather you و It's time you فعل گذشته می‌آید، هرچند معنی حال دارد."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u05-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "It ___ that when people multitask, they do one thing after another.",
+      "options": [
+        "seems",
+        "seem",
+        "seeming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با it فعل s می‌گیرد.",
+        "2": "seeming بدون is است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seems» است. It seems that."
+    },
+    {
+      "external_id": "u05-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "The new marketing manager ___ to be very friendly.",
+      "options": [
+        "seems",
+        "seem",
+        "seeming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "manager مفرد است.",
+        "2": "seeming بدون is است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seems» است. seems to be."
+    },
+    {
+      "external_id": "u05-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Excuse me. There ___ to be a mistake with my order.",
+      "options": [
+        "seems",
+        "seem",
+        "seeming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "there مفرد است.",
+        "2": "seeming بدون is است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seems» است. There seems to be."
+    },
+    {
+      "external_id": "u05-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "It would ___ that Mr. Young had been using company money.",
+      "options": [
+        "seem",
+        "seems",
+        "seemed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would فعل پایه.",
+        "2": "seemed بعد از would نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seem» است. It would seem."
+    },
+    {
+      "external_id": "u05-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "It ___ that using a washing machine saves people time.",
+      "options": [
+        "is said",
+        "says",
+        "is saying"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "says معلوم است.",
+        "2": "is saying حال استمراری است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is said» است. It is said that."
+    },
+    {
+      "external_id": "u05-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "It has been ___ that the president is in the hospital.",
+      "options": [
+        "announced",
+        "announcing",
+        "announce"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از been قسمت سوم.",
+        "2": "announce فعل پایه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «announced» است. has been announced."
+    },
+    {
+      "external_id": "u05-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "The company director is ___ to resign in the next few days.",
+      "options": [
+        "expected",
+        "expecting",
+        "expect"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is قسمت سوم.",
+        "2": "expect فعل پایه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «expected» است. is expected to."
+    },
+    {
+      "external_id": "u05-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "The missing couple is ___ to have been living in Panama.",
+      "options": [
+        "understood",
+        "understanding",
+        "understand"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is قسمت سوم.",
+        "2": "understand فعل پایه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «understood» است. is understood to."
+    },
+    {
+      "external_id": "u05-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "There are ___ to be over a thousand species in danger.",
+      "options": [
+        "thought",
+        "thinking",
+        "think"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از are قسمت سوم.",
+        "2": "think فعل پایه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «thought» است. are thought to be."
+    },
+    {
+      "external_id": "u05-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "We use seem/appear to give information we are not ___ sure about.",
+      "options": [
+        "definitely",
+        "definite",
+        "definition"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "definite صفت است.",
+        "2": "definition اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «definitely» است. definitely."
+    },
+    {
+      "external_id": "u05-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "It would seem is ___ formal than it seems.",
+      "options": [
+        "more",
+        "most",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "most برای عالی است.",
+        "2": "much بدون er نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «more» است. more formal."
+    },
+    {
+      "external_id": "u05-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "The passive with saying verbs helps us ___ from the facts.",
+      "options": [
+        "distance",
+        "distantly",
+        "distant"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "distantly قید است.",
+        "2": "distant صفت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «distance» است. distance ourselves."
+    },
+    {
+      "external_id": "u05-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I wish I ___ afford it!",
+      "options": [
+        "could",
+        "can",
+        "would"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can حال است.",
+        "2": "would برای رفتار است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could» است. could."
+    },
+    {
+      "external_id": "u05-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I wish you ___ to Jane like that.",
+      "options": [
+        "hadn't spoken",
+        "didn't speak",
+        "wouldn't speak"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't speak گذشتهٔ ساده است.",
+        "2": "wouldn't برای رفتار است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't spoken» است. hadn't spoken."
+    },
+    {
+      "external_id": "u05-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "If only he ___ less stubborn!",
+      "options": [
+        "were",
+        "was",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was در این ساختار کم‌تر رایج است.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. were."
+    },
+    {
+      "external_id": "u05-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "If only you ___ the map, we'd be there now.",
+      "options": [
+        "hadn't forgotten",
+        "didn't forget",
+        "wouldn't forget"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't forget گذشتهٔ ساده است.",
+        "2": "wouldn't برای رفتار است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't forgotten» است. hadn't forgotten."
+    },
+    {
+      "external_id": "u05-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I'd rather you ___ your dog outside.",
+      "options": [
+        "left",
+        "leave",
+        "would leave"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از I'd rather you گذشته.",
+        "2": "would leave بعد از rather نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «left» است. left."
+    },
+    {
+      "external_id": "u05-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Would you rather I ___ back later?",
+      "options": [
+        "called",
+        "call",
+        "would call"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از rather گذشته.",
+        "2": "would call نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «called» است. called."
+    },
+    {
+      "external_id": "u05-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "It's time you ___ a job.",
+      "options": [
+        "found",
+        "find",
+        "would find"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از It's time گذشته.",
+        "2": "would find نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «found» است. found."
+    },
+    {
+      "external_id": "u05-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I wish I ___ lent Gary that money.",
+      "options": [
+        "hadn't",
+        "hadn't have",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hadn't have وجود ندارد.",
+        "2": "didn't با lent نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't» است. hadn't lent."
+    },
+    {
+      "external_id": "u05-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Don't you think it's time you ___ looking for a job?",
+      "options": [
+        "started",
+        "start",
+        "would start"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از it's time گذشته.",
+        "2": "would start نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «started» است. started."
+    },
+    {
+      "external_id": "u05-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "If only the weather ___ warmer, we could walk there.",
+      "options": [
+        "were",
+        "is",
+        "would be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "would be برای رفتار است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. were."
+    },
+    {
+      "external_id": "u05-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I'd rather ___ talk about it.",
+      "options": [
+        "not",
+        "not to",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "not to بعد از rather نمی‌آید.",
+        "2": "doesn't فعل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not» است. not talk."
+    },
+    {
+      "external_id": "u05-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "It's time ___ go now.",
+      "options": [
+        "to",
+        "for",
+        "to be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for با فعل پایه نمی‌آید.",
+        "2": "to be go غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to» است. to go."
+    },
+    {
+      "external_id": "u05-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "It seems that",
+          "right": "people multitask."
+        },
+        {
+          "left": "The manager seems",
+          "right": "to be very friendly."
+        },
+        {
+          "left": "There seems to be",
+          "right": "a mistake."
+        },
+        {
+          "left": "It is said that",
+          "right": "washing machines save time."
+        },
+        {
+          "left": "The director is expected",
+          "right": "to resign."
+        }
+      ],
+      "explanation_fa": "seem/appear و مجهول فعل‌های گفتن برای فاصله گرفتن.",
+      "position": 25
+    },
+    {
+      "external_id": "u05-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I wish I",
+          "right": "could afford it."
+        },
+        {
+          "left": "I wish you",
+          "right": "hadn't spoken to Jane."
+        },
+        {
+          "left": "If only he",
+          "right": "were less stubborn."
+        },
+        {
+          "left": "I'd rather you",
+          "right": "left your dog outside."
+        },
+        {
+          "left": "It's time you",
+          "right": "found a job."
+        }
+      ],
+      "explanation_fa": "wish/if only + گذشته و would rather/it's time + گذشته.",
+      "position": 26
+    }
+  ]
+}

@@ -1,0 +1,448 @@
+{
+  "external_id": "aef-3e-starter-u04",
+  "book": "aef-3e-starter",
+  "unit": 4,
+  "title": "American English File Starter · Unit 4",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 4,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "4A",
+      "4B"
+    ],
+    "grammar_bank": "4A p.98, 4B p.98",
+    "workbook": "4A pp.19-20, 4B pp.21-22"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "possessive adjectives; possessive 's",
+      "title_fa": "صفات ملکی و آپاستروف s",
+      "use_fa": "برای گفتن اینکه چیزی مال کیست: صفت ملکی قبل از اسم می‌آید (my name) و s' بعد از اسمِ صاحبِ چیز (Jack's car).",
+      "formulas": [
+        {
+          "label_fa": "صفات ملکی",
+          "text": "I → my\nYou → your\nHe → his\nShe → her\nIt → its\nWe → our\nThey → their\n+ noun"
+        },
+        {
+          "label_fa": "مالکیت با s'",
+          "text": "person + 's + noun\nJack's car\nMaria's sister\nCarlos's brother"
+        },
+        {
+          "label_fa": "جمع",
+          "text": "plural people + ' + noun\nmy parents' house\nmy brothers' room"
+        }
+      ],
+      "examples": [
+        {
+          "en": "This is Jack's car.",
+          "fa": "این ماشین جک است."
+        },
+        {
+          "en": "Her name is Satoko.",
+          "fa": "اسم او ساتوکو است."
+        },
+        {
+          "en": "Their names are Pedro and Maria.",
+          "fa": "اسم آن‌ها پدرو و ماریاست."
+        },
+        {
+          "en": "Its name is Kebob Kitchen.",
+          "fa": "اسمش کباب کیچن است."
+        }
+      ],
+      "notes_fa": "its (مالِ آن) با it's (it is) فرق دارد. برای اسمی که به s ختم می‌شود، s's می‌آید (Carlos's) و برای جمع، فقط آپاستروف: my parents' house."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "adjectives",
+      "title_fa": "صفت‌ها",
+      "use_fa": "صفت چیزی را توصیف می‌کند: بعد از فعل be می‌آید یا قبل از اسم. صفت برای مفرد و جمع یک شکل دارد.",
+      "formulas": [
+        {
+          "label_fa": "بعد از be",
+          "text": "subject + be + adjective\nAn Audi is expensive.\nThey're old houses."
+        },
+        {
+          "label_fa": "قبل از اسم",
+          "text": "adjective + noun\nIt's a fast car.\nThey're old houses."
+        },
+        {
+          "label_fa": "بدون تغییر",
+          "text": "It's an old house.\nThey're old houses. (NOT olds)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "An Audi is expensive.",
+          "fa": "یک آئودی گران است."
+        },
+        {
+          "en": "It's a fast car.",
+          "fa": "این یک ماشین سریع است."
+        },
+        {
+          "en": "They're old houses.",
+          "fa": "آن‌ها خانه‌های قدیمی‌اند."
+        },
+        {
+          "en": "He's tall. She's tall, too.",
+          "fa": "او قدبلند است. او هم قدبلند است."
+        }
+      ],
+      "notes_fa": "صفت جمع بسته نمی‌شود: two fast cars (نه fasts). صفت همیشه قبل از اسم می‌آید، نه بعد از آن: a fast car (نه a car fast)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u04-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "This is ___ car.",
+      "options": [
+        "Jack's",
+        "Jacks",
+        "Jack"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "برای مالکیت باید s' بیاید.",
+        "2": "بدون s' جمله مالکیت را نشان نمی‌دهد."
+      },
+      "explanation_fa": "مالکیت با اسم + 's ساخته می‌شود: Jack's car."
+    },
+    {
+      "external_id": "u04-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "___ name is Sara.",
+      "options": [
+        "My",
+        "I",
+        "Me"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "I ضمیر فاعلی است، نه صفت ملکی.",
+        "2": "Me ضمیر مفعولی است."
+      },
+      "explanation_fa": "قبل از اسم، صفت ملکی می‌آید: My name is Sara."
+    },
+    {
+      "external_id": "u04-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "She's from Japan. ___ name is Satoko.",
+      "options": [
+        "Her",
+        "His",
+        "Their"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "His برای مرد است.",
+        "2": "Their برای جمع است."
+      },
+      "explanation_fa": "برای زن از her استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u04-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They're from Mexico. ___ names are Pedro and Maria.",
+      "options": [
+        "Their",
+        "Our",
+        "Your"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Our یعنی «مالِ ما».",
+        "2": "Your یعنی «مالِ شما»."
+      },
+      "explanation_fa": "برای they صفت ملکی their است."
+    },
+    {
+      "external_id": "u04-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "We're from Brazil. ___ names are Selma and Luis.",
+      "options": [
+        "Our",
+        "Their",
+        "Your"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Their برای آن‌هاست.",
+        "2": "Your برای شماست."
+      },
+      "explanation_fa": "برای we صفت ملکی our است."
+    },
+    {
+      "external_id": "u04-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "It's a restaurant. ___ name is Kebob Kitchen.",
+      "options": [
+        "Its",
+        "It's",
+        "His"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "It's یعنی it is، نه مالکیت.",
+        "2": "His برای انسان است."
+      },
+      "explanation_fa": "برای چیزها از its استفاده می‌کنیم: Its name is ..."
+    },
+    {
+      "external_id": "u04-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Maria is ___ sister.",
+      "options": [
+        "Carlos's",
+        "Carlos'",
+        "Carlos"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "اسم مفرد Carlos با s's می‌آید.",
+        "2": "بدون آپاستروف، مالکیت معلوم نیست."
+      },
+      "explanation_fa": "اسم مفردی که به s ختم می‌شود s's می‌گیرد: Carlos's sister."
+    },
+    {
+      "external_id": "u04-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "This is my ___ house.",
+      "options": [
+        "parents'",
+        "parent's",
+        "parents"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "parent's برای یک والد است.",
+        "2": "بدون آپاستروف مالکیت ندارد."
+      },
+      "explanation_fa": "برای جمع (parents) فقط آپاستروف می‌آید: my parents' house."
+    },
+    {
+      "external_id": "u04-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "An Audi is ___.",
+      "options": [
+        "expensive",
+        "expensives",
+        "expensiver"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت جمع بسته نمی‌شود.",
+        "2": "صفت مقایسه‌ای اینجا لازم نیست."
+      },
+      "explanation_fa": "صفت بعد از be و بدون تغییر می‌آید: is expensive."
+    },
+    {
+      "external_id": "u04-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "It's a ___ car.",
+      "options": [
+        "fast",
+        "fastly",
+        "fasts"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "fastly قید است، نه صفت.",
+        "2": "صفت جمع بسته نمی‌شود."
+      },
+      "explanation_fa": "صفت قبل از اسم می‌آید: a fast car."
+    },
+    {
+      "external_id": "u04-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "They're ___ houses.",
+      "options": [
+        "old",
+        "olds",
+        "older"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "صفت جمع بسته نمی‌شود.",
+        "2": "older مقایسه‌ای است و اینجا مقایسه نیست."
+      },
+      "explanation_fa": "old برای مفرد و جمع یک شکل است: old houses."
+    },
+    {
+      "external_id": "u04-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "My glasses ___ new.",
+      "options": [
+        "are",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "glasses جمع است (عینک دو عدسی)."
+      },
+      "explanation_fa": "glasses جمع است، پس are می‌آید."
+    },
+    {
+      "external_id": "u04-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "He's tall. She's tall, ___.",
+      "options": [
+        "too",
+        "two",
+        "to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "two عدد است.",
+        "2": "to حرف اضافه است."
+      },
+      "explanation_fa": "برای «همچنین» از too استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u04-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "It's ___ old house.",
+      "options": [
+        "an",
+        "a",
+        "the"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "old با صدای مصوت شروع می‌شود.",
+        "2": "the برای اشاره به خانهٔ مشخص است."
+      },
+      "explanation_fa": "قبل از صدای مصوت an می‌آید: an old house."
+    },
+    {
+      "external_id": "u04-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "They're old ___.",
+      "options": [
+        "houses",
+        "house",
+        "houses's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله جمع است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "اسم جمع می‌شود، نه صفت: old houses."
+    },
+    {
+      "external_id": "u04-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "This car isn't fast. It's ___.",
+      "options": [
+        "slow",
+        "slowly",
+        "slower"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "slowly قید است.",
+        "2": "slower مقایسه‌ای است."
+      },
+      "explanation_fa": "متضاد fast در این جمله slow است: It's slow."
+    },
+    {
+      "external_id": "u04-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "هر ضمیر را به صفت ملکی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "I",
+          "right": "my"
+        },
+        {
+          "left": "you",
+          "right": "your"
+        },
+        {
+          "left": "he",
+          "right": "his"
+        },
+        {
+          "left": "she",
+          "right": "her"
+        },
+        {
+          "left": "they",
+          "right": "their"
+        }
+      ],
+      "explanation_fa": "هر ضمیر صفت ملکی خودش را دارد: I → my، you → your، he → his، she → her، they → their."
+    },
+    {
+      "external_id": "u04-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر صفت را به متضادش وصل کن.",
+      "pairs": [
+        {
+          "left": "big",
+          "right": "small"
+        },
+        {
+          "left": "old",
+          "right": "new"
+        },
+        {
+          "left": "expensive",
+          "right": "cheap"
+        },
+        {
+          "left": "fast",
+          "right": "slow"
+        },
+        {
+          "left": "tall",
+          "right": "short"
+        }
+      ],
+      "explanation_fa": "این جفت‌ها متضادهای رایج‌اند: big/small، old/new، expensive/cheap، fast/slow، tall/short."
+    }
+  ]
+}

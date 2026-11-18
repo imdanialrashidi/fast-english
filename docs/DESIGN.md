@@ -798,3 +798,72 @@ Design read for this surface: a Persian-language learning publication landing fo
 The `/` composition is the publication cover named in the page-specific rules: working sample sheet → six-level ink band → four-row session → real sample spread → library contents → DB plan ledger → FAQ → framed closing panel. It supersedes the landing presentation details of the 2026-10-31 refinement: the six-level band keeps the static scale but carries a visible active-level label and a teal rule; the plan ledger stays one row per plan at every width; the topic split begins at `lg`; the sample cover is a wide plate; the sample sheet is the new hero object. The app-surface refinements from 2026-10-31 (shell, Today, Account, Subscribe, reader covers, 44px controls) stand.
 
 Focus rings now include native summaries and role controls; pointer affordance is declared once in the base layer. Rendered proof at 320/390/768/1440: no horizontal overflow, no visible control under 44×44px, the primary focus ring on every control, and all measured text pairs at or above 4.5:1 (large text 3:1). Checks: `s8-landing`, `m0-inertia`, the M1 landing leg, `design-theme`; `S8LandingTest`, `M0InertiaFoundationTest`; typecheck, build, and Pint.
+
+## Flashcards 2026-11-15 — text-first book units and lesson decks
+
+Owner request from Teacher Erfan, clarified by the owner the same day: cards are text-only (no picture prompt), each article's glossary is its deck, and word audio is produced offline. Design read: adult coursebook practice inside the existing quiet editorial shell, dial **ENERGY 2 / RHYTHM 2 / MOTION 1**. No new palette, font, theme, or fabricated content.
+
+- **Navigation.** A fifth mobile tab «کتاب‌ها» (library glyph) and a matching rail item sit between «واژه‌ها» and «حساب»; the bottom bar becomes five equal columns. At 320 the labels stay 12px, every tab still clears 44px, and the page must not overflow horizontally.
+- **Shelf.** One review panel first (calendar glyph, due count, next due, primary action), then one book card per book: 4:3 cover, level chip, English title, thin progress bar, known/unknown counts, primary action. A small totals strip repeats the two buckets; green/red are used only for book self-reports, not as page decoration.
+- **Book.** Bounded cover plate, title, level, progress and counts, then quiet unit rows: number chip, English unit title, subtitle, thin progress, «ادامه/شروع» and «نتیجه». Rows, not a card wall.
+- **Lesson deck.** The reader's glossary section links to a 680px deck page: a quiet count strip (total, learning, known, due), then the same player with four grades in a 2×2 grid — outlined danger «دوباره», neutral «سخت», filled success «خوب», filled success «آسان». The strip never repeats the lesson title; the start card owns it.
+- **Unit / player.** Header back + «نتیجه». The card is one surface: the English word (Inter, 4xl/5xl) with a speaker when an approved clip exists, a fixed min-height answer area, then a 2×2 action grid. Book decks keep the two self-reports («درست گفتم / درست نگفتم»); lesson decks use the four grades. The first card has no previous action and the last has no next action; the slot stays as an invisible placeholder so nothing jumps. A hairline progress bar and «n از N» use Persian digits.
+- **Reveal.** The word is always visible; the Persian meaning, example and IPA (when known) stay hidden until «نمایش پاسخ» or Space/Enter. No timer and no picture. On reveal the word clip plays (already unlocked by the start tap), and the speaker replays it.
+- **Start screen.** Layers glyph, English lesson/unit title, context, card count, one direct instruction («واژه را ببین و معنی را بگو؛ بعد پاسخ را ببین.»), and one primary «شروع». The tap is also the audio unlock (a silent clip through the shared element), because browsers block programmatic audio before a gesture.
+- **Summary / results.** Success mark, «این درس تمام شد.», two tinted count plates, then retry the second bucket / continue unanswered / results / back. Book results are the persistent two-bucket page with word/meaning rows and no thumbnails; lesson grades live in the notebook they write to. It is the client's buckets, not a score.
+- **Empty states.** «الان کارتی برای مرور نیست» with the next due time on the review page; a lesson without a glossary says «برای این درس هنوز واژه‌ای ثبت نشده است.»; no fake cards or placeholder counts.
+- **Copy.** Direct and calm: «واژه را ببین و بشنو، معنی را بگو و بعد پاسخ را باز کن.», «نمایش پاسخ», «درست گفتم», «درست نگفتم», «دوباره», «سخت», «خوب», «آسان», «مرور امروز», «نتیجهٔ درس». No streaks, points, confetti, countdown pressure, or failure language.
+- **Accessibility.** 44px+ actions, visible focus, `aria-live` reveal, `aria-pressed` on every self-report, progressbar labels, keyboard 1–4 and arrows; first/last placeholders are `aria-hidden`; a card without a clip simply has no speaker, never a dead button.
+- **Evidence.** Screenshots listed in [`docs/FLASHCARDS.md`](FLASHCARDS.md); Playwright 4/4 at 320/390/393; inspected rendered front, revealed card, summary, results, retry, review and lesson-deck states.
+
+## Book exercises 2026-11-15 — unit practice
+
+Owner request 2026-11-15: a real exercise set per book unit, not just cards. The design stays inside the same quiet editorial shell; no new palette, no gamified scoreboards, no timers.
+
+- **Entry.** One quiet row above the unit player: clipboard glyph, «تمرین این یونیت», question count, latest score (or «هنوز تمرین نکردهای»), chevron. A unit without a published set has no row.
+- **Intro.** Centered clipboard plate, set title, Persian instructions, `N سؤال · book · unit`, the last score with its Persian date, and one primary «شروع تمرین».
+- **Session.** 680px measure, hairline progress and «n از N», opened from the hub. Prompt is direction-aware: Latin prompts render LTR in Inter, Persian instructions render RTL. Choice options are full-width tappable rows; fill-blank is one LTR input; order uses an LTR selected strip and an LTR token bank so English word order never mirrors into RTL. Previous keeps answers; next is gated on a complete answer; the last question submits once.
+- **No key before submit.** The UI never shows the correct answer or the explanation during the session; the copy says the feedback arrives on the result page.
+- **Result.** Score plate with «X از Y» and a calm sentence by band, correct/needs-review counts, «تلاش دوباره» and «بازگشت به یونیت», then one card per question: prompt, the learner's answer, the correct answer only when wrong, and the Persian explanation with Latin runs isolated via `MixedText` so punctuation (the «?» in "How are you?") stays with its English run.
+- **Copy.** «تمرین این یونیت», «شروع تمرین», «سؤال بعدی», «سؤال قبلی», «ثبت پاسخها», «نتیجهٔ تمرین», «پاسخ تو», «پاسخ درست», «تلاش دوباره». No points, badges, confetti, or countdown.
+- **Accessibility.** 44px+ controls, visible focus, radiogroup semantics on choices, labelled input, `aria-live` on the selected-token strip, progressbar label, and a result row whose correct/incorrect state is conveyed by icon plus text, not color alone.
+- **Evidence.** Screenshots `exercise-intro-393.png`, `exercise-order-393.png`, `exercise-result-393.png`, `exercise-result-wrong-320.png`; Playwright 2/2 at 320/393; `docs/EXERCISES.md` owns the behavior contract.
+
+
+## Books section and unit hub 2026-11-15
+
+Owner request: books are a first-class section, not a flashcard tab. The shelf URL is `/app/books`; the fifth nav destination reads «کتاب‌ها».
+
+- **Shelf.** The existing flashcard shelf becomes the books shelf: same quiet review panel, one card per book with cover, level chip, title, progress and known/unknown counts. Copy says «کلمه را ببین، معنی را بگو.», not «تصویر را ببین».
+- **Book.** Back to «کتاب‌ها»; unit rows link to the unit hub, not straight into a session. Rows keep number, title, subtitle, thin progress and the start/continue action.
+- **Unit hub.** Header: book/level meta, English unit title, Persian title/subtitle, «X از Y کارت درست», due count, thin progress. Then two entry rows: **فلش‌کارت این یونیت** (layers glyph, card counts, chevron) and **تمرین این یونیت** (clipboard, question count, last score, chevron) — or a dashed «هنوز آماده نشده» row when no set is published. One quiet line: «با هر جلسه، کارت‌ها و نتیجهٔ تمرین همین‌جا به‌روز می‌شوند.»
+- **Child pages.** The player and the results page return to the hub; the exercise intro/result return to the hub. The hub keeps the «نتیجه» action for the card buckets.
+- **Legacy URLs.** `/app/flashcards` and its deeper paths redirect to the books equivalents, so an installed PWA link or an older bookmark still lands.
+- **No fake lesson path.** A book unit has no lesson text model yet; the hub deliberately has two real paths. A third path appears only when book-lesson content exists.
+- **Evidence.** `test-results/browser-shots/books-unit-hub-393.png` and `flashcards-index-393.png`; `tests/Feature/BookUnitTest.php` (5) + the flashcard/exercise suites; Playwright 6/6.
+
+## Cross-track progress 2026-11-15
+
+Progress stays on the surfaces a learner already uses; no dashboard, streak, badge or leaderboard.
+
+- **Shelf.** Under a book's `unit · card` meta, one quiet line: `تمرین: X از Y یونیت · آخرین ۴ از ۵` when sets exist. No bar for exercises; the card bar stays the only progress bar on the card.
+- **Book.** A unit row gains one muted line under its card progress: `تمرین: آخرین ۴ از ۵` or `تمرین: ۵ سؤال آماده`. Rows without a set keep the line out entirely.
+- **Hub.** The exercise entry reads `۵ سؤال · آخرین ۴ از ۵ · بهترین ۵ · ۲ بار`. The deck entry keeps its card counts.
+- **Today.** One task in the existing list: `تمرین کتاب` for a fresh set, `مرور تمرین کتاب` when today's attempt was incomplete, and no task once the set is answered fully. The detail names the book, the unit and the question count. The task is a link, never a toggle.
+- **Tone.** Progress is stated, not celebrated: no «آفرین», no percentage fireworks; the existing calm success/needs-review colors are reused.
+- **Evidence.** `tests/Feature/ExerciseProgressTest.php` (2), the Today budget (14), and the browser assertions after the exercise result (`exercise-result-393.png` flow). The unified review surface is the next design problem.
+
+## Cross-track review hub 2026-11-15
+
+Owner request: one place to see what is due across both tracks, without merging the two schedulers into one session.
+
+- **Entry.** Today's goal card carries a quiet «مرور همه» pill next to the due-word action; the books shelf's review panel links «مرور واژه‌ها و تمرین‌ها» under its primary button. No new nav tab.
+- **Header and total.** «مرور» with a back chevron to Today; a calm plate states `N مورد برای مرور` (or «چیزی برای مرور نمانده.») and one sentence naming the three queues.
+- **Primary action.** One filled pill chosen by priority: words → cards → exercise retry. Empty hub shows an outlined link to the notebook, never a disabled primary.
+- **Queue cards.** Three quiet surfaces, each with an icon, a title, one count line, a numeric badge and at most two actions:
+  - «واژه‌های من» — due and learning counts; primary review + notebook.
+  - «کارت‌های کتاب» — due count or next due time; primary review + books.
+  - «تمرین‌های کتاب» — mistakes in the latest attempt per set; retry + result.
+- **Zero state.** Each queue says «امروز چیزی نمانده» / «تمرین‌ها پاک است» with a check, not a fake count. The badge stays a muted zero.
+- **Tone and a11y.** No celebration, no merged score; 44px actions, visible focus, count badges labelled by their section, `data-review-*` hooks for the browser proof. Persian digits via `fa()`.
+- **Evidence.** `test-results/browser-shots/review-hub-393.png`; Playwright `review.spec.ts` 2/2 at 393/320; `tests/Feature/ReviewHubTest.php` (6).

@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-2-u10",
+  "book": "aef-3e-2",
+  "unit": 10,
+  "title": "American English File 2 · Unit 10",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 10,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "10A",
+      "10B",
+      "10C"
+    ],
+    "grammar_bank": "10A p.146, 10B p.146, 10C p.146",
+    "workbook": "10A, 10B, 10C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "expressing movement",
+      "title_fa": "بیان حرکت",
+      "use_fa": "فعل حرکت + حرف اضافهٔ حرکت: over، across، into، out of، up، down، away. into/out of با اسم می‌آیند و in/out بدون اسم.",
+      "formulas": [
+        {
+          "label_fa": "حروف حرکت",
+          "text": "run over the bridge\nwalk across the park\ngo out of the house\ncome into the room"
+        },
+        {
+          "label_fa": "in/out",
+          "text": "Come in.\nHe went out."
+        },
+        {
+          "label_fa": "come/go",
+          "text": "come = toward you\ngo = away from you"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I ran over the bridge and across the park.",
+          "fa": "از روی پل دویدم و از پارک گذشتم."
+        },
+        {
+          "en": "He went out of the house.",
+          "fa": "او از خانه بیرون رفت."
+        },
+        {
+          "en": "Come into the living room.",
+          "fa": "بیا داخل اتاق نشیمن."
+        },
+        {
+          "en": "She ran away.",
+          "fa": "او فرار کرد."
+        }
+      ],
+      "notes_fa": "into و out of با اسم می‌آیند (into the room) ولی in و out بدون اسم (come in)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "word order of phrasal verbs",
+      "title_fa": "ترتیب کلمات افعال عبارتی",
+      "use_fa": "فعل عبارتی = فعل + حرف. بعضی مفعول‌دار و جداپذیرند (turn off the TV / turn the TV off) ولی اگر مفعول ضمیر باشد همیشه وسط می‌آید (turn it off). بعضی جدا نمی‌شوند (look for).",
+      "formulas": [
+        {
+          "label_fa": "جداپذیر",
+          "text": "turn off the TV\nturn the TV off\nturn it off"
+        },
+        {
+          "label_fa": "غیرجداپذیر",
+          "text": "look for my glasses\nlook for them"
+        },
+        {
+          "label_fa": "بدون مفعول",
+          "text": "get up\ngo out"
+        }
+      ],
+      "examples": [
+        {
+          "en": "What time do you get up?",
+          "fa": "چه ساعتی بیدار می‌شوی؟"
+        },
+        {
+          "en": "Put on your coat. / Put your coat on.",
+          "fa": "پالتویت را بپوش."
+        },
+        {
+          "en": "Turn it off!",
+          "fa": "خاموشش کن!"
+        },
+        {
+          "en": "I'm looking for my glasses.",
+          "fa": "دنبال عینکم می‌گردم."
+        }
+      ],
+      "notes_fa": "با ضمیر، حرف بعد از فعل و قبل از ضمیر می‌آید: turn it off (نه turn off it). look for جدا نمی‌شود."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "the passive: be + past participle",
+      "title_fa": "مجهول: be + قسمت سوم فعل",
+      "use_fa": "وقتی مهم نیست یا نمی‌دانیم چه کسی کار را انجام داده. با am/is/are/was/were + past participle.",
+      "formulas": [
+        {
+          "label_fa": "حال",
+          "text": "am / is / are + past participle\nLego is produced every year."
+        },
+        {
+          "label_fa": "منفی/سؤال",
+          "text": "CDs aren't used.\nIs Spanish spoken here?"
+        },
+        {
+          "label_fa": "گذشته",
+          "text": "was / were + past participle\nThe window was broken."
+        }
+      ],
+      "examples": [
+        {
+          "en": "20 billion pieces of Lego are produced every year.",
+          "fa": "سالانه ۲۰ میلیارد قطعه لگو تولید می‌شود."
+        },
+        {
+          "en": "CDs aren't used very much nowadays.",
+          "fa": "این روزها CD زیاد استفاده نمی‌شود."
+        },
+        {
+          "en": "Is Spanish spoken in New Mexico?",
+          "fa": "در نیومکزیکو اسپانیایی صحبت می‌شود؟"
+        },
+        {
+          "en": "The window was broken yesterday.",
+          "fa": "پنجره دیروز شکسته شد."
+        }
+      ],
+      "notes_fa": "در مجهول، مفعول جملهٔ معلوم فاعل می‌شود و فعل به be + قسمت سوم تبدیل می‌شود: They produce Lego → Lego is produced."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u10-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ran ___ the bridge.",
+      "options": [
+        "over",
+        "into",
+        "out of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "into یعنی به داخل.",
+        "2": "out of یعنی به بیرون."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «over» است. running over the bridge."
+    },
+    {
+      "external_id": "u10-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He went ___ the house.",
+      "options": [
+        "out of",
+        "out",
+        "in"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "out بدون اسم می‌آید.",
+        "2": "in یعنی داخل."
+      },
+      "explanation_fa": "out of + اسم."
+    },
+    {
+      "external_id": "u10-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Come ___ the living room.",
+      "options": [
+        "into",
+        "in",
+        "out of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in بدون اسم می‌آید.",
+        "2": "out of یعنی بیرون."
+      },
+      "explanation_fa": "into + اسم."
+    },
+    {
+      "external_id": "u10-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Come ___!",
+      "options": [
+        "in",
+        "into",
+        "out of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "into با اسم می‌آید.",
+        "2": "out of یعنی بیرون."
+      },
+      "explanation_fa": "بدون اسم: come in."
+    },
+    {
+      "external_id": "u10-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "He went ___.",
+      "options": [
+        "out",
+        "out of",
+        "into"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "out of با اسم می‌آید.",
+        "2": "into یعنی به داخل."
+      },
+      "explanation_fa": "بدون اسم: went out."
+    },
+    {
+      "external_id": "u10-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "We walked ___ the hill.",
+      "options": [
+        "up",
+        "into",
+        "out of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "into یعنی داخل.",
+        "2": "out of یعنی بیرون."
+      },
+      "explanation_fa": "بالای تپه: up."
+    },
+    {
+      "external_id": "u10-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She ran ___ from the dog.",
+      "options": [
+        "away",
+        "into",
+        "over"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "into یعنی داخل.",
+        "2": "over یعنی از روی."
+      },
+      "explanation_fa": "فرار: ran away."
+    },
+    {
+      "external_id": "u10-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "The cat jumped ___ the table.",
+      "options": [
+        "onto",
+        "into",
+        "out of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "into یعنی داخل.",
+        "2": "out of یعنی بیرون."
+      },
+      "explanation_fa": "روی میز: onto."
+    },
+    {
+      "external_id": "u10-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "What time do you ___?",
+      "options": [
+        "get up",
+        "up get",
+        "get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب حرف و فعل غلط است.",
+        "2": "get به‌تنهایی معنی بیدار شدن ندارد."
+      },
+      "explanation_fa": "فعل عبارتی: get up."
+    },
+    {
+      "external_id": "u10-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I don't usually ___ during the week.",
+      "options": [
+        "go out",
+        "out go",
+        "go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب غلط است.",
+        "2": "go به‌تنهایی این معنا را ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «go out» است. go out."
+    },
+    {
+      "external_id": "u10-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "___ your coat.",
+      "options": [
+        "Put on",
+        "Put",
+        "On put"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "put به‌تنهایی کامل نیست.",
+        "2": "ترتیب غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Put on» است. Put on your coat."
+    },
+    {
+      "external_id": "u10-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Put ___ on!",
+      "options": [
+        "it",
+        "on it",
+        "it on"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ضمیر باید بین فعل و حرف باشد.",
+        "2": "ترتیب غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «it» است. put it on."
+    },
+    {
+      "external_id": "u10-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "Turn ___ the TV.",
+      "options": [
+        "off",
+        "of",
+        "out"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "of غلط است.",
+        "2": "out معنی خاموش نمی‌دهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «off» است. turn off."
+    },
+    {
+      "external_id": "u10-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I'm looking ___ my glasses.",
+      "options": [
+        "for",
+        "after",
+        "at"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "after یعنی مراقبت.",
+        "2": "at یعنی نگاه کردن."
+      },
+      "explanation_fa": "look for = جستجو."
+    },
+    {
+      "external_id": "u10-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "No, I'm still looking ___ them.",
+      "options": [
+        "for",
+        "after",
+        "at"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "after یعنی مراقبت.",
+        "2": "at یعنی نگاه کردن."
+      },
+      "explanation_fa": "look for جدا نمی‌شود."
+    },
+    {
+      "external_id": "u10-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Turn it ___.",
+      "options": [
+        "off",
+        "of",
+        "out"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "of غلط است.",
+        "2": "out اینجا معنی خاموش نمی‌دهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «off» است. turn it off."
+    },
+    {
+      "external_id": "u10-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "20 billion pieces of Lego ___ produced every year.",
+      "options": [
+        "are",
+        "is",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "pieces جمع است.",
+        "2": "were گذشته است."
+      },
+      "explanation_fa": "جمع: are produced."
+    },
+    {
+      "external_id": "u10-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "CDs ___ used very much nowadays.",
+      "options": [
+        "aren't",
+        "isn't",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "CDs جمع است.",
+        "2": "don't با قسمت سوم نمی‌آید."
+      },
+      "explanation_fa": "منفی مجهول: aren't used."
+    },
+    {
+      "external_id": "u10-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "___ Spanish spoken in New Mexico?",
+      "options": [
+        "Is",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does با قسمت سوم نمی‌آید.",
+        "2": "Spanish مفرد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Is» است. Is Spanish spoken?"
+    },
+    {
+      "external_id": "u10-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "The passive is be + ___.",
+      "options": [
+        "past participle",
+        "past",
+        "base form"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشتهٔ ساده کافی نیست.",
+        "2": "فعل پایه نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «past participle» است. be + past participle."
+    },
+    {
+      "external_id": "u10-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "This song ___ written by Lennon.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "song مفرد است و گذشته.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. was written."
+    },
+    {
+      "external_id": "u10-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "These cars ___ made in Japan.",
+      "options": [
+        "are",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "cars جمع است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are» است. are made."
+    },
+    {
+      "external_id": "u10-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "The window ___ broken yesterday.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "window مفرد است و گذشته.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. was broken."
+    },
+    {
+      "external_id": "u10-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "English ___ spoken in many countries.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "English مفرد است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is spoken."
+    },
+    {
+      "external_id": "u10-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I ran over",
+          "right": "the bridge."
+        },
+        {
+          "left": "We walked across",
+          "right": "the park."
+        },
+        {
+          "left": "He went out of",
+          "right": "the house."
+        },
+        {
+          "left": "Come",
+          "right": "into the living room."
+        },
+        {
+          "left": "She ran",
+          "right": "away."
+        }
+      ],
+      "explanation_fa": "فعل حرکت + حرف اضافهٔ حرکت."
+    },
+    {
+      "external_id": "u10-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر فعل عبارتی را به معنی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "get up",
+          "right": "leave bed"
+        },
+        {
+          "left": "go out",
+          "right": "leave home for fun"
+        },
+        {
+          "left": "turn on",
+          "right": "start a machine"
+        },
+        {
+          "left": "turn off",
+          "right": "stop a machine"
+        },
+        {
+          "left": "look for",
+          "right": "try to find"
+        }
+      ],
+      "explanation_fa": "معنی افعال عبارتی را باید حفظ کرد."
+    },
+    {
+      "external_id": "u10-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر جملهٔ معلوم را به مجهولش وصل کن.",
+      "pairs": [
+        {
+          "left": "They produce Lego.",
+          "right": "Lego is produced."
+        },
+        {
+          "left": "Someone built this house.",
+          "right": "This house was built."
+        },
+        {
+          "left": "They don't use CDs.",
+          "right": "CDs aren't used."
+        },
+        {
+          "left": "Do they speak Spanish?",
+          "right": "Is Spanish spoken?"
+        },
+        {
+          "left": "Someone broke the window.",
+          "right": "The window was broken."
+        }
+      ],
+      "explanation_fa": "مجهول: be + قسمت سوم فعل."
+    }
+  ]
+}

@@ -1,0 +1,450 @@
+{
+  "external_id": "aef-3e-starter-u10",
+  "book": "aef-3e-starter",
+  "unit": 10,
+  "title": "American English File Starter · Unit 10",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 10,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "10A",
+      "10B"
+    ],
+    "grammar_bank": "10A p.110, 10B p.110",
+    "workbook": "10A pp.43-44, 10B pp.45-46"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "there's a... / there are some...",
+      "title_fa": "there's a… / there are some…",
+      "use_fa": "برای گفتن اینکه چیزی در جایی هست. برای مفرد there's و برای جمع there are می‌آید؛ some در جملهٔ مثبت و any در منفی و سؤال.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "There's a + singular noun\nThere are some + plural noun\nThere's a TV in the room.\nThere are some pictures."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "There isn't a + singular\nThere aren't any + plural\nThere isn't a phone.\nThere aren't any towels."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Is there a ...?\nAre there any ...?\nYes, there is. / No, there isn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "There's a TV in my hotel room.",
+          "fa": "یک تلویزیون در اتاق هتل من هست."
+        },
+        {
+          "en": "There are two beds in the room.",
+          "fa": "دو تخت در اتاق هست."
+        },
+        {
+          "en": "There isn't a bathtub.",
+          "fa": "وان حمام نیست."
+        },
+        {
+          "en": "Are there any towels? — Yes, there are.",
+          "fa": "حوله هست؟ — بله."
+        }
+      ],
+      "notes_fa": "some در جملهٔ مثبت جمع و any در منفی و سؤال می‌آید: There are some towels. / There aren't any towels. / Are there any towels?"
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "simple past: be",
+      "title_fa": "گذشتهٔ سادهٔ فعل be",
+      "use_fa": "برای صحبت دربارهٔ گذشته: was برای I/he/she/it و were برای you/we/they. منفی was wasn't و were weren't.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I / He / She / It was ...\nYou / We / They were ...\nI was at home at 8:00."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "wasn't / weren't\nI wasn't at home.\nThey weren't in Mexico."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Was she a singer?\nWere you late?\nYes, she was. / No, she wasn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I was at home at 8:00.",
+          "fa": "من ساعت ۸ خانه بودم."
+        },
+        {
+          "en": "You were in class yesterday.",
+          "fa": "تو دیروز سر کلاس بودی."
+        },
+        {
+          "en": "He wasn't tired last night.",
+          "fa": "او دیشب خسته نبود."
+        },
+        {
+          "en": "Were they in Mexico last week? — Yes, they were.",
+          "fa": "آن‌ها هفتهٔ گذشته در مکزیک بودند؟ — بله."
+        }
+      ],
+      "notes_fa": "was برای مفرد (I/he/she/it) و were برای جمع و you. زمان‌های گذشته: yesterday، last night، last week."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u10-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ a TV in the room.",
+      "options": [
+        "There's",
+        "There are",
+        "It's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "TV مفرد است.",
+        "2": "It's دربارهٔ یک چیز مشخص است، نه «وجود داشتن»."
+      },
+      "explanation_fa": "مفرد: There's a TV."
+    },
+    {
+      "external_id": "u10-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "___ two beds in the room.",
+      "options": [
+        "There are",
+        "There is",
+        "They are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "two beds جمع است.",
+        "2": "They are دربارهٔ چیزهای مشخص است."
+      },
+      "explanation_fa": "جمع: There are two beds."
+    },
+    {
+      "external_id": "u10-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "There ___ a phone in my room.",
+      "options": [
+        "isn't",
+        "aren't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a phone مفرد است.",
+        "2": "not به‌تنهایی فعل کمکی ندارد."
+      },
+      "explanation_fa": "منفی مفرد: There isn't a phone."
+    },
+    {
+      "external_id": "u10-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "There ___ any towels.",
+      "options": [
+        "aren't",
+        "isn't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "towels جمع است.",
+        "2": "not فعل کمکی ندارد."
+      },
+      "explanation_fa": "منفی جمع: There aren't any towels."
+    },
+    {
+      "external_id": "u10-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ there a swimming pool?",
+      "options": [
+        "Is",
+        "Are",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "pool مفرد است.",
+        "2": "Does برای فعل معمولی است."
+      },
+      "explanation_fa": "سؤال مفرد: Is there a swimming pool?"
+    },
+    {
+      "external_id": "u10-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Are there ___ pictures?",
+      "options": [
+        "any",
+        "some",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "some در سؤال معمولاً نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "در سؤال جمع از any استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u10-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "There are ___ towels in the bathroom.",
+      "options": [
+        "some",
+        "any",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "any در جملهٔ مثبت نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "مثبت جمع: some."
+    },
+    {
+      "external_id": "u10-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "___ there any books?",
+      "options": [
+        "Are",
+        "Is",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "books جمع است.",
+        "2": "Do برای فعل معمولی است."
+      },
+      "explanation_fa": "سؤال جمع: Are there any books?"
+    },
+    {
+      "external_id": "u10-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I ___ at home at 8:00.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع و you است.",
+        "2": "am زمان حال است."
+      },
+      "explanation_fa": "I با was: I was at home."
+    },
+    {
+      "external_id": "u10-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "You ___ in class yesterday.",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "you با were: You were in class."
+    },
+    {
+      "external_id": "u10-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "He ___ tired last night.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "is زمان حال است."
+      },
+      "explanation_fa": "he با was: He was tired."
+    },
+    {
+      "external_id": "u10-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "They ___ in Mexico last week.",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "they با were: They were in Mexico."
+    },
+    {
+      "external_id": "u10-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ at home. I was at work.",
+      "options": [
+        "wasn't",
+        "weren't",
+        "am not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "weren't برای جمع است.",
+        "2": "am not زمان حال است."
+      },
+      "explanation_fa": "منفی I: wasn't."
+    },
+    {
+      "external_id": "u10-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "A: Were you late?\nB: Yes, I ___.",
+      "options": [
+        "was",
+        "were",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای you/they است.",
+        "2": "am زمان حال است."
+      },
+      "explanation_fa": "پاسخ کوتاه: Yes, I was."
+    },
+    {
+      "external_id": "u10-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "A: Was she a singer?\nB: No, she ___.",
+      "options": [
+        "wasn't",
+        "weren't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "weren't برای جمع است.",
+        "2": "isn't زمان حال است."
+      },
+      "explanation_fa": "پاسخ منفی: No, she wasn't."
+    },
+    {
+      "external_id": "u10-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ they in Mexico last week?",
+      "options": [
+        "Were",
+        "Was",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Was برای مفرد است.",
+        "2": "Are زمان حال است."
+      },
+      "explanation_fa": "سؤال جمع: Were they ...?"
+    },
+    {
+      "external_id": "u10-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "There's a TV",
+          "right": "in my hotel room."
+        },
+        {
+          "left": "There are two beds",
+          "right": "in the room."
+        },
+        {
+          "left": "There isn't a phone",
+          "right": "in the bathroom."
+        },
+        {
+          "left": "Are there any towels?",
+          "right": "Yes, there are."
+        },
+        {
+          "left": "Is there a bathtub?",
+          "right": "No, there isn't."
+        }
+      ],
+      "explanation_fa": "there is برای مفرد و there are برای جمع؛ پاسخ کوتاه با is/are."
+    },
+    {
+      "external_id": "u10-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر نیمه را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "I was",
+          "right": "at home at 8:00."
+        },
+        {
+          "left": "You were",
+          "right": "in class yesterday."
+        },
+        {
+          "left": "He was",
+          "right": "tired last night."
+        },
+        {
+          "left": "They were",
+          "right": "in Mexico last week."
+        },
+        {
+          "left": "Were you",
+          "right": "late?"
+        }
+      ],
+      "explanation_fa": "was برای I/he/she/it و were برای you/we/they."
+    }
+  ]
+}

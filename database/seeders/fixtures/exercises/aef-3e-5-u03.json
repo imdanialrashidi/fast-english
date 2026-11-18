@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-5-u03",
+  "book": "aef-3e-5",
+  "unit": 3,
+  "title": "American English File 5 · Unit 3",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 3,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "3A",
+      "3B"
+    ],
+    "grammar_bank": "3A p.143, 3B p.144",
+    "workbook": "3A, 3B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "get",
+      "title_fa": "کاربردهای get",
+      "use_fa": "get + اسم یعنی گرفتن/آوردن/سوار شدن/رسیدن؛ get + صفت یعنی شدن؛ get + قسمت سوم مجهول غیررسمی؛ get sth done و get sb to do.",
+      "formulas": [
+        {
+          "label_fa": "اسم",
+          "text": "get an email / get stamps / get the bus / get to Beijing"
+        },
+        {
+          "label_fa": "صفت",
+          "text": "It's getting dark.\nThe traffic gets worse."
+        },
+        {
+          "label_fa": "ساختارها",
+          "text": "Dan got fired.\nget my hair cut\nget someone to fix it"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I got an email from Marc today.",
+          "fa": "امروز از مارک ایمیل گرفتم."
+        },
+        {
+          "en": "It's getting dark.",
+          "fa": "دارد تاریک می‌شود."
+        },
+        {
+          "en": "Dan got fired last week.",
+          "fa": "دن هفتهٔ پیش اخراج شد."
+        },
+        {
+          "en": "I need to get my passport renewed.",
+          "fa": "باید پاسپورتم را تمدید کنم."
+        }
+      ],
+      "notes_fa": "get + صفت یعنی «شدن»: getting dark. get + قسمت سوم مجهول غیررسمی می‌سازد: got fired."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "discourse markers (2): adverbs and adverbial expressions",
+      "title_fa": "نشانگرهای گفتمانی (۲): قیدها",
+      "use_fa": "قیدهای گفتمانی مثل actually، apparently، obviously، in fact، luckily، unfortunately، basically، anyway و frankly نظر یا نگرش گوینده را نشان می‌دهند و معمولاً اول جمله با کاما می‌آیند.",
+      "formulas": [
+        {
+          "label_fa": "واقعیت",
+          "text": "Actually, ...\nIn fact, ...\nObviously, ...\nApparently, ..."
+        },
+        {
+          "label_fa": "نگرش",
+          "text": "Luckily, ...\nUnfortunately, ...\nHonestly, ...\nFrankly, ..."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Actually, I don't think he's coming.",
+          "fa": "راستش فکر نمی‌کنم بیاید."
+        },
+        {
+          "en": "Apparently, she's moving to Canada.",
+          "fa": "ظاهراً او دارد به کانادا می‌رود."
+        },
+        {
+          "en": "Luckily, we won the match.",
+          "fa": "خوشبختانه مسابقه را بردیم."
+        },
+        {
+          "en": "Basically, the whole thing was a misunderstanding.",
+          "fa": "اساساً همه‌اش سوءتفاهم بود."
+        }
+      ],
+      "notes_fa": "این قیدها جمله را مستقل نمی‌کنند؛ با کاما از بقیهٔ جمله جدا می‌شوند و لحن را مشخص می‌کنند."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u03-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ an email from Marc today saying he was leaving me!",
+      "options": [
+        "got",
+        "get",
+        "gotten"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "get حال است.",
+        "2": "gotten بعد از have می‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «got» است. got."
+    },
+    {
+      "external_id": "u03-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "If you're going to the post office, could you ___ me some stamps?",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از could فعل پایه.",
+        "2": "getting بعد از could نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get."
+    },
+    {
+      "external_id": "u03-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Let's not bother with a taxi — we can ___ the bus.",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از can فعل پایه.",
+        "2": "getting بعد از can نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get the bus."
+    },
+    {
+      "external_id": "u03-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "When do you think we'll ___ to Beijing?",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از will فعل پایه.",
+        "2": "getting بعد از will نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get to."
+    },
+    {
+      "external_id": "u03-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "We'd better go home. It's ___ dark.",
+      "options": [
+        "getting",
+        "get",
+        "got"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is فعل ing.",
+        "2": "got گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «getting» است. getting dark."
+    },
+    {
+      "external_id": "u03-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I seem to have ___ very forgetful recently.",
+      "options": [
+        "gotten",
+        "get",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از have قسمت سوم.",
+        "2": "getting بعد از have نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «gotten» است. gotten."
+    },
+    {
+      "external_id": "u03-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "The traffic ___ worse on the local roads every day.",
+      "options": [
+        "gets",
+        "get",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با traffic فعل s می‌گیرد.",
+        "2": "getting بدون is است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «gets» است. gets worse."
+    },
+    {
+      "external_id": "u03-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I don't think my mother will ever ___ used to living on her own.",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از will فعل پایه.",
+        "2": "getting بعد از will نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get used to."
+    },
+    {
+      "external_id": "u03-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Did you know Dan ___ fired last week?",
+      "options": [
+        "got",
+        "get",
+        "gotten"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "get حال است.",
+        "2": "gotten بدون have است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «got» است. got fired."
+    },
+    {
+      "external_id": "u03-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I'm going to ___ my hair cut next week.",
+      "options": [
+        "get",
+        "got",
+        "gotten"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل پایه.",
+        "2": "gotten بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get my hair cut."
+    },
+    {
+      "external_id": "u03-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I need to ___ my passport renewed — it expires soon.",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل پایه.",
+        "2": "getting بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get it renewed."
+    },
+    {
+      "external_id": "u03-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "We need to ___ someone to fix the heater.",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل پایه.",
+        "2": "getting بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. get someone to fix."
+    },
+    {
+      "external_id": "u03-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "___ , I don't think he's coming.",
+      "options": [
+        "Actually",
+        "Actual",
+        "In actual"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "actual صفت است.",
+        "2": "این عبارت وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Actually» است. Actually."
+    },
+    {
+      "external_id": "u03-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "___ , she's moving to Canada.",
+      "options": [
+        "Apparently",
+        "Apparent",
+        "Basically"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "apparent صفت است.",
+        "2": "basically یعنی اساساً."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Apparently» است. Apparently."
+    },
+    {
+      "external_id": "u03-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ , we should leave now or we'll be late.",
+      "options": [
+        "Obviously",
+        "Obvious",
+        "Clear"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "obvious صفت است.",
+        "2": "clear بدون -ly قید نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Obviously» است. Obviously."
+    },
+    {
+      "external_id": "u03-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ , it was the best day of my life.",
+      "options": [
+        "In fact",
+        "In true",
+        "Actually fact"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "in true وجود ندارد.",
+        "2": "actually fact وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «In fact» است. In fact."
+    },
+    {
+      "external_id": "u03-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "___ , the train was late again.",
+      "options": [
+        "Unfortunately",
+        "Unfortunate",
+        "Luckily"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "unfortunate صفت است.",
+        "2": "luckily مثبت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Unfortunately» است. Unfortunately."
+    },
+    {
+      "external_id": "u03-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "___ , we won the match in the last minute.",
+      "options": [
+        "Luckily",
+        "Lucky",
+        "Unluckily"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "lucky صفت است.",
+        "2": "unluckily منفی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Luckily» است. Luckily."
+    },
+    {
+      "external_id": "u03-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "___ , the whole thing was a misunderstanding.",
+      "options": [
+        "Basically",
+        "Basic",
+        "Basis"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "basic صفت است.",
+        "2": "basis اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Basically» است. Basically."
+    },
+    {
+      "external_id": "u03-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "___ , let's talk about the schedule for next week.",
+      "options": [
+        "Anyway",
+        "Any way",
+        "Anyhow way"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "any way یعنی هر راه.",
+        "2": "anyhow way وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Anyway» است. Anyway."
+    },
+    {
+      "external_id": "u03-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "___ , I agree with you.",
+      "options": [
+        "Personally",
+        "Personal",
+        "Person"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "personal صفت است.",
+        "2": "person اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Personally» است. Personally."
+    },
+    {
+      "external_id": "u03-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "___ , he's only sixteen — he can't drive.",
+      "options": [
+        "After all",
+        "After all that",
+        "All after"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "after all that وجود ندارد.",
+        "2": "all after وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «After all» است. After all."
+    },
+    {
+      "external_id": "u03-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "___ , I'd rather stay home tonight.",
+      "options": [
+        "Honestly",
+        "Honest",
+        "Honesty"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "honest صفت است.",
+        "2": "honesty اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Honestly» است. Honestly."
+    },
+    {
+      "external_id": "u03-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "___ , the movie was disappointing.",
+      "options": [
+        "Frankly",
+        "Frank",
+        "Frankness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "frank صفت است.",
+        "2": "frankness اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Frankly» است. Frankly."
+    },
+    {
+      "external_id": "u03-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I got",
+          "right": "an email from Marc."
+        },
+        {
+          "left": "Could you get me",
+          "right": "some stamps?"
+        },
+        {
+          "left": "We can get",
+          "right": "the bus."
+        },
+        {
+          "left": "It's getting",
+          "right": "dark."
+        },
+        {
+          "left": "Dan got",
+          "right": "fired."
+        },
+        {
+          "left": "I'm going to get my hair",
+          "right": "cut."
+        }
+      ],
+      "explanation_fa": "get + اسم/صفت/قسمت سوم و ساختار get sth done.",
+      "position": 25
+    },
+    {
+      "external_id": "u03-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر قید را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "Actually,",
+          "right": "I don't think he's coming."
+        },
+        {
+          "left": "Apparently,",
+          "right": "she's moving to Canada."
+        },
+        {
+          "left": "Obviously,",
+          "right": "we should leave now."
+        },
+        {
+          "left": "Unfortunately,",
+          "right": "the train was late again."
+        },
+        {
+          "left": "Luckily,",
+          "right": "we won the match."
+        }
+      ],
+      "explanation_fa": "قیدهای گفتمانی نگرش گوینده را نشان می‌دهند.",
+      "position": 26
+    }
+  ]
+}

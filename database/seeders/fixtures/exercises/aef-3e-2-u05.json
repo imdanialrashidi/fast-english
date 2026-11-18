@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-2-u05",
+  "book": "aef-3e-2",
+  "unit": 5,
+  "title": "American English File 2 · Unit 5",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 5,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "5A",
+      "5B",
+      "5C"
+    ],
+    "grammar_bank": "5A p.136, 5B p.136, 5C p.136",
+    "workbook": "5A, 5B, 5C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "comparatives",
+      "title_fa": "مقایسه‌ای‌ها",
+      "use_fa": "برای مقایسهٔ دو چیز یا دو کار: صفت/قید کوتاه er می‌گیرد، بلند با more می‌آید، و می‌توان از less و as...as هم استفاده کرد.",
+      "formulas": [
+        {
+          "label_fa": "صفت",
+          "text": "busy → busier\nhot → hotter\nrelaxed → more relaxed\ngood → better\nbad → worse"
+        },
+        {
+          "label_fa": "قید",
+          "text": "quickly → more quickly\nfast → faster\nwell → better"
+        },
+        {
+          "label_fa": "کمتر/مساوی",
+          "text": "less + adjective/adverb\n(not) as + adjective/adverb + as"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm busier than I was five years ago.",
+          "fa": "من از پنج سال پیش شلوغ‌ترم."
+        },
+        {
+          "en": "People are more impatient today than in the past.",
+          "fa": "مردم امروز بی‌حوصله‌تر از گذشته‌اند."
+        },
+        {
+          "en": "The service isn't as good as it was.",
+          "fa": "سرویس به خوبی قبل نیست."
+        },
+        {
+          "en": "People walk more quickly than in the past.",
+          "fa": "مردم سریع‌تر از گذشته راه می‌روند."
+        }
+      ],
+      "notes_fa": "بعد از مقایسه than می‌آید و بعد از as...as هم as. با ضمیر می‌توان گفت than me یا than I am."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "superlatives",
+      "title_fa": "صفت‌های عالی",
+      "use_fa": "برای گفتن بهترین/بزرگ‌ترین در یک گروه. با the + صفت عالی و برای مکان‌ها in می‌آید. با ever و حال کامل رایج است.",
+      "formulas": [
+        {
+          "label_fa": "کوتاه",
+          "text": "cold → the coldest\nthin → the thinnest\nhealthy → the healthiest"
+        },
+        {
+          "label_fa": "بلند",
+          "text": "beautiful → the most beautiful\nleast + adjective = the least expensive"
+        },
+        {
+          "label_fa": "بی‌قاعده",
+          "text": "good → the best\nbad → the worst\nfar → the farthest"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Tokyo is the cleanest city in the world.",
+          "fa": "توکیو تمیزترین شهر جهان است."
+        },
+        {
+          "en": "Mexico is one of the most popular destinations.",
+          "fa": "مکزیک یکی از محبوب‌ترین مقصدهاست."
+        },
+        {
+          "en": "It's the most beautiful city I've ever been to.",
+          "fa": "زیباترین شهری است که تا حالا دیده‌ام."
+        },
+        {
+          "en": "Camping is the least expensive way.",
+          "fa": "کمپینگ کم‌هزینه‌ترین راه است."
+        }
+      ],
+      "notes_fa": "بعد از صفت عالی برای مکان in می‌آید: the oldest in the class. the least + صفت یعنی کمترین."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "quantifiers: too much, too many, too, enough",
+      "title_fa": "کمیت‌ها: too much، too many، too و enough",
+      "use_fa": "too much/too many یعنی بیشتر از حد خوب؛ too با صفت؛ enough یعنی به‌اندازهٔ کافی.",
+      "formulas": [
+        {
+          "label_fa": "too",
+          "text": "too much + uncountable\ntoo many + countable\ntoo + adjective"
+        },
+        {
+          "label_fa": "enough",
+          "text": "enough + noun\nadjective + enough\nverb + enough"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I have too much work.",
+          "fa": "کار زیادی دارم (بیش از حد)."
+        },
+        {
+          "en": "I eat too many cookies.",
+          "fa": "شیرینی زیادی می‌خورم."
+        },
+        {
+          "en": "I'm too tired.",
+          "fa": "خیلی خسته‌ام."
+        },
+        {
+          "en": "Do you eat enough vegetables?",
+          "fa": "به‌اندازهٔ کافی سبزی می‌خوری؟"
+        }
+      ],
+      "notes_fa": "too much با ناشمارش (work) و too many با جمع (cookies). enough بعد از صفت می‌آید: big enough."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u05-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'm ___ than I was five years ago.",
+      "options": [
+        "busier",
+        "busy",
+        "more busy"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "مقایسه بدون er نیست.",
+        "2": "busy دو هجایی است و er می‌گیرد."
+      },
+      "explanation_fa": "صفت busy در مقایسه busier می‌شود."
+    },
+    {
+      "external_id": "u05-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "People are ___ impatient today.",
+      "options": [
+        "more",
+        "most",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "most برای عالی است.",
+        "2": "much قبل از صفت مقایسه‌ای نمی‌آید."
+      },
+      "explanation_fa": "impatient با more مقایسه می‌شود: more impatient."
+    },
+    {
+      "external_id": "u05-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "The service isn't as ___ as it was.",
+      "options": [
+        "good",
+        "better",
+        "best"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "better مقایسه‌ای است.",
+        "2": "best عالی است."
+      },
+      "explanation_fa": "ساختار as ... as با صفت پایه: as good as."
+    },
+    {
+      "external_id": "u05-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "This restaurant is ___ expensive than that one.",
+      "options": [
+        "less",
+        "least",
+        "fewer"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "least برای عالی است.",
+        "2": "fewer با اسم جمع می‌آید."
+      },
+      "explanation_fa": "less + صفت."
+    },
+    {
+      "external_id": "u05-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "People walk ___ than in the past.",
+      "options": [
+        "more quickly",
+        "quicker",
+        "most quickly"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "quicker صفت است.",
+        "2": "most عالی است."
+      },
+      "explanation_fa": "قید: more quickly."
+    },
+    {
+      "external_id": "u05-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "He isn't as intelligent ___ her.",
+      "options": [
+        "as",
+        "than",
+        "that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "than برای مقایسه‌ای است.",
+        "2": "that اینجا نمی‌آید."
+      },
+      "explanation_fa": "ساختار برابر: as intelligent as."
+    },
+    {
+      "external_id": "u05-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "My brother speaks French ___ fluently than me.",
+      "options": [
+        "less",
+        "least",
+        "little"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "least عالی است.",
+        "2": "little صفت است."
+      },
+      "explanation_fa": "less + قید."
+    },
+    {
+      "external_id": "u05-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "It's ___ than I thought.",
+      "options": [
+        "worse",
+        "badder",
+        "more bad"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "bad بی‌قاعده است.",
+        "2": "more bad وجود ندارد."
+      },
+      "explanation_fa": "bad بی‌قاعده است و worse می‌شود."
+    },
+    {
+      "external_id": "u05-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Tokyo is the ___ city in the world.",
+      "options": [
+        "cleanest",
+        "cleaner",
+        "most clean"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "cleaner مقایسه‌ای است.",
+        "2": "clean یک‌هجایی است."
+      },
+      "explanation_fa": "clean یک‌هجایی است: the cleanest."
+    },
+    {
+      "external_id": "u05-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Mexico is one of the ___ popular destinations.",
+      "options": [
+        "most",
+        "more",
+        "much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "more مقایسه‌ای است.",
+        "2": "much اینجا نمی‌آید."
+      },
+      "explanation_fa": "popular با most عالی می‌شود: the most popular."
+    },
+    {
+      "external_id": "u05-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "Camping is the ___ expensive way.",
+      "options": [
+        "least",
+        "less",
+        "little"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "less مقایسه‌ای است.",
+        "2": "little اینجا نمی‌آید."
+      },
+      "explanation_fa": "least + صفت یعنی کمترین: the least expensive."
+    },
+    {
+      "external_id": "u05-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "It's the most beautiful city I've ___ been to.",
+      "options": [
+        "ever",
+        "never",
+        "yet"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never منفی است.",
+        "2": "yet برای کارهای تازه است."
+      },
+      "explanation_fa": "با حال کامل: ever."
+    },
+    {
+      "external_id": "u05-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "It's the ___ movie I've seen this year.",
+      "options": [
+        "best",
+        "better",
+        "goodest"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "better مقایسه‌ای است.",
+        "2": "good بی‌قاعده است."
+      },
+      "explanation_fa": "good بی‌قاعده است: the best."
+    },
+    {
+      "external_id": "u05-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Ann's the oldest ___ the class.",
+      "options": [
+        "in",
+        "on",
+        "of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "on برای روز است.",
+        "2": "of با گروه‌ها می‌آید ولی اینجا in رایج است."
+      },
+      "explanation_fa": "برای گروه‌ها in می‌آید: the oldest in the class."
+    },
+    {
+      "external_id": "u05-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "It's the ___ city in the world.",
+      "options": [
+        "noisiest",
+        "noisier",
+        "most noisy"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "noisier مقایسه‌ای است.",
+        "2": "noisy با iest می‌آید."
+      },
+      "explanation_fa": "noisy به iest تبدیل می‌شود: the noisiest."
+    },
+    {
+      "external_id": "u05-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "It's the ___ expensive way to travel.",
+      "options": [
+        "least",
+        "less",
+        "most little"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "less مقایسه‌ای است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "least + صفت: the least expensive."
+    },
+    {
+      "external_id": "u05-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I have ___ work.",
+      "options": [
+        "too much",
+        "too many",
+        "too"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "work ناشمارش است.",
+        "2": "too با صفت می‌آید."
+      },
+      "explanation_fa": "work ناشمارش است: too much work."
+    },
+    {
+      "external_id": "u05-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I eat ___ cookies.",
+      "options": [
+        "too many",
+        "too much",
+        "too"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "cookies جمع است.",
+        "2": "too با صفت است."
+      },
+      "explanation_fa": "cookies جمع است: too many cookies."
+    },
+    {
+      "external_id": "u05-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I'm ___ tired.",
+      "options": [
+        "too",
+        "too much",
+        "too many"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "too much با اسم می‌آید.",
+        "2": "too many با جمع است."
+      },
+      "explanation_fa": "too + صفت: too tired."
+    },
+    {
+      "external_id": "u05-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "My boss talks ___.",
+      "options": [
+        "too much",
+        "too many",
+        "too"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "too many با جمع است.",
+        "2": "too به‌تنهایی بعد از فعل نمی‌آید."
+      },
+      "explanation_fa": "بعد از فعل: too much."
+    },
+    {
+      "external_id": "u05-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Do you eat ___ vegetables?",
+      "options": [
+        "enough",
+        "enough of",
+        "enoughs"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "enough of قبل از اسم اینجا نمی‌آید.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "enough + اسم."
+    },
+    {
+      "external_id": "u05-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "I don't drink ___ water.",
+      "options": [
+        "enough",
+        "enough of",
+        "many"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "enough of اینجا نمی‌آید.",
+        "2": "many با ناشمارش نمی‌آید."
+      },
+      "explanation_fa": "water ناشمارش است: enough water."
+    },
+    {
+      "external_id": "u05-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "The refrigerator isn't big ___.",
+      "options": [
+        "enough",
+        "enoughly",
+        "too"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "enoughly وجود ندارد.",
+        "2": "too معنی «بیش از حد» دارد."
+      },
+      "explanation_fa": "صفت + enough: big enough."
+    },
+    {
+      "external_id": "u05-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She doesn't sleep ___.",
+      "options": [
+        "enough",
+        "enoughly",
+        "too much"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "enoughly وجود ندارد.",
+        "2": "too much یعنی بیش از حد."
+      },
+      "explanation_fa": "فعل + enough: sleep enough."
+    },
+    {
+      "external_id": "u05-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر صفت را به مقایسه‌ای‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "busy",
+          "right": "busier"
+        },
+        {
+          "left": "hot",
+          "right": "hotter"
+        },
+        {
+          "left": "relaxed",
+          "right": "more relaxed"
+        },
+        {
+          "left": "good",
+          "right": "better"
+        },
+        {
+          "left": "bad",
+          "right": "worse"
+        }
+      ],
+      "explanation_fa": "busy→busier، hot→hotter، relaxed→more relaxed، good→better، bad→worse."
+    },
+    {
+      "external_id": "u05-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر صفت را به عالی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "cold",
+          "right": "the coldest"
+        },
+        {
+          "left": "thin",
+          "right": "the thinnest"
+        },
+        {
+          "left": "healthy",
+          "right": "the healthiest"
+        },
+        {
+          "left": "beautiful",
+          "right": "the most beautiful"
+        },
+        {
+          "left": "good",
+          "right": "the best"
+        }
+      ],
+      "explanation_fa": "cold→the coldest، thin→the thinnest، healthy→the healthiest، beautiful→the most beautiful، good→the best."
+    },
+    {
+      "external_id": "u05-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I have too much",
+          "right": "work."
+        },
+        {
+          "left": "I eat too many",
+          "right": "cookies."
+        },
+        {
+          "left": "I'm too",
+          "right": "tired."
+        },
+        {
+          "left": "Do you eat enough",
+          "right": "vegetables?"
+        },
+        {
+          "left": "The refrigerator isn't big",
+          "right": "enough."
+        }
+      ],
+      "explanation_fa": "too much + ناشمارش، too many + جمع، too + صفت، enough بعد از صفت."
+    }
+  ]
+}

@@ -1,0 +1,450 @@
+{
+  "external_id": "aef-3e-starter-u08",
+  "book": "aef-3e-starter",
+  "unit": 8,
+  "title": "American English File Starter · Unit 8",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 8,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "8A",
+      "8B"
+    ],
+    "grammar_bank": "8A p.106, 8B p.106",
+    "workbook": "8A pp.35-36, 8B pp.37-38"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "can / can't",
+      "title_fa": "can و can't",
+      "use_fa": "برای اجازه، امکان و توانایی. can برای همهٔ فاعل‌ها یک شکل دارد و منفی‌اش can't است.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + can + base verb\nI can park here.\nShe can play the guitar."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "subject + can't + base verb\nYou can't park there.\n(can't = cannot)"
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Can + subject + base verb?\nCan I park here?\nYes, you can. / No, you can't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Can I park here? — Yes, you can.",
+          "fa": "می‌توانم اینجا پارک کنم؟ — بله."
+        },
+        {
+          "en": "You can't park there.",
+          "fa": "آن‌جا نمی‌توانی پارک کنی."
+        },
+        {
+          "en": "He can help us.",
+          "fa": "او می‌تواند به ما کمک کند."
+        },
+        {
+          "en": "Can you drive? — No, I can't.",
+          "fa": "رانندگی می‌توانی؟ — نه."
+        }
+      ],
+      "notes_fa": "can برای همهٔ فاعل‌ها یک شکل است (بدون s). بعد از can فعل پایه می‌آید: She can play (نه can plays). سؤال با Can شروع می‌شود، نه Do."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "like / love / hate + verb + -ing",
+      "title_fa": "like، love و hate + فعل ing‌دار",
+      "use_fa": "برای گفتن اینکه از چه کاری خوشمان می‌آید یا بدمان می‌آید. بعد از like/love/hate فعل به شکل -ing می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + like / love / hate + verb-ing\nI love cooking.\nShe likes going for a walk."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "subject + don't / doesn't + like + verb-ing\nI don't like studying.\nHe doesn't like getting up early."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "What do you like doing on the weekend?\nDo you like cooking?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I love cooking.",
+          "fa": "من عاشق آشپزی هستم."
+        },
+        {
+          "en": "She likes going for a walk.",
+          "fa": "او دوست دارد پیاده‌روی کند."
+        },
+        {
+          "en": "I don't like studying.",
+          "fa": "مطالعه کردن را دوست ندارم."
+        },
+        {
+          "en": "He hates getting up early.",
+          "fa": "او از زود بیدار شدن متنفر است."
+        }
+      ],
+      "notes_fa": "بعد از like/love/hate فعل -ing می‌گیرد: I like reading. (نه I like read.) در منفی با he/she/it از doesn't استفاده می‌شود و فعل پایه می‌ماند."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u08-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "You ___ park here. It's not allowed.",
+      "options": [
+        "can't",
+        "can",
+        "don't can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله می‌گوید اجازه ندارید.",
+        "2": "don't can وجود ندارد."
+      },
+      "explanation_fa": "برای عدم اجازه: can't."
+    },
+    {
+      "external_id": "u08-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "___ I sit here?",
+      "options": [
+        "Can",
+        "Do",
+        "Am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do با فعل معمولی می‌آید.",
+        "2": "Am برای فعل be است."
+      },
+      "explanation_fa": "درخواست اجازه با Can I ...?"
+    },
+    {
+      "external_id": "u08-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "He ___ help us.",
+      "options": [
+        "can",
+        "cans",
+        "can to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can با هیچ فاعلی s نمی‌گیرد.",
+        "2": "بعد از can حرف اضافه to نمی‌آید."
+      },
+      "explanation_fa": "can برای he هم بدون تغییر است: He can help us."
+    },
+    {
+      "external_id": "u08-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "A: Can they come?\nB: Yes, they ___.",
+      "options": [
+        "can",
+        "can't",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "پاسخ مثبت است.",
+        "2": "do پاسخ Can ...? نیست."
+      },
+      "explanation_fa": "پاسخ کوتاه: Yes, they can."
+    },
+    {
+      "external_id": "u08-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "We ___ have lunch outside.",
+      "options": [
+        "can",
+        "can to",
+        "are can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از can فعل پایه می‌آید.",
+        "2": "are و can با هم نمی‌آیند."
+      },
+      "explanation_fa": "can + فعل پایه: We can have lunch outside."
+    },
+    {
+      "external_id": "u08-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "A: Can you drive?\nB: No, I ___.",
+      "options": [
+        "can't",
+        "don't",
+        "can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't پاسخ Can ...? نیست.",
+        "2": "No با can نمی‌آید."
+      },
+      "explanation_fa": "پاسخ منفی: No, I can't."
+    },
+    {
+      "external_id": "u08-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "___ he help us?",
+      "options": [
+        "Can",
+        "Does",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای فعل معمولی است.",
+        "2": "Is برای فعل be است."
+      },
+      "explanation_fa": "سؤال توانایی با Can: Can he help us?"
+    },
+    {
+      "external_id": "u08-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "She ___ play the guitar.",
+      "options": [
+        "can",
+        "cans",
+        "can plays"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can با سوم‌شخص s نمی‌گیرد.",
+        "2": "بعد از can فعل پایه می‌آید."
+      },
+      "explanation_fa": "can + فعل پایه: She can play the guitar."
+    },
+    {
+      "external_id": "u08-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I love ___.",
+      "options": [
+        "cooking",
+        "cook",
+        "to cook"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از love فعل پایه نمی‌آید.",
+        "2": "بعد از love to + فعل در این درس نیامده؛ الگو verb-ing است."
+      },
+      "explanation_fa": "بعد از love فعل به شکل ing می‌آید: I love cooking."
+    },
+    {
+      "external_id": "u08-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She likes ___ for a walk.",
+      "options": [
+        "going",
+        "go",
+        "to go"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از likes فعل پایه نمی‌آید.",
+        "2": "الگوی این درس verb-ing است."
+      },
+      "explanation_fa": "بعد از like فعل به شکل ing می‌آید: She likes going."
+    },
+    {
+      "external_id": "u08-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I don't like ___.",
+      "options": [
+        "studying",
+        "study",
+        "to study"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از like فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از like فعل به شکل ing می‌آید: I don’t like studying."
+    },
+    {
+      "external_id": "u08-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "He hates ___ up early.",
+      "options": [
+        "getting",
+        "get",
+        "to get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از hates فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از hate فعل به شکل ing می‌آید: He hates getting up."
+    },
+    {
+      "external_id": "u08-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "What do you like ___ on the weekend?",
+      "options": [
+        "doing",
+        "do",
+        "to do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از like فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "در سؤال با like، فعل به شکل ing می‌آید: like doing."
+    },
+    {
+      "external_id": "u08-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "They love ___ tennis.",
+      "options": [
+        "playing",
+        "play",
+        "to play"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از love فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از love فعل به شکل ing می‌آید: love playing tennis."
+    },
+    {
+      "external_id": "u08-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I like ___ movies.",
+      "options": [
+        "watching",
+        "watch",
+        "to watch"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از like فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از like فعل به شکل ing می‌آید: like watching movies."
+    },
+    {
+      "external_id": "u08-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "She doesn't like ___.",
+      "options": [
+        "cooking",
+        "cook",
+        "to cook"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از like فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از like فعل به شکل ing می‌آید: doesn’t like cooking."
+    },
+    {
+      "external_id": "u08-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Can I park here?",
+          "right": "Yes, you can."
+        },
+        {
+          "left": "Can he help us?",
+          "right": "No, he can't."
+        },
+        {
+          "left": "Can they come tonight?",
+          "right": "Yes, they can."
+        },
+        {
+          "left": "Can you swim?",
+          "right": "No, I can't."
+        },
+        {
+          "left": "You can't",
+          "right": "park there."
+        }
+      ],
+      "explanation_fa": "پاسخ کوتاه با can/can't و همان فاعل می‌آید."
+    },
+    {
+      "external_id": "u08-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر فعل را به شکل ing‌دارش وصل کن.",
+      "pairs": [
+        {
+          "left": "cook",
+          "right": "cooking"
+        },
+        {
+          "left": "go",
+          "right": "going"
+        },
+        {
+          "left": "study",
+          "right": "studying"
+        },
+        {
+          "left": "get",
+          "right": "getting"
+        },
+        {
+          "left": "play",
+          "right": "playing"
+        }
+      ],
+      "explanation_fa": "cook→cooking، go→going، study→studying، get→getting، play→playing."
+    }
+  ]
+}

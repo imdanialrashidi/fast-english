@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-4-u04",
+  "book": "aef-3e-4",
+  "unit": 4,
+  "title": "American English File 4 · Unit 4",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 4,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "4A",
+      "4B"
+    ],
+    "grammar_bank": "4A p.140, 4B p.141",
+    "workbook": "4A, 4B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "future perfect and future continuous",
+      "title_fa": "آیندهٔ کامل و آیندهٔ استمراری",
+      "use_fa": "آیندهٔ کامل برای کاری که قبل از زمانی در آینده تمام می‌شود (will have + قسمت سوم)؛ آیندهٔ استمراری برای کاری که در لحظه‌ای در آینده در جریان است (will be + ing).",
+      "formulas": [
+        {
+          "label_fa": "آیندهٔ کامل",
+          "text": "will have + past participle\nby this afternoon / by 2030"
+        },
+        {
+          "label_fa": "آیندهٔ استمراری",
+          "text": "will be + verb-ing\nAt 10:00 they will be flying."
+        }
+      ],
+      "examples": [
+        {
+          "en": "The rain will have stopped by this afternoon.",
+          "fa": "تا بعدازظهر باران تمام شده است."
+        },
+        {
+          "en": "By the end of the year, I will have saved $2,400.",
+          "fa": "تا پایان سال ۲۴۰۰ دلار پس‌انداز کرده‌ام."
+        },
+        {
+          "en": "At 10:00 they will be flying to Miami.",
+          "fa": "ساعت ۱۰ در حال پرواز به میامی خواهند بود."
+        },
+        {
+          "en": "When I arrive, the movie will have started.",
+          "fa": "وقتی برسم فیلم شروع شده است."
+        }
+      ],
+      "notes_fa": "by یعنی «حداکثر تا» و با آیندهٔ کامل می‌آید. برای کار در جریان در لحظهٔ آینده از will be + ing استفاده کن."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "zero and first conditionals, future time clauses",
+      "title_fa": "شرطی صفر و اول و جمله‌های زمان آینده",
+      "use_fa": "شرطی صفر برای حقیقت همیشگی (if + حال، حال)؛ شرطی اول برای نتیجهٔ احتمالی در آینده (if + حال، will/امری).",
+      "formulas": [
+        {
+          "label_fa": "صفر",
+          "text": "If + present, present\nIf you want to be in shape, you need to exercise."
+        },
+        {
+          "label_fa": "اول",
+          "text": "If + present, will/imperative\nIf the photos are good, I'll send them."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If you want to be in shape, you need to exercise every day.",
+          "fa": "اگر می‌خواهی خوش‌اندام باشی، باید هر روز ورزش کنی."
+        },
+        {
+          "en": "If people are wearing headphones, they often don't notice.",
+          "fa": "اگر مردم هدفون داشته باشند، معمولاً متوجه نمی‌شوند."
+        },
+        {
+          "en": "If the photos are good, I'll send them to you.",
+          "fa": "اگر عکس‌ها خوب باشند برایت می‌فرستم."
+        },
+        {
+          "en": "If I haven't come back by 9:00, start dinner without me.",
+          "fa": "اگر تا ۹ برنگشتم بدون من شام را شروع کن."
+        }
+      ],
+      "notes_fa": "در جملهٔ if هرگز will نمی‌آید؛ نتیجه می‌تواند will، امری یا هر زمان آینده باشد."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u04-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "The rain ___ stopped by this afternoon.",
+      "options": [
+        "will have",
+        "will be",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will be با قسمت سوم نمی‌آید.",
+        "2": "has حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will have» است. will have stopped."
+    },
+    {
+      "external_id": "u04-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Sea levels ___ risen by as much as 3 feet in 50 years.",
+      "options": [
+        "will have",
+        "will be",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will be با risen نمی‌آید.",
+        "2": "have حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will have» است. will have risen."
+    },
+    {
+      "external_id": "u04-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Laura ___ arrived before dinner, so I'll leave food for her.",
+      "options": [
+        "won't have",
+        "won't be",
+        "hasn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't be با arrived نمی‌آید.",
+        "2": "hasn't حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «won't have» است. won't have arrived."
+    },
+    {
+      "external_id": "u04-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "When ___ they have learned enough English?",
+      "options": [
+        "will",
+        "do",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will» است. will they have learned."
+    },
+    {
+      "external_id": "u04-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "By the end of the year, I ___ $2,400.",
+      "options": [
+        "will have saved",
+        "will save",
+        "have saved"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will save آیندهٔ ساده است.",
+        "2": "have saved حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will have saved» است. will have saved."
+    },
+    {
+      "external_id": "u04-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "At 10:00 they ___ to Miami.",
+      "options": [
+        "will be flying",
+        "will have flown",
+        "fly"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will have flown یعنی تمام شده.",
+        "2": "fly حال است."
+      },
+      "explanation_fa": "در جریان: will be flying."
+    },
+    {
+      "external_id": "u04-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "At 7:00 tomorrow, she ___ to work.",
+      "options": [
+        "will be driving",
+        "will have driven",
+        "drives"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will have driven یعنی رسیده.",
+        "2": "drives حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will be driving» است. will be driving."
+    },
+    {
+      "external_id": "u04-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "When I arrive at 7:15, the movie ___.",
+      "options": [
+        "will have started",
+        "will start",
+        "starts"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will start یعنی هنوز شروع نکرده.",
+        "2": "starts حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will have started» است. will have started."
+    },
+    {
+      "external_id": "u04-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "by + time expression یعنی ___.",
+      "options": [
+        "حداکثر تا",
+        "دقیقاً در",
+        "قبل از الآن"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "by یعنی حداکثر تا.",
+        "2": "by یعنی حداکثر تا."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «حداکثر تا» است. by = at the latest."
+    },
+    {
+      "external_id": "u04-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ you have finished by Friday?",
+      "options": [
+        "Will",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Will» است. Will you have finished?"
+    },
+    {
+      "external_id": "u04-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I ___ have finished in an hour.",
+      "options": [
+        "will",
+        "would",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would شرطی است.",
+        "2": "am با have finished نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will» است. will have finished."
+    },
+    {
+      "external_id": "u04-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "This time next week we ___ on the beach.",
+      "options": [
+        "will be lying",
+        "will have lain",
+        "lie"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will have lain یعنی دراز کشیده‌ایم.",
+        "2": "lie حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will be lying» است. will be lying."
+    },
+    {
+      "external_id": "u04-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "If you want to be in shape, you ___ every day.",
+      "options": [
+        "need",
+        "needed",
+        "will need"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "حقیقت همیشگی است.",
+        "2": "will need با شرطی صفر نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «need» است. need (zero)."
+    },
+    {
+      "external_id": "u04-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "If people are wearing headphones, they often ___ other people.",
+      "options": [
+        "don't notice",
+        "won't notice",
+        "didn't notice"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "عادت همیشگی است.",
+        "2": "didn't گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «don't notice» است. don't notice."
+    },
+    {
+      "external_id": "u04-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "If you haven't been to New York, you ___ lived.",
+      "options": [
+        "haven't",
+        "hadn't",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hadn't گذشته است.",
+        "2": "didn't با lived نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «haven't» است. haven't lived."
+    },
+    {
+      "external_id": "u04-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "If the photos are good, I ___ them to you.",
+      "options": [
+        "will send",
+        "send",
+        "sent"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "نتیجه در آینده است.",
+        "2": "sent گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will send» است. will send."
+    },
+    {
+      "external_id": "u04-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "If I haven't come back by 9:00, ___ dinner without me.",
+      "options": [
+        "start",
+        "started",
+        "will start"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "started گذشته است.",
+        "2": "will start با امری نمی‌آید."
+      },
+      "explanation_fa": "امری: start."
+    },
+    {
+      "external_id": "u04-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I'll have finished in an hour if you ___ me.",
+      "options": [
+        "don't disturb",
+        "won't disturb",
+        "disturbed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't در if نمی‌آید.",
+        "2": "disturbed گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «don't disturb» است. don't disturb."
+    },
+    {
+      "external_id": "u04-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "If it ___ tomorrow, we'll stay home.",
+      "options": [
+        "rains",
+        "will rain",
+        "rained"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "rained گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «rains» است. rains."
+    },
+    {
+      "external_id": "u04-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "If you ___ hard, you'll pass your exams.",
+      "options": [
+        "work",
+        "will work",
+        "worked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "worked گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «work» است. work."
+    },
+    {
+      "external_id": "u04-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "If I ___ time, I'll call you.",
+      "options": [
+        "have",
+        "will have",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "had گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have."
+    },
+    {
+      "external_id": "u04-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Unless you ___, we'll be late.",
+      "options": [
+        "hurry",
+        "will hurry",
+        "hurried"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در unless نمی‌آید.",
+        "2": "hurried گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hurry» است. hurry."
+    },
+    {
+      "external_id": "u04-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "If she ___ the answer, she'll tell us.",
+      "options": [
+        "knows",
+        "will know",
+        "knew"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "knew گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «knows» است. knows."
+    },
+    {
+      "external_id": "u04-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "I'll wait here until you ___ back.",
+      "options": [
+        "come",
+        "will come",
+        "came"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در until نمی‌آید.",
+        "2": "came گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «come» است. come."
+    },
+    {
+      "external_id": "u04-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "The rain will have",
+          "right": "stopped by this afternoon."
+        },
+        {
+          "left": "By the end of the year",
+          "right": "I will have saved $2,400."
+        },
+        {
+          "left": "At 10:00",
+          "right": "they will be flying to Miami."
+        },
+        {
+          "left": "When I arrive",
+          "right": "the movie will have started."
+        },
+        {
+          "left": "This time next week",
+          "right": "we will be lying on the beach."
+        }
+      ],
+      "explanation_fa": "آیندهٔ کامل برای «تا آن زمان تمام» و آیندهٔ استمراری برای «در جریان».",
+      "position": 25
+    },
+    {
+      "external_id": "u04-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های شرطی را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If you want to be in shape",
+          "right": "you need to exercise."
+        },
+        {
+          "left": "If the photos are good",
+          "right": "I'll send them to you."
+        },
+        {
+          "left": "If you don't disturb me",
+          "right": "I'll have finished in an hour."
+        },
+        {
+          "left": "If it rains tomorrow",
+          "right": "we'll stay home."
+        },
+        {
+          "left": "Unless you hurry",
+          "right": "we'll be late."
+        }
+      ],
+      "explanation_fa": "شرطی صفر با حال، شرطی اول با will یا امری در نتیجه.",
+      "position": 26
+    }
+  ]
+}

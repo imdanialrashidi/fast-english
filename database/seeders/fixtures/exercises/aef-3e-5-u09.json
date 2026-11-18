@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-5-u09",
+  "book": "aef-3e-5",
+  "unit": 9,
+  "title": "American English File 5 · Unit 9",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 9,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "9A",
+      "9B"
+    ],
+    "grammar_bank": "9A p.155, 9B p.156",
+    "workbook": "9A, 9B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "ellipsis",
+      "title_fa": "حذف (ellipsis)",
+      "use_fa": "در انگلیسی طبیعی بخش‌های تکراری جمله حذف می‌شوند: بعد از فعل کمکی، بعد از to، و بعد از پیوندها (if you want to, but I don't know why).",
+      "formulas": [
+        {
+          "label_fa": "فعل کمکی",
+          "text": "I'd love to come, but I can't.\nShe can play the piano and her sister can too."
+        },
+        {
+          "label_fa": "بعد از پیوند",
+          "text": "You can go if you want to.\nHe didn't come, but I don't know why."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'd love to come, but I can't.",
+          "fa": "دوست دارم بیایم ولی نمی‌توانم."
+        },
+        {
+          "en": "She can play the piano and her sister can too.",
+          "fa": "او پیانو می‌نوازد و خواهرش هم می‌تواند."
+        },
+        {
+          "en": "You can go if you want to.",
+          "fa": "اگر بخواهی می‌توانی بروی."
+        },
+        {
+          "en": "He didn't come, but I don't know why.",
+          "fa": "او نیامد ولی نمی‌دانم چرا."
+        }
+      ],
+      "notes_fa": "بعد از to در پاسخ کوتاه، فعل تکرار نمی‌شود: I'd love to (come). بعد از can't/can هم فعل حذف می‌شود."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "nouns: compound and possessive forms",
+      "title_fa": "اسم‌های مرکب و ملکی",
+      "use_fa": "اسم مرکب: اسم اول اسم دوم را توصیف می‌کند (coffee table). مالکیت با 's برای افراد و برخی چیزها؛ جمع بی‌قاعده children's و women's.",
+      "formulas": [
+        {
+          "label_fa": "مرکب",
+          "text": "can opener / coffee table / tennis racket / shoe polish"
+        },
+        {
+          "label_fa": "ملکی",
+          "text": "my sister's car / the doctor's office / children's toys"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I need a new can opener.",
+          "fa": "به یابازکن نو نیاز دارم."
+        },
+        {
+          "en": "She bought a coffee table.",
+          "fa": "او میز جلومبلی خرید."
+        },
+        {
+          "en": "It's my sister's car.",
+          "fa": "ماشین خواهرم است."
+        },
+        {
+          "en": "The children's toys are everywhere.",
+          "fa": "اسباب‌بازی‌های بچه‌ها همه‌جا پخش است."
+        }
+      ],
+      "notes_fa": "در اسم مرکب، اسم اول مفرد می‌ماند: shoe polish (نه shoes polish). مالکیت جمع بی‌قاعده: children's."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u09-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'd love to come, but I ___.",
+      "options": [
+        "can't",
+        "can't come",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "not تنها نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't» است. can't."
+    },
+    {
+      "external_id": "u09-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She can play the piano and her sister ___ too.",
+      "options": [
+        "can",
+        "can play",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "does با can نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can» است. can too."
+    },
+    {
+      "external_id": "u09-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "He didn't come, but I don't know ___.",
+      "options": [
+        "why",
+        "why he didn't",
+        "why didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جملهٔ کامل تکراری است.",
+        "2": "ترتیب سؤال غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «why» است. why."
+    },
+    {
+      "external_id": "u09-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I asked him to help, but he ___.",
+      "options": [
+        "didn't",
+        "didn't help",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "not تنها نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't» است. didn't."
+    },
+    {
+      "external_id": "u09-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "You can go if you ___.",
+      "options": [
+        "want to",
+        "want",
+        "want it"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "want به مفعول نیاز دارد.",
+        "2": "want it معنی نمی‌دهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «want to» است. want to."
+    },
+    {
+      "external_id": "u09-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I'll come if I ___.",
+      "options": [
+        "can",
+        "can come",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "could زمان را عوض می‌کند."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can» است. can."
+    },
+    {
+      "external_id": "u09-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She said she'd call, but she ___.",
+      "options": [
+        "didn't",
+        "didn't call",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "not تنها نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't» است. didn't."
+    },
+    {
+      "external_id": "u09-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "He works harder than I ___.",
+      "options": [
+        "do",
+        "do work",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "am فعل اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «do» است. do."
+    },
+    {
+      "external_id": "u09-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "They arrived before we ___.",
+      "options": [
+        "did",
+        "did arrive",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "do زمان اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did» است. did."
+    },
+    {
+      "external_id": "u09-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I can't swim, but my brother ___.",
+      "options": [
+        "can",
+        "can swim",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "does با can نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can» است. can."
+    },
+    {
+      "external_id": "u09-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "You should try it — I think you'd ___.",
+      "options": [
+        "like to",
+        "like",
+        "like it"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like به to نیاز دارد.",
+        "2": "like it اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «like to» است. like to."
+    },
+    {
+      "external_id": "u09-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She didn't want to go, but I ___.",
+      "options": [
+        "did",
+        "did want",
+        "wanted"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تکرار فعل لازم نیست.",
+        "2": "wanted زمان اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did» است. did."
+    },
+    {
+      "external_id": "u09-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I need a new ___.",
+      "options": [
+        "can opener",
+        "can's opener",
+        "opener can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "آپاستروف لازم نیست.",
+        "2": "ترتیب غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can opener» است. can opener."
+    },
+    {
+      "external_id": "u09-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "She bought a ___.",
+      "options": [
+        "coffee table",
+        "table coffee",
+        "coffee's table"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب غلط است.",
+        "2": "آپاستروف لازم نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «coffee table» است. coffee table."
+    },
+    {
+      "external_id": "u09-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "It's my ___ car.",
+      "options": [
+        "sister's",
+        "sisters",
+        "sister"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sisters جمع است.",
+        "2": "sister بدون 's مالکیت را نشان نمی‌دهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «sister's» است. sister's."
+    },
+    {
+      "external_id": "u09-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "The ___ toys are everywhere.",
+      "options": [
+        "children's",
+        "childrens'",
+        "childrens"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "childrens وجود ندارد.",
+        "2": "childrens وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «children's» است. children's."
+    },
+    {
+      "external_id": "u09-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "This is the ___ office.",
+      "options": [
+        "doctor's",
+        "doctors",
+        "doctor"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doctors جمع است.",
+        "2": "doctor بدون 's ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «doctor's» است. doctor's."
+    },
+    {
+      "external_id": "u09-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "We stayed at a ___.",
+      "options": [
+        "bed and breakfast",
+        "bed's breakfast",
+        "breakfast bed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "آپاستروف لازم نیست.",
+        "2": "ترتیب غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «bed and breakfast» است. bed and breakfast."
+    },
+    {
+      "external_id": "u09-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I need some ___.",
+      "options": [
+        "shoe polish",
+        "polish shoe",
+        "shoe's polish"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب غلط است.",
+        "2": "آپاستروف لازم نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «shoe polish» است. shoe polish."
+    },
+    {
+      "external_id": "u09-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "That's James and ___ house.",
+      "options": [
+        "Mary's",
+        "Mary",
+        "Marys"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Mary بدون 's ناقص است.",
+        "2": "Marys جمع است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Mary's» است. Mary's."
+    },
+    {
+      "external_id": "u09-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "The ___ legs are broken.",
+      "options": [
+        "table's",
+        "table",
+        "tables"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "table بدون 's ناقص است.",
+        "2": "tables جمع است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «table's» است. table's."
+    },
+    {
+      "external_id": "u09-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "It's a ___ department.",
+      "options": [
+        "women's",
+        "women",
+        "womans"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "women بدون 's ناقص است.",
+        "2": "womans وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «women's» است. women's."
+    },
+    {
+      "external_id": "u09-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I bought a ___.",
+      "options": [
+        "tennis racket",
+        "racket tennis",
+        "tennis's racket"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب غلط است.",
+        "2": "آپاستروف لازم نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «tennis racket» است. tennis racket."
+    },
+    {
+      "external_id": "u09-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "The ___ name is Max.",
+      "options": [
+        "dog's",
+        "dogs",
+        "dog"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "dogs جمع است.",
+        "2": "dog بدون 's ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «dog's» است. dog's."
+    },
+    {
+      "external_id": "u09-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'd love to come,",
+          "right": "but I can't."
+        },
+        {
+          "left": "She can play the piano",
+          "right": "and her sister can too."
+        },
+        {
+          "left": "He didn't come,",
+          "right": "but I don't know why."
+        },
+        {
+          "left": "I asked him to help,",
+          "right": "but he didn't."
+        },
+        {
+          "left": "You can go",
+          "right": "if you want to."
+        }
+      ],
+      "explanation_fa": "حذف بخش تکراری جمله.",
+      "position": 25
+    },
+    {
+      "external_id": "u09-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر اسم مرکب را کامل کن.",
+      "pairs": [
+        {
+          "left": "can",
+          "right": "opener"
+        },
+        {
+          "left": "coffee",
+          "right": "table"
+        },
+        {
+          "left": "bed and",
+          "right": "breakfast"
+        },
+        {
+          "left": "shoe",
+          "right": "polish"
+        },
+        {
+          "left": "tennis",
+          "right": "racket"
+        }
+      ],
+      "explanation_fa": "در اسم مرکب، اسم اول اسم دوم را توصیف می‌کند.",
+      "position": 26
+    }
+  ]
+}

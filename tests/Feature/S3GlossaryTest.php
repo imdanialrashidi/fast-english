@@ -22,18 +22,13 @@ test('a valid glossary normalizes and an invalid one is refused with keys', func
     ]);
 });
 
-test('more than twelve entries are refused', function () {
+test('a glossary may carry as many entries as the article needs', function () {
     $entries = array_map(
         fn ($i) => ['word' => "word{$i}", 'meaning_fa' => "معنی {$i}"],
-        range(1, 13)
+        range(1, 30)
     );
 
-    try {
-        Glossary::validate($entries);
-        $this->fail('Thirteen entries should have been refused.');
-    } catch (ValidationException $e) {
-        expect($e->errors())->toHaveKey('glossary');
-    }
+    expect(Glossary::validate($entries))->toHaveCount(30);
 });
 
 test('entries missing the word or the meaning are refused with specific keys', function () {

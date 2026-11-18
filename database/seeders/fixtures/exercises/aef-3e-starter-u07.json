@@ -1,0 +1,446 @@
+{
+  "external_id": "aef-3e-starter-u07",
+  "book": "aef-3e-starter",
+  "unit": 7,
+  "title": "American English File Starter · Unit 7",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 7,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "7A",
+      "7B"
+    ],
+    "grammar_bank": "7A p.104, 7B p.104",
+    "workbook": "7A pp.31-32, 7B pp.33-34"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "word order in questions",
+      "title_fa": "ترتیب کلمات در سؤال",
+      "use_fa": "در سؤال با فعل be، فعل قبل از فاعل می‌آید؛ در سؤال با فعل معمولی، do/does اول می‌آید و بعد فاعل و فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "سؤال با be",
+          "text": "be + subject + ...?\nAre you tired?\nIs this your coat?\nWhere are you from?"
+        },
+        {
+          "label_fa": "سؤال با فعل معمولی",
+          "text": "do / does + subject + base verb + ...?\nDo you go out on Friday nights?\nWhere do you go?\nWhat does your sister do?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Are you a student?",
+          "fa": "دانشجویی؟"
+        },
+        {
+          "en": "Where are you from?",
+          "fa": "اهل کجایی؟"
+        },
+        {
+          "en": "Do you go out on Friday nights?",
+          "fa": "جمعه شب‌ها بیرون می‌روی؟"
+        },
+        {
+          "en": "What does your sister do?",
+          "fa": "خواهرت چه کار می‌کند؟"
+        }
+      ],
+      "notes_fa": "با فعل be از do استفاده نمی‌کنیم: Are you tired? (نه Do you tired?). با فعل معمولی، فعل بعد از فاعل به شکل پایه می‌آید: Where do you go?"
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "imperatives; object pronouns: me, him, etc.",
+      "title_fa": "امری و ضمیرهای مفعولی: me، him و…",
+      "use_fa": "امری برای دستور و راهنمایی است و برای یک نفر و چند نفر یک شکل دارد. ضمیر مفعولی بعد از فعل یا حرف اضافه می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "امری مثبت",
+          "text": "base verb + ...!\nCome here!\nOpen your books."
+        },
+        {
+          "label_fa": "امری منفی",
+          "text": "Don't + base verb + ...!\nDon't talk.\nDon't be late."
+        },
+        {
+          "label_fa": "ضمیر مفعولی",
+          "text": "I → me\nYou → you\nHe → him\nShe → her\nIt → it\nWe → us\nThey → them\n(after a verb or preposition)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Open your books.",
+          "fa": "کتاب‌هایتان را باز کنید."
+        },
+        {
+          "en": "Don't be late.",
+          "fa": "دیر نکن."
+        },
+        {
+          "en": "Listen to me!",
+          "fa": "به من گوش کن!"
+        },
+        {
+          "en": "I see him every week.",
+          "fa": "من هر هفته او را می‌بینم."
+        }
+      ],
+      "notes_fa": "ضمیر مفعولی بعد از فعل می‌آید: I love you. (نه I love he.) امری منفی با Don't شروع می‌شود: Don't talk."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u07-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ you tired?",
+      "options": [
+        "Are",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do با فعل معمولی می‌آید، نه با be.",
+        "2": "Does برای he/she/it است."
+      },
+      "explanation_fa": "سؤال با be: Are you tired?"
+    },
+    {
+      "external_id": "u07-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Where ___ you go on Fridays?",
+      "options": [
+        "do",
+        "are",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای فعل be است.",
+        "2": "does برای he/she/it است."
+      },
+      "explanation_fa": "با فعل معمولی do: Where do you go?"
+    },
+    {
+      "external_id": "u07-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "What music ___ you like?",
+      "options": [
+        "do",
+        "are",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are فعل be است.",
+        "2": "does برای he/she/it است."
+      },
+      "explanation_fa": "فاعل you با do سؤال می‌گیرد."
+    },
+    {
+      "external_id": "u07-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "What ___ your sister do?",
+      "options": [
+        "does",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای I/you/we/they است.",
+        "2": "is فعل be است."
+      },
+      "explanation_fa": "فاعل سوم‌شخص (your sister) با does."
+    },
+    {
+      "external_id": "u07-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ this your coat?",
+      "options": [
+        "Is",
+        "Does",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای فعل معمولی است.",
+        "2": "Do برای I/you/we/they است."
+      },
+      "explanation_fa": "سؤال با be: Is this your coat?"
+    },
+    {
+      "external_id": "u07-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Where ___ you from?",
+      "options": [
+        "are",
+        "do",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای فعل معمولی است.",
+        "2": "does برای he/she/it است."
+      },
+      "explanation_fa": "Where are you from? (فعل be)"
+    },
+    {
+      "external_id": "u07-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "What time ___ it?",
+      "options": [
+        "is",
+        "does",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای فعل معمولی است.",
+        "2": "do برای I/you/we/they است."
+      },
+      "explanation_fa": "با it و be: What time is it?"
+    },
+    {
+      "external_id": "u07-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "کدام ترتیب درست است؟",
+      "options": [
+        "Where do you live?",
+        "Where you do live?",
+        "Do where you live?"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فاعل بعد از فعل کمکی می‌آید.",
+        "2": "کلمهٔ پرسشی اول جمله می‌آید."
+      },
+      "explanation_fa": "ترتیب سؤال: کلمهٔ پرسشی + do + فاعل + فعل پایه."
+    },
+    {
+      "external_id": "u07-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ here!",
+      "options": [
+        "Come",
+        "Comes",
+        "Coming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "امری فعل پایه است.",
+        "2": "-ing برای امری نیست."
+      },
+      "explanation_fa": "امری: Come here!"
+    },
+    {
+      "external_id": "u07-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ talk in class.",
+      "options": [
+        "Don't",
+        "Doesn't",
+        "Not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Doesn't برای سوم‌شخص است.",
+        "2": "Not به‌تنهایی منفی نمی‌سازد."
+      },
+      "explanation_fa": "امری منفی: Don't talk."
+    },
+    {
+      "external_id": "u07-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "Open ___ books.",
+      "options": [
+        "your",
+        "you",
+        "yours"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "you ضمیر فاعلی است.",
+        "2": "yours بدون اسم می‌آید."
+      },
+      "explanation_fa": "قبل از اسم، صفت ملکی: your books."
+    },
+    {
+      "external_id": "u07-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Listen to ___!",
+      "options": [
+        "me",
+        "I",
+        "my"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "I ضمیر فاعلی است.",
+        "2": "my قبل از اسم می‌آید."
+      },
+      "explanation_fa": "بعد از حرف اضافه، ضمیر مفعولی: Listen to me!"
+    },
+    {
+      "external_id": "u07-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I see ___ every week.",
+      "options": [
+        "him",
+        "he",
+        "his"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "he ضمیر فاعلی است.",
+        "2": "his صفت ملکی است."
+      },
+      "explanation_fa": "بعد از فعل، ضمیر مفعولی: I see him."
+    },
+    {
+      "external_id": "u07-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "She doesn't listen to ___.",
+      "options": [
+        "her",
+        "she",
+        "hers"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "she ضمیر فاعلی است.",
+        "2": "hers بدون اسم می‌آید."
+      },
+      "explanation_fa": "بعد از حرف اضافه to، ضمیر مفعولی her."
+    },
+    {
+      "external_id": "u07-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I want to read ___.",
+      "options": [
+        "them",
+        "they",
+        "their"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "they ضمیر فاعلی است.",
+        "2": "their قبل از اسم می‌آید."
+      },
+      "explanation_fa": "بعد از فعل read، ضمیر مفعولی them."
+    },
+    {
+      "external_id": "u07-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Don't ___ late.",
+      "options": [
+        "be",
+        "are",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are شکل صرف‌شده است.",
+        "2": "is برای سوم‌شخص است."
+      },
+      "explanation_fa": "بعد از Don't فعل پایه می‌آید: Don't be late."
+    },
+    {
+      "external_id": "u07-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Are you a student?",
+          "right": "Yes, I am."
+        },
+        {
+          "left": "Where do you go?",
+          "right": "To the gym."
+        },
+        {
+          "left": "What does your sister do?",
+          "right": "She's a nurse."
+        },
+        {
+          "left": "How old are you?",
+          "right": "I'm 22."
+        },
+        {
+          "left": "What time is it?",
+          "right": "It's 8:00."
+        }
+      ],
+      "explanation_fa": "سؤال با be با am/is/are پاسخ کوتاه می‌گیرد؛ سؤال با do/does با do/does."
+    },
+    {
+      "external_id": "u07-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر ضمیر فاعلی را به ضمیر مفعولی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "I",
+          "right": "me"
+        },
+        {
+          "left": "you",
+          "right": "you"
+        },
+        {
+          "left": "he",
+          "right": "him"
+        },
+        {
+          "left": "she",
+          "right": "her"
+        },
+        {
+          "left": "they",
+          "right": "them"
+        }
+      ],
+      "explanation_fa": "I→me، you→you، he→him، she→her، they→them."
+    }
+  ]
+}

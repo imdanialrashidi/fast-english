@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-3-u04",
+  "book": "aef-3e-3",
+  "unit": 4,
+  "title": "American English File 3 · Unit 4",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 4,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "4A",
+      "4B"
+    ],
+    "grammar_bank": "4A p.140, 4B p.141",
+    "workbook": "4A, 4B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "obligation and prohibition: have to, must, should",
+      "title_fa": "اجبار و ممنوعیت: have to، must و should",
+      "use_fa": "have to و must برای اجبار و کار لازم؛ must not برای ممنوعیت؛ don't have to یعنی لازم نیست؛ should برای توصیه.",
+      "formulas": [
+        {
+          "label_fa": "اجبار",
+          "text": "have to / has to + base verb\nYou have to turn off your phone."
+        },
+        {
+          "label_fa": "ممنوعیت",
+          "text": "must not + base verb\nYou must not send texts while driving."
+        },
+        {
+          "label_fa": "عدم اجبار",
+          "text": "don't / doesn't have to\nYou don't have to pay."
+        }
+      ],
+      "examples": [
+        {
+          "en": "You have to turn off your phone during take-off.",
+          "fa": "باید هنگام برخاستن هواپیما تلفنت را خاموش کنی."
+        },
+        {
+          "en": "You must be on time tomorrow.",
+          "fa": "فردا باید سر وقت باشی."
+        },
+        {
+          "en": "You don't have to pay — the museum is free.",
+          "fa": "لازم نیست پول بدهی — موزه رایگان است."
+        },
+        {
+          "en": "You must not send text messages when driving.",
+          "fa": "هنگام رانندگی نباید پیام بفرستی."
+        }
+      ],
+      "notes_fa": "must not با don't have to فرق دارد: اولی ممنوعیت و دومی «لازم نیست». have to در همهٔ زمان‌ها می‌آید: had to، having to."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "ability and possibility: can, could, be able to",
+      "title_fa": "توانایی و امکان: can، could و be able to",
+      "use_fa": "can برای حال، could برای گذشته/درخواست مؤدبانه، و be able to برای زمان‌هایی که can شکل ندارد (حال کامل، آینده، مصدر، ing).",
+      "formulas": [
+        {
+          "label_fa": "can/could",
+          "text": "I can speak three languages.\nShe could play the violin when she was three."
+        },
+        {
+          "label_fa": "be able to",
+          "text": "have been able to\nwill be able to\nwould like to be able to\nbeing able to"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I can speak three languages fluently.",
+          "fa": "من سه زبان را روان صحبت می‌کنم."
+        },
+        {
+          "en": "She could play the violin when she was three.",
+          "fa": "او سه‌ساله بود که ویولن می‌نواخت."
+        },
+        {
+          "en": "Luke has been able to swim since he was three.",
+          "fa": "لوک از سه‌سالگی شنا می‌تواند."
+        },
+        {
+          "en": "You'll be able to practice your English.",
+          "fa": "خواهی توانست انگلیسی تمرین کنی."
+        }
+      ],
+      "notes_fa": "برای آینده و حال کامل از can استفاده نمی‌کنیم: will be able to / has been able to. could برای درخواست مؤدبانه هم می‌آید: Could you open the door?"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u04-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "You ___ turn off your phone during take-off.",
+      "options": [
+        "have to",
+        "must not",
+        "don't have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "این ممنوعیت نیست.",
+        "2": "don't have to یعنی لازم نیست؛ اینجا قانون است."
+      },
+      "explanation_fa": "اجبار: have to."
+    },
+    {
+      "external_id": "u04-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "You ___ be on time tomorrow; there's a test.",
+      "options": [
+        "must",
+        "must not",
+        "don't have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "این ممنوعیت نیست.",
+        "2": "don't have to یعنی لازم نیست."
+      },
+      "explanation_fa": "اجبار شخصی: must."
+    },
+    {
+      "external_id": "u04-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I ___ wear a uniform at my elementary school.",
+      "options": [
+        "had to",
+        "have to",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله دربارهٔ گذشته است.",
+        "2": "must فقط حال است."
+      },
+      "explanation_fa": "گذشتهٔ have to: had to."
+    },
+    {
+      "external_id": "u04-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Do you ___ work on Saturdays?",
+      "options": [
+        "have to",
+        "must to",
+        "has to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must to وجود ندارد.",
+        "2": "has to برای سوم‌شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have to» است. Do you have to ...?"
+    },
+    {
+      "external_id": "u04-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "You ___ pay — the museum is free.",
+      "options": [
+        "don't have to",
+        "must not",
+        "have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ممنوعیت نیست، فقط لازم نیست.",
+        "2": "have to یعنی باید."
+      },
+      "explanation_fa": "عدم اجبار: don't have to."
+    },
+    {
+      "external_id": "u04-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "You ___ send text messages when you are driving.",
+      "options": [
+        "must not",
+        "don't have to",
+        "have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "این کار ممنوع است.",
+        "2": "have to یعنی اجبار."
+      },
+      "explanation_fa": "ممنوعیت: must not."
+    },
+    {
+      "external_id": "u04-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I ___ buy a new shirt — this one is too old.",
+      "options": [
+        "must",
+        "don't have to",
+        "have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "تصمیم شخصی است.",
+        "2": "don't have to یعنی لازم نیست."
+      },
+      "explanation_fa": "اجبار شخصی: must."
+    },
+    {
+      "external_id": "u04-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "You ___ go to the Uffizi when you're in Florence.",
+      "options": [
+        "should",
+        "must not",
+        "don't have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ممنوعیت نیست.",
+        "2": "لازم نبودن هم معنا نمی‌دهد."
+      },
+      "explanation_fa": "توصیه: should."
+    },
+    {
+      "external_id": "u04-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "A pilot ___ wear a uniform when he's at work.",
+      "options": [
+        "has to",
+        "have to",
+        "must to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با pilot فعل have to نمی‌آید.",
+        "2": "must to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has to» است. has to."
+    },
+    {
+      "external_id": "u04-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I hate ___ get up early.",
+      "options": [
+        "having to",
+        "have to",
+        "had to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از hate فعل ing می‌آید.",
+        "2": "had to گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «having to» است. hate having to."
+    },
+    {
+      "external_id": "u04-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "You ___ use your phone in quiet zones.",
+      "options": [
+        "must not",
+        "don't have to",
+        "have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "در این مناطق تلفن ممنوع است.",
+        "2": "have to یعنی اجبار."
+      },
+      "explanation_fa": "ممنوعیت: must not."
+    },
+    {
+      "external_id": "u04-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Do you think we ___ text Dad?",
+      "options": [
+        "should",
+        "ought",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ought به to نیاز دارد.",
+        "2": "must اینجا توصیه نیست."
+      },
+      "explanation_fa": "توصیه: should."
+    },
+    {
+      "external_id": "u04-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ speak three languages fluently.",
+      "options": [
+        "can",
+        "could",
+        "be able to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "could برای گذشته است.",
+        "2": "be able to بدون شکل صرف‌شده نمی‌آید."
+      },
+      "explanation_fa": "حال: can."
+    },
+    {
+      "external_id": "u04-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Jenny ___ come tonight. She's sick.",
+      "options": [
+        "can't",
+        "couldn't",
+        "doesn't can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "couldn't برای گذشته است.",
+        "2": "doesn't can وجود ندارد."
+      },
+      "explanation_fa": "حال منفی: can't."
+    },
+    {
+      "external_id": "u04-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "Our daughter ___ play the violin when she was three.",
+      "options": [
+        "could",
+        "can",
+        "was able"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can برای حال است.",
+        "2": "was able به to نیاز دارد."
+      },
+      "explanation_fa": "گذشته: could."
+    },
+    {
+      "external_id": "u04-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "They ___ wait because they were in a hurry.",
+      "options": [
+        "couldn't",
+        "can't",
+        "didn't could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't برای حال است.",
+        "2": "didn't could وجود ندارد."
+      },
+      "explanation_fa": "گذشته منفی: couldn't."
+    },
+    {
+      "external_id": "u04-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Luke has ___ to swim since he was three.",
+      "options": [
+        "been able",
+        "be able",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "be able بعد از has نمی‌آید.",
+        "2": "could بعد از has نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «been able» است. has been able to."
+    },
+    {
+      "external_id": "u04-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I'd like to ___ to ski.",
+      "options": [
+        "be able",
+        "can",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can بعد از to نمی‌آید.",
+        "2": "could بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be able» است. to be able to."
+    },
+    {
+      "external_id": "u04-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "You'll ___ to practice your English in the US.",
+      "options": [
+        "be able",
+        "can",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can بعد از will نمی‌آید.",
+        "2": "could بعد از will نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be able» است. will be able to."
+    },
+    {
+      "external_id": "u04-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "My colleagues weren't ___ to come.",
+      "options": [
+        "able",
+        "can",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can بعد از weren't نمی‌آید.",
+        "2": "could بعد از weren't نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «able» است. weren't able to."
+    },
+    {
+      "external_id": "u04-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I love ___ to stay in bed late.",
+      "options": [
+        "being able",
+        "be able",
+        "can"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از love فعل ing می‌آید.",
+        "2": "can بعد از love نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «being able» است. being able to."
+    },
+    {
+      "external_id": "u04-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "___ you open the door for me, please?",
+      "options": [
+        "Could",
+        "Are",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Are برای be است.",
+        "2": "Do برای حال ساده است."
+      },
+      "explanation_fa": "درخواست مؤدبانه: Could you ...?"
+    },
+    {
+      "external_id": "u04-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "She hasn't ___ to fix my bike.",
+      "options": [
+        "been able",
+        "could",
+        "able"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "could بعد از hasn't نمی‌آید.",
+        "2": "able بعد از hasn't نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «been able» است. hasn't been able to."
+    },
+    {
+      "external_id": "u04-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She'll ___ walk again soon.",
+      "options": [
+        "be able to",
+        "can",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can بعد از will نمی‌آید.",
+        "2": "could بعد از will نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be able to» است. will be able to."
+    },
+    {
+      "external_id": "u04-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "You have to",
+          "right": "turn off your phone."
+        },
+        {
+          "left": "You must",
+          "right": "be on time."
+        },
+        {
+          "left": "I had to",
+          "right": "wear a uniform."
+        },
+        {
+          "left": "You don't have to",
+          "right": "pay."
+        },
+        {
+          "left": "You must not",
+          "right": "send texts while driving."
+        }
+      ],
+      "explanation_fa": "اجبار، ممنوعیت و عدم اجبار را از هم تشخیص بده."
+    },
+    {
+      "external_id": "u04-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I can",
+          "right": "speak three languages."
+        },
+        {
+          "left": "She couldn't",
+          "right": "wait."
+        },
+        {
+          "left": "Luke has been able to",
+          "right": "swim since he was three."
+        },
+        {
+          "left": "You'll be able to",
+          "right": "practice your English."
+        },
+        {
+          "left": "Could you",
+          "right": "open the door?"
+        }
+      ],
+      "explanation_fa": "can/could برای حال و گذشته؛ be able to برای زمان‌های دیگر."
+    }
+  ]
+}

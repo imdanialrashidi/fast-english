@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-4-u06",
+  "book": "aef-3e-4",
+  "unit": 6,
+  "title": "American English File 4 · Unit 6",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 6,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "6A",
+      "6B"
+    ],
+    "grammar_bank": "6A p.144, 6B p.145",
+    "workbook": "6A, 6B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "used to, be used to, get used to",
+      "title_fa": "used to، be used to و get used to",
+      "use_fa": "used to برای عادت گذشته؛ be used to + ing/اسم یعنی «عادت دارم»؛ get used to یعنی «دارم عادت می‌کنم».",
+      "formulas": [
+        {
+          "label_fa": "گذشته",
+          "text": "used to / didn't use to + base\nI used to sleep eight hours."
+        },
+        {
+          "label_fa": "عادت فعلی",
+          "text": "be used to + noun/-ing\nI'm used to walking to work."
+        },
+        {
+          "label_fa": "در حال عادت",
+          "text": "get used to + noun/-ing\nShe's getting used to the cold."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I used to sleep for eight hours every night.",
+          "fa": "قبلاً هر شب هشت ساعت می‌خوابیدم."
+        },
+        {
+          "en": "He didn't use to have a beard.",
+          "fa": "او قبلاً ریش نداشت."
+        },
+        {
+          "en": "I'm used to walking to work now.",
+          "fa": "حالا به پیاده رفتن سر کار عادت کرده‌ام."
+        },
+        {
+          "en": "She's getting used to the cold weather.",
+          "fa": "او دارد به هوای سرد عادت می‌کند."
+        }
+      ],
+      "notes_fa": "بعد از be/get used to فعل ing می‌آید: used to walking (نه used to walk). would فقط برای عادت‌های کنشی گذشته است، نه برای be."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "gerunds and infinitives",
+      "title_fa": "اسم مصدر و مصدر",
+      "use_fa": "فعل اول شکل فعل دوم را تعیین می‌کند: بعد از enjoy/look forward to فعل ing، بعد از want/afford مصدر با to، و بعد از would rather/let/make فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "ing",
+          "text": "enjoy listening\nlooking forward to seeing"
+        },
+        {
+          "label_fa": "to",
+          "text": "want to speak\ncan't afford to buy"
+        },
+        {
+          "label_fa": "پایه",
+          "text": "would rather eat\nlet him borrow\nmake me laugh"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I enjoy listening to music.",
+          "fa": "از گوش دادن به موسیقی لذت می‌برم."
+        },
+        {
+          "en": "I'm really looking forward to seeing you.",
+          "fa": "خیلی منتظر دیدنت هستم."
+        },
+        {
+          "en": "I want to speak to you.",
+          "fa": "می‌خواهم با تو حرف بزنم."
+        },
+        {
+          "en": "She let him borrow her car.",
+          "fa": "او اجازه داد ماشینش را قرض بگیرد."
+        }
+      ],
+      "notes_fa": "بعد از حرف اضافه همیشه ing: looking forward to seeing. بعد از let و make فعل پایه بدون to می‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u06-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ sleep eight hours, but now I sleep six.",
+      "options": [
+        "used to",
+        "use to",
+        "am used to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون did غلط است.",
+        "2": "am used to یعنی عادت فعلی."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to sleep."
+    },
+    {
+      "external_id": "u06-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He ___ have a beard.",
+      "options": [
+        "didn't use to",
+        "didn't used to",
+        "doesn't use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't شکل used نمی‌آید.",
+        "2": "doesn't برای حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't use to» است. didn't use to."
+    },
+    {
+      "external_id": "u06-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "We ___ have pan dulce for breakfast.",
+      "options": [
+        "used to",
+        "use to",
+        "are used to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use to بدون did غلط است.",
+        "2": "are used to عادت فعلی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used to» است. used to have."
+    },
+    {
+      "external_id": "u06-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I ___ walking to work now.",
+      "options": [
+        "am used to",
+        "used to",
+        "use to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used to برای گذشته است.",
+        "2": "use to بدون did غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «am used to» است. am used to walking."
+    },
+    {
+      "external_id": "u06-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "She's getting ___ to the cold weather.",
+      "options": [
+        "used",
+        "use",
+        "using"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "use بدون d غلط است.",
+        "2": "using without used is wrong."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «used» است. getting used to."
+    },
+    {
+      "external_id": "u06-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I can't get used ___ waking up early.",
+      "options": [
+        "to",
+        "for",
+        "at"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for اینجا نمی‌آید.",
+        "2": "at اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to» است. used to waking."
+    },
+    {
+      "external_id": "u06-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "He isn't used ___ so much noise.",
+      "options": [
+        "to",
+        "for",
+        "with"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for اینجا نمی‌آید.",
+        "2": "with اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to» است. used to noise."
+    },
+    {
+      "external_id": "u06-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I usually ___ to work.",
+      "options": [
+        "walk",
+        "am walking",
+        "walked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am walking یعنی الان.",
+        "2": "walked گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «walk» است. usually walk."
+    },
+    {
+      "external_id": "u06-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "We ___ buy them every morning.",
+      "options": [
+        "would",
+        "will",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will آینده است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "would (عادت گذشته)."
+    },
+    {
+      "external_id": "u06-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Alan ___ be so thin.",
+      "options": [
+        "didn't use to",
+        "wouldn't",
+        "didn't used to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would با فعل غیرکنشی be نمی‌آید.",
+        "2": "used بعد از didn't غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't use to» است. didn't use to be."
+    },
+    {
+      "external_id": "u06-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I'm used to ___ up early.",
+      "options": [
+        "getting",
+        "get",
+        "to get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل ing.",
+        "2": "to get بعد از used to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «getting» است. getting up."
+    },
+    {
+      "external_id": "u06-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She used ___ long hair.",
+      "options": [
+        "to have",
+        "have",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "used to + فعل پایه.",
+        "2": "having بعد از used to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to have» است. used to have."
+    },
+    {
+      "external_id": "u06-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I enjoy ___ to music.",
+      "options": [
+        "listening",
+        "listen",
+        "to listen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از enjoy فعل ing.",
+        "2": "to listen بعد از enjoy نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «listening» است. listening."
+    },
+    {
+      "external_id": "u06-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "We couldn't help ___.",
+      "options": [
+        "laughing",
+        "laugh",
+        "to laugh"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از can't help فعل ing.",
+        "2": "to laugh بعد از help اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «laughing» است. laughing."
+    },
+    {
+      "external_id": "u06-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I'm really looking forward to ___ you.",
+      "options": [
+        "seeing",
+        "see",
+        "to see"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از to فعل ing.",
+        "2": "to see بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seeing» است. seeing."
+    },
+    {
+      "external_id": "u06-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I want ___ to you.",
+      "options": [
+        "to speak",
+        "speak",
+        "speaking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از want مصدر با to.",
+        "2": "speaking بعد از want نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to speak» است. to speak."
+    },
+    {
+      "external_id": "u06-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "They can't afford ___ a new car.",
+      "options": [
+        "to buy",
+        "buy",
+        "buying"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از afford مصدر با to.",
+        "2": "buying بعد از afford نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to buy» است. to buy."
+    },
+    {
+      "external_id": "u06-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I'd rather ___ in than go out tonight.",
+      "options": [
+        "eat",
+        "to eat",
+        "eating"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would rather فعل پایه.",
+        "2": "eating بعد از rather نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «eat» است. eat."
+    },
+    {
+      "external_id": "u06-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "She let him ___ her car.",
+      "options": [
+        "borrow",
+        "to borrow",
+        "borrowing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از let فعل پایه بدون to.",
+        "2": "borrowing بعد از let نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «borrow» است. borrow."
+    },
+    {
+      "external_id": "u06-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "You should give up ___ coffee after dinner.",
+      "options": [
+        "drinking",
+        "drink",
+        "to drink"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از give up فعل ing.",
+        "2": "to drink بعد از up نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «drinking» است. drinking."
+    },
+    {
+      "external_id": "u06-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I feel like ___ a movie.",
+      "options": [
+        "watching",
+        "watch",
+        "to watch"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از feel like فعل ing.",
+        "2": "to watch بعد از like نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «watching» است. watching."
+    },
+    {
+      "external_id": "u06-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "He made me ___.",
+      "options": [
+        "laugh",
+        "to laugh",
+        "laughing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از make فعل پایه.",
+        "2": "laughing بعد از make نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «laugh» است. laugh."
+    },
+    {
+      "external_id": "u06-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Would you like ___?",
+      "options": [
+        "to dance",
+        "dancing",
+        "dance"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از would like مصدر با to.",
+        "2": "dance بعد از like نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to dance» است. to dance."
+    },
+    {
+      "external_id": "u06-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "We decided ___ early.",
+      "options": [
+        "to leave",
+        "leave",
+        "leaving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از decide مصدر با to.",
+        "2": "leaving بعد از decide نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to leave» است. to leave."
+    },
+    {
+      "external_id": "u06-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I used to",
+          "right": "sleep eight hours."
+        },
+        {
+          "left": "He didn't use to",
+          "right": "have a beard."
+        },
+        {
+          "left": "I'm used to",
+          "right": "walking to work."
+        },
+        {
+          "left": "She's getting used to",
+          "right": "the cold weather."
+        },
+        {
+          "left": "I can't get used to",
+          "right": "waking up early."
+        }
+      ],
+      "explanation_fa": "used to برای گذشته و be/get used to + ing برای عادت فعلی.",
+      "position": 25
+    },
+    {
+      "external_id": "u06-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر فعل را به شکل درست ادامه‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "enjoy",
+          "right": "listening"
+        },
+        {
+          "left": "look forward to",
+          "right": "seeing"
+        },
+        {
+          "left": "want",
+          "right": "to speak"
+        },
+        {
+          "left": "would rather",
+          "right": "eat"
+        },
+        {
+          "left": "let",
+          "right": "borrow"
+        }
+      ],
+      "explanation_fa": "فعل اول شکل فعل دوم را تعیین می‌کند.",
+      "position": 26
+    }
+  ]
+}

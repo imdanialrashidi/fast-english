@@ -74,7 +74,7 @@ class SaveLessonTool extends ContentTool
             'body_en' => ['nullable', 'string', 'max:50000'],
             'duration_seconds' => ['nullable', 'integer', 'min:1', 'max:86400'],
             'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:600'],
-            'glossary' => ['nullable', 'array', 'max:12'],
+            'glossary' => ['nullable', 'array'],
             'audio_upload_id' => ['nullable', 'uuid'],
             'is_public_sample' => ['nullable', 'boolean'],
         ]);

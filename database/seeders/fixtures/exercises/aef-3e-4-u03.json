@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-4-u03",
+  "book": "aef-3e-4",
+  "unit": 3,
+  "title": "American English File 4 · Unit 3",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 3,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "3A",
+      "3B"
+    ],
+    "grammar_bank": "3A p.138, 3B p.139",
+    "workbook": "3A, 3B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "narrative tenses",
+      "title_fa": "زمان‌های روایت",
+      "use_fa": "گذشتهٔ ساده برای رویدادهای اصلی؛ استمراری برای کار طولانی در جریان؛ کامل و کامل استمراری برای گذشتهٔ قبل‌تر.",
+      "formulas": [
+        {
+          "label_fa": "ساده",
+          "text": "arrived and checked in"
+        },
+        {
+          "label_fa": "استمراری",
+          "text": "were having dinner when the plane hit turbulence"
+        },
+        {
+          "label_fa": "کامل",
+          "text": "had left a suitcase\nhad been flying for two hours"
+        }
+      ],
+      "examples": [
+        {
+          "en": "We were having dinner when the plane hit some turbulence.",
+          "fa": "شام می‌خوردیم که هواپیما به تلاطم خورد."
+        },
+        {
+          "en": "We suddenly realized that we'd left one of the suitcases in the taxi.",
+          "fa": "ناگهان فهمیدیم یکی از چمدان‌ها را در تاکسی جا گذاشته‌ایم."
+        },
+        {
+          "en": "We'd been flying for about two hours when the captain spoke.",
+          "fa": "حدود دو ساعت پرواز کرده بودیم که کاپیتان صحبت کرد."
+        },
+        {
+          "en": "They had won three free plane tickets.",
+          "fa": "آن‌ها سه بلیت رایگان برده بودند."
+        }
+      ],
+      "notes_fa": "ترتیب: کار قبل‌تر با had، کار اصلی با گذشتهٔ ساده، و صحنهٔ در جریان با استمراری."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "the position of adverbs and adverbial phrases",
+      "title_fa": "جای قیدها و عبارت‌های قیدی",
+      "use_fa": "قید حالت بعد از فعل می‌آید؛ قید تکرار قبل از فعل اصلی و بعد از be؛ زمان و مکان در پایان جمله (مکان قبل از زمان)؛ قید نظر در ابتدای جمله.",
+      "formulas": [
+        {
+          "label_fa": "حالت",
+          "text": "He walks very slowly.\nShe speaks fluently."
+        },
+        {
+          "label_fa": "تکرار",
+          "text": "I hardly ever have time.\nLiam's always late."
+        },
+        {
+          "label_fa": "زمان/مکان",
+          "text": "I trained all day yesterday.\nthey'll be here in half an hour"
+        }
+      ],
+      "examples": [
+        {
+          "en": "He walks very slowly.",
+          "fa": "او خیلی آرام راه می‌رود."
+        },
+        {
+          "en": "I hardly ever have time for breakfast.",
+          "fa": "من به‌ندرت برای صبحانه وقت دارم."
+        },
+        {
+          "en": "My parents will be here in half an hour.",
+          "fa": "والدینم نیم ساعت دیگر اینجا هستند."
+        },
+        {
+          "en": "Unfortunately, the package never arrived.",
+          "fa": "متأسفانه بسته هرگز نرسید."
+        }
+      ],
+      "notes_fa": "مکان قبل از زمان می‌آید: here in half an hour (نه in half an hour here). قید تکرار بعد از be: She's always late."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u03-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "We ___ at the airport and checked in.",
+      "options": [
+        "arrived",
+        "were arriving",
+        "had arrived"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "استمراری برای رویداد اصلی نیست.",
+        "2": "had arrived ترتیب را برعکس می‌کند."
+      },
+      "explanation_fa": "رویداد اصلی: arrived."
+    },
+    {
+      "external_id": "u03-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "We ___ dinner when the plane hit some turbulence.",
+      "options": [
+        "were having",
+        "had",
+        "were had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had ساده است.",
+        "2": "were had وجود ندارد."
+      },
+      "explanation_fa": "در جریان: were having."
+    },
+    {
+      "external_id": "u03-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "At nine o'clock most people ___ or trying to sleep.",
+      "options": [
+        "were reading",
+        "read",
+        "had read"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "read ساده است.",
+        "2": "had read قبل‌تر را می‌رساند."
+      },
+      "explanation_fa": "در جریان: were reading."
+    },
+    {
+      "external_id": "u03-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "When we arrived, we realized we ___ a suitcase in the taxi.",
+      "options": [
+        "had left",
+        "left",
+        "were leaving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "left ساده است.",
+        "2": "were leaving در جریان است."
+      },
+      "explanation_fa": "گذشتهٔ کامل: had left."
+    },
+    {
+      "external_id": "u03-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "We ___ for about two hours when the captain spoke.",
+      "options": [
+        "had been flying",
+        "were flying",
+        "flew"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were flying فقط در جریان است.",
+        "2": "flew ساده است."
+      },
+      "explanation_fa": "گذشتهٔ کامل استمراری: had been flying."
+    },
+    {
+      "external_id": "u03-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Ava and Ryan ___ a nasty surprise when they checked in.",
+      "options": [
+        "got",
+        "were getting",
+        "had got"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were getting در جریان است.",
+        "2": "had got قبل‌تر است."
+      },
+      "explanation_fa": "رویداد اصلی: got."
+    },
+    {
+      "external_id": "u03-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They ___ three free plane tickets in a competition.",
+      "options": [
+        "had won",
+        "won",
+        "were winning"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won ساده است.",
+        "2": "were winning در جریان است."
+      },
+      "explanation_fa": "قبل از رویداد اصلی: had won."
+    },
+    {
+      "external_id": "u03-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "They ___ forward to the trip for months.",
+      "options": [
+        "had been looking",
+        "were looking",
+        "looked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were looking در جریان است.",
+        "2": "looked ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had been looking» است. had been looking forward."
+    },
+    {
+      "external_id": "u03-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Unfortunately, they ___ to get a passport for their son.",
+      "options": [
+        "had forgotten",
+        "forgot",
+        "were forgetting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "forgot ساده است.",
+        "2": "were forgetting در جریان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had forgotten» است. had forgotten."
+    },
+    {
+      "external_id": "u03-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Luckily, they ___ very early for their flight.",
+      "options": [
+        "had arrived",
+        "arrived",
+        "were arriving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "arrived ساده است.",
+        "2": "were arriving در جریان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had arrived» است. had arrived."
+    },
+    {
+      "external_id": "u03-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "Ava ___ with Alec to the photo booth.",
+      "options": [
+        "went",
+        "was going",
+        "had gone"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was going در جریان است.",
+        "2": "had gone قبل‌تر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «went» است. went."
+    },
+    {
+      "external_id": "u03-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "While Ryan ___ the forms, Ava went to the booth.",
+      "options": [
+        "was filling out",
+        "filled out",
+        "had filled out"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "filled out ساده است.",
+        "2": "had filled out قبل‌تر است."
+      },
+      "explanation_fa": "در جریان: was filling out."
+    },
+    {
+      "external_id": "u03-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "He walks very ___.",
+      "options": [
+        "slowly",
+        "slow",
+        "slowly's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "slow صفت است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "قید حالت: slowly."
+    },
+    {
+      "external_id": "u03-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I speak five languages ___.",
+      "options": [
+        "fluently",
+        "fluent",
+        "fluentness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "fluent صفت است.",
+        "2": "این اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «fluently» است. fluently."
+    },
+    {
+      "external_id": "u03-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "The driver was ___ injured in the accident.",
+      "options": [
+        "seriously",
+        "serious",
+        "seriousness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "serious صفت است.",
+        "2": "این اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seriously» است. seriously."
+    },
+    {
+      "external_id": "u03-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I ___ ever have time for breakfast.",
+      "options": [
+        "hardly",
+        "hard",
+        "harder"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hard یعنی سخت.",
+        "2": "harder مقایسه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hardly» است. hardly ever."
+    },
+    {
+      "external_id": "u03-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Liam's ___ late for work.",
+      "options": [
+        "always",
+        "always is",
+        "is always"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب قید بعد از be است.",
+        "2": "after be: always comes after is."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «always» است. Liam's always late."
+    },
+    {
+      "external_id": "u03-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I would ___ have thought you were 40.",
+      "options": [
+        "never",
+        "not never",
+        "no"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "دو منفی است.",
+        "2": "no اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «never» است. never."
+    },
+    {
+      "external_id": "u03-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I trained ___ yesterday.",
+      "options": [
+        "all day",
+        "all day's",
+        "whole day"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "این شکل وجود ندارد.",
+        "2": "whole day بدون the نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «all day» است. all day yesterday."
+    },
+    {
+      "external_id": "u03-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "My parents will be ___ in half an hour.",
+      "options": [
+        "here",
+        "here in",
+        "in here"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "here in ناقص است.",
+        "2": "in here وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «here» است. here in half an hour."
+    },
+    {
+      "external_id": "u03-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I'm ___ finished.",
+      "options": [
+        "nearly",
+        "near",
+        "near to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "near صفت است.",
+        "2": "near to با finished نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «nearly» است. nearly finished."
+    },
+    {
+      "external_id": "u03-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "We're ___ tired.",
+      "options": [
+        "incredibly",
+        "incredible",
+        "incredibleness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "incredible صفت است.",
+        "2": "این اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «incredibly» است. incredibly tired."
+    },
+    {
+      "external_id": "u03-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "My husband works ___.",
+      "options": [
+        "a lot",
+        "a lot of",
+        "much of"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "a lot of اسم می‌خواهد.",
+        "2": "much of اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «a lot» است. works a lot."
+    },
+    {
+      "external_id": "u03-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "___, the package never arrived.",
+      "options": [
+        "Unfortunately",
+        "Unfortunate",
+        "Unfortunateness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "unfortunate صفت است.",
+        "2": "این اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Unfortunately» است. Unfortunately."
+    },
+    {
+      "external_id": "u03-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "We were having dinner",
+          "right": "when the plane hit turbulence."
+        },
+        {
+          "left": "We realized",
+          "right": "we had left a suitcase."
+        },
+        {
+          "left": "They had won",
+          "right": "three free tickets."
+        },
+        {
+          "left": "They had been looking forward",
+          "right": "to the trip for months."
+        },
+        {
+          "left": "They had forgotten",
+          "right": "to get a passport."
+        }
+      ],
+      "explanation_fa": "گذشتهٔ کامل برای قبل‌تر و استمراری برای در جریان.",
+      "position": 25
+    },
+    {
+      "external_id": "u03-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "He walks",
+          "right": "very slowly."
+        },
+        {
+          "left": "I speak five languages",
+          "right": "fluently."
+        },
+        {
+          "left": "Liam's",
+          "right": "always late."
+        },
+        {
+          "left": "I trained",
+          "right": "all day yesterday."
+        },
+        {
+          "left": "Unfortunately,",
+          "right": "the package never arrived."
+        }
+      ],
+      "explanation_fa": "جای قید حالت، تکرار، زمان و نظر.",
+      "position": 26
+    }
+  ]
+}

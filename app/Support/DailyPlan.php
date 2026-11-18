@@ -7,6 +7,8 @@ use App\Models\LessonProgress;
 use App\Models\Topic;
 use App\Models\User;
 use App\Models\VocabularyWord;
+use App\Support\Exercises\ExerciseProgress;
+use App\Support\Flashcards\FlashcardProgress;
 
 /**
  * R5 daily learning path (PLAN-01): a computed plan, never stored.
@@ -120,6 +122,29 @@ final class DailyPlan
                 'url' => route('words.review'),
                 'done' => true,
             ];
+        }
+
+        // Book cards are paid content: only an eligible learner gets the
+        // due-card task, and one count query keeps the plan constant.
+        $cardsDue = $eligible ? FlashcardProgress::dueCount($user) : 0;
+        if ($cardsDue > 0) {
+            $tasks[] = [
+                'key' => 'cards',
+                'title' => 'مرور کارت‌های کتاب',
+                'detail' => $cardsDue.' کارت',
+                'url' => route('flashcards.review'),
+                'done' => false,
+            ];
+        }
+
+        // Book exercises join the plan only for an eligible learner: a
+        // published set with today's unfinished attempt (fix the mistakes),
+        // a fresh set, or an older unfinished attempt. No set → no task.
+        if ($eligible) {
+            $exerciseTask = ExerciseProgress::next($user);
+            if ($exerciseTask !== null) {
+                $tasks[] = $exerciseTask;
+            }
         }
 
         $next = self::nextLesson($user, $continueLesson?->id, $eligible);

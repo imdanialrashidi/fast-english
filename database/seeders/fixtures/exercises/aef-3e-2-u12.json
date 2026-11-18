@@ -1,0 +1,657 @@
+{
+  "external_id": "aef-3e-2-u12",
+  "book": "aef-3e-2",
+  "unit": 12,
+  "title": "American English File 2 · Unit 12",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 12,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "12A",
+      "12B",
+      "12C"
+    ],
+    "grammar_bank": "12A p.150, 12B p.150, 12C p.150",
+    "workbook": "12A, 12B, 12C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "past perfect",
+      "title_fa": "گذشتهٔ کامل",
+      "use_fa": "برای کاری که قبل از یک کار گذشتهٔ دیگر اتفاق افتاده است. با had/hadn't + قسمت سوم فعل.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + had + past participle\nIt had snowed during the night."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "hadn't + past participle\nThe game hadn't started."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Had you been there before?\nYes, I had. / No, I hadn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "When I woke up, it had snowed during the night.",
+          "fa": "وقتی بیدار شدم، شب برف آمده بود."
+        },
+        {
+          "en": "I realized that I had left my phone in the taxi.",
+          "fa": "فهمیدم تلفنم را در تاکسی جا گذاشته بودم."
+        },
+        {
+          "en": "The game hadn't started.",
+          "fa": "بازی شروع نشده بود."
+        },
+        {
+          "en": "Had you been there before? — No, I hadn't.",
+          "fa": "قبلاً آنجا بودی؟ — نه."
+        }
+      ],
+      "notes_fa": "گذشتهٔ کامل برای «گذشتهٔ قبل از گذشته» است. 'd می‌تواند had یا would باشد؛ از جمله معلوم می‌شود."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "reported (or indirect) speech",
+      "title_fa": "نقل قول غیرمستقیم",
+      "use_fa": "برای گفتن حرف کسی دیگر. با said/told و تغییر زمان فعل به یک مرحله عقب‌تر.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "He said (that) he loved me.\nShe told me (that) she was tired."
+        },
+        {
+          "label_fa": "تغییر زمان",
+          "text": "present → past\nwill → would\ncan → could\npast/present perfect → past perfect"
+        }
+      ],
+      "examples": [
+        {
+          "en": "He said that he loved me.",
+          "fa": "او گفت که دوستم دارد."
+        },
+        {
+          "en": "She told me that she was tired.",
+          "fa": "او به من گفت خسته است."
+        },
+        {
+          "en": "He told me he would call me.",
+          "fa": "او گفت به من زنگ می‌زند."
+        },
+        {
+          "en": "She said she had broken her arm.",
+          "fa": "او گفت بازویش را شکسته است."
+        }
+      ],
+      "notes_fa": "say بدون مفعول و tell با مفعول می‌آید: He said (that) ... / He told me (that) ..."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "questions without auxiliaries",
+      "title_fa": "سؤال‌های بدون فعل کمکی",
+      "use_fa": "وقتی who/what/which خودش فاعل جمله است، از do/does/did استفاده نمی‌کنیم و ترتیب جملهٔ مثبت می‌ماند.",
+      "formulas": [
+        {
+          "label_fa": "فاعل پرسشی",
+          "text": "Who directed the movie?\nWhich city has the most people?\nHow many people came?"
+        },
+        {
+          "label_fa": "مقایسه",
+          "text": "Who did you see? (who = مفعول)\nWho saw you? (who = فاعل)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Who directed the movie?",
+          "fa": "فیلم را چه کسی کارگردانی کرد؟"
+        },
+        {
+          "en": "Which city has the most people?",
+          "fa": "کدام شهر بیشترین جمعیت را دارد؟"
+        },
+        {
+          "en": "How many people came to the party?",
+          "fa": "چند نفر به مهمانی آمدند؟"
+        },
+        {
+          "en": "Who told you that?",
+          "fa": "چه کسی این را به تو گفت؟"
+        }
+      ],
+      "notes_fa": "اگر کلمهٔ پرسشی فاعل باشد، فعل کمکی نمی‌آید: Who came? (نه Who did come?)"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u12-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "It ___ snowed during the night.",
+      "options": [
+        "had",
+        "has",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has برای حال کامل است.",
+        "2": "was برای be است."
+      },
+      "explanation_fa": "گذشتهٔ کامل: had snowed."
+    },
+    {
+      "external_id": "u12-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "I realized that I ___ left my phone.",
+      "options": [
+        "had",
+        "have",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال کامل است.",
+        "2": "was برای be است."
+      },
+      "explanation_fa": "قبل از realize: had left."
+    },
+    {
+      "external_id": "u12-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "The game ___ started.",
+      "options": [
+        "hadn't",
+        "hasn't",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "hasn't حال کامل است.",
+        "2": "didn't با started نمی‌آید."
+      },
+      "explanation_fa": "منفی گذشتهٔ کامل: hadn't started."
+    },
+    {
+      "external_id": "u12-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Had you ___ there before?",
+      "options": [
+        "been",
+        "be",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "be بعد از had نمی‌آید.",
+        "2": "was بعد از had نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «been» است. had been there."
+    },
+    {
+      "external_id": "u12-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "A: Had you been there before?\nB: No, I ___.",
+      "options": [
+        "hadn't",
+        "didn't",
+        "haven't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't برای گذشتهٔ ساده است.",
+        "2": "haven't حال کامل است."
+      },
+      "explanation_fa": "پاسخ کوتاه: hadn't."
+    },
+    {
+      "external_id": "u12-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "When I woke up, it ___.",
+      "options": [
+        "had snowed",
+        "has snowed",
+        "snowed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has snowed حال کامل است.",
+        "2": "snowed ترتیب را نشان نمی‌دهد."
+      },
+      "explanation_fa": "گذشتهٔ کامل: had snowed."
+    },
+    {
+      "external_id": "u12-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She realized she ___ her book.",
+      "options": [
+        "hadn't brought",
+        "didn't bring",
+        "hasn't brought"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't bring گذشتهٔ ساده است.",
+        "2": "hasn't brought حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't brought» است. hadn't brought."
+    },
+    {
+      "external_id": "u12-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "'d می‌تواند had یا ___ باشد.",
+      "options": [
+        "would",
+        "has",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has کوتاه نمی‌شود.",
+        "2": "is کوتاه نمی‌شود."
+      },
+      "explanation_fa": "'d = had یا would."
+    },
+    {
+      "external_id": "u12-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "He ___ that he loved me.",
+      "options": [
+        "said",
+        "told",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "told با مفعول می‌آید.",
+        "2": "says حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «said» است. said (that) ..."
+    },
+    {
+      "external_id": "u12-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She ___ me that she was tired.",
+      "options": [
+        "told",
+        "said",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "said بدون مفعول می‌آید.",
+        "2": "says حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «told» است. told me that ..."
+    },
+    {
+      "external_id": "u12-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "'I'm driving.' She said she ___ driving.",
+      "options": [
+        "was",
+        "is",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is زمان اصلی است.",
+        "2": "were با she نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. present continuous → past continuous."
+    },
+    {
+      "external_id": "u12-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "'I'll call you.' He told me he ___ call me.",
+      "options": [
+        "would",
+        "will",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will زمان اصلی است.",
+        "2": "was با call نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. will → would."
+    },
+    {
+      "external_id": "u12-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "'I've broken my arm.' She said she ___ broken her arm.",
+      "options": [
+        "had",
+        "has",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has زمان اصلی است.",
+        "2": "was با broken نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. present perfect → past perfect."
+    },
+    {
+      "external_id": "u12-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "'I can help you.' He said he ___ help me.",
+      "options": [
+        "could",
+        "can",
+        "would"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can زمان اصلی است.",
+        "2": "would معنی متفاوتی دارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could» است. can → could."
+    },
+    {
+      "external_id": "u12-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "Jack ___ Anna that he didn't want to go.",
+      "options": [
+        "told",
+        "said",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "said بدون مفعول است.",
+        "2": "says حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «told» است. told Anna that ..."
+    },
+    {
+      "external_id": "u12-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "He said he ___ a girl at a party.",
+      "options": [
+        "had met",
+        "met",
+        "has met"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "met زمان اصلی است.",
+        "2": "has met حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had met» است. past → past perfect: had met."
+    },
+    {
+      "external_id": "u12-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Who ___ the movie?",
+      "options": [
+        "directed",
+        "did direct",
+        "does direct"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who فاعل است؛ did نمی‌آید.",
+        "2": "does برای حال است."
+      },
+      "explanation_fa": "فاعل پرسشی: Who directed?"
+    },
+    {
+      "external_id": "u12-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Which city ___ the most people?",
+      "options": [
+        "has",
+        "does has",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does has وجود ندارد.",
+        "2": "which city مفرد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has» است. Which city has ...?"
+    },
+    {
+      "external_id": "u12-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "How many people ___ to the party?",
+      "options": [
+        "came",
+        "did came",
+        "come"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "did came وجود ندارد.",
+        "2": "come حال است."
+      },
+      "explanation_fa": "فاعل پرسشی: How many people came?"
+    },
+    {
+      "external_id": "u12-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Who ___ you that?",
+      "options": [
+        "told",
+        "did tell",
+        "tells"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who فاعل است؛ did نمی‌آید.",
+        "2": "tells حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «told» است. Who told you?"
+    },
+    {
+      "external_id": "u12-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Who ___ in this house?",
+      "options": [
+        "lives",
+        "does live",
+        "live"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who فاعل است؛ does نمی‌آید.",
+        "2": "live برای جمع است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «lives» است. Who lives ...?"
+    },
+    {
+      "external_id": "u12-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Which team ___ the game?",
+      "options": [
+        "won",
+        "did win",
+        "wins"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who/which فاعل است؛ did نمی‌آید.",
+        "2": "wins حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «won» است. Which team won?"
+    },
+    {
+      "external_id": "u12-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Who ___ you this book?",
+      "options": [
+        "gave",
+        "did give",
+        "gives"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who فاعل است؛ did نمی‌آید.",
+        "2": "gives حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «gave» است. Who gave you?"
+    },
+    {
+      "external_id": "u12-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "How many students ___ the test?",
+      "options": [
+        "passed",
+        "did pass",
+        "pass"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "did pass وجود ندارد.",
+        "2": "pass حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «passed» است. How many students passed?"
+    },
+    {
+      "external_id": "u12-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "When I woke up",
+          "right": "it had snowed."
+        },
+        {
+          "left": "I realized",
+          "right": "I had left my phone."
+        },
+        {
+          "left": "The game hadn't",
+          "right": "started."
+        },
+        {
+          "left": "Had you been",
+          "right": "there before?"
+        },
+        {
+          "left": "She realized she",
+          "right": "hadn't brought her book."
+        }
+      ],
+      "explanation_fa": "گذشتهٔ کامل: had + قسمت سوم، برای کاری قبل از گذشته."
+    },
+    {
+      "external_id": "u12-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر جملهٔ مستقیم را به نقل غیرمستقیم وصل کن.",
+      "pairs": [
+        {
+          "left": "'I love you.'",
+          "right": "He said he loved me."
+        },
+        {
+          "left": "'I've just arrived.'",
+          "right": "She said she had just arrived."
+        },
+        {
+          "left": "'We'll come at eight.'",
+          "right": "He told me they would come at eight."
+        },
+        {
+          "left": "'I'm tired.'",
+          "right": "She told me she was tired."
+        },
+        {
+          "left": "'I can help you.'",
+          "right": "He said he could help me."
+        }
+      ],
+      "explanation_fa": "در نقل قول، زمان یک مرحله عقب می‌رود."
+    },
+    {
+      "external_id": "u12-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Who directed the movie?",
+          "right": "Spielberg did."
+        },
+        {
+          "left": "Which city has the most people?",
+          "right": "Tokyo."
+        },
+        {
+          "left": "How many people came?",
+          "right": "About fifty."
+        },
+        {
+          "left": "Who told you that?",
+          "right": "Maria did."
+        },
+        {
+          "left": "Who lives here?",
+          "right": "My aunt does."
+        }
+      ],
+      "explanation_fa": "فاعل پرسشی، فعل کمکی نمی‌خواهد."
+    }
+  ]
+}

@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-4-u07",
+  "book": "aef-3e-4",
+  "unit": 7,
+  "title": "American English File 4 · Unit 7",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 7,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "7A",
+      "7B"
+    ],
+    "grammar_bank": "7A p.146, 7B p.147",
+    "workbook": "7A, 7B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "past modals",
+      "title_fa": "وجهی‌های گذشته",
+      "use_fa": "برای حدس و استنتاج دربارهٔ گذشته: must have (مطمئناً)، may/might/could have (شاید)، can't/couldn't have (غیرممکن).",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "modal + have + past participle"
+        },
+        {
+          "label_fa": "قطعیت",
+          "text": "must have left / can't have gone"
+        },
+        {
+          "label_fa": "احتمال",
+          "text": "might have stolen / may not have given / could have forgotten"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I must have left my phone at Anna's.",
+          "fa": "حتماً گوشی‌ام را خانهٔ آنا جا گذاشته‌ام."
+        },
+        {
+          "en": "Somebody might have stolen your wallet.",
+          "fa": "شاید کسی کیف پولت را دزدیده باشد."
+        },
+        {
+          "en": "She can't have gone to work. Her car's still there.",
+          "fa": "او نمی‌تواند سر کار رفته باشد؛ ماشینش هنوز اینجاست."
+        },
+        {
+          "en": "You couldn't have seen their faces clearly.",
+          "fa": "نمی‌توانستی صورتشان را واضح دیده باشی."
+        }
+      ],
+      "notes_fa": "مخالف must have، can't have است (نه mustn't have). بعد از وجهی همیشه have + قسمت سوم می‌آید."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "verbs of the senses",
+      "title_fa": "فعل‌های حسی",
+      "use_fa": "look/feel/smell/sound/taste + صفت؛ + like + اسم؛ + as if + جمله. seem برای برداشت کلی است.",
+      "formulas": [
+        {
+          "label_fa": "صفت",
+          "text": "You look tired.\nThat cake smells good."
+        },
+        {
+          "label_fa": "like + اسم",
+          "text": "Tim looks like his father.\nIt tastes like tea."
+        },
+        {
+          "label_fa": "as if + جمله",
+          "text": "She looks as if she's been crying."
+        }
+      ],
+      "examples": [
+        {
+          "en": "You look tired.",
+          "fa": "خسته به نظر می‌رسی."
+        },
+        {
+          "en": "That cake smells good!",
+          "fa": "آن کیک بوی خوبی می‌دهد!"
+        },
+        {
+          "en": "Tim looks like his father.",
+          "fa": "تیم شبیه پدرش است."
+        },
+        {
+          "en": "She looks as if she's been crying.",
+          "fa": "طوری به نظر می‌رسد که گریه کرده است."
+        }
+      ],
+      "notes_fa": "بعد از look like اسم می‌آید و بعد از as if جمله: looks like his father / looks as if he's tired."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u07-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ left my phone at Anna's.",
+      "options": [
+        "must have",
+        "must",
+        "might"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must بدون have برای حال است.",
+        "2": "might فقط احتمال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must have» است. must have left."
+    },
+    {
+      "external_id": "u07-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "You ___ seen something. You were there.",
+      "options": [
+        "must have",
+        "must",
+        "might have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must بدون have ناقص است.",
+        "2": "might احتمال ضعیف است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must have» است. must have seen."
+    },
+    {
+      "external_id": "u07-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Somebody ___ stolen your wallet.",
+      "options": [
+        "might have",
+        "might",
+        "steal"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "might بدون have ناقص است.",
+        "2": "steal زمان اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might have» است. might have stolen."
+    },
+    {
+      "external_id": "u07-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I suppose she ___ forgotten about the meeting.",
+      "options": [
+        "could have",
+        "could",
+        "can have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "could بدون have ناقص است.",
+        "2": "can have در این معنا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could have» است. could have forgotten."
+    },
+    {
+      "external_id": "u07-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "He may not ___ given him the right directions.",
+      "options": [
+        "have",
+        "has",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has بعد از may not نمی‌آید.",
+        "2": "had بعد از may not نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. may not have given."
+    },
+    {
+      "external_id": "u07-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "She ___ gone to work. Her car's still there.",
+      "options": [
+        "can't have",
+        "mustn't have",
+        "couldn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mustn't have وجود ندارد.",
+        "2": "couldn't ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't have» است. can't have gone."
+    },
+    {
+      "external_id": "u07-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "You ___ seen their faces clearly. It was too dark.",
+      "options": [
+        "couldn't have",
+        "couldn't",
+        "mustn't have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "couldn't ناقص است.",
+        "2": "mustn't have وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «couldn't have» است. couldn't have seen."
+    },
+    {
+      "external_id": "u07-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I'm certain I left my umbrella at home. — I ___ left it at home.",
+      "options": [
+        "must have",
+        "might have",
+        "can't have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "might احتمال است.",
+        "2": "can't غیرممکن است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «must have» است. must have left."
+    },
+    {
+      "external_id": "u07-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "Maybe she had an argument. — She ___ had an argument.",
+      "options": [
+        "might have",
+        "must have",
+        "can't have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعیت است.",
+        "2": "can't غیرممکن است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might have» است. might have had."
+    },
+    {
+      "external_id": "u07-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I'm sure he didn't take it. — He ___ taken it.",
+      "options": [
+        "can't have",
+        "mustn't have",
+        "might not have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mustn't have وجود ندارد.",
+        "2": "might not فقط احتمال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't have» است. can't have taken."
+    },
+    {
+      "external_id": "u07-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "The opposite of must have is ___.",
+      "options": [
+        "can't have",
+        "mustn't have",
+        "not must have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mustn't have وجود ندارد.",
+        "2": "not must have غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't have» است. can't have."
+    },
+    {
+      "external_id": "u07-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "It's possible that she forgot. — She ___ forgotten.",
+      "options": [
+        "may have",
+        "must have",
+        "can't have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must قطعیت است.",
+        "2": "can't غیرممکن است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «may have» است. may have forgotten."
+    },
+    {
+      "external_id": "u07-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "You ___ tired.",
+      "options": [
+        "look",
+        "look like",
+        "look as if"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like اسم می‌خواهد.",
+        "2": "as if جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «look» است. look tired."
+    },
+    {
+      "external_id": "u07-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "That cake ___ good!",
+      "options": [
+        "smells",
+        "smells like",
+        "smells as if"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like اسم می‌خواهد.",
+        "2": "as if جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «smells» است. smells good."
+    },
+    {
+      "external_id": "u07-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "These jeans don't ___ comfortable.",
+      "options": [
+        "feel",
+        "feel like",
+        "feel as if"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like اسم می‌خواهد.",
+        "2": "as if جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «feel» است. feel comfortable."
+    },
+    {
+      "external_id": "u07-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Tim ___ his father.",
+      "options": [
+        "looks like",
+        "looks",
+        "looks as if"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "looks صفت می‌خواهد.",
+        "2": "as if جمله می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «looks like» است. looks like his father."
+    },
+    {
+      "external_id": "u07-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "It tastes ___ tea.",
+      "options": [
+        "like",
+        "as if",
+        "as"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "as if جمله می‌خواهد.",
+        "2": "as اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «like» است. tastes like tea."
+    },
+    {
+      "external_id": "u07-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "This material feels ___ silk.",
+      "options": [
+        "like",
+        "as if",
+        "like as"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "as if جمله می‌خواهد.",
+        "2": "like as وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «like» است. feels like silk."
+    },
+    {
+      "external_id": "u07-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "She looks ___ she's been crying.",
+      "options": [
+        "as if",
+        "like",
+        "as"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like اسم می‌خواهد.",
+        "2": "as اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «as if» است. looks as if."
+    },
+    {
+      "external_id": "u07-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "It smells ___ something's burning.",
+      "options": [
+        "as if",
+        "like",
+        "as"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like اسم می‌خواهد.",
+        "2": "as اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «as if» است. smells as if."
+    },
+    {
+      "external_id": "u07-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "It sounds ___ it's raining.",
+      "options": [
+        "as if",
+        "like",
+        "as"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "like اسم می‌خواهد.",
+        "2": "as اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «as if» است. sounds as if."
+    },
+    {
+      "external_id": "u07-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "She looked ___.",
+      "options": [
+        "sad",
+        "sadly",
+        "sadness"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sadly قید است.",
+        "2": "sadness اسم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «sad» است. looked sad."
+    },
+    {
+      "external_id": "u07-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Mark ___ like a nice man.",
+      "options": [
+        "seems",
+        "seems as",
+        "seems if"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "seems as وجود ندارد.",
+        "2": "seems if وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «seems» است. seems like."
+    },
+    {
+      "external_id": "u07-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "I feel ___ pasta for lunch.",
+      "options": [
+        "like",
+        "as if",
+        "as"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "as if جمله می‌خواهد.",
+        "2": "as اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «like» است. feel like pasta."
+    },
+    {
+      "external_id": "u07-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I can't find my phone.",
+          "right": "I must have left it at Anna's."
+        },
+        {
+          "left": "Somebody might have",
+          "right": "stolen your wallet."
+        },
+        {
+          "left": "She can't have",
+          "right": "gone to work."
+        },
+        {
+          "left": "You couldn't have",
+          "right": "seen their faces clearly."
+        },
+        {
+          "left": "He may not have",
+          "right": "given him the right directions."
+        }
+      ],
+      "explanation_fa": "must/can't برای قطعیت و might/may/could برای احتمال.",
+      "position": 25
+    },
+    {
+      "external_id": "u07-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "You look",
+          "right": "tired."
+        },
+        {
+          "left": "That cake smells",
+          "right": "good."
+        },
+        {
+          "left": "Tim looks",
+          "right": "like his father."
+        },
+        {
+          "left": "It tastes",
+          "right": "like tea."
+        },
+        {
+          "left": "She looks as if",
+          "right": "she's been crying."
+        }
+      ],
+      "explanation_fa": "حسی + صفت / like + اسم / as if + جمله.",
+      "position": 26
+    }
+  ]
+}

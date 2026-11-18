@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-3-u07",
+  "book": "aef-3e-3",
+  "unit": 7,
+  "title": "American English File 3 · Unit 7",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 7,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "7A",
+      "7B"
+    ],
+    "grammar_bank": "7A p.146, 7B p.147",
+    "workbook": "7A, 7B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "first conditional and future time clauses + when, until, etc.",
+      "title_fa": "شرطی نوع اول و جمله‌های زمان آینده",
+      "use_fa": "برای موقعیت ممکن در آینده و نتیجه‌اش: if + حال ساده، نتیجه با will. با when/until/unless هم حال ساده می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "If + present, will/won't + base verb\nIf you work hard, you'll pass."
+        },
+        {
+          "label_fa": "when/until",
+          "text": "I'll call you when I get home.\nWe'll wait until the rain stops."
+        },
+        {
+          "label_fa": "unless",
+          "text": "unless = if not\nAlison won't get in unless she gets good grades."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If you work hard, you'll pass your exams.",
+          "fa": "اگر سخت کار کنی، امتحان‌ها را قبول می‌شوی."
+        },
+        {
+          "en": "The teacher won't be happy if we're late.",
+          "fa": "اگر دیر برسیم معلم خوشحال نمی‌شود."
+        },
+        {
+          "en": "I won't go unless you go, too.",
+          "fa": "نمی‌روم مگر اینکه تو هم بروی."
+        },
+        {
+          "en": "I'll call you when I get home.",
+          "fa": "وقتی خانه رسیدم زنگ می‌زنم."
+        }
+      ],
+      "notes_fa": "بعد از if/when/until/unless هرگز will نمی‌آید: when I get home (نه when I will get)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "second conditional, choosing between conditionals",
+      "title_fa": "شرطی نوع دوم و انتخاب بین شرطی‌ها",
+      "use_fa": "برای موقعیت خیالی یا غیرواقعی: if + گذشتهٔ ساده، نتیجه با would/could. شرطی اول برای موقعیت ممکن و دوم برای خیالی است.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "If + past simple, would/wouldn't + base verb\nIf I had a job, I'd get my own apartment."
+        },
+        {
+          "label_fa": "were",
+          "text": "If I were you, I'd buy a new computer.\nIf your sister were here ..."
+        },
+        {
+          "label_fa": "unless",
+          "text": "I wouldn't do that job unless they paid me well."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If I had a job, I'd get my own apartment.",
+          "fa": "اگر کار داشتم، آپارتمان خودم را می‌گرفتم."
+        },
+        {
+          "en": "If David spoke good English, he could get a job.",
+          "fa": "اگر دیوید انگلیسی خوب صحبت می‌کرد، می‌توانست کار بگیرد."
+        },
+        {
+          "en": "If it was warmer, we could take a swim.",
+          "fa": "اگر هوا گرم‌تر بود، می‌توانستیم شنا کنیم."
+        },
+        {
+          "en": "If I were you, I'd buy a new computer.",
+          "fa": "اگر جای تو بودم، کامپیوتر نو می‌خریدم."
+        }
+      ],
+      "notes_fa": "در شرطی دوم بعد از if گذشته می‌آید، نه would: If I had (نه If I would have)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u07-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "If you work hard, you ___ your exams.",
+      "options": [
+        "will pass",
+        "pass",
+        "would pass"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "نتیجه با will می‌آید.",
+        "2": "would برای شرطی دوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will pass» است. will pass."
+    },
+    {
+      "external_id": "u07-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "The teacher won't be happy if we ___ late for class.",
+      "options": [
+        "are",
+        "will be",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از if will نمی‌آید.",
+        "2": "were برای خیالی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are» است. if we are late."
+    },
+    {
+      "external_id": "u07-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "Come and see us next week if you ___ time.",
+      "options": [
+        "have",
+        "will have",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از if will نمی‌آید.",
+        "2": "had برای شرطی دوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. if you have time."
+    },
+    {
+      "external_id": "u07-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Alison won't get into college ___ she gets good grades.",
+      "options": [
+        "unless",
+        "if",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "if معنی را برعکس می‌کند.",
+        "2": "when برای زمان است."
+      },
+      "explanation_fa": "unless = اگر ... نباشد."
+    },
+    {
+      "external_id": "u07-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I won't go ___ you go, too.",
+      "options": [
+        "unless",
+        "if",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "if معنی را برعکس می‌کند.",
+        "2": "when برای زمان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «unless» است. unless you go."
+    },
+    {
+      "external_id": "u07-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "If you hand in your homework late, the teacher ___ it.",
+      "options": [
+        "won't grade",
+        "doesn't grade",
+        "didn't grade"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "نتیجه در آینده است.",
+        "2": "didn't گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «won't grade» است. won't grade."
+    },
+    {
+      "external_id": "u07-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Don't write anything unless you ___ sure of the answer.",
+      "options": [
+        "are",
+        "will be",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از unless will نمی‌آید.",
+        "2": "were برای خیالی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are» است. unless you are sure."
+    },
+    {
+      "external_id": "u07-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Gary will be suspended if his behavior ___.",
+      "options": [
+        "doesn't improve",
+        "won't improve",
+        "didn't improve"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از if will نمی‌آید.",
+        "2": "didn't گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «doesn't improve» است. doesn't improve."
+    },
+    {
+      "external_id": "u07-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "They'll be late for school unless they ___.",
+      "options": [
+        "hurry",
+        "will hurry",
+        "hurried"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از unless will نمی‌آید.",
+        "2": "hurried گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hurry» است. unless they hurry."
+    },
+    {
+      "external_id": "u07-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Ask me if you ___ what to do.",
+      "options": [
+        "don't know",
+        "won't know",
+        "didn't know"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از if will نمی‌آید.",
+        "2": "didn't گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «don't know» است. if you don't know."
+    },
+    {
+      "external_id": "u07-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I'll call you when I ___ home.",
+      "options": [
+        "get",
+        "will get",
+        "got"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از when will نمی‌آید.",
+        "2": "got گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. when I get home."
+    },
+    {
+      "external_id": "u07-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "We'll wait here until the rain ___.",
+      "options": [
+        "stops",
+        "will stop",
+        "stopped"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از until will نمی‌آید.",
+        "2": "stopped گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «stops» است. until it stops."
+    },
+    {
+      "external_id": "u07-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "If I ___ a job, I'd get my own apartment.",
+      "options": [
+        "had",
+        "have",
+        "will have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. if + had."
+    },
+    {
+      "external_id": "u07-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "If David ___ good English, he could get a job.",
+      "options": [
+        "spoke",
+        "speaks",
+        "will speak"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "speaks حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «spoke» است. if + spoke."
+    },
+    {
+      "external_id": "u07-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I would get along better with my parents if I ___ with them.",
+      "options": [
+        "didn't live",
+        "don't live",
+        "won't live"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't live حال است.",
+        "2": "won't در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't live» است. if I didn't live."
+    },
+    {
+      "external_id": "u07-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I wouldn't do that job ___ they paid me a really good salary.",
+      "options": [
+        "unless",
+        "if",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "if معنی را برعکس می‌کند.",
+        "2": "when برای زمان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «unless» است. unless."
+    },
+    {
+      "external_id": "u07-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "If your sister ___ here, she'd know what to do.",
+      "options": [
+        "were",
+        "is",
+        "will be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. if she were here."
+    },
+    {
+      "external_id": "u07-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "If it ___ warmer, we could take a swim.",
+      "options": [
+        "was",
+        "is",
+        "will be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. if it was warmer."
+    },
+    {
+      "external_id": "u07-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "If I ___ you, I'd buy a new computer.",
+      "options": [
+        "were",
+        "am",
+        "will be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. If I were you."
+    },
+    {
+      "external_id": "u07-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "If I had more time, I ___ more.",
+      "options": [
+        "would exercise",
+        "exercise",
+        "will exercise"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "exercise بدون would نیست.",
+        "2": "will برای شرطی اول است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would exercise» است. would exercise."
+    },
+    {
+      "external_id": "u07-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "She ___ come if you invited her.",
+      "options": [
+        "would",
+        "will",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای شرطی اول است.",
+        "2": "does برای حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would come."
+    },
+    {
+      "external_id": "u07-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "What ___ you do if you won the lottery?",
+      "options": [
+        "would",
+        "will",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای شرطی اول است.",
+        "2": "do برای حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would you do."
+    },
+    {
+      "external_id": "u07-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "If they didn't have a noisy dog, they ___ better with their neighbors.",
+      "options": [
+        "would get along",
+        "get along",
+        "will get along"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "get along بدون would نیست.",
+        "2": "will برای شرطی اول است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would get along» است. would get along."
+    },
+    {
+      "external_id": "u07-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Would you have a dog if you ___ in an apartment?",
+      "options": [
+        "didn't live",
+        "don't live",
+        "won't live"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't live حال است.",
+        "2": "won't در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't live» است. if you didn't live."
+    },
+    {
+      "external_id": "u07-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If you work hard",
+          "right": "you'll pass."
+        },
+        {
+          "left": "The teacher won't be happy",
+          "right": "if we're late."
+        },
+        {
+          "left": "Alison won't get into college",
+          "right": "unless she gets good grades."
+        },
+        {
+          "left": "I'll call you",
+          "right": "when I get home."
+        },
+        {
+          "left": "We'll wait here",
+          "right": "until the rain stops."
+        }
+      ],
+      "explanation_fa": "if/when/until/unless + حال ساده، نتیجه با will."
+    },
+    {
+      "external_id": "u07-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If I had a job",
+          "right": "I'd get my own apartment."
+        },
+        {
+          "left": "If it were warmer",
+          "right": "we could take a swim."
+        },
+        {
+          "left": "If I were you",
+          "right": "I'd buy a new computer."
+        },
+        {
+          "left": "I wouldn't do that job",
+          "right": "unless they paid me well."
+        },
+        {
+          "left": "She'd know what to do",
+          "right": "if your sister were here."
+        }
+      ],
+      "explanation_fa": "if + گذشته، نتیجه با would/could."
+    }
+  ]
+}

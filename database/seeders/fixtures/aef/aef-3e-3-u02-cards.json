@@ -1,0 +1,252 @@
+{
+  "book": {
+    "slug": "aef-3e-3"
+  },
+  "unit": {
+    "number": 2,
+    "title_en": "Spending money",
+    "title_fa": "خرج کردن پول"
+  },
+  "cards": [
+    {
+      "external_id": "aef3-u02-001",
+      "word": "ever",
+      "phonetic": "/ˈevər/",
+      "translation_fa": "تا حالا",
+      "definition_en": "at any time in your life",
+      "example_en": "Have you ever lost your card?",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-001.mp3"
+    },
+    {
+      "external_id": "aef3-u02-002",
+      "word": "never",
+      "phonetic": "/ˈnevər/",
+      "translation_fa": "هرگز",
+      "definition_en": "at no time in your life",
+      "example_en": "Sally has never met her.",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-002.mp3"
+    },
+    {
+      "external_id": "aef3-u02-003",
+      "word": "yet",
+      "phonetic": "/jet/",
+      "translation_fa": "هنوز (در سؤال/منفی)",
+      "definition_en": "up to now",
+      "example_en": "I haven't finished yet.",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-003.mp3"
+    },
+    {
+      "external_id": "aef3-u02-004",
+      "word": "already",
+      "phonetic": "/ɔːlˈredi/",
+      "translation_fa": "قبلاً (زودتر از انتظار)",
+      "definition_en": "before now",
+      "example_en": "I've already seen it.",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-004.mp3"
+    },
+    {
+      "external_id": "aef3-u02-005",
+      "word": "twice",
+      "phonetic": "/twaɪs/",
+      "translation_fa": "دو بار",
+      "definition_en": "two times",
+      "example_en": "I've been to Miami twice.",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-005.mp3"
+    },
+    {
+      "external_id": "aef3-u02-006",
+      "word": "since",
+      "phonetic": "/sɪns/",
+      "translation_fa": "از",
+      "definition_en": "from a point in time",
+      "example_en": "since she was in college",
+      "part_of_speech": "preposition",
+      "lesson_code": "2B",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-006.mp3"
+    },
+    {
+      "external_id": "aef3-u02-007",
+      "word": "for",
+      "phonetic": "/fɔːr/",
+      "translation_fa": "به مدت",
+      "definition_en": "for a period of time",
+      "example_en": "for ten years",
+      "part_of_speech": "preposition",
+      "lesson_code": "2B",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-007.mp3"
+    },
+    {
+      "external_id": "aef3-u02-008",
+      "word": "lately",
+      "phonetic": "/ˈleɪtli/",
+      "translation_fa": "اخیراً",
+      "definition_en": "in the recent past",
+      "example_en": "I haven't seen him lately.",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-008.mp3"
+    },
+    {
+      "external_id": "aef3-u02-009",
+      "word": "recently",
+      "phonetic": "/ˈriːsəntli/",
+      "translation_fa": "به‌تازگی",
+      "definition_en": "a short time ago",
+      "example_en": "They recently moved.",
+      "part_of_speech": "adverb",
+      "lesson_code": "2A",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-009.mp3"
+    },
+    {
+      "external_id": "aef3-u02-010",
+      "word": "How long",
+      "phonetic": "/haʊ lɔːŋ/",
+      "translation_fa": "چه مدت",
+      "definition_en": "used to ask about duration",
+      "example_en": "How long have you worked here?",
+      "part_of_speech": "phrase",
+      "lesson_code": "2B",
+      "topic": "perfect markers",
+      "audio": "aef3-u02-010.mp3"
+    },
+    {
+      "external_id": "aef3-u02-011",
+      "word": "inherit",
+      "phonetic": "/ɪnˈherɪt/",
+      "translation_fa": "به ارث بردن",
+      "definition_en": "to get money or things from a dead person",
+      "example_en": "I've inherited some money.",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-011.mp3"
+    },
+    {
+      "external_id": "aef3-u02-012",
+      "word": "spend",
+      "phonetic": "/spend/",
+      "translation_fa": "خرج کردن",
+      "definition_en": "to use money",
+      "example_en": "I haven't spent it.",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-012.mp3"
+    },
+    {
+      "external_id": "aef3-u02-013",
+      "word": "lose",
+      "phonetic": "/luːz/",
+      "translation_fa": "گم کردن",
+      "definition_en": "to not find something",
+      "example_en": "Have you ever lost your card?",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-013.mp3"
+    },
+    {
+      "external_id": "aef3-u02-014",
+      "word": "find",
+      "phonetic": "/faɪnd/",
+      "translation_fa": "پیدا کردن",
+      "definition_en": "to see something you looked for",
+      "example_en": "He hasn't found a new job.",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-014.mp3"
+    },
+    {
+      "external_id": "aef3-u02-015",
+      "word": "marry",
+      "phonetic": "/ˈmeri/",
+      "translation_fa": "ازدواج کردن",
+      "definition_en": "to become husband and wife",
+      "example_en": "They got married last year.",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-015.mp3"
+    },
+    {
+      "external_id": "aef3-u02-016",
+      "word": "meet",
+      "phonetic": "/miːt/",
+      "translation_fa": "ملاقات کردن",
+      "definition_en": "to see someone",
+      "example_en": "They've known each other since they met.",
+      "part_of_speech": "verb",
+      "lesson_code": "2B",
+      "topic": "life events",
+      "audio": "aef3-u02-016.mp3"
+    },
+    {
+      "external_id": "aef3-u02-017",
+      "word": "buy",
+      "phonetic": "/baɪ/",
+      "translation_fa": "خریدن",
+      "definition_en": "to get something with money",
+      "example_en": "I bought it last Saturday.",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-017.mp3"
+    },
+    {
+      "external_id": "aef3-u02-018",
+      "word": "pay back",
+      "phonetic": "/peɪ bæk/",
+      "translation_fa": "پس دادن پول",
+      "definition_en": "to return borrowed money",
+      "example_en": "I paid it back.",
+      "part_of_speech": "phrasal verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-018.mp3"
+    },
+    {
+      "external_id": "aef3-u02-019",
+      "word": "borrow",
+      "phonetic": "/ˈbɑːroʊ/",
+      "translation_fa": "قرض گرفتن",
+      "definition_en": "to take money and return it later",
+      "example_en": "I haven't borrowed any money.",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-019.mp3"
+    },
+    {
+      "external_id": "aef3-u02-020",
+      "word": "waste",
+      "phonetic": "/weɪst/",
+      "translation_fa": "هدر دادن",
+      "definition_en": "to use badly",
+      "example_en": "Have you ever wasted money?",
+      "part_of_speech": "verb",
+      "lesson_code": "2A",
+      "topic": "life events",
+      "audio": "aef3-u02-020.mp3"
+    }
+  ]
+}

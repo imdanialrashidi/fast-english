@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-1-u08",
+  "book": "aef-3e-1",
+  "unit": 8,
+  "title": "American English File 1 · Unit 8",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 8,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "8A",
+      "8B",
+      "8C"
+    ],
+    "grammar_bank": "8A p.140, 8B p.140, 8C p.140",
+    "workbook": "8A, 8B, 8C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple past: regular and irregular",
+      "title_fa": "گذشتهٔ ساده: باقاعده و بی‌قاعده",
+      "use_fa": "مرور گذشته: was/were، could، افعال باقاعده با ed و بی‌قاعده با شکل خودشان. سؤال و منفی با did/didn't.",
+      "formulas": [
+        {
+          "label_fa": "be و can",
+          "text": "was / were\ncould / couldn't\nThey could hear a noise."
+        },
+        {
+          "label_fa": "باقاعده",
+          "text": "like → liked\nwant → wanted\ndidn't enjoy"
+        },
+        {
+          "label_fa": "بی‌قاعده",
+          "text": "go → went\nsee → saw\nsleep → slept"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Gordon was Jeremy's business partner.",
+          "fa": "گوردون شریک تجاری جرمی بود."
+        },
+        {
+          "en": "They could hear a strange noise.",
+          "fa": "آن‌ها صدای عجیبی می‌شنیدند."
+        },
+        {
+          "en": "She didn't enjoy the concert.",
+          "fa": "او از کنسرت لذت نبرد."
+        },
+        {
+          "en": "Did you watch the game last night?",
+          "fa": "دیشب بازی را دیدی؟"
+        }
+      ],
+      "notes_fa": "گذشتهٔ can می‌شود could و منفی‌اش couldn't. بعد از did/didn't فعل پایه می‌آید."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "there is / there are, some / any + plural nouns",
+      "title_fa": "there is / there are و some / any",
+      "use_fa": "می‌گوید چیزی وجود دارد یا ندارد. there is برای مفرد و there are برای جمع؛ some در مثبت و any در منفی و سؤال.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "There's a garage.\nThere are some pictures."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "There isn't a pool.\nThere aren't any books."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Is there a bathroom?\nAre there any neighbors?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "There's a garage.",
+          "fa": "یک گاراژ هست."
+        },
+        {
+          "en": "There are two bedrooms upstairs.",
+          "fa": "دو اتاق خواب طبقهٔ بالا هست."
+        },
+        {
+          "en": "Is there a bathroom downstairs?",
+          "fa": "طبقهٔ پایین حمام هست؟"
+        },
+        {
+          "en": "There aren't any books.",
+          "fa": "هیچ کتابی نیست."
+        }
+      ],
+      "notes_fa": "some در جملهٔ مثبت جمع، any در منفی و سؤال: There are some pictures. / Are there any pictures?"
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "there was / there were",
+      "title_fa": "there was / there were",
+      "use_fa": "همان there is/are در گذشته: there was برای مفرد و there were برای جمع؛ منفی wasn't/weren't.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "There was a noise.\nThere were two men."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "There wasn't a ghost.\nThere weren't any lights."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Was there a library?\nWere there any lights?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "There was a strange noise.",
+          "fa": "صدای عجیبی بود."
+        },
+        {
+          "en": "There were two men in the garden.",
+          "fa": "دو مرد در باغ بودند."
+        },
+        {
+          "en": "There wasn't a ghost.",
+          "fa": "روحی در کار نبود."
+        },
+        {
+          "en": "Were there any lights?",
+          "fa": "چراغی بود؟"
+        }
+      ],
+      "notes_fa": "برای گذشته از was/were استفاده می‌کنیم، نه is/are: There was a library (نه There is a library)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u08-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Gordon ___ Jeremy's business partner.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "were برای جمع است.",
+        "2": "is زمان حال است."
+      },
+      "explanation_fa": "مفرد: was."
+    },
+    {
+      "external_id": "u08-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "They ___ at his country house.",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was برای مفرد است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "جمع: were."
+    },
+    {
+      "external_id": "u08-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "She ___ at home last night.",
+      "options": [
+        "wasn't",
+        "weren't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "weren't برای جمع است.",
+        "2": "isn't زمان حال است."
+      },
+      "explanation_fa": "منفی was: wasn't."
+    },
+    {
+      "external_id": "u08-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I ___ sleep.",
+      "options": [
+        "couldn't",
+        "can't",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can't زمان حال است.",
+        "2": "don't برای حال است."
+      },
+      "explanation_fa": "گذشتهٔ can: couldn't."
+    },
+    {
+      "external_id": "u08-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ you sick yesterday?",
+      "options": [
+        "Were",
+        "Was",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Was برای مفرد است.",
+        "2": "Are زمان حال است."
+      },
+      "explanation_fa": "با you: Were you sick?"
+    },
+    {
+      "external_id": "u08-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "She didn't ___ the concert.",
+      "options": [
+        "enjoy",
+        "enjoyed",
+        "enjoys"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't گذشته نمی‌آید.",
+        "2": "enjoys حال ساده است."
+      },
+      "explanation_fa": "بعد از didn't فعل پایه: enjoy."
+    },
+    {
+      "external_id": "u08-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Did you ___ the game last night?",
+      "options": [
+        "watch",
+        "watched",
+        "watches"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did گذشته نمی‌آید.",
+        "2": "watches حال ساده است."
+      },
+      "explanation_fa": "بعد از did فعل پایه: watch."
+    },
+    {
+      "external_id": "u08-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I ___ to Paris last summer.",
+      "options": [
+        "went",
+        "go",
+        "goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "goes حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ go: went."
+    },
+    {
+      "external_id": "u08-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "There ___ a garage.",
+      "options": [
+        "is",
+        "are",
+        "be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "garage مفرد است.",
+        "2": "be شکل پایه است."
+      },
+      "explanation_fa": "مفرد: There is a garage."
+    },
+    {
+      "external_id": "u08-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "There ___ a swimming pool.",
+      "options": [
+        "isn't",
+        "aren't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "pool مفرد است.",
+        "2": "not فعل کمکی ندارد."
+      },
+      "explanation_fa": "منفی مفرد: isn't."
+    },
+    {
+      "external_id": "u08-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "___ there a bathroom downstairs?",
+      "options": [
+        "Is",
+        "Are",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "bathroom مفرد است.",
+        "2": "Does برای فعل معمولی است."
+      },
+      "explanation_fa": "سؤال مفرد: Is there ...?"
+    },
+    {
+      "external_id": "u08-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Are there ___ neighbors with children?",
+      "options": [
+        "any",
+        "some",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "some در سؤال معمولاً نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "در سؤال جمع: any."
+    },
+    {
+      "external_id": "u08-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "There are ___ good restaurants.",
+      "options": [
+        "some",
+        "any",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "any در مثبت نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "مثبت جمع: some."
+    },
+    {
+      "external_id": "u08-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "There ___ two bedrooms upstairs.",
+      "options": [
+        "are",
+        "is",
+        "be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "two bedrooms جمع است.",
+        "2": "be شکل پایه است."
+      },
+      "explanation_fa": "جمع: There are."
+    },
+    {
+      "external_id": "u08-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "There aren't ___ books.",
+      "options": [
+        "any",
+        "some",
+        "a"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "some در منفی نمی‌آید.",
+        "2": "a با جمع نمی‌آید."
+      },
+      "explanation_fa": "منفی جمع: any."
+    },
+    {
+      "external_id": "u08-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ there any pictures?",
+      "options": [
+        "Are",
+        "Is",
+        "Do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "pictures جمع است.",
+        "2": "Do برای فعل معمولی است."
+      },
+      "explanation_fa": "سؤال جمع: Are there ...?"
+    },
+    {
+      "external_id": "u08-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "There ___ a strange noise.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "noise مفرد است.",
+        "2": "is زمان حال است."
+      },
+      "explanation_fa": "گذشتهٔ مفرد: There was."
+    },
+    {
+      "external_id": "u08-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "There ___ two men in the garden.",
+      "options": [
+        "were",
+        "was",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "two men جمع است.",
+        "2": "are زمان حال است."
+      },
+      "explanation_fa": "گذشتهٔ جمع: There were."
+    },
+    {
+      "external_id": "u08-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "There ___ a ghost.",
+      "options": [
+        "wasn't",
+        "weren't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ghost مفرد است.",
+        "2": "isn't زمان حال است."
+      },
+      "explanation_fa": "منفی گذشته: wasn't."
+    },
+    {
+      "external_id": "u08-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "There ___ any lights.",
+      "options": [
+        "weren't",
+        "wasn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "lights جمع است.",
+        "2": "aren't زمان حال است."
+      },
+      "explanation_fa": "منفی جمع: weren't."
+    },
+    {
+      "external_id": "u08-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "___ there a library?",
+      "options": [
+        "Was",
+        "Were",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "library مفرد است.",
+        "2": "Is زمان حال است."
+      },
+      "explanation_fa": "سؤال گذشته: Was there ...?"
+    },
+    {
+      "external_id": "u08-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "___ there any neighbors?",
+      "options": [
+        "Were",
+        "Was",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "neighbors جمع است.",
+        "2": "Are زمان حال است."
+      },
+      "explanation_fa": "سؤال جمع: Were there ...?"
+    },
+    {
+      "external_id": "u08-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "There ___ a sofa in the living room.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sofa مفرد است.",
+        "2": "is زمان حال است."
+      },
+      "explanation_fa": "مفرد: was."
+    },
+    {
+      "external_id": "u08-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "There ___ some old photos.",
+      "options": [
+        "were",
+        "was",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "photos جمع است.",
+        "2": "is زمان حال است."
+      },
+      "explanation_fa": "جمع: were."
+    },
+    {
+      "external_id": "u08-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Gordon was",
+          "right": "Jeremy's business partner."
+        },
+        {
+          "left": "They were",
+          "right": "at his country house."
+        },
+        {
+          "left": "I couldn't",
+          "right": "sleep."
+        },
+        {
+          "left": "She didn't enjoy",
+          "right": "the concert."
+        },
+        {
+          "left": "Did you watch",
+          "right": "the game?"
+        }
+      ],
+      "explanation_fa": "گذشتهٔ be و can شکل خودشان را دارند؛ بعد از didn't/did فعل پایه می‌آید."
+    },
+    {
+      "external_id": "u08-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "There's",
+          "right": "a garage."
+        },
+        {
+          "left": "There are",
+          "right": "two bedrooms."
+        },
+        {
+          "left": "Is there",
+          "right": "a bathroom?"
+        },
+        {
+          "left": "Are there",
+          "right": "any neighbors?"
+        },
+        {
+          "left": "There isn't",
+          "right": "a swimming pool."
+        }
+      ],
+      "explanation_fa": "there is برای مفرد و there are برای جمع؛ some/any با جمع."
+    },
+    {
+      "external_id": "u08-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "There was",
+          "right": "a strange noise."
+        },
+        {
+          "left": "There were",
+          "right": "two men in the garden."
+        },
+        {
+          "left": "There wasn't",
+          "right": "a ghost."
+        },
+        {
+          "left": "Were there",
+          "right": "any lights?"
+        },
+        {
+          "left": "Was there",
+          "right": "a library upstairs?"
+        }
+      ],
+      "explanation_fa": "گذشتهٔ there is/are: was/were."
+    }
+  ]
+}

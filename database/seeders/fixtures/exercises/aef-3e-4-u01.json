@@ -1,0 +1,594 @@
+{
+  "external_id": "aef-3e-4-u01",
+  "book": "aef-3e-4",
+  "unit": 1,
+  "title": "American English File 4 · Unit 1",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 1,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "1A",
+      "1B"
+    ],
+    "grammar_bank": "1A p.134, 1B p.135",
+    "workbook": "1A, 1B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "question formation",
+      "title_fa": "ساخت سؤال",
+      "use_fa": "در سؤال، فعل کمکی و فاعل جابه‌جا می‌شوند؛ در حال ساده/گذشته do/does/did می‌آید. اگر who/what فاعل باشد do نمی‌آید.",
+      "formulas": [
+        {
+          "label_fa": "با فعل کمکی",
+          "text": "How long have you been waiting?\nShould we buy her a present?"
+        },
+        {
+          "label_fa": "با do/does/did",
+          "text": "How many children does your sister have?\nWhy didn't you like it?"
+        },
+        {
+          "label_fa": "فاعل پرسشی",
+          "text": "Who lives in that house? (بدون does)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "How long have you been waiting?",
+          "fa": "چه مدت منتظر بوده‌ای؟"
+        },
+        {
+          "en": "How many children does your sister have?",
+          "fa": "خواهرت چند فرزند دارد؟"
+        },
+        {
+          "en": "Who lives in that house?",
+          "fa": "چه کسی در آن خانه زندگی می‌کند؟"
+        },
+        {
+          "en": "What are you talking about?",
+          "fa": "دربارهٔ چه حرف می‌زنی؟"
+        }
+      ],
+      "notes_fa": "حرف اضافهٔ فعل در پایان سؤال می‌آید: What are you talking about? و اگر who فاعل باشد do حذف می‌شود."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "auxiliary verbs",
+      "title_fa": "فعل‌های کمکی",
+      "use_fa": "برای تکرار نکردن فعل اصلی، برای so/neither، برای تأکید، و در سؤال‌های دنباله‌ای از فعل کمکی استفاده می‌کنیم.",
+      "formulas": [
+        {
+          "label_fa": "جایگزین فعل",
+          "text": "I like cats, but my husband doesn't.\nSally's coming, but Angela isn't."
+        },
+        {
+          "label_fa": "so/neither",
+          "text": "So did I.\nNeither have I."
+        },
+        {
+          "label_fa": "تأکید/دنباله",
+          "text": "I did lock it.\nYou won't forget, will you?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I like cats, but my husband doesn't.",
+          "fa": "من گربه دوست دارم ولی شوهرم نه."
+        },
+        {
+          "en": "A: I loved his latest movie. B: So did I.",
+          "fa": "فیلم جدیدش را دوست داشتم. — من هم."
+        },
+        {
+          "en": "A: I haven't finished. B: Neither have I.",
+          "fa": "تمامش نکرده‌ام. — من هم نه."
+        },
+        {
+          "en": "You won't forget, will you?",
+          "fa": "فراموش نمی‌کنی، نه؟"
+        }
+      ],
+      "notes_fa": "در so/neither همان فعل کمکی جملهٔ قبلی تکرار می‌شود. برای تأکید روی فعل مثبت از do/does/did استفاده می‌کنیم: I did lock it."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "How long ___ you been waiting?",
+      "options": [
+        "have",
+        "are",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای be است.",
+        "2": "do برای حال ساده است."
+      },
+      "explanation_fa": "حال کامل: have you been waiting."
+    },
+    {
+      "external_id": "u01-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "How many children ___ your sister have?",
+      "options": [
+        "does",
+        "do",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do با سوم‌شخص نمی‌آید.",
+        "2": "has با have پایه نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «does» است. does your sister have."
+    },
+    {
+      "external_id": "u01-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ we buy her a present?",
+      "options": [
+        "Should",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال ساده است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Should» است. Should we buy?"
+    },
+    {
+      "external_id": "u01-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Why ___ you like the movie?",
+      "options": [
+        "didn't",
+        "don't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله دربارهٔ گذشته است.",
+        "2": "aren't برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't» است. Why didn't you like it?"
+    },
+    {
+      "external_id": "u01-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ this a beautiful place?",
+      "options": [
+        "Isn't",
+        "Doesn't",
+        "Aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فعل be است.",
+        "2": "this مفرد است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Isn't» است. Isn't this ...?"
+    },
+    {
+      "external_id": "u01-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "What are you ___ about?",
+      "options": [
+        "talking",
+        "talk",
+        "talked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از are فعل پایه نمی‌آید.",
+        "2": "talked گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «talking» است. talking about."
+    },
+    {
+      "external_id": "u01-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Who ___ that bag belong to?",
+      "options": [
+        "does",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "bag مفرد است.",
+        "2": "is با belong نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «does» است. does this bag belong to."
+    },
+    {
+      "external_id": "u01-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Who ___ in that house?",
+      "options": [
+        "lives",
+        "does live",
+        "live"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who فاعل است؛ does نمی‌آید.",
+        "2": "live برای جمع است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «lives» است. Who lives ...?"
+    },
+    {
+      "external_id": "u01-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "How many people ___ you on Twitter?",
+      "options": [
+        "follow",
+        "does follow",
+        "are follow"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "people جمع است.",
+        "2": "are follow وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «follow» است. follow you."
+    },
+    {
+      "external_id": "u01-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ you tell me what time the store opens?",
+      "options": [
+        "Could",
+        "Do",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای سؤال ساده است.",
+        "2": "Are برای be است."
+      },
+      "explanation_fa": "درخواست مؤدبانه: Could you tell me ...?"
+    },
+    {
+      "external_id": "u01-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "Do you know ___ Mark's coming?",
+      "options": [
+        "if",
+        "that",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "that جمله را خبری می‌کند.",
+        "2": "when زمان مشخص می‌خواهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «if» است. Do you know if ...?"
+    },
+    {
+      "external_id": "u01-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ wrote this?",
+      "options": [
+        "Who",
+        "Did who",
+        "Who did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ترتیب did who غلط است.",
+        "2": "who فاعل است؛ did نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Who» است. Who wrote this?"
+    },
+    {
+      "external_id": "u01-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I like cats, but my husband ___.",
+      "options": [
+        "doesn't",
+        "does",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does مثبت است.",
+        "2": "isn't برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «doesn't» است. doesn't (like cats)."
+    },
+    {
+      "external_id": "u01-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Sally's coming tonight, but Angela ___.",
+      "options": [
+        "isn't",
+        "doesn't",
+        "won't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای فعل معمولی است.",
+        "2": "won't آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «isn't» است. isn't (coming)."
+    },
+    {
+      "external_id": "u01-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "A: I loved his latest movie. B: So ___ I.",
+      "options": [
+        "did",
+        "do",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "am برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did» است. So did I."
+    },
+    {
+      "external_id": "u01-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "A: I haven't finished. B: Neither ___ I.",
+      "options": [
+        "have",
+        "do",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله حال کامل است.",
+        "2": "am برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. Neither have I."
+    },
+    {
+      "external_id": "u01-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Andrew's a doctor and so ___ his wife.",
+      "options": [
+        "is",
+        "does",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فعل be است.",
+        "2": "has با doctor نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. so is his wife."
+    },
+    {
+      "external_id": "u01-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I don't like shopping online. — I ___.",
+      "options": [
+        "do",
+        "am",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am برای be است.",
+        "2": "don't تکرار منفی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «do» است. I do (like it)."
+    },
+    {
+      "external_id": "u01-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "A: I went to a psychic. B: You ___?",
+      "options": [
+        "did",
+        "do",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did» است. You did?"
+    },
+    {
+      "external_id": "u01-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "A: I'll make dinner. B: You ___?",
+      "options": [
+        "will",
+        "do",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله آینده است.",
+        "2": "are برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will» است. You will?"
+    },
+    {
+      "external_id": "u01-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "You didn't lock the door! — I ___ lock it.",
+      "options": [
+        "did",
+        "do",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته است.",
+        "2": "am برای be است."
+      },
+      "explanation_fa": "تأکید: I did lock it."
+    },
+    {
+      "external_id": "u01-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Silvia isn't coming. — She ___ coming.",
+      "options": [
+        "is",
+        "does",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فعل be است.",
+        "2": "will آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. She is coming."
+    },
+    {
+      "external_id": "u01-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "You won't forget, ___ you?",
+      "options": [
+        "will",
+        "won't",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله منفی است.",
+        "2": "do فعل کمکی اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will» است. will you?"
+    },
+    {
+      "external_id": "u01-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "She can speak Italian, ___ she?",
+      "options": [
+        "can't",
+        "can",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "doesn't فعل کمکی اشتباه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «can't» است. can't she?"
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های سؤال را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "How long have you",
+          "right": "been waiting?"
+        },
+        {
+          "left": "How many children does",
+          "right": "your sister have?"
+        },
+        {
+          "left": "What are you",
+          "right": "talking about?"
+        },
+        {
+          "left": "Who lives",
+          "right": "in that house?"
+        },
+        {
+          "left": "Could you tell me",
+          "right": "what time it opens?"
+        }
+      ],
+      "explanation_fa": "ترتیب سؤال: فعل کمکی + فاعل + فعل؛ if/who در جای درست.",
+      "position": 25
+    },
+    {
+      "external_id": "u01-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر جمله را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "I loved his movie.",
+          "right": "So did I."
+        },
+        {
+          "left": "I haven't finished.",
+          "right": "Neither have I."
+        },
+        {
+          "left": "Andrew's a doctor.",
+          "right": "So is his wife."
+        },
+        {
+          "left": "I don't like shopping online.",
+          "right": "I do."
+        },
+        {
+          "left": "Silvia isn't coming.",
+          "right": "She is coming."
+        }
+      ],
+      "explanation_fa": "so/neither + همان فعل کمکی.",
+      "position": 26
+    }
+  ]
+}

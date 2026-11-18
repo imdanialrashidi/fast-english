@@ -1,0 +1,65 @@
+{
+  "external_id": "aef-3e-starter-u12",
+  "book": "aef-3e-starter",
+  "unit": 12,
+  "title": "تمرین یونیت 12 — گذشتهٔ افعال بی‌قاعده",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u12-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ to the beach yesterday.",
+      "options": [
+        "go",
+        "went",
+        "gone",
+        "going"
+      ],
+      "answer": 1,
+      "explanation_fa": "گذشتهٔ go می‌شود went."
+    },
+    {
+      "external_id": "u12-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "She ___ (see) a friend last night.",
+      "answer": [
+        "saw"
+      ],
+      "explanation_fa": "see → saw."
+    },
+    {
+      "external_id": "u12-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "We ___ dinner at 8:00.",
+      "options": [
+        "have",
+        "had",
+        "having",
+        "has"
+      ],
+      "answer": 1,
+      "explanation_fa": "گذشتهٔ have می‌شود had."
+    },
+    {
+      "external_id": "u12-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "We went to the beach yesterday",
+      "explanation_fa": "ترتیب درست: We went to the beach yesterday."
+    },
+    {
+      "external_id": "u12-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "He ___ (take) a train to Boston.",
+      "answer": [
+        "took"
+      ],
+      "explanation_fa": "take → took."
+    }
+  ]
+}

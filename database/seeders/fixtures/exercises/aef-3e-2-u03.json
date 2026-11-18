@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-2-u03",
+  "book": "aef-3e-2",
+  "unit": 3,
+  "title": "American English File 2 · Unit 3",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 3,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "3A",
+      "3B",
+      "3C"
+    ],
+    "grammar_bank": "3A p.132, 3B p.132, 3C p.132",
+    "workbook": "3A, 3B, 3C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "be going to (plans and predictions)",
+      "title_fa": "be going to برای برنامه و پیش‌بینی",
+      "use_fa": "برای برنامه‌های آینده و پیش‌بینی چیزی که می‌بینیم یا می‌دانیم اتفاق می‌افتد. با am/is/are + going to + فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I'm going to give a talk.\nHe's going to meet me.\nIt's going to rain."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I'm not going to ...\nShe isn't going to come."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Are you going to give a talk?\nIs he going to come?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm going to give a talk at a conference.",
+          "fa": "قرار است در یک کنفرانس سخنرانی کنم."
+        },
+        {
+          "en": "They're going to lose tomorrow.",
+          "fa": "آن‌ها فردا می‌بازند."
+        },
+        {
+          "en": "It's going to rain tonight.",
+          "fa": "امشب باران می‌آید."
+        },
+        {
+          "en": "Look at that car! It's going to crash.",
+          "fa": "آن ماشین را ببین! می‌خواهد تصادف کند."
+        }
+      ],
+      "notes_fa": "بعد از going to فعل پایه می‌آید: going to give (نه going to giving)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present continuous (future arrangements)",
+      "title_fa": "حال استمراری برای قرارهای آینده",
+      "use_fa": "برای قرار و برنامهٔ قطعی در آینده (زمان و مکان مشخص). با فعل ing و عبارت‌های tonight، tomorrow، this weekend.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I'm seeing an old friend tonight.\nShe's arriving at lunchtime."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "She isn't leaving until Friday."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "What are you doing this evening?\nIs he meeting us?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm seeing an old friend tonight.",
+          "fa": "امشب دوست قدیمی‌ام را می‌بینم."
+        },
+        {
+          "en": "She's arriving at lunchtime.",
+          "fa": "او موقع ناهار می‌رسد."
+        },
+        {
+          "en": "They aren't coming to the party tomorrow.",
+          "fa": "آن‌ها فردا به مهمانی نمی‌آیند."
+        },
+        {
+          "en": "I'm leaving on Monday.",
+          "fa": "دوشنبه می‌روم."
+        }
+      ],
+      "notes_fa": "برای قرار آینده از حال استمراری استفاده می‌کنیم، نه حال ساده. با افعال travel مثل go/come/leave/arrive رایج است."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "defining relative clauses with who, that, where",
+      "title_fa": "جمله‌های وصفی با who، that و where",
+      "use_fa": "برای توضیح اینکه یک شخص، چیز یا مکان چیست یا چه کار می‌کند. who برای شخص، that برای چیز و where برای مکان.",
+      "formulas": [
+        {
+          "label_fa": "شخص",
+          "text": "A chef is a person who cooks food."
+        },
+        {
+          "label_fa": "چیز",
+          "text": "A clock is something that tells the time."
+        },
+        {
+          "label_fa": "مکان",
+          "text": "A post office is a place where you can buy stamps."
+        }
+      ],
+      "examples": [
+        {
+          "en": "That's the woman who won the lottery.",
+          "fa": "آن زنی است که در لاتاری برنده شد."
+        },
+        {
+          "en": "Is that the book that won an important prize?",
+          "fa": "آن کتابی است که جایزهٔ مهمی گرفت؟"
+        },
+        {
+          "en": "That's the restaurant where I had dinner.",
+          "fa": "آن رستورانی است که شام خوردم."
+        },
+        {
+          "en": "A post office is a place where you can buy stamps.",
+          "fa": "پست‌خانه جایی است که می‌توانی تمبر بخری."
+        }
+      ],
+      "notes_fa": "بعد از where جمله باید فاعل داشته باشد: where you can buy stamps. می‌توان به‌جای who برای شخص هم that آورد."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u03-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'm going to ___ a talk.",
+      "options": [
+        "give",
+        "giving",
+        "gave"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "gave گذشته است."
+      },
+      "explanation_fa": "بعد از going to فعل پایه: give."
+    },
+    {
+      "external_id": "u03-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He's going to ___ me at the airport.",
+      "options": [
+        "meet",
+        "met",
+        "meeting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "met گذشته است.",
+        "2": "meeting بعد از to نمی‌آید."
+      },
+      "explanation_fa": "بعد از going to: meet."
+    },
+    {
+      "external_id": "u03-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you going to give a talk?",
+      "options": [
+        "Are",
+        "Do",
+        "Will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do با going to نمی‌آید.",
+        "2": "Will با going to ترکیب نمی‌شود."
+      },
+      "explanation_fa": "سؤال: Are you going to ...?"
+    },
+    {
+      "external_id": "u03-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I'm sure they ___ going to lose.",
+      "options": [
+        "are",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای مفرد است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "فاعل they با are می‌آید: They’re going to lose."
+    },
+    {
+      "external_id": "u03-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "It's going to ___ tonight.",
+      "options": [
+        "rain",
+        "raining",
+        "rained"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "rained گذشته است."
+      },
+      "explanation_fa": "بعد از going to: rain."
+    },
+    {
+      "external_id": "u03-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "She isn't going to ___.",
+      "options": [
+        "come",
+        "came",
+        "coming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to گذشته نمی‌آید.",
+        "2": "coming بعد از to نمی‌آید."
+      },
+      "explanation_fa": "بعد از going to: come."
+    },
+    {
+      "external_id": "u03-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Look at that car! It's going to ___.",
+      "options": [
+        "crash",
+        "crashing",
+        "crashed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "crashed گذشته است."
+      },
+      "explanation_fa": "پیش‌بینی: It's going to crash."
+    },
+    {
+      "external_id": "u03-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "We're going to ___ a conference.",
+      "options": [
+        "attend",
+        "attending",
+        "attended"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از going to فعل ing نمی‌آید.",
+        "2": "attended گذشته است."
+      },
+      "explanation_fa": "بعد از going to: attend."
+    },
+    {
+      "external_id": "u03-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I'm ___ an old friend tonight.",
+      "options": [
+        "seeing",
+        "see",
+        "saw"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از am فعل پایه نمی‌آید.",
+        "2": "saw گذشته است."
+      },
+      "explanation_fa": "حال استمراری برای قرار: seeing."
+    },
+    {
+      "external_id": "u03-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She's ___ at lunchtime.",
+      "options": [
+        "arriving",
+        "arrive",
+        "arrived"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is فعل پایه نمی‌آید.",
+        "2": "arrived گذشته است."
+      },
+      "explanation_fa": "قرار آینده: She’s arriving at lunchtime."
+    },
+    {
+      "external_id": "u03-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "She isn't ___ until Friday.",
+      "options": [
+        "leaving",
+        "leave",
+        "left"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از isn't فعل پایه نمی‌آید.",
+        "2": "left گذشته است."
+      },
+      "explanation_fa": "قرار آینده منفی: She isn’t leaving."
+    },
+    {
+      "external_id": "u03-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "What ___ you doing this evening?",
+      "options": [
+        "are",
+        "do",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال ساده است.",
+        "2": "did برای گذشته است."
+      },
+      "explanation_fa": "قرار آینده: What are you doing?"
+    },
+    {
+      "external_id": "u03-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "___ he meeting us at the restaurant?",
+      "options": [
+        "Is",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای حال ساده است.",
+        "2": "Are برای جمع است."
+      },
+      "explanation_fa": "سؤال: Is he meeting us?"
+    },
+    {
+      "external_id": "u03-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "They ___ coming to the party tomorrow.",
+      "options": [
+        "aren't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال ساده است.",
+        "2": "isn't برای مفرد است."
+      },
+      "explanation_fa": "منفی: aren't coming."
+    },
+    {
+      "external_id": "u03-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I'm ___ on Monday.",
+      "options": [
+        "leaving",
+        "leave",
+        "left"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از am فعل پایه نمی‌آید.",
+        "2": "left گذشته است."
+      },
+      "explanation_fa": "قرار سفر با حال استمراری: I’m leaving on Monday."
+    },
+    {
+      "external_id": "u03-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "We're ___ to Paris next week.",
+      "options": [
+        "flying",
+        "fly",
+        "flew"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از are فعل پایه نمی‌آید.",
+        "2": "flew گذشته است."
+      },
+      "explanation_fa": "قرار آینده: are flying."
+    },
+    {
+      "external_id": "u03-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "A chef is a person ___ cooks food.",
+      "options": [
+        "who",
+        "where",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "where برای مکان است.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "برای شخص who."
+    },
+    {
+      "external_id": "u03-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "A clock is something ___ tells the time.",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "برای چیز that."
+    },
+    {
+      "external_id": "u03-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "A post office is a place ___ you can buy stamps.",
+      "options": [
+        "where",
+        "that",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "that برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "برای مکان where."
+    },
+    {
+      "external_id": "u03-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "That's the restaurant ___ I had dinner.",
+      "options": [
+        "where",
+        "who",
+        "that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "that برای چیز است."
+      },
+      "explanation_fa": "مکان: where."
+    },
+    {
+      "external_id": "u03-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Is that the book ___ won the prize?",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "چیز: that."
+    },
+    {
+      "external_id": "u03-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "A doctor is a person ___ helps sick people.",
+      "options": [
+        "who",
+        "where",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "where برای مکان است.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "شخص: who."
+    },
+    {
+      "external_id": "u03-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "This is the place ___ we met.",
+      "options": [
+        "where",
+        "who",
+        "that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "that برای چیز است."
+      },
+      "explanation_fa": "مکان: where."
+    },
+    {
+      "external_id": "u03-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "It's a thing ___ connects two computers.",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "چیز: that."
+    },
+    {
+      "external_id": "u03-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm going to",
+          "right": "give a talk."
+        },
+        {
+          "left": "He's going to",
+          "right": "meet me at the airport."
+        },
+        {
+          "left": "It's going to",
+          "right": "rain tonight."
+        },
+        {
+          "left": "They're going to",
+          "right": "lose tomorrow."
+        },
+        {
+          "left": "She isn't going to",
+          "right": "come."
+        }
+      ],
+      "explanation_fa": "be going to + فعل پایه برای برنامه و پیش‌بینی."
+    },
+    {
+      "external_id": "u03-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm seeing",
+          "right": "an old friend tonight."
+        },
+        {
+          "left": "She's arriving",
+          "right": "at lunchtime."
+        },
+        {
+          "left": "They aren't coming",
+          "right": "to the party."
+        },
+        {
+          "left": "What are you doing",
+          "right": "this evening?"
+        },
+        {
+          "left": "Is he meeting us",
+          "right": "at the restaurant?"
+        }
+      ],
+      "explanation_fa": "حال استمراری برای قرار آینده با زمان مشخص."
+    },
+    {
+      "external_id": "u03-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "A chef is a person",
+          "right": "who cooks food."
+        },
+        {
+          "left": "A clock is something",
+          "right": "that tells the time."
+        },
+        {
+          "left": "A post office is a place",
+          "right": "where you buy stamps."
+        },
+        {
+          "left": "That's the woman",
+          "right": "who won the lottery."
+        },
+        {
+          "left": "That's the restaurant",
+          "right": "where I had dinner."
+        }
+      ],
+      "explanation_fa": "who برای شخص، that برای چیز، where برای مکان."
+    }
+  ]
+}

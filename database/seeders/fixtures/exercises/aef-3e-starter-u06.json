@@ -1,0 +1,450 @@
+{
+  "external_id": "aef-3e-starter-u06",
+  "book": "aef-3e-starter",
+  "unit": 6,
+  "title": "American English File Starter · Unit 6",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 6,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "6A",
+      "6B"
+    ],
+    "grammar_bank": "6A p.102, 6B p.102",
+    "workbook": "6A pp.27-28, 6B pp.29-30"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple present: he, she, it",
+      "title_fa": "حال ساده: he، she، it",
+      "use_fa": "برای عادت‌ها و کارهای روزمرهٔ یک نفر یا یک چیز. با he/she/it فعل s می‌گیرد و منفی/سؤالی با does ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "He / She / It + verb + s\nHe works in an office.\nShe studies history."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "He / She / It + doesn't + base verb\nHe doesn't work on Sundays."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Does + he / she / it + base verb?\nDoes she work here?\nYes, she does. / No, she doesn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "He works in an office.",
+          "fa": "او در یک دفتر کار می‌کند."
+        },
+        {
+          "en": "She doesn't work on Sundays.",
+          "fa": "او یکشنبه‌ها کار نمی‌کند."
+        },
+        {
+          "en": "Does he work here? — Yes, he does.",
+          "fa": "او اینجا کار می‌کند؟ — بله."
+        },
+        {
+          "en": "It finishes at 8:00.",
+          "fa": "ساعت ۸ تمام می‌شود."
+        }
+      ],
+      "notes_fa": "spelling سوم‌شخص مثل جمع اسم است: work→works، watch→watches، study→studies. سه فعل بی‌قاعده: have→has، go→goes، do→does. بعد از doesn't فعل پایه می‌آید."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "adverbs of frequency",
+      "title_fa": "قیدهای تکرار",
+      "use_fa": "می‌گویند کاری چند وقت یک‌بار انجام می‌شود: always (همیشه)، usually (معمولاً)، sometimes (گاهی)، never (هرگز).",
+      "formulas": [
+        {
+          "label_fa": "جای قید",
+          "text": "subject + adverb + main verb\nI always have breakfast.\nShe usually goes shopping."
+        },
+        {
+          "label_fa": "با never",
+          "text": "never + فعل مثبت\nHe never eats meat.\n(نه doesn't eat)"
+        },
+        {
+          "label_fa": "در سؤال",
+          "text": "Does she usually go shopping?\nWhat time do you usually get up?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I always have breakfast.",
+          "fa": "من همیشه صبحانه می‌خورم."
+        },
+        {
+          "en": "They usually finish work at 5:00.",
+          "fa": "آن‌ها معمولاً ساعت ۵ کار را تمام می‌کنند."
+        },
+        {
+          "en": "She sometimes watches TV in the evening.",
+          "fa": "او گاهی عصر تلویزیون تماشا می‌کند."
+        },
+        {
+          "en": "He never eats meat.",
+          "fa": "او هرگز گوشت نمی‌خورد."
+        }
+      ],
+      "notes_fa": "قید تکرار قبل از فعل اصلی می‌آید: I always have breakfast. (نه Always I have breakfast.) با never فعل مثبت است: He never eats meat."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u06-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "She ___ in an office.",
+      "options": [
+        "works",
+        "work",
+        "working"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با she فعل s می‌گیرد.",
+        "2": "-ing برای حال استمراری است."
+      },
+      "explanation_fa": "she + فعل + s: She works in an office."
+    },
+    {
+      "external_id": "u06-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "He ___ work on Sundays.",
+      "options": [
+        "doesn't",
+        "don't",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای I/you/we/they است.",
+        "2": "isn't برای فعل be است."
+      },
+      "explanation_fa": "منفیِ he با doesn't ساخته می‌شود."
+    },
+    {
+      "external_id": "u06-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ she work here?",
+      "options": [
+        "Does",
+        "Do",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای I/you/we/they است.",
+        "2": "Is برای فعل be است."
+      },
+      "explanation_fa": "سؤال دربارهٔ she با Does شروع می‌شود."
+    },
+    {
+      "external_id": "u06-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "My brother ___ history.",
+      "options": [
+        "studies",
+        "study",
+        "studys"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با he/she/it فعل s می‌گیرد.",
+        "2": "y بعد از صامت به ies تبدیل می‌شود."
+      },
+      "explanation_fa": "study → studies (y بعد از صامت)."
+    },
+    {
+      "external_id": "u06-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "The show ___ at 8:00.",
+      "options": [
+        "finishes",
+        "finish",
+        "finishs"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با it فعل s می‌گیرد.",
+        "2": "بعد از sh باید es بیاید."
+      },
+      "explanation_fa": "finish به sh ختم می‌شود: finishes."
+    },
+    {
+      "external_id": "u06-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "He ___ two brothers.",
+      "options": [
+        "has",
+        "have",
+        "haves"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have برای I/you/we/they است.",
+        "2": "این شکل وجود ندارد."
+      },
+      "explanation_fa": "have در سوم‌شخص has می‌شود."
+    },
+    {
+      "external_id": "u06-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She ___ to college in Boston.",
+      "options": [
+        "goes",
+        "go",
+        "gos"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با she فعل s می‌گیرد.",
+        "2": "go استثناست و es می‌گیرد."
+      },
+      "explanation_fa": "go در سوم‌شخص goes می‌شود: She goes to college."
+    },
+    {
+      "external_id": "u06-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "What ___ he do?",
+      "options": [
+        "does",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای I/you/we/they است.",
+        "2": "Is برای فعل be است."
+      },
+      "explanation_fa": "سؤال با what دربارهٔ he: What does he do?"
+    },
+    {
+      "external_id": "u06-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I ___ have breakfast. (۱۰۰٪)",
+      "options": [
+        "always",
+        "sometimes",
+        "never"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sometimes یعنی گاهی (۵۰٪).",
+        "2": "never یعنی هرگز (۰٪)."
+      },
+      "explanation_fa": "always یعنی همیشه و ۱۰۰٪."
+    },
+    {
+      "external_id": "u06-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She ___ watches TV in the evening. (گاهی)",
+      "options": [
+        "sometimes",
+        "always",
+        "never"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "always یعنی همیشه.",
+        "2": "never یعنی هرگز."
+      },
+      "explanation_fa": "sometimes یعنی گاهی."
+    },
+    {
+      "external_id": "u06-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "He ___ eats meat. (۰٪)",
+      "options": [
+        "never",
+        "always",
+        "usually"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "always یعنی همیشه.",
+        "2": "usually یعنی معمولاً."
+      },
+      "explanation_fa": "never یعنی هرگز (۰٪)."
+    },
+    {
+      "external_id": "u06-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "They ___ finish work at 5:00. (معمولاً)",
+      "options": [
+        "usually",
+        "never",
+        "sometimes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never یعنی هرگز.",
+        "2": "sometimes یعنی گاهی."
+      },
+      "explanation_fa": "usually یعنی معمولاً."
+    },
+    {
+      "external_id": "u06-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "What time do you ___ get up?",
+      "options": [
+        "usually",
+        "never",
+        "always"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never با سؤال دربارهٔ زمان طبیعی نیست.",
+        "2": "always یعنی همیشه؛ اینجا قید تکرار عادی لازم است."
+      },
+      "explanation_fa": "در سؤال، قید تکرار قبل از فعل اصلی می‌آید: do you usually get up?"
+    },
+    {
+      "external_id": "u06-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "کدام جمله درست است؟",
+      "options": [
+        "I always have breakfast.",
+        "Always I have breakfast.",
+        "I have always breakfast."
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "قید تکرار قبل از فاعل نمی‌آید.",
+        "2": "قید بعد از فعل اصلی نمی‌آید."
+      },
+      "explanation_fa": "جای قید تکرار قبل از فعل اصلی است: I always have breakfast."
+    },
+    {
+      "external_id": "u06-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "She ___ goes shopping on Saturday.",
+      "options": [
+        "usually",
+        "usual",
+        "usually goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "usual صفت است، نه قید.",
+        "2": "فعل دوباره تکرار نمی‌شود."
+      },
+      "explanation_fa": "قید قبل از فعل: She usually goes shopping."
+    },
+    {
+      "external_id": "u06-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "He never ___ meat.",
+      "options": [
+        "eats",
+        "eat",
+        "doesn't eat"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با he فعل s می‌گیرد.",
+        "2": "never خودش منفی است؛ doesn't نمی‌آید."
+      },
+      "explanation_fa": "با never فعل مثبت و سوم‌شخص است: He never eats meat."
+    },
+    {
+      "external_id": "u06-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "هر فعل را به شکل سوم‌شخصش وصل کن.",
+      "pairs": [
+        {
+          "left": "work",
+          "right": "works"
+        },
+        {
+          "left": "watch",
+          "right": "watches"
+        },
+        {
+          "left": "study",
+          "right": "studies"
+        },
+        {
+          "left": "have",
+          "right": "has"
+        },
+        {
+          "left": "go",
+          "right": "goes"
+        }
+      ],
+      "explanation_fa": "work→works، watch→watches، study→studies، have→has، go→goes."
+    },
+    {
+      "external_id": "u06-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر نیمه را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "I always",
+          "right": "have breakfast."
+        },
+        {
+          "left": "They usually",
+          "right": "finish work at 5:00."
+        },
+        {
+          "left": "She sometimes",
+          "right": "watches TV in the evening."
+        },
+        {
+          "left": "He never",
+          "right": "eats meat."
+        },
+        {
+          "left": "What time do you usually",
+          "right": "get up?"
+        }
+      ],
+      "explanation_fa": "قید تکرار بین فاعل و فعل اصلی می‌آید."
+    }
+  ]
+}

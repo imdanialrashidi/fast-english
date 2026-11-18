@@ -1,0 +1,252 @@
+{
+  "book": {
+    "slug": "aef-3e-5"
+  },
+  "unit": {
+    "number": 7,
+    "title_en": "Permission, obligation, necessity",
+    "title_fa": "اجازه، اجبار و ضرورت"
+  },
+  "cards": [
+    {
+      "external_id": "aef5-u07-001",
+      "word": "mustn't",
+      "phonetic": "/ˈmʌsənt/",
+      "translation_fa": "نباید (ممنوع)",
+      "definition_en": "prohibited",
+      "example_en": "You mustn't park here.",
+      "part_of_speech": "phrase",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-001.mp3"
+    },
+    {
+      "external_id": "aef5-u07-002",
+      "word": "don't have to",
+      "phonetic": "/doʊnt hæv tə/",
+      "translation_fa": "لازم نیست",
+      "definition_en": "not necessary",
+      "example_en": "You don't have to bring a towel.",
+      "part_of_speech": "phrase",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-002.mp3"
+    },
+    {
+      "external_id": "aef5-u07-003",
+      "word": "needn't",
+      "phonetic": "/ˈniːdənt/",
+      "translation_fa": "لازم نیست",
+      "definition_en": "not necessary",
+      "example_en": "You needn't worry.",
+      "part_of_speech": "phrase",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-003.mp3"
+    },
+    {
+      "external_id": "aef5-u07-004",
+      "word": "can",
+      "phonetic": "/kæn/",
+      "translation_fa": "می‌تواند (اجازه)",
+      "definition_en": "used to ask for permission",
+      "example_en": "Can I use your phone?",
+      "part_of_speech": "modal verb",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-004.mp3"
+    },
+    {
+      "external_id": "aef5-u07-005",
+      "word": "should",
+      "phonetic": "/ʃʊd/",
+      "translation_fa": "بهتر است",
+      "definition_en": "used for advice",
+      "example_en": "You should see a doctor.",
+      "part_of_speech": "modal verb",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-005.mp3"
+    },
+    {
+      "external_id": "aef5-u07-006",
+      "word": "ought to",
+      "phonetic": "/ˈɔːt tə/",
+      "translation_fa": "باید/بهتر است",
+      "definition_en": "used for advice",
+      "example_en": "You ought to take an umbrella.",
+      "part_of_speech": "phrase",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-006.mp3"
+    },
+    {
+      "external_id": "aef5-u07-007",
+      "word": "had better",
+      "phonetic": "/hæd ˈbetər/",
+      "translation_fa": "بهتر است (هشدار)",
+      "definition_en": "used for strong advice",
+      "example_en": "You'd better leave now.",
+      "part_of_speech": "phrase",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-007.mp3"
+    },
+    {
+      "external_id": "aef5-u07-008",
+      "word": "be allowed to",
+      "phonetic": "/bi əˈlaʊd tə/",
+      "translation_fa": "مجاز بودن",
+      "definition_en": "to have permission",
+      "example_en": "You aren't allowed to smoke here.",
+      "part_of_speech": "phrase",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-008.mp3"
+    },
+    {
+      "external_id": "aef5-u07-009",
+      "word": "permission",
+      "phonetic": "/pərˈmɪʃən/",
+      "translation_fa": "اجازه",
+      "definition_en": "the act of allowing",
+      "example_en": "You need permission to enter.",
+      "part_of_speech": "noun",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-009.mp3"
+    },
+    {
+      "external_id": "aef5-u07-010",
+      "word": "obligation",
+      "phonetic": "/ˌɑːblɪˈɡeɪʃən/",
+      "translation_fa": "اجبار",
+      "definition_en": "something you must do",
+      "example_en": "It's a legal obligation.",
+      "part_of_speech": "noun",
+      "lesson_code": "7A",
+      "topic": "permission",
+      "audio": "aef5-u07-010.mp3"
+    },
+    {
+      "external_id": "aef5-u07-011",
+      "word": "hear",
+      "phonetic": "/hɪr/",
+      "translation_fa": "شنیدن",
+      "definition_en": "to notice a sound",
+      "example_en": "I heard her singing.",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-011.mp3"
+    },
+    {
+      "external_id": "aef5-u07-012",
+      "word": "see",
+      "phonetic": "/siː/",
+      "translation_fa": "دیدن",
+      "definition_en": "to notice with your eyes",
+      "example_en": "I saw him cross the road.",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-012.mp3"
+    },
+    {
+      "external_id": "aef5-u07-013",
+      "word": "smell",
+      "phonetic": "/smel/",
+      "translation_fa": "بو دادن/بوی چیزی را حس کردن",
+      "definition_en": "to notice a smell",
+      "example_en": "We could smell the cake baking.",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-013.mp3"
+    },
+    {
+      "external_id": "aef5-u07-014",
+      "word": "feel",
+      "phonetic": "/fiːl/",
+      "translation_fa": "حس کردن",
+      "definition_en": "to notice by touch",
+      "example_en": "I felt the ground shake.",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-014.mp3"
+    },
+    {
+      "external_id": "aef5-u07-015",
+      "word": "taste",
+      "phonetic": "/teɪst/",
+      "translation_fa": "مزه دادن/چشیدن",
+      "definition_en": "to notice a flavor",
+      "example_en": "I can taste something bitter.",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-015.mp3"
+    },
+    {
+      "external_id": "aef5-u07-016",
+      "word": "notice",
+      "phonetic": "/ˈnoʊtɪs/",
+      "translation_fa": "متوجه شدن",
+      "definition_en": "to see or hear something",
+      "example_en": "Did you notice him leave?",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-016.mp3"
+    },
+    {
+      "external_id": "aef5-u07-017",
+      "word": "watch",
+      "phonetic": "/wɑːtʃ/",
+      "translation_fa": "تماشا کردن",
+      "definition_en": "to look at for a time",
+      "example_en": "I watched them playing.",
+      "part_of_speech": "verb",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-017.mp3"
+    },
+    {
+      "external_id": "aef5-u07-018",
+      "word": "ground",
+      "phonetic": "/ɡraʊnd/",
+      "translation_fa": "زمین",
+      "definition_en": "the surface of the earth",
+      "example_en": "I felt the ground shake.",
+      "part_of_speech": "noun",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-018.mp3"
+    },
+    {
+      "external_id": "aef5-u07-019",
+      "word": "burning",
+      "phonetic": "/ˈbɜːrnɪŋ/",
+      "translation_fa": "در حال سوختن",
+      "definition_en": "on fire",
+      "example_en": "I can smell something burning.",
+      "part_of_speech": "adjective",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-019.mp3"
+    },
+    {
+      "external_id": "aef5-u07-020",
+      "word": "bitter",
+      "phonetic": "/ˈbɪtər/",
+      "translation_fa": "تلخ",
+      "definition_en": "a sharp unpleasant taste",
+      "example_en": "The coffee tastes bitter.",
+      "part_of_speech": "adjective",
+      "lesson_code": "7B",
+      "topic": "senses",
+      "audio": "aef5-u07-020.mp3"
+    }
+  ]
+}

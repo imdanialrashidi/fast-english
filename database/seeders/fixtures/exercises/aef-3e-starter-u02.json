@@ -1,0 +1,311 @@
+{
+  "external_id": "aef-3e-starter-u02",
+  "book": "aef-3e-starter",
+  "unit": 2,
+  "title": "American English File Starter · Unit 2",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 2,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": ["2A", "2B"],
+    "grammar_bank": "2A p.94, 2B p.95",
+    "workbook": "2A pp.11-12, 2B pp.13-14"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "verb be (plural): we, you, they",
+      "title_fa": "فعل be (جمع): we، you و they",
+      "use_fa": "وقتی دربارهٔ چند نفر یا چند چیز حرف می‌زنیم از we، you و they استفاده می‌کنیم. you هم برای یک نفر و هم برای چند نفر است.",
+      "formulas": [
+        { "label_fa": "مثبت", "text": "We are (We're) + ...\nYou are (You're) + ...\nThey are (They're) + ..." },
+        { "label_fa": "منفی", "text": "We are not (We aren't / We're not) + ...\nYou are not (You aren't / You're not) + ...\nThey are not (They aren't / They're not) + ..." },
+        { "label_fa": "سؤالی", "text": "Are we ...?\nAre you ...?\nAre they ...?\nYes, we / you / they are.\nNo, we / you / they aren't." }
+      ],
+      "examples": [
+        { "en": "We're American.", "fa": "ما آمریکایی هستیم." },
+        { "en": "They aren't Peruvian.", "fa": "آن‌ها اهل پرو نیستند." },
+        { "en": "Are they Mexican? — Yes, they are.", "fa": "آن‌ها مکزیکی هستند؟ — بله، هستند." },
+        { "en": "Are you from the UK? — No, we aren't.", "fa": "شما اهل بریتانیا هستید؟ — نه، نیستیم." }
+      ],
+      "notes_fa": "they برای افراد و چیزها هر دو می‌آید. در جملهٔ منفی، aren't را با we، you و they استفاده می‌کنیم."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "Wh- and How questions with be",
+      "title_fa": "سؤال‌های Wh- و How با فعل be",
+      "use_fa": "برای پرسیدن اطلاعات مشخص: چه کسی، چه، کجا، چه زمانی، چند سال و حال‌وهوا. کلمهٔ پرسشی اول جمله می‌آید و بعد فعل be.",
+      "formulas": [
+        { "label_fa": "الگو", "text": "Who / What / Where / When / How + is / are + فاعل?" },
+        { "label_fa": "کوتاه‌شده", "text": "What's your name?\nWhere's he from?\nWhen's the concert?\nHow's Anna?" },
+        { "label_fa": "پاسخ", "text": "He's from Mexico.\nIt's on Tuesday.\nI'm fine, thanks.\nShe's 22." }
+      ],
+      "examples": [
+        { "en": "Where are you from? — I'm from Toronto.", "fa": "اهل کجایی؟ — اهل تورنتو هستم." },
+        { "en": "What's your email? — john@gmail.com.", "fa": "ایمیلت چیست؟ — john@gmail.com." },
+        { "en": "Who's he? — He's Alex.", "fa": "او کیست؟ — او الکس است." },
+        { "en": "How old is he? — He's 22.", "fa": "چند سالش است؟ — بیست‌ودو سالش است." }
+      ],
+      "notes_fa": "is را می‌توان با کلمهٔ پرسشی کوتاه کرد: What's، Where's، How's. اما اگر آخر جمله ضمیر باشد کوتاه نمی‌شود: How old is she? (نه How old's she?)"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u02-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Luisa and Pedro ___ from Lima.",
+      "options": ["are", "is", "am"],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای he/she/it است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "دو نفر (Luisa and Pedro) فاعل جمع است، پس are می‌آید."
+    },
+    {
+      "external_id": "u02-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "We ___ American.",
+      "options": ["are", "is", "am"],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای he/she/it است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "we با are می‌آید: We are American. / We're American."
+    },
+    {
+      "external_id": "u02-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They ___ Mexican. They're Peruvian.",
+      "options": ["aren't", "isn't", "am not"],
+      "answer": 0,
+      "feedback": {
+        "1": "isn't برای he/she/it است.",
+        "2": "am not فقط با I می‌آید."
+      },
+      "explanation_fa": "منفیِ they are می‌شود they aren't: They aren't Mexican."
+    },
+    {
+      "external_id": "u02-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "A: Are they from Canada?\nB: Yes, ___.",
+      "options": ["they are", "they're", "are they"],
+      "answer": 0,
+      "feedback": {
+        "1": "در پاسخ کوتاه شکل کامل می‌آید؛ they're در پایان جمله به‌تنهایی نمی‌آید.",
+        "2": "ترتیب پاسخ کوتاه فاعل + فعل است، نه فعل + فاعل."
+      },
+      "explanation_fa": "پاسخ کوتاه مثبت به Are they ...? می‌شود Yes, they are."
+    },
+    {
+      "external_id": "u02-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "A: Are you late?\nB: No, ___.",
+      "options": ["we aren't", "you aren't", "they aren't"],
+      "answer": 0,
+      "feedback": {
+        "1": "you aren't پاسخ به Are we ...? است.",
+        "2": "they aren't دربارهٔ آن‌هاست، نه خودمان."
+      },
+      "explanation_fa": "کسی که خودش جزو جمع است می‌گوید No, we aren't."
+    },
+    {
+      "external_id": "u02-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "___ you from the US?",
+      "options": ["Are", "Is", "Am"],
+      "answer": 0,
+      "feedback": {
+        "1": "Is برای he/she/it است.",
+        "2": "Am فقط با I می‌آید."
+      },
+      "explanation_fa": "برای سؤال با you، فعل are اول جمله می‌آید: Are you from the US?"
+    },
+    {
+      "external_id": "u02-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Honda and Toyota ___ Japanese.",
+      "options": ["are", "is", "am"],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای یک چیز مفرد است؛ اینجا دو شرکت است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "Honda and Toyota فاعل جمع است؛ برای شرکت‌ها و چیزها هم they/are می‌آید."
+    },
+    {
+      "external_id": "u02-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Liz and Tom ___ in Egypt. They're in Turkey.",
+      "options": ["aren't", "isn't", "am not"],
+      "answer": 0,
+      "feedback": {
+        "1": "isn't برای فاعل مفرد است.",
+        "2": "am not فقط با I می‌آید."
+      },
+      "explanation_fa": "فاعل جمع (Liz and Tom) با aren't منفی می‌شود."
+    },
+    {
+      "external_id": "u02-t1-m01",
+      "topic": "t1",
+      "position": 9,
+      "type": "matching",
+      "prompt": "هر اسم را به ضمیر درستش وصل کن.",
+      "pairs": [
+        { "left": "Luisa and Pedro", "right": "they" },
+        { "left": "Diana and I", "right": "we" },
+        { "left": "The Taj Mahal", "right": "it" },
+        { "left": "Paul", "right": "he" },
+        { "left": "Rosa", "right": "she" }
+      ],
+      "explanation_fa": "چند نفر یا چند چیز → they؛ خودمان و کس دیگری → we؛ یک چیز → it؛ یک مرد → he؛ یک زن → she."
+    },
+    {
+      "external_id": "u02-t2-q01",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ is your name?",
+      "options": ["What", "Who", "Where"],
+      "answer": 0,
+      "feedback": {
+        "1": "Who برای پرسیدن هویت یک شخص است، نه اسم.",
+        "2": "Where برای مکان است."
+      },
+      "explanation_fa": "برای پرسیدن اسم از What استفاده می‌کنیم: What's your name?"
+    },
+    {
+      "external_id": "u02-t2-q02",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "___ is he from?",
+      "options": ["Where", "What", "Who"],
+      "answer": 0,
+      "feedback": {
+        "1": "What برای چیز است، نه مکان.",
+        "2": "Who برای شخص است."
+      },
+      "explanation_fa": "برای پرسیدن مکان از Where استفاده می‌کنیم: Where's he from?"
+    },
+    {
+      "external_id": "u02-t2-q03",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "A: ___ old is she?\nB: She's 22.",
+      "options": ["How", "What", "Who"],
+      "answer": 0,
+      "feedback": {
+        "1": "What old وجود ندارد؛ برای سن How old می‌گوییم.",
+        "2": "Who برای شخص است، نه سن."
+      },
+      "explanation_fa": "برای پرسیدن سن از How old استفاده می‌کنیم: How old is she?"
+    },
+    {
+      "external_id": "u02-t2-q04",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "A: ___ are you?\nB: I'm fine, thanks.",
+      "options": ["How", "Who", "What"],
+      "answer": 0,
+      "feedback": {
+        "1": "Who برای پرسیدن هویت است.",
+        "2": "What are you? یعنی «شغلت چیست؟»، نه احوال‌پرسی."
+      },
+      "explanation_fa": "احوال‌پرسی با How are you? انجام می‌شود."
+    },
+    {
+      "external_id": "u02-t2-q05",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "A: ___ he?\nB: He's Alex.",
+      "options": ["Who's", "What's", "Where's"],
+      "answer": 0,
+      "feedback": {
+        "1": "What's he? دربارهٔ شغل یا چیز می‌پرسد.",
+        "2": "Where's he? دربارهٔ مکان می‌پرسد."
+      },
+      "explanation_fa": "برای پرسیدن هویت یک شخص از Who's استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u02-t2-q06",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "A: ___ the concert?\nB: It's on Tuesday.",
+      "options": ["When's", "Who's", "Where's"],
+      "answer": 0,
+      "feedback": {
+        "1": "Who's دربارهٔ شخص است.",
+        "2": "Where's دربارهٔ مکان است؛ پاسخ «سه‌شنبه» زمان است."
+      },
+      "explanation_fa": "برای پرسیدن زمان از When's استفاده می‌کنیم: When's the concert?"
+    },
+    {
+      "external_id": "u02-t2-q07",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "کدام جمله درست است؟",
+      "options": ["How old is she?", "How old's she?", "How old she is?"],
+      "answer": 0,
+      "feedback": {
+        "1": "وقتی آخر جمله ضمیر است، is را با کلمهٔ پرسشی کوتاه نمی‌کنیم.",
+        "2": "در سؤال، فعل be قبل از فاعل می‌آید."
+      },
+      "explanation_fa": "قاعده: is را با ضمیر آخر جمله کوتاه نمی‌کنیم؛ How old is she? درست است."
+    },
+    {
+      "external_id": "u02-t2-q08",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "A: What's your email?\nB: ___ john@gmail.com.",
+      "options": ["It's", "He's", "She's"],
+      "answer": 0,
+      "feedback": {
+        "1": "He's برای یک مرد است.",
+        "2": "She's برای یک زن است."
+      },
+      "explanation_fa": "ایمیل یک چیز است، پس با it به آن اشاره می‌کنیم: It's john@gmail.com."
+    },
+    {
+      "external_id": "u02-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخ درستش وصل کن.",
+      "pairs": [
+        { "left": "Where are you from?", "right": "I'm from Toronto." },
+        { "left": "What's your email?", "right": "john@gmail.com." },
+        { "left": "Who's he?", "right": "He's Alex." },
+        { "left": "How old is he?", "right": "He's 22." },
+        { "left": "How are you?", "right": "I'm fine, thanks." }
+      ],
+      "explanation_fa": "هر کلمهٔ پرسشی جواب خودش را می‌گیرد: Where → مکان، What → چیز، Who → شخص، How old → سن، How → حال."
+    }
+  ]
+}

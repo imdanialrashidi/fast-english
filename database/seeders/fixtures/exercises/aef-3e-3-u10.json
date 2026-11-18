@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-3-u10",
+  "book": "aef-3e-3",
+  "unit": 10,
+  "title": "American English File 3 · Unit 10",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 10,
+  "source": {
+    "edition": "3rd",
+    "student_book": "3",
+    "lessons": [
+      "10A",
+      "10B"
+    ],
+    "grammar_bank": "10A p.152, 10B p.153",
+    "workbook": "10A, 10B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "relative clauses: defining and nondefining",
+      "title_fa": "جمله‌های وصفی: تعیین‌کننده و غیرتعیین‌کننده",
+      "use_fa": "برای توضیح دادن دربارهٔ شخص/چیز/مکان: who برای شخص، that/which برای چیز، where برای مکان و whose برای مالکیت.",
+      "formulas": [
+        {
+          "label_fa": "شخص",
+          "text": "the woman who wrote the book"
+        },
+        {
+          "label_fa": "چیز",
+          "text": "a book that teaches you"
+        },
+        {
+          "label_fa": "مکان/مالکیت",
+          "text": "the house where I was born\nthe man whose car was stolen"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Harper Lee is the woman who wrote To Kill a Mockingbird.",
+          "fa": "هارپر لی زنی است که کتاب را نوشت."
+        },
+        {
+          "en": "That's the house where I was born.",
+          "fa": "آن خانه‌ای است که در آن به دنیا آمدم."
+        },
+        {
+          "en": "Is Frank the man whose brother plays for the Lakers?",
+          "fa": "فرانک مردی است که برادرش برای لیکرز بازی می‌کند؟"
+        },
+        {
+          "en": "This is the phone that I bought yesterday.",
+          "fa": "این همان تلفنی است که دیروز خریدم."
+        }
+      ],
+      "notes_fa": "who برای انسان، which/that برای چیز و where برای مکان. whose یعنی «مالِ کسی/چیزی»."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "tag questions",
+      "title_fa": "سؤال‌های دنباله‌ای (tag questions)",
+      "use_fa": "برای تأیید گرفتن از شنونده. جملهٔ مثبت، دنبالهٔ منفی و جملهٔ منفی، دنبالهٔ مثبت می‌گیرد.",
+      "formulas": [
+        {
+          "label_fa": "مثبت → منفی",
+          "text": "It's cold, isn't it?\nYou're Peruvian, aren't you?\nThey live here, don't they?"
+        },
+        {
+          "label_fa": "منفی → مثبت",
+          "text": "She isn't here, is she?\nThey didn't come, did they?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "It's cold today, isn't it?",
+          "fa": "امروز سرد است، نه؟"
+        },
+        {
+          "en": "They live in Ankara, don't they?",
+          "fa": "آن‌ها در آنکارا زندگی می‌کنند، نه؟"
+        },
+        {
+          "en": "We've met before, haven't we?",
+          "fa": "قبلاً همدیگر را دیده‌ایم، نه؟"
+        },
+        {
+          "en": "You never do the dishes, do you?",
+          "fa": "تو هیچ‌وقت ظرف نمی‌شویی، نه؟"
+        }
+      ],
+      "notes_fa": "فعل کمکی جمله را تکرار می‌کنیم: is → isn't، do → don't، did → didn't. با never جمله منفی است، پس دنباله مثبت می‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u10-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Harper Lee is the woman ___ wrote To Kill a Mockingbird.",
+      "options": [
+        "who",
+        "which",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "شخص: who."
+    },
+    {
+      "external_id": "u10-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "I'm looking for a book ___ teaches you how to relax.",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "چیز: that."
+    },
+    {
+      "external_id": "u10-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "That's the house ___ I was born.",
+      "options": [
+        "where",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "مکان: where."
+    },
+    {
+      "external_id": "u10-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "Is Frank the man ___ brother plays for the Lakers?",
+      "options": [
+        "whose",
+        "who",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who با اسم بعدی نمی‌آید.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "مالکیت: whose."
+    },
+    {
+      "external_id": "u10-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "It's a tree ___ leaves change color in the fall.",
+      "options": [
+        "whose",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which مستقیماً قبل از leaves نمی‌آید.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «whose» است. whose leaves."
+    },
+    {
+      "external_id": "u10-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I just got a text from the girl ___ I met on the flight.",
+      "options": [
+        "who",
+        "which",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "شخص: who."
+    },
+    {
+      "external_id": "u10-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "This is the phone ___ I bought yesterday.",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "چیز: that."
+    },
+    {
+      "external_id": "u10-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "That's the restaurant ___ we had dinner.",
+      "options": [
+        "where",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "مکان: where."
+    },
+    {
+      "external_id": "u10-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "She's the girl ___ works with my brother.",
+      "options": [
+        "who",
+        "where",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "where برای مکان است.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "شخص: who."
+    },
+    {
+      "external_id": "u10-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "It's a thing ___ connects two computers.",
+      "options": [
+        "which",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "چیز: which."
+    },
+    {
+      "external_id": "u10-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "The man ___ car was stolen called the police.",
+      "options": [
+        "whose",
+        "who",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who با car نمی‌آید.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «whose» است. whose car."
+    },
+    {
+      "external_id": "u10-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "This is the town ___ I grew up.",
+      "options": [
+        "where",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "مکان: where."
+    },
+    {
+      "external_id": "u10-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "It's cold today, ___?",
+      "options": [
+        "isn't it",
+        "is it",
+        "doesn't it"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت دنبالهٔ منفی می‌خواهد.",
+        "2": "فعل کمکی is است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «isn't it» است. isn't it?"
+    },
+    {
+      "external_id": "u10-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "You're Peruvian, ___?",
+      "options": [
+        "aren't you",
+        "are you",
+        "don't you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "فعل کمکی are است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «aren't you» است. aren't you?"
+    },
+    {
+      "external_id": "u10-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "They live in Ankara, ___?",
+      "options": [
+        "don't they",
+        "do they",
+        "aren't they"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "فعل کمکی do است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «don't they» است. don't they?"
+    },
+    {
+      "external_id": "u10-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "The game ends at 8:00, ___?",
+      "options": [
+        "doesn't it",
+        "does it",
+        "isn't it"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "فعل کمکی does است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «doesn't it» است. doesn't it?"
+    },
+    {
+      "external_id": "u10-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Your sister worked in the US, ___?",
+      "options": [
+        "didn't she",
+        "did she",
+        "doesn't she"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't she» است. didn't she?"
+    },
+    {
+      "external_id": "u10-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "We've met before, ___?",
+      "options": [
+        "haven't we",
+        "have we",
+        "didn't we"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "حال کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «haven't we» است. haven't we?"
+    },
+    {
+      "external_id": "u10-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "You'll be OK, ___?",
+      "options": [
+        "won't you",
+        "will you",
+        "aren't you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "آینده با will است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «won't you» است. won't you?"
+    },
+    {
+      "external_id": "u10-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "You'd go on vacation with me, ___?",
+      "options": [
+        "wouldn't you",
+        "would you",
+        "don't you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "فعل کمکی would است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «wouldn't you» است. wouldn't you?"
+    },
+    {
+      "external_id": "u10-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "You never do the dishes, ___?",
+      "options": [
+        "do you",
+        "don't you",
+        "never you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never جمله را منفی می‌کند.",
+        "2": "never you وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «do you» است. do you?"
+    },
+    {
+      "external_id": "u10-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "She isn't here, ___?",
+      "options": [
+        "is she",
+        "isn't she",
+        "does she"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله منفی است.",
+        "2": "فعل کمکی is است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is she» است. is she?"
+    },
+    {
+      "external_id": "u10-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "They didn't come, ___?",
+      "options": [
+        "did they",
+        "didn't they",
+        "do they"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله منفی است.",
+        "2": "گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «did they» است. did they?"
+    },
+    {
+      "external_id": "u10-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Your name's Maria, ___?",
+      "options": [
+        "isn't it",
+        "is it",
+        "aren't you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله مثبت است.",
+        "2": "فاعل it است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «isn't it» است. isn't it?"
+    },
+    {
+      "external_id": "u10-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Harper Lee is the woman",
+          "right": "who wrote the book."
+        },
+        {
+          "left": "That's the house",
+          "right": "where I was born."
+        },
+        {
+          "left": "Is Frank the man",
+          "right": "whose brother plays?"
+        },
+        {
+          "left": "This is the phone",
+          "right": "that I bought."
+        },
+        {
+          "left": "It's a tree",
+          "right": "whose leaves change color."
+        }
+      ],
+      "explanation_fa": "who/when/whose/that را با توجه به اسم انتخاب کن.",
+      "position": 25
+    },
+    {
+      "external_id": "u10-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "هر جمله را به دنبالهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "It's cold today",
+          "right": "isn't it?"
+        },
+        {
+          "left": "They live in Ankara",
+          "right": "don't they?"
+        },
+        {
+          "left": "We've met before",
+          "right": "haven't we?"
+        },
+        {
+          "left": "She isn't here",
+          "right": "is she?"
+        },
+        {
+          "left": "They didn't come",
+          "right": "did they?"
+        }
+      ],
+      "explanation_fa": "مثبت → دنبالهٔ منفی، منفی → دنبالهٔ مثبت.",
+      "position": 26
+    }
+  ]
+}

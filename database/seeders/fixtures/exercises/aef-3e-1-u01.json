@@ -1,0 +1,603 @@
+{
+  "external_id": "aef-3e-1-u01",
+  "book": "aef-3e-1",
+  "unit": 1,
+  "title": "American English File 1 · Unit 1",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 1,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "1A",
+      "1B",
+      "1C"
+    ],
+    "grammar_bank": "1A p.126, 1B p.126, 1C p.126",
+    "workbook": "1A, 1B, 1C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "verb be [+], subject pronouns",
+      "title_fa": "فعل be مثبت و ضمیرهای فاعلی",
+      "use_fa": "برای معرفی خودمان و دیگران. هر جمله به ضمیر فاعلی نیاز دارد و فعل be با فاعل هماهنگ می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I am (I'm)\nYou are (You're)\nHe / She / It is (He's / She's / It's)\nWe / You / They are (We're / You're / They're)"
+        },
+        {
+          "label_fa": "قاعده",
+          "text": "I'm a student.\nIt's a school. (نه Is a school.)\nHe's Ben and I'm Sally. (I همیشه بزرگ)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm a student.",
+          "fa": "من دانشجو هستم."
+        },
+        {
+          "en": "You're my partner.",
+          "fa": "تو هم‌گروه من هستی."
+        },
+        {
+          "en": "She's in my class.",
+          "fa": "او در کلاس من است."
+        },
+        {
+          "en": "They're teachers.",
+          "fa": "آن‌ها معلم‌اند."
+        }
+      ],
+      "notes_fa": "subject pronoun همیشه لازم است: It's a school. (نه Is a school.) برای یک مرد he، برای یک زن she و برای چیز it؛ they برای افراد و چیزها."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "verb be [- and [?]",
+      "title_fa": "فعل be منفی و سؤالی",
+      "use_fa": "برای منفی کردن، not بعد از be می‌آید؛ برای سؤال، am/is/are قبل از فاعل می‌آید. پاسخ کوتاه بدون کوتاه‌نویسی است.",
+      "formulas": [
+        {
+          "label_fa": "منفی",
+          "text": "I'm not ...\nHe / She / It isn't ...\nYou / We / They aren't ..."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Am / Are / Is + subject ...?\nAre you Turkish?\nWhere are you from?"
+        },
+        {
+          "label_fa": "پاسخ کوتاه",
+          "text": "Yes, I am. / No, I'm not.\nYes, she is. / No, she isn't.\n(نه Yes, I'm.)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm not American.",
+          "fa": "من آمریکایی نیستم."
+        },
+        {
+          "en": "She isn't from London.",
+          "fa": "او اهل لندن نیست."
+        },
+        {
+          "en": "Are you Brazilian? — Yes, I am.",
+          "fa": "برزیلی هستی؟ — بله."
+        },
+        {
+          "en": "Where are you from?",
+          "fa": "اهل کجایی؟"
+        }
+      ],
+      "notes_fa": "در پاسخ کوتاه مثبت، کوتاه‌نویسی نمی‌آید: Yes, I am. (نه Yes, I'm.) در سؤال، کلمهٔ پرسشی اول و بعد فعل be می‌آید: Where are you from?"
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "possessive adjectives",
+      "title_fa": "صفات ملکی",
+      "use_fa": "نشان می‌دهد چیزی مال چه کسی است. قبل از اسم می‌آید و با مفرد و جمع تغییر نمی‌کند.",
+      "formulas": [
+        {
+          "label_fa": "جدول",
+          "text": "I → my\nYou → your\nHe → his\nShe → her\nIt → its\nWe → our\nThey → their"
+        },
+        {
+          "label_fa": "مثال",
+          "text": "My family is from Peru.\nHis name is Michael.\nTheir names are Luc and Marie."
+        }
+      ],
+      "examples": [
+        {
+          "en": "My family is from Cusco.",
+          "fa": "خانوادهٔ من اهل کوسکو است."
+        },
+        {
+          "en": "This is your classroom.",
+          "fa": "این کلاس شماست."
+        },
+        {
+          "en": "Her name is Tina.",
+          "fa": "اسم او تیناست."
+        },
+        {
+          "en": "Its name is English House.",
+          "fa": "اسمش انگلیسی هاوس است."
+        }
+      ],
+      "notes_fa": "its (مالِ آن) با it's (it is) فرق دارد. صفت ملکی جمع بسته نمی‌شود: our students (نه ours students)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ a student.",
+      "options": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای he/she/it است.",
+        "2": "are برای you/we/they است."
+      },
+      "explanation_fa": "با I از am استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u01-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ Sally.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "she با is: She is Sally."
+    },
+    {
+      "external_id": "u01-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They ___ teachers.",
+      "options": [
+        "are",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای مفرد است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "they با are: They are teachers."
+    },
+    {
+      "external_id": "u01-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "It's a school. ___ is big.",
+      "options": [
+        "It",
+        "He",
+        "She"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "He برای یک مرد است.",
+        "2": "She برای یک زن است."
+      },
+      "explanation_fa": "برای مدرسه از it استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u01-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "Ben is a teacher. ___ is my teacher.",
+      "options": [
+        "He",
+        "She",
+        "It"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "She برای یک زن است.",
+        "2": "It برای چیز است."
+      },
+      "explanation_fa": "Ben یک مرد است، پس he."
+    },
+    {
+      "external_id": "u01-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Sally is in my class. ___ is nice.",
+      "options": [
+        "She",
+        "He",
+        "It"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "He برای یک مرد است.",
+        "2": "It برای چیز است."
+      },
+      "explanation_fa": "Sally یک زن است، پس she."
+    },
+    {
+      "external_id": "u01-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "کدام جمله درست است؟",
+      "options": [
+        "I'm a student.",
+        "i'm a student.",
+        "Am a student."
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "I همیشه با حرف بزرگ نوشته می‌شود.",
+        "2": "جمله به ضمیر فاعلی نیاز دارد."
+      },
+      "explanation_fa": "I بزرگ است و جمله ضمیر فاعلی دارد: I'm a student."
+    },
+    {
+      "external_id": "u01-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I ___ American.",
+      "options": [
+        "'m not",
+        "amn't",
+        "not am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "amn't وجود ندارد.",
+        "2": "ترتیب not am غلط است."
+      },
+      "explanation_fa": "منفی I am: I'm not American."
+    },
+    {
+      "external_id": "u01-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "She ___ from London.",
+      "options": [
+        "isn't",
+        "aren't",
+        "amn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "aren't برای جمع است.",
+        "2": "amn't وجود ندارد."
+      },
+      "explanation_fa": "منفی she: isn't."
+    },
+    {
+      "external_id": "u01-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "They ___ Spanish.",
+      "options": [
+        "aren't",
+        "isn't",
+        "amn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "isn't برای مفرد است.",
+        "2": "amn't وجود ندارد."
+      },
+      "explanation_fa": "منفی they: aren't."
+    },
+    {
+      "external_id": "u01-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "___ you Turkish?",
+      "options": [
+        "Are",
+        "Do",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Is برای he/she/it است."
+      },
+      "explanation_fa": "سؤال با be: Are you Turkish?"
+    },
+    {
+      "external_id": "u01-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Where ___ you from?",
+      "options": [
+        "are",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای فعل معمولی است.",
+        "2": "is برای he/she/it است."
+      },
+      "explanation_fa": "سؤال دربارهٔ مکان با be: Where are you from?"
+    },
+    {
+      "external_id": "u01-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "A: Is she Russian?\nB: No, she ___.",
+      "options": [
+        "isn't",
+        "aren't",
+        "not"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "aren't برای جمع است.",
+        "2": "not به‌تنهایی پاسخ نیست."
+      },
+      "explanation_fa": "پاسخ کوتاه: No, she isn't."
+    },
+    {
+      "external_id": "u01-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "A: Are you Brazilian?\nB: Yes, ___.",
+      "options": [
+        "I am",
+        "I'm",
+        "me"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "در پاسخ کوتاه، کوتاه‌نویسی نمی‌آید.",
+        "2": "me ضمیر مفعولی است."
+      },
+      "explanation_fa": "پاسخ کوتاه: Yes, I am."
+    },
+    {
+      "external_id": "u01-t3-q01",
+      "topic": "t3",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I'm Peruvian. ___ family is from Cusco.",
+      "options": [
+        "My",
+        "I",
+        "Me"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "I ضمیر فاعلی است.",
+        "2": "Me ضمیر مفعولی است."
+      },
+      "explanation_fa": "قبل از اسم، صفت ملکی: My family."
+    },
+    {
+      "external_id": "u01-t3-q02",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "You're in Class 1. This is ___ classroom.",
+      "options": [
+        "your",
+        "you",
+        "yours"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "you ضمیر فاعلی است.",
+        "2": "yours بدون اسم می‌آید."
+      },
+      "explanation_fa": "قبل از اسم classroom صفت ملکی your می‌آید: your classroom."
+    },
+    {
+      "external_id": "u01-t3-q03",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "He's the director. ___ name is Michael.",
+      "options": [
+        "His",
+        "Her",
+        "He"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Her برای زن است.",
+        "2": "He ضمیر فاعلی است."
+      },
+      "explanation_fa": "برای مرد: his."
+    },
+    {
+      "external_id": "u01-t3-q04",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She's your teacher. ___ name is Tina.",
+      "options": [
+        "Her",
+        "His",
+        "She"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "His برای مرد است.",
+        "2": "She ضمیر فاعلی است."
+      },
+      "explanation_fa": "برای زن: her."
+    },
+    {
+      "external_id": "u01-t3-q05",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "It's a language school. ___ name is English House.",
+      "options": [
+        "Its",
+        "It's",
+        "His"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "It's یعنی it is.",
+        "2": "His برای انسان است."
+      },
+      "explanation_fa": "برای چیز: its."
+    },
+    {
+      "external_id": "u01-t3-q06",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "We're an international school. ___ students are from Asia.",
+      "options": [
+        "Our",
+        "We",
+        "Us"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "We ضمیر فاعلی است.",
+        "2": "Us ضمیر مفعولی است."
+      },
+      "explanation_fa": "برای we: our."
+    },
+    {
+      "external_id": "u01-t3-q07",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "They're French. ___ names are Luc and Marie.",
+      "options": [
+        "Their",
+        "They",
+        "Them"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "They ضمیر فاعلی است.",
+        "2": "Them ضمیر مفعولی است."
+      },
+      "explanation_fa": "برای they: their."
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "position": 22,
+      "type": "matching",
+      "prompt": "هر نیمه را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "I am",
+          "right": "a student."
+        },
+        {
+          "left": "You are",
+          "right": "my partner."
+        },
+        {
+          "left": "He is",
+          "right": "Matt."
+        },
+        {
+          "left": "She is",
+          "right": "Sally."
+        },
+        {
+          "left": "They are",
+          "right": "teachers."
+        }
+      ],
+      "explanation_fa": "فعل be با فاعل هماهنگ می‌شود: I am، you are، he/she is، they are."
+    },
+    {
+      "external_id": "u01-t2-m01",
+      "topic": "t2",
+      "position": 23,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "Are you Turkish?",
+          "right": "Yes, I am."
+        },
+        {
+          "left": "Is she Russian?",
+          "right": "No, she isn't."
+        },
+        {
+          "left": "Are we in class 2?",
+          "right": "No, we aren't."
+        },
+        {
+          "left": "Where are you from?",
+          "right": "I'm from Brazil."
+        },
+        {
+          "left": "Are they Spanish?",
+          "right": "No, they aren't."
+        }
+      ],
+      "explanation_fa": "سؤال با be با همان فاعل و am/is/are پاسخ کوتاه می‌گیرد."
+    },
+    {
+      "external_id": "u01-t3-m01",
+      "topic": "t3",
+      "position": 24,
+      "type": "matching",
+      "prompt": "هر ضمیر را به صفت ملکی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "I",
+          "right": "my"
+        },
+        {
+          "left": "you",
+          "right": "your"
+        },
+        {
+          "left": "he",
+          "right": "his"
+        },
+        {
+          "left": "she",
+          "right": "her"
+        },
+        {
+          "left": "they",
+          "right": "their"
+        }
+      ],
+      "explanation_fa": "I→my، you→your، he→his، she→her، they→their."
+    }
+  ]
+}

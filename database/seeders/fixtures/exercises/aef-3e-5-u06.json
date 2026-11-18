@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-5-u06",
+  "book": "aef-3e-5",
+  "unit": 6,
+  "title": "American English File 5 · Unit 6",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 6,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "6A",
+      "6B"
+    ],
+    "grammar_bank": "6A p.149, 6B p.150",
+    "workbook": "6A, 6B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "verb + object + infinitive or gerund",
+      "title_fa": "فعل + مفعول + مصدر یا اسم مصدر",
+      "use_fa": "برخی فعل‌ها الگوی verb + object + to do دارند (advise, encourage, persuade, warn, remind, invite, allow, expect)؛ let و make با فعل پایه می‌آیند.",
+      "formulas": [
+        {
+          "label_fa": "to",
+          "text": "advise him not to travel\nencourage her to take the exam\nwarn us not to be late"
+        },
+        {
+          "label_fa": "پایه",
+          "text": "let us arrive / make me tell"
+        }
+      ],
+      "examples": [
+        {
+          "en": "She advised him not to travel by train.",
+          "fa": "او به او توصیه کرد با قطار سفر نکند."
+        },
+        {
+          "en": "They encouraged her to take the exam.",
+          "fa": "آن‌ها او را تشویق کردند امتحان بدهد."
+        },
+        {
+          "en": "He warned us not to be late.",
+          "fa": "او به ما هشدار داد دیر نکنیم."
+        },
+        {
+          "en": "She made me tell the truth.",
+          "fa": "او مرا وادار کرد حقیقت را بگویم."
+        }
+      ],
+      "notes_fa": "در الگوی to، مفعول بین فعل و to می‌آید: advise him not to travel. بعد از let/make فعل پایه بدون to."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "conditional sentences: real and unreal",
+      "title_fa": "جمله‌های شرطی: واقعی و غیرواقعی",
+      "use_fa": "شرطی واقعی (صفر/اول) با حال و will؛ شرطی غیرواقعی (دوم/سوم) با گذشته و would (have). unless یعنی if not.",
+      "formulas": [
+        {
+          "label_fa": "واقعی",
+          "text": "If it rains, we'll cancel.\nIf you heat ice, it melts.\nUnless we hurry, we'll miss it."
+        },
+        {
+          "label_fa": "غیرواقعی",
+          "text": "If I were you, I'd take it.\nIf she had studied, she would have passed."
+        }
+      ],
+      "examples": [
+        {
+          "en": "They won't get a table unless they've made a reservation.",
+          "fa": "اگر رزرو نکرده باشند میز نمی‌گیرند."
+        },
+        {
+          "en": "Can I borrow your dictionary if you're not using it?",
+          "fa": "اگر از دیکشنری‌ات استفاده نمی‌کنی می‌توانم قرض بگیرم؟"
+        },
+        {
+          "en": "If I were you, I'd take the job.",
+          "fa": "اگر جای تو بودم کار را قبول می‌کردم."
+        },
+        {
+          "en": "If she had studied harder, she would have passed.",
+          "fa": "اگر بیشتر درس می‌خواند قبول می‌شد."
+        }
+      ],
+      "notes_fa": "در هیچ‌کدام از شرطی‌ها بعد از if از will استفاده نمی‌کنیم؛ در شرطی سوم had + قسمت سوم و would have + قسمت سوم."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u06-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "She advised him ___ by train.",
+      "options": [
+        "not to travel",
+        "not travel",
+        "to not travel"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "منفی مصدر not to است.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not to travel» است. advised him not to travel."
+    },
+    {
+      "external_id": "u06-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "They encouraged her ___ the exam.",
+      "options": [
+        "to take",
+        "take",
+        "taking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از encourage مصدر با to.",
+        "2": "taking بعد از encourage نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to take» است. to take."
+    },
+    {
+      "external_id": "u06-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "I persuaded him ___ with us.",
+      "options": [
+        "to come",
+        "come",
+        "coming"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از persuade مصدر با to.",
+        "2": "coming نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to come» است. to come."
+    },
+    {
+      "external_id": "u06-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "He warned us ___ late.",
+      "options": [
+        "not to be",
+        "not be",
+        "to not be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "منفی مصدر not to است.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not to be» است. not to be."
+    },
+    {
+      "external_id": "u06-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "She reminded me ___ the door.",
+      "options": [
+        "to lock",
+        "lock",
+        "locking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از remind مصدر با to.",
+        "2": "locking نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to lock» است. to lock."
+    },
+    {
+      "external_id": "u06-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "They invited us ___ dinner.",
+      "options": [
+        "to have",
+        "have",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از invite مصدر با to.",
+        "2": "having نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to have» است. to have."
+    },
+    {
+      "external_id": "u06-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "I told him ___ quiet.",
+      "options": [
+        "to be",
+        "be",
+        "being"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از tell مصدر با to.",
+        "2": "being نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to be» است. to be."
+    },
+    {
+      "external_id": "u06-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "We allow students ___ their phones in the break.",
+      "options": [
+        "to use",
+        "use",
+        "using"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از allow مصدر با to.",
+        "2": "using نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to use» است. to use."
+    },
+    {
+      "external_id": "u06-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "He doesn't let us ___ late.",
+      "options": [
+        "arrive",
+        "to arrive",
+        "arriving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از let فعل پایه.",
+        "2": "arriving نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «arrive» است. arrive."
+    },
+    {
+      "external_id": "u06-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "She made me ___ the truth.",
+      "options": [
+        "tell",
+        "to tell",
+        "telling"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از make فعل پایه.",
+        "2": "telling نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «tell» است. tell."
+    },
+    {
+      "external_id": "u06-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "We expected them ___ early.",
+      "options": [
+        "to arrive",
+        "arrive",
+        "arriving"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از expect مصدر با to.",
+        "2": "arriving نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to arrive» است. to arrive."
+    },
+    {
+      "external_id": "u06-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "They asked me ___ the form.",
+      "options": [
+        "to fill in",
+        "fill in",
+        "filling in"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از ask مصدر با to.",
+        "2": "filling in نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to fill in» است. to fill in."
+    },
+    {
+      "external_id": "u06-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "They won't get a table ___ they've already made a reservation.",
+      "options": [
+        "unless",
+        "if",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "if معنی را برعکس می‌کند.",
+        "2": "when برای زمان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «unless» است. unless."
+    },
+    {
+      "external_id": "u06-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Can I borrow your dictionary ___ you're not using it?",
+      "options": [
+        "if",
+        "unless",
+        "when"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "unless معنی را برعکس می‌کند.",
+        "2": "when زمان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «if» است. if."
+    },
+    {
+      "external_id": "u06-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "If I ___ you, I'd take the job.",
+      "options": [
+        "were",
+        "am",
+        "will be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. were."
+    },
+    {
+      "external_id": "u06-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "If she ___ harder, she would have passed.",
+      "options": [
+        "had studied",
+        "studied",
+        "would study"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "studied گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had studied» است. had studied."
+    },
+    {
+      "external_id": "u06-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "If it ___ tomorrow, we'll cancel the picnic.",
+      "options": [
+        "rains",
+        "will rain",
+        "rained"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "rained گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «rains» است. rains."
+    },
+    {
+      "external_id": "u06-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I would have called you if I ___ your number.",
+      "options": [
+        "had had",
+        "have had",
+        "would have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have had حال کامل است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had had» است. had had."
+    },
+    {
+      "external_id": "u06-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "If you ___ me, I'll help you.",
+      "options": [
+        "ask",
+        "will ask",
+        "asked"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "asked گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «ask» است. ask."
+    },
+    {
+      "external_id": "u06-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Unless we ___, we'll miss the train.",
+      "options": [
+        "hurry",
+        "will hurry",
+        "hurried"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در unless نمی‌آید.",
+        "2": "hurried گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hurry» است. hurry."
+    },
+    {
+      "external_id": "u06-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "If I had known, I ___ come.",
+      "options": [
+        "would have",
+        "would",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would بدون have ناقص است.",
+        "2": "will آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would have» است. would have come."
+    },
+    {
+      "external_id": "u06-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "If you heat ice, it ___.",
+      "options": [
+        "melts",
+        "will melt",
+        "melted"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "حقیقت همیشگی است.",
+        "2": "melted گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «melts» است. melts."
+    },
+    {
+      "external_id": "u06-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "She wouldn't have gone if she ___ about the weather.",
+      "options": [
+        "had known",
+        "knew",
+        "would know"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "knew گذشتهٔ ساده است.",
+        "2": "would در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had known» است. had known."
+    },
+    {
+      "external_id": "u06-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "If he ___ time, he'll visit us.",
+      "options": [
+        "has",
+        "will have",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will در if نمی‌آید.",
+        "2": "had گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has» است. has."
+    },
+    {
+      "external_id": "u06-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "هر فعل را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "advise him",
+          "right": "not to travel"
+        },
+        {
+          "left": "encourage her",
+          "right": "to take the exam"
+        },
+        {
+          "left": "warn us",
+          "right": "not to be late"
+        },
+        {
+          "left": "make me",
+          "right": "tell the truth"
+        },
+        {
+          "left": "let us",
+          "right": "arrive late"
+        }
+      ],
+      "explanation_fa": "افعال to-دار مصدر با to و let/make فعل پایه می‌گیرند.",
+      "position": 25
+    },
+    {
+      "external_id": "u06-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های شرطی را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If you ask me",
+          "right": "I'll help you."
+        },
+        {
+          "left": "Unless we hurry",
+          "right": "we'll miss the train."
+        },
+        {
+          "left": "If I were you",
+          "right": "I'd take the job."
+        },
+        {
+          "left": "If she had studied",
+          "right": "she would have passed."
+        },
+        {
+          "left": "If you heat ice",
+          "right": "it melts."
+        }
+      ],
+      "explanation_fa": "شرطی واقعی و غیرواقعی را از هم تشخیص بده.",
+      "position": 26
+    }
+  ]
+}

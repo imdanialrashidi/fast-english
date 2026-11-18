@@ -1,0 +1,228 @@
+# خط تولید محتوای American English File
+
+راهنمای استاندارد ساخت و آپلود یک یونیت (گرامر + فلش‌کارت) در بخش «کتاب‌ها ← American English File».
+این فایل مرجعِ خودِ عامل (agent) و بازبین انسانی است؛ هر یونیت باید دقیقاً با همین ترتیب ساخته و
+قبل از رفتن به یونیت بعدی تأیید شود.
+
+## ۱. منابع
+
+| منبع | مسیر | کاربرد |
+|---|---|---|
+| Student Book | `~/Documents/Projects/aef 3rd edition workbook/aef 3rd edition student book/` | ترتیب درس‌ها، Grammar Bank، واژگان هر درس |
+| Workbook | `~/Documents/Projects/aef 3rd edition workbook/aef 3rd edition workbook/` | تمرین‌های مرجع و شمارهٔ بخش |
+| کتاب استارتر | `AEF.Starter.3rd.Ed.SB_IELTSMatters.com.PDF` | ۱۲ فایل |
+| Book 1–2 | `AEF.1…`, `AEF.2…` | ۱۲ فایل، هر فایل A/B/C |
+| Book 3–4 | `AEF.3…`, `AEF4 SB…` | ۱۰ فایل، هر فایل A/B |
+| Book 5 | `American-English-File-5-3rd-Student-book.pdf` | ۱۰ فایل (تأیید از فهرست) |
+
+PDFها اسکن تصویری‌اند و لایهٔ متنی ندارند. هر واقعیت محتوایی باید از OCR + نگاه بصری به صفحه بیاید،
+نه از حافظه. برای ارجاع داخلی، شمارهٔ صفحهٔ چاپی کتاب ثبت می‌شود (مثل `Grammar Bank 1A p.92`)،
+نه شمارهٔ صفحهٔ PDF.
+
+## ۲. قاعده‌های تغییرناپذیر
+
+1. **گرامر از Grammar Bank.** موضوع، ترتیب، کاربرد و ساختارها از Grammar Bank همان درس؛ تمرین‌ها
+   از بخش GRAMMAR همان درس در Workbook. اگر یک ساختار در چند یونیت تکرار شده، فقط همان فرم/کاربرد
+   یونیت جاری تمرین می‌شود.
+2. **ترتیب کتاب.** مبحث ۱ → توضیح → سؤال‌های همان مبحث → مبحث ۲ → … . هیچ سؤالی به مبحث دیگر منتقل
+   نمی‌شود. تمرین واژگان (فلش‌کارت) در پایان یونیت است.
+3. **فارسی برای آموزش، انگلیسی برای فرمول.** کاربرد، نکته و بازخورد فارسی؛ فرمول و مثال انگلیسیِ
+   هم‌سطح کتاب. در Starter واژه و جمله باید A1 بماند.
+4. **یک جواب درست.** هر MCQ دقیقاً یک گزینهٔ درست با ایندکس معتبر؛ هر Matching جفت یکتا با سمت راست
+   تکراری‌نشده. گزینه‌های غلط از خطاهای رایج ساخته می‌شوند و هر کدام بازخورد فارسی خودش را دارد.
+5. **اولین پاسخ می‌ماند.** سؤال با اولین پاسخ (درست یا غلط) یک‌بار در پیشرفت شمرده می‌شود؛ تلاش دوباره
+   شمارش را بالا نمی‌برد و همان نتیجه را برمی‌گرداند.
+6. **بدون تصویر.** کارت واژه متنی است: واژه + IPA + معنی فارسی + تعریف انگلیسی + مثال + نقش دستوری.
+7. **صدا اجباری است.** هر کارت یک MP3 از Underdog Woof (صدای Juno) دارد؛ credit «Voice by Underdog
+   Woof» در تگ فایل و در صفحهٔ دربارهٔ ما حفظ می‌شود.
+8. **پولی.** کل بخش کتاب‌ها و تمرین‌ها پشت اشتراک فعال است؛ هیچ پیش‌نمایش رایگان سؤال یا کارت وجود ندارد.
+9. **حذف محدود.** فقط محتوای صریحاً تأییدشده (کارت‌های قدیمی AEF) جایگزین می‌شود؛ مقاله‌ها، درس‌ها،
+   واژه‌نامه و دادهٔ کاربران دست‌نخورده می‌ماند.
+
+## ۳. چرخهٔ یک یونیت
+
+### گام ۱ — نقشهٔ یونیت
+
+از Student Book فهرست همان فایل و از Grammar Bank همان درس:
+
+- شماره و عنوان فایل/درس‌ها (مثل `1A`, `1B`)؛
+- عنوان گرامر هر درس به همان لفظ Grammar Bank؛
+- صفحهٔ Grammar Bank هر درس؛
+- بخش GRAMMAR همان درس در Workbook و شمارهٔ تمرین‌ها.
+
+خروجی این گام در `source` فایل تمرین ثبت می‌شود:
+
+```json
+"source": {
+  "edition": "3rd",
+  "student_book": "Starter",
+  "lessons": ["1A", "1B"],
+  "grammar_bank": "1A p.92, 1B p.93",
+  "workbook": "1A, 1B"
+}
+```
+
+### گام ۲ — OCR صفحه‌ها
+
+```bash
+scripts/aef/ocr-pages.sh "<pdf>" <first> <last> /tmp/aef-ocr/<book>-<unit> 250
+```
+
+- صفحهٔ درس‌ها + صفحهٔ Grammar Bank + صفحهٔ GRAMMAR در Workbook.
+- اگر خروجی یک ستون را قاطی کرد، همان صفحه را با `pdftoppm` تک‌صفحه‌ای رندر و دوباره OCR کن؛
+  برای جدول‌ها حتماً تصویر صفحه را هم ببین.
+- شمارهٔ صفحهٔ چاپی معمولاً با شمارهٔ PDF در انتهای کتاب یکی است؛ در ابتدای کتاب اختلاف دارد.
+  قبل از ثبت ارجاع، شمارهٔ چاپی داخل صفحه را با OCR چک کن.
+
+### گام ۳ — نوشتن توضیح مبحث
+
+برای هر مبحث سه چیز:
+
+1. `title_en` دقیقاً از Grammar Bank، `title_fa` کوتاه و روشن.
+2. `use_fa`: چه زمانی و برای چه منظوری، در دو تا چهار جملهٔ ساده.
+3. `formulas`: مثبت/منفی/سؤالی جداگانه، با `\n` برای چند حالت؛ اگر ساختار با فاعل عوض می‌شود،
+   همهٔ حالت‌ها. اگر سؤال/منفی معنا ندارد، شکل‌های اصلی همان ساختار.
+4. `examples`: سه تا پنج مثال کوتاه از خود کتاب یا هم‌سطح آن، با ترجمهٔ فارسی.
+5. `notes_fa`: یک نکتهٔ ضروری یا خطای رایج که برای حل سؤال‌ها لازم است.
+
+قبل از ادامه، توضیح را با Grammar Bank همان درس مقایسه کن: ترتیب، فرم و کاربرد یکی باشد.
+
+### گام ۴ — نوشتن سؤال‌ها
+
+- پیش‌فرض: **چندگزینه‌ای ۲–۳ گزینه‌ای، یک جواب**؛ برای هر مبحث ۶ تا ۸ سؤال.
+- در هر یونیت حداکثر یک تمرین Matching (۵ جفت) برای تنوع، اگر به فهم کمک می‌کند.
+- ترتیب: اول شکل درست در جمله، بعد همان ساختار در گفت‌وگوی کوتاه.
+- گزینه‌های غلط از خطاهای رایج (زمان، فاعل، حرف اضافه، شکل کوتاه)؛ بازخورد هر گزینه دقیقاً همان خطا.
+- سؤال طولانی، دستور چندمرحله‌ای و تکرار حذف می‌شود.
+
+### گام ۵ — فلش‌کارت‌ها
+
+- ۱۵ تا ۲۵ واژهٔ پرکاربرد از Vocabulary همان یونیت؛ واژهٔ کم‌کاربرد یا تخصصی کنار گذاشته می‌شود.
+- IPA، معنی فارسی، تعریف انگلیسیِ ساده، یک مثال کوتاه هم‌سطح، نقش دستوری، `lesson_code` و `topic`.
+
+### گام ۶ — صدا
+
+```bash
+python3 scripts/aef/generate-audio.py \
+  database/seeders/fixtures/aef/aef-3e-starter-u01-cards.json \
+  storage/app/aef-audio/aef-3e-starter/u01
+```
+
+- صدا با Woof محلی ساخته می‌شود (`~/Documents/Projects/Kido-Talks-Flashcards`)، یک صدا (Juno)،
+  tempo پیش‌فرض 0.85 برای یونیت‌های جدید.
+- فایل‌های تولیدشده در `storage/app/aef-audio/<book>/uNN/` می‌مانند و وارد git نمی‌شوند.
+
+### گام ۷ — اعتبارسنجی و آپلود
+
+```bash
+python3 scripts/aef/validate-content.py \
+  database/seeders/fixtures/exercises database/seeders/fixtures/aef
+docker exec <php-container> php artisan aef:import-catalog
+docker exec <php-container> php artisan flashcards:import-aef \
+  database/seeders/fixtures/aef/aef-3e-starter-u01-cards.json \
+  --audio=storage/app/aef-audio/aef-3e-starter/u01
+docker exec <php-container> php artisan exercises:import \
+  database/seeders/fixtures/exercises/aef-3e-starter-u01.json
+```
+
+- اول `--dry-run` برای تمرین‌ها؛ خطا یعنی هیچ چیز نوشته نمی‌شود.
+- import کارت، فایل صوتی را به `storage/app/private/flashcards/<book>/uNN/` کپی می‌کند.
+- re-import با همان `external_id` به‌روزرسانی است؛ کارت‌های حذف‌شده از فایل، از همان یونیت حذف
+  می‌شوند.
+
+### گام ۸ — بازبینی
+
+1. صفحهٔ یونیت را در ۳۹۳px و ۳۲۰px باز کن: عنوان، مبحث‌ها، ترتیب سؤال‌ها، بازخورد و نبود سرریز افقی.
+2. یک سؤال را عمداً غلط جواب بده: پاسخ درست + بازخورد همان گزینه + توضیح فوراً دیده شود.
+3. همان سؤال را دوباره جواب بده: پیشرفت تغییر نکند و پیام «قبلاً پاسخ داده شده» بدهد.
+4. رفرش: همان تعداد پاسخ باقی بماند؛ پیشرفت کتاب و فهرست یونیت‌ها همان عدد را نشان دهند.
+5. صوت کارت: درخواست `/media/flashcards/{id}/audio` با ۲۰۶ پاسخ دهد.
+6. تست‌ها:
+
+```bash
+docker exec -e APP_ENV=testing -e DB_DATABASE=fe_test ... php artisan test --filter="Exercise|BookUnit|ReviewHub|Grader"
+BASE_URL=http://127.0.0.1:8112 npx playwright test tests/browser/exercises.spec.ts --project=chromium
+```
+
+## ۴. قرارداد فایل تمرین (v2)
+
+```json
+{
+  "external_id": "aef-3e-starter-u01",
+  "book": "aef-3e-starter",
+  "unit": 1,
+  "title": "American English File Starter · Unit 1",
+  "instructions_fa": "…",
+  "source": { "edition": "3rd", "student_book": "Starter", "lessons": ["1A"], "grammar_bank": "1A p.92" },
+  "topics": [
+    {
+      "key": "t1",
+      "title_en": "verb be (singular): I and you",
+      "title_fa": "فعل be: I و you",
+      "use_fa": "…",
+      "formulas": [{ "label_fa": "مثبت", "text": "I am (I'm) + ..." }],
+      "examples": [{ "en": "I'm Helen.", "fa": "من هلن هستم." }],
+      "notes_fa": "…"
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u01-t1-q01",
+      "topic": "t1",
+      "type": "choice",
+      "prompt": "Hello, I ___ Helen.",
+      "options": ["am", "is", "are"],
+      "answer": 0,
+      "feedback": { "1": "is برای he/she/it است." },
+      "explanation_fa": "فاعل I با am می‌آید."
+    },
+    {
+      "external_id": "u01-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "هر نیمه را وصل کن.",
+      "pairs": [{ "left": "Hello, I'm", "right": "Maria." }]
+    }
+  ]
+}
+```
+
+قاعده‌ها: `topic` هر آیتم باید در `topics` باشد؛ Matching بین ۲ تا ۶ جفت و سمت راست یکتا؛
+`answer` ایندکس گزینه؛ `feedback` فقط برای گزینه‌های موجود.
+
+## ۵. قرارداد فایل کارت
+
+```json
+{
+  "book": { "slug": "aef-3e-starter" },
+  "unit": { "number": 1, "title_en": "A cappuccino, please", "title_fa": "…" },
+  "cards": [
+    {
+      "external_id": "aef3s-u01-001",
+      "word": "zero",
+      "phonetic": "/ˈzɪroʊ/",
+      "translation_fa": "صفر",
+      "definition_en": "the number 0",
+      "example_en": "Zero, one, two.",
+      "part_of_speech": "number",
+      "lesson_code": "1A",
+      "topic": "numbers",
+      "audio": "aef3s-u01-001.mp3"
+    }
+  ]
+}
+```
+
+## ۶. تعریف «یونیت تمام‌شده»
+
+- [ ] عنوان و شمارهٔ یونیت با Student Book یکی است.
+- [ ] هر مبحث از Grammar Bank همان درس آمده و ترتیبش حفظ شده.
+- [ ] هر سؤال زیر مبحثی است که پیش از آن تدریس شده.
+- [ ] هر MCQ یک جواب و هر گزینهٔ غلط بازخورد دارد.
+- [ ] هر Matching جفت یکتا دارد.
+- [ ] ۱۵–۲۵ کارت با IPA، معنی، تعریف، مثال و صدا.
+- [ ] پیشرفت یک‌بار شمرده می‌شود و بعد از رفرش می‌ماند.
+- [ ] تست‌ها و اسکرین‌شات موبایل ثبت شده‌اند.
+- [ ] ارجاع داخلی (`source`) پر شده است.
+
+تنها بعد از این چک‌لیست سراغ یونیت بعدی برو.

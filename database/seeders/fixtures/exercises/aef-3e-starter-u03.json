@@ -1,0 +1,444 @@
+{
+  "external_id": "aef-3e-starter-u03",
+  "book": "aef-3e-starter",
+  "unit": 3,
+  "title": "American English File Starter · Unit 3",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 3,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "3A",
+      "3B"
+    ],
+    "grammar_bank": "3A p.96, 3B p.96",
+    "workbook": "3A pp.15-16, 3B pp.17-18"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "singular and plural nouns; a / an",
+      "title_fa": "اسم مفرد و جمع؛ a / an",
+      "use_fa": "برای نام بردن یک چیز مفرد از a یا an استفاده می‌کنیم و برای چند چیز، اسم را جمع می‌بندیم. a قبل از صدای صامت و an قبل از صدای مصوت می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "مفرد",
+          "text": "a / an + singular noun\nIt's a book. / It's an umbrella."
+        },
+        {
+          "label_fa": "جمع",
+          "text": "noun + -s / -es\nThey're books. / They're watches.\nconsonant + y → -ies: countries"
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "What is it? — It's a key.\nWhat are they? — They're keys."
+        }
+      ],
+      "examples": [
+        {
+          "en": "It's a key.",
+          "fa": "این یک کلید است."
+        },
+        {
+          "en": "It's an ID card.",
+          "fa": "این یک کارت شناسایی است."
+        },
+        {
+          "en": "They're watches.",
+          "fa": "این‌ها ساعت مچی‌اند."
+        },
+        {
+          "en": "They're dictionaries.",
+          "fa": "این‌ها فرهنگ لغت‌اند."
+        }
+      ],
+      "notes_fa": "a + صامت (a bag, a phone) و an + مصوت (an umbrella, an ID card). برای جمع: -s معمول، -es بعد از ch/sh/s/ss/x، و y بعد از صامت به ies تبدیل می‌شود."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "this / that / these / those",
+      "title_fa": "this، that، these و those",
+      "use_fa": "برای اشاره به چیزها و افراد: this/these برای چیزهای نزدیک و that/those برای چیزهای دور. this و that مفردند و these و those جمع.",
+      "formulas": [
+        {
+          "label_fa": "نزدیک",
+          "text": "this + singular noun\nThese + plural noun\nThis is my book. / These are my keys."
+        },
+        {
+          "label_fa": "دور",
+          "text": "that + singular noun\nThose + plural noun\nThat is my car. / Those are my friends."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "What's this? — It's a key.\nWhat are those? — They're cats."
+        }
+      ],
+      "examples": [
+        {
+          "en": "What's this? — It's a key.",
+          "fa": "این چیست؟ — یک کلید است."
+        },
+        {
+          "en": "What are those? — They're cats.",
+          "fa": "آن‌ها چیستند؟ — گربه‌اند."
+        },
+        {
+          "en": "This is my brother.",
+          "fa": "این برادرم است."
+        },
+        {
+          "en": "Who are those girls over there?",
+          "fa": "آن دخترها آن‌طرف کی هستند؟"
+        }
+      ],
+      "notes_fa": "this/these = here (نزدیک)، that/those = there / over there (دور). این کلمه‌ها هم ضمیرند و هم صفت: This is my book. / This book is nice."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u03-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "It's ___ umbrella.",
+      "options": [
+        "a",
+        "an"
+      ],
+      "answer": 1,
+      "feedback": {
+        "0": "قبل از صدای مصوت (umbrella) از an استفاده می‌کنیم."
+      },
+      "explanation_fa": "umbrella با صدای مصوت شروع می‌شود، پس an می‌گیرد."
+    },
+    {
+      "external_id": "u03-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "It's ___ book.",
+      "options": [
+        "a",
+        "an"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "book با صدای صامت شروع می‌شود، پس a می‌گیرد."
+      },
+      "explanation_fa": "book با صدای صامت شروع می‌شود: a book."
+    },
+    {
+      "external_id": "u03-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They're ___.",
+      "options": [
+        "watchs",
+        "watches",
+        "watch"
+      ],
+      "answer": 1,
+      "feedback": {
+        "0": "بعد از ch باید es بیاید، نه فقط s.",
+        "2": "برای جمع، اسم باید جمع بسته شود."
+      },
+      "explanation_fa": "watch به ch ختم می‌شود؛ جمعش watches است."
+    },
+    {
+      "external_id": "u03-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They're ___.",
+      "options": [
+        "dictionarys",
+        "dictionaries",
+        "dictionary"
+      ],
+      "answer": 1,
+      "feedback": {
+        "0": "y بعد از صامت به ies تبدیل می‌شود.",
+        "2": "این اسم مفرد است؛ جمله دربارهٔ چند چیز است."
+      },
+      "explanation_fa": "dictionary → dictionaries (y بعد از صامت)."
+    },
+    {
+      "external_id": "u03-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ are they?\nThey're keys.",
+      "options": [
+        "What",
+        "Who",
+        "Where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Who برای افراد است.",
+        "2": "Where برای مکان است."
+      },
+      "explanation_fa": "برای پرسیدن دربارهٔ چیزها از What استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "It's ___ ID card.",
+      "options": [
+        "a",
+        "an"
+      ],
+      "answer": 1,
+      "feedback": {
+        "0": "ID با صدای مصوت /aɪ/ شروع می‌شود."
+      },
+      "explanation_fa": "ID با صدای مصوت شروع می‌شود، پس an ID card."
+    },
+    {
+      "external_id": "u03-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "They're ___.",
+      "options": [
+        "keyes",
+        "keys",
+        "key"
+      ],
+      "answer": 1,
+      "feedback": {
+        "0": "key به y بعد از مصوت ختم می‌شود؛ s اضافه می‌شود.",
+        "2": "جمله جمع است."
+      },
+      "explanation_fa": "key → keys (y بعد از مصوت تغییر نمی‌کند)."
+    },
+    {
+      "external_id": "u03-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "___ is it?\nIt's a phone.",
+      "options": [
+        "What",
+        "Who",
+        "How"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Who برای افراد است.",
+        "2": "How برای حالت و روش است."
+      },
+      "explanation_fa": "برای پرسیدن دربارهٔ یک چیز از What is it? استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ is my book. (نزدیک)",
+      "options": [
+        "This",
+        "These",
+        "Those"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "These جمع است و book مفرد.",
+        "2": "Those برای چیز دور است."
+      },
+      "explanation_fa": "برای یک چیز نزدیک از this استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "___ are my keys. (نزدیک)",
+      "options": [
+        "This",
+        "These",
+        "That"
+      ],
+      "answer": 1,
+      "feedback": {
+        "0": "This مفرد است و keys جمع.",
+        "2": "That برای چیز دور است."
+      },
+      "explanation_fa": "برای چند چیز نزدیک از these استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "Look at ___ car over there.",
+      "options": [
+        "that",
+        "this",
+        "these"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "this برای چیز نزدیک است.",
+        "2": "these جمع است و car مفرد."
+      },
+      "explanation_fa": "برای یک چیز دور از that استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "___ are my friends over there.",
+      "options": [
+        "Those",
+        "These",
+        "This"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "These برای چیزهای نزدیک است.",
+        "2": "This مفرد است."
+      },
+      "explanation_fa": "برای چند چیز یا چند نفر دور از those استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "What's ___?\nIt's a watch.",
+      "options": [
+        "this",
+        "these",
+        "those"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "these جمع است و watch مفرد.",
+        "2": "those جمع است و برای دور."
+      },
+      "explanation_fa": "برای یک چیز نزدیک: What's this?"
+    },
+    {
+      "external_id": "u03-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "What are ___?\nThey're sunglasses.",
+      "options": [
+        "these",
+        "this",
+        "that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "this مفرد است.",
+        "2": "that مفرد است."
+      },
+      "explanation_fa": "برای چند چیز نزدیک: What are these?"
+    },
+    {
+      "external_id": "u03-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ is my brother.",
+      "options": [
+        "This",
+        "These",
+        "Those"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "These جمع است.",
+        "2": "Those جمع است."
+      },
+      "explanation_fa": "برای معرفی یک نفر نزدیک: This is my brother."
+    },
+    {
+      "external_id": "u03-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "Who are ___ girls over there?",
+      "options": [
+        "those",
+        "these",
+        "this"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "These برای نزدیک است.",
+        "2": "This مفرد است."
+      },
+      "explanation_fa": "برای چند نفر دور: those girls."
+    },
+    {
+      "external_id": "u03-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "هر اسم مفرد را به جمعش وصل کن.",
+      "pairs": [
+        {
+          "left": "a book",
+          "right": "books"
+        },
+        {
+          "left": "a watch",
+          "right": "watches"
+        },
+        {
+          "left": "a country",
+          "right": "countries"
+        },
+        {
+          "left": "a class",
+          "right": "classes"
+        },
+        {
+          "left": "a key",
+          "right": "keys"
+        }
+      ],
+      "explanation_fa": "جمع با -s، -es (بعد از ch/sh/s/ss/x) یا ies (y بعد از صامت) ساخته می‌شود."
+    },
+    {
+      "external_id": "u03-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخش وصل کن.",
+      "pairs": [
+        {
+          "left": "What's this?",
+          "right": "It's a key."
+        },
+        {
+          "left": "What are these?",
+          "right": "They're keys."
+        },
+        {
+          "left": "What's that?",
+          "right": "It's a cat."
+        },
+        {
+          "left": "What are those?",
+          "right": "They're cats."
+        },
+        {
+          "left": "This is",
+          "right": "my brother."
+        }
+      ],
+      "explanation_fa": "this/that مفردند و با it پاسخ می‌گیرند؛ these/those جمع‌اند و با they."
+    }
+  ]
+}

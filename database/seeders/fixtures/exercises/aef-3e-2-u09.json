@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-2-u09",
+  "book": "aef-3e-2",
+  "unit": 9,
+  "title": "American English File 2 · Unit 9",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 9,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "9A",
+      "9B",
+      "9C"
+    ],
+    "grammar_bank": "9A p.144, 9B p.144, 9C p.144",
+    "workbook": "9A, 9B, 9C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "second conditional: if + past, would / wouldn't + base form",
+      "title_fa": "شرطی نوع دوم",
+      "use_fa": "برای موقعیت خیالی یا غیرواقعی در آینده و نتیجه‌اش. جملهٔ if با گذشتهٔ ساده و نتیجه با would/wouldn't + فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "If + past simple, would/wouldn't + base verb\nIf a cow attacked me, I'd run away."
+        },
+        {
+          "label_fa": "ترتیب",
+          "text": "I'd exercise more if I had more time."
+        },
+        {
+          "label_fa": "could/were",
+          "text": "If we went by car, we could stop.\nIf I were you, I wouldn't take that job."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If a cow attacked me, I'd run away.",
+          "fa": "اگر گاوی به من حمله می‌کرد، فرار می‌کردم."
+        },
+        {
+          "en": "If she didn't have a dog, she wouldn't exercise.",
+          "fa": "اگر سگ نداشت، ورزش نمی‌کرد."
+        },
+        {
+          "en": "Would you go for a swim if there were sharks?",
+          "fa": "اگر کوسه بود شنا می‌رفتی؟"
+        },
+        {
+          "en": "If I were you, I wouldn't take that job.",
+          "fa": "اگر جای تو بودم، آن کار را قبول نمی‌کردم."
+        }
+      ],
+      "notes_fa": "در جملهٔ if شرطی دوم گذشته می‌آید، نه would: If I had (نه If I would have). با be از were استفاده می‌کنیم."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present perfect + for and since",
+      "title_fa": "حال کامل با for و since",
+      "use_fa": "برای کاری که در گذشته شروع شده و هنوز ادامه دارد. for با مدت زمان و since با نقطهٔ شروع.",
+      "formulas": [
+        {
+          "label_fa": "for",
+          "text": "for + period\nfor 20 years / for three months"
+        },
+        {
+          "label_fa": "since",
+          "text": "since + starting point\nsince 2015 / since last June"
+        },
+        {
+          "label_fa": "سؤال",
+          "text": "How long have you lived there?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I've lived there for 20 years.",
+          "fa": "بیست سال است آنجا زندگی می‌کنم."
+        },
+        {
+          "en": "I've worked there since 2015.",
+          "fa": "از ۲۰۱۵ آنجا کار می‌کنم."
+        },
+        {
+          "en": "How long have you been married?",
+          "fa": "چند وقت است ازدواج کرده‌اید؟"
+        },
+        {
+          "en": "I've been afraid of spiders since I was a child.",
+          "fa": "از بچگی از عنکبوت می‌ترسم."
+        }
+      ],
+      "notes_fa": "با for/since حال کامل می‌آید، نه حال ساده: I've lived here for 20 years (نه I live here for 20 years)."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "present perfect or simple past? (2)",
+      "title_fa": "حال کامل یا گذشتهٔ ساده؟ (دورهٔ تمام‌شده)",
+      "use_fa": "گذشتهٔ ساده برای دورهٔ تمام‌شده در گذشته؛ حال کامل با for/since برای دوره‌ای که هنوز ادامه دارد.",
+      "formulas": [
+        {
+          "label_fa": "گذشته",
+          "text": "How long was she married? — For 11 years.\nShe wrote four books."
+        },
+        {
+          "label_fa": "حال کامل",
+          "text": "How long has she been married?\nShe's been married since 1984."
+        }
+      ],
+      "examples": [
+        {
+          "en": "She was married to him for 11 years.",
+          "fa": "او ۱۱ سال با او ازدواج کرده بود."
+        },
+        {
+          "en": "She's been married since 1984.",
+          "fa": "از ۱۹۸۴ ازدواج کرده است."
+        },
+        {
+          "en": "She wrote four books.",
+          "fa": "او چهار کتاب نوشت."
+        },
+        {
+          "en": "She's written children's books.",
+          "fa": "او کتاب‌های کودک نوشته است."
+        }
+      ],
+      "notes_fa": "Jack was married for ten years یعنی الان ازدواج نکرده است؛ Jack has been married for ten years یعنی هنوز ازدواج کرده است."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u09-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "If a cow ___ me, I'd run away.",
+      "options": [
+        "attacked",
+        "attacks",
+        "will attack"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "شرطی دوم گذشته می‌خواهد.",
+        "2": "will در جملهٔ if نمی‌آید."
+      },
+      "explanation_fa": "if + گذشتهٔ ساده: attacked."
+    },
+    {
+      "external_id": "u09-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "If she didn't have a dog, she ___ exercise.",
+      "options": [
+        "wouldn't",
+        "won't",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't برای شرطی اول است.",
+        "2": "didn't در جملهٔ نتیجه نمی‌آید."
+      },
+      "explanation_fa": "نتیجهٔ خیالی: wouldn't."
+    },
+    {
+      "external_id": "u09-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ you go for a swim if there were sharks?",
+      "options": [
+        "Would",
+        "Do",
+        "Will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای حال است.",
+        "2": "Will برای شرطی اول است."
+      },
+      "explanation_fa": "سؤال شرطی دوم: Would you ...?"
+    },
+    {
+      "external_id": "u09-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "If I ___ more time, I'd exercise more.",
+      "options": [
+        "had",
+        "have",
+        "will have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "will در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. if + had."
+    },
+    {
+      "external_id": "u09-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I'd exercise more if I ___ more time.",
+      "options": [
+        "had",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "has برای سوم‌شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. if + past: had."
+    },
+    {
+      "external_id": "u09-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "If we went by car, we ___ stop on the way.",
+      "options": [
+        "could",
+        "can",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can برای حال است.",
+        "2": "will برای شرطی اول است."
+      },
+      "explanation_fa": "could + فعل پایه."
+    },
+    {
+      "external_id": "u09-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "If Jack ___ here, he'd know what to do.",
+      "options": [
+        "were",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "am با Jack نمی‌آید."
+      },
+      "explanation_fa": "با be در شرطی دوم: were."
+    },
+    {
+      "external_id": "u09-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "If I ___ you, I wouldn't take that job.",
+      "options": [
+        "were",
+        "am",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am حال است.",
+        "2": "was در این عبارت رایج نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. If I were you."
+    },
+    {
+      "external_id": "u09-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I've lived there ___ 20 years.",
+      "options": [
+        "for",
+        "since",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "since برای نقطهٔ شروع است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "مدت زمان: for."
+    },
+    {
+      "external_id": "u09-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I've worked there ___ 2015.",
+      "options": [
+        "since",
+        "for",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for برای مدت است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "نقطهٔ شروع: since."
+    },
+    {
+      "external_id": "u09-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "How long ___ you lived there?",
+      "options": [
+        "have",
+        "do",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال ساده است.",
+        "2": "did برای گذشتهٔ ساده است."
+      },
+      "explanation_fa": "حال کامل: have you lived."
+    },
+    {
+      "external_id": "u09-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "She ___ been married since 1984.",
+      "options": [
+        "has",
+        "have",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have برای جمع است.",
+        "2": "is برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has» است. she + has been."
+    },
+    {
+      "external_id": "u09-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I've had this car ___ three months.",
+      "options": [
+        "for",
+        "since",
+        "ago"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "since برای نقطهٔ شروع است.",
+        "2": "ago با گذشته می‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «for» است. for three months."
+    },
+    {
+      "external_id": "u09-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I've been afraid of spiders ___ I was a child.",
+      "options": [
+        "since",
+        "for",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for مدت است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «since» است. since I was a child."
+    },
+    {
+      "external_id": "u09-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "How long have you ___ married?",
+      "options": [
+        "been",
+        "be",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "be بعد از have نمی‌آید.",
+        "2": "was گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «been» است. have been married."
+    },
+    {
+      "external_id": "u09-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "We haven't seen him ___ last June.",
+      "options": [
+        "since",
+        "for",
+        "ago"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for مدت است.",
+        "2": "ago با گذشته می‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «since» است. since last June."
+    },
+    {
+      "external_id": "u09-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "How long ___ Janet Leigh married to Tony Curtis?",
+      "options": [
+        "was",
+        "has been",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has been یعنی هنوز ادامه دارد.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "دورهٔ تمام‌شده: was."
+    },
+    {
+      "external_id": "u09-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She ___ married to him for 11 years.",
+      "options": [
+        "was",
+        "has been",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has been یعنی هنوز ادامه دارد.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "گذشته: was."
+    },
+    {
+      "external_id": "u09-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "How long ___ Jamie Lee Curtis been married?",
+      "options": [
+        "has",
+        "was",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was گذشته است.",
+        "2": "is حال ساده است."
+      },
+      "explanation_fa": "هنوز ادامه دارد: has been."
+    },
+    {
+      "external_id": "u09-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "She's been married ___ 1984.",
+      "options": [
+        "since",
+        "for",
+        "from"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "for مدت است.",
+        "2": "from اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «since» است. since 1984."
+    },
+    {
+      "external_id": "u09-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "How many books ___ she write?",
+      "options": [
+        "did",
+        "has",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has با write پایه نمی‌آید.",
+        "2": "have برای جمع است."
+      },
+      "explanation_fa": "گذشته: did she write."
+    },
+    {
+      "external_id": "u09-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "She ___ four books.",
+      "options": [
+        "wrote",
+        "has written",
+        "writes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has written یعنی تا حالا.",
+        "2": "writes حال است."
+      },
+      "explanation_fa": "دورهٔ تمام‌شده: wrote."
+    },
+    {
+      "external_id": "u09-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Jack ___ married for ten years. (الان ازدواج نیست)",
+      "options": [
+        "was",
+        "has been",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has been یعنی هنوز ازدواج است.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "گذشته: was."
+    },
+    {
+      "external_id": "u09-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "Jack ___ married for ten years. (هنوز ازدواج است)",
+      "options": [
+        "has been",
+        "was",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was یعنی تمام شده.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "حال کامل: has been."
+    },
+    {
+      "external_id": "u09-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های شرطی را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If a cow attacked me",
+          "right": "I'd run away."
+        },
+        {
+          "left": "If she didn't have a dog",
+          "right": "she wouldn't exercise."
+        },
+        {
+          "left": "If I had more time",
+          "right": "I'd exercise more."
+        },
+        {
+          "left": "If we went by car",
+          "right": "we could stop on the way."
+        },
+        {
+          "left": "If I were you",
+          "right": "I wouldn't take that job."
+        }
+      ],
+      "explanation_fa": "if + گذشته، نتیجه با would/could."
+    },
+    {
+      "external_id": "u09-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I've lived there",
+          "right": "for 20 years."
+        },
+        {
+          "left": "I've worked there",
+          "right": "since 2015."
+        },
+        {
+          "left": "I've had this car",
+          "right": "for three months."
+        },
+        {
+          "left": "I've been afraid",
+          "right": "since I was a child."
+        },
+        {
+          "left": "How long have you",
+          "right": "been married?"
+        }
+      ],
+      "explanation_fa": "for + مدت، since + نقطهٔ شروع."
+    },
+    {
+      "external_id": "u09-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "Janet Leigh",
+          "right": "was married for 11 years."
+        },
+        {
+          "left": "Jamie Lee Curtis",
+          "right": "has been married since 1984."
+        },
+        {
+          "left": "She wrote",
+          "right": "four books."
+        },
+        {
+          "left": "She's written",
+          "right": "children's books."
+        },
+        {
+          "left": "Jack was married for ten years.",
+          "right": "He's not married now."
+        },
+        {
+          "left": "Jack has been married for ten years.",
+          "right": "He's married now."
+        }
+      ],
+      "explanation_fa": "دورهٔ تمام‌شده گذشتهٔ ساده و دورهٔ ادامه‌دار حال کامل."
+    }
+  ]
+}

@@ -152,6 +152,182 @@ export interface ReadingContent {
     glossary: GlossaryEntry[];
 }
 
+/** Owner request 2026-11-15: AEF book flashcards (two-grade scheduler). */
+export type FlashcardRating = 'again' | 'good';
+
+/** Lesson vocabulary decks use the notebook's four-grade schedule. */
+export type VocabRating = 'again' | 'hard' | 'good' | 'easy';
+
+/** Book-unit exercises: grammar topics, choice and matching (2026-11-16). */
+export type ExerciseType = 'choice' | 'matching';
+
+export interface ExerciseTopicRow {
+    id: number;
+    key: string;
+    title_en: string;
+    title_fa: string;
+    use_fa: string;
+    formulas: { label_fa: string; text: string }[];
+    examples: { en: string; fa: string | null }[];
+    notes_fa: string | null;
+}
+
+export interface ExerciseAnswerResult {
+    is_correct: boolean;
+    response: number | number[];
+    correct: string;
+    explanation_fa: string | null;
+    feedback_fa: string | null;
+    answered_at: string | null;
+}
+
+export interface UnitExerciseItem {
+    id: number;
+    topic_key: string | null;
+    type: ExerciseType;
+    prompt: string;
+    position: number;
+    answered: boolean;
+    options?: string[];
+    left?: string[];
+    rights?: string[];
+    result?: ExerciseAnswerResult;
+}
+
+export interface UnitExerciseSet {
+    title: string;
+    instructions_fa: string;
+    source: Record<string, unknown> | null;
+}
+
+export interface UnitProgress {
+    questions: number;
+    answered: number;
+}
+
+export interface FlashcardCounts {
+    total: number;
+    known: number;
+    unknown: number;
+    due: number;
+    fresh: number;
+}
+
+/** One lesson deck's computed state (owner clarification 2026-11-15). */
+export interface LessonDeckCounts {
+    total: number;
+    new: number;
+    learning: number;
+    known: number;
+    due: number;
+}
+
+export interface LessonDeckLesson {
+    id: number;
+    title_en: string;
+    level: string;
+    topic_slug: string;
+    topic_title: string;
+    reader_url: string;
+}
+
+export interface BookExerciseProgress {
+    questions: number;
+    answered: number;
+}
+
+export interface UnitExerciseProgress {
+    questions: number;
+    answered: number;
+}
+
+export interface FlashcardBookRow {
+    slug: string;
+    title_en: string;
+    title_fa: string | null;
+    level: string | null;
+    edition: string | null;
+    cover_url: string | null;
+    units_count: number;
+    cards_count: number;
+    known_count: number;
+    unknown_count: number;
+    due_count: number;
+    fresh_count: number;
+    exercise: BookExerciseProgress | null;
+    url: string;
+}
+
+export interface FlashcardUnitRow {
+    number: number;
+    title_en: string;
+    title_fa: string | null;
+    subtitle: string | null;
+    cards_count: number;
+    known_count: number;
+    unknown_count: number;
+    due_count: number;
+    fresh_count: number;
+    exercise: UnitExerciseProgress | null;
+    url: string;
+    hub_url: string;
+    results_url: string;
+}
+
+export interface FlashcardCardRow {
+    id: number;
+    word_key?: string | null;
+    word: string;
+    headword: string;
+    phonetic: string | null;
+    translation_fa: string;
+    definition_en: string | null;
+    example_en: string | null;
+    part_of_speech: string | null;
+    /** Null on a lesson card whose approved clip has not been produced yet. */
+    audio_url: string | null;
+    status?: 'new' | 'learning' | 'known' | string | null;
+    last_rating: FlashcardRating | null;
+    phase: string | null;
+    due_at: string | null;
+    is_new: boolean;
+    book_title?: string | null;
+    book_slug?: string | null;
+    unit_title?: string | null;
+    unit_number?: number | null;
+}
+
+export interface FlashcardStudyConfig {
+    reveal_delay_ms: number;
+    auto_play_audio: boolean;
+    show_phonetic: boolean;
+    show_translation: boolean;
+}
+
+export interface FlashcardBookSummary {
+    slug: string;
+    title_en: string;
+    title_fa: string | null;
+    level: string | null;
+    url: string;
+}
+
+export interface FlashcardUnitSummary {
+    number: number;
+    title_en: string;
+    title_fa: string | null;
+    subtitle: string | null;
+    url: string;
+    hub_url: string;
+    results_url: string;
+}
+
+export interface FlashcardReviewSummary {
+    due: number;
+    next_due_at: string | null;
+    reviewed_today: number;
+}
+
 declare global {
     interface Window {
         /** Browser-test probe: the persistent audio element bound once. */

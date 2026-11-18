@@ -3,6 +3,7 @@
 namespace App\Support\Flashcards;
 
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use InvalidArgumentException;
 
 /**
@@ -178,7 +179,7 @@ final class Scheduler
         $dueAt = $state['due_at'] ?? null;
 
         return $phase !== 'new'
-            && $dueAt instanceof \Carbon\CarbonInterface
+            && $dueAt instanceof CarbonInterface
             && $dueAt->lessThanOrEqualTo($now);
     }
 

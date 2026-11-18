@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-4-u05",
+  "book": "aef-3e-4",
+  "unit": 5,
+  "title": "American English File 4 · Unit 5",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 5,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "5A",
+      "5B"
+    ],
+    "grammar_bank": "5A p.142, 5B p.143",
+    "workbook": "5A, 5B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "unreal conditionals",
+      "title_fa": "شرطی‌های غیرواقعی",
+      "use_fa": "شرطی دوم برای وضعیت خیالی در حال/آینده (if + گذشته، would)؛ شرطی سوم برای گذشتهٔ خیالی (if + گذشتهٔ کامل، would have + قسمت سوم).",
+      "formulas": [
+        {
+          "label_fa": "دوم",
+          "text": "If + past, would/could + base\nIf I were you, I'd wear a helmet."
+        },
+        {
+          "label_fa": "سوم",
+          "text": "If + past perfect, would have + past participle\nIf they had found the river, they would have survived."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If there was a fire, it would be very difficult to escape.",
+          "fa": "اگر آتش‌سوزی بود، فرار بسیار سخت می‌شد."
+        },
+        {
+          "en": "If they had found the river sooner, they would all have survived.",
+          "fa": "اگر زودتر رودخانه را پیدا می‌کردند، همه زنده می‌ماندند."
+        },
+        {
+          "en": "I wouldn't have gotten lost if I hadn't taken the wrong path.",
+          "fa": "اگر مسیر اشتباه را نمی‌رفتم گم نمی‌شدم."
+        },
+        {
+          "en": "If the weather had been better, I might have arrived earlier.",
+          "fa": "اگر هوا بهتر بود شاید زودتر می‌رسیدم."
+        }
+      ],
+      "notes_fa": "در if شرطی سوم گذشتهٔ کامل می‌آید و در نتیجه would have + قسمت سوم. could/might هم به‌جای would می‌آیند."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "wish for present / future",
+      "title_fa": "wish برای حال و آینده",
+      "use_fa": "wish + گذشتهٔ ساده برای آرزوی وضعیت متفاوت در حال/آینده؛ wish + would برای کاری که می‌خواهیم انجام شود یا متوقف شود.",
+      "formulas": [
+        {
+          "label_fa": "وضعیت",
+          "text": "I wish I was taller.\nI wish I could understand."
+        },
+        {
+          "label_fa": "رفتار",
+          "text": "I wish the bus would come.\nI wish you wouldn't leave your shoes there."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I wish I was ten years younger!",
+          "fa": "ای کاش ده سال جوان‌تر بودم!"
+        },
+        {
+          "en": "I wish I could understand what they're saying.",
+          "fa": "ای کاش می‌فهمیدم چه می‌گویند."
+        },
+        {
+          "en": "I wish the bus would come.",
+          "fa": "ای کاش اتوبوس بیاید."
+        },
+        {
+          "en": "I wish you wouldn't leave your shoes there.",
+          "fa": "ای کاش کفش‌هایت را آنجا نمی‌گذاشتی."
+        }
+      ],
+      "notes_fa": "برای آرزوی خودمان از wish + would استفاده نمی‌کنیم: I wish I could (نه I wish I would)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u05-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "If there ___ a fire in this hotel, it would be difficult to escape.",
+      "options": [
+        "were",
+        "was",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was هم ممکن است ولی در آزمون were استاندارد است.",
+        "2": "is حال است."
+      },
+      "explanation_fa": "were (شرطی دوم)."
+    },
+    {
+      "external_id": "u05-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "I wouldn't have a car if I ___ in the suburbs.",
+      "options": [
+        "didn't live",
+        "don't live",
+        "wouldn't live"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't live حال است.",
+        "2": "wouldn't در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't live» است. didn't live."
+    },
+    {
+      "external_id": "u05-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "If it wasn't raining so hard, we ___ get to the top.",
+      "options": [
+        "could",
+        "can",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can حال است.",
+        "2": "will برای شرطی اول است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could» است. could."
+    },
+    {
+      "external_id": "u05-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "If I ___ you, I'd make Jimmy wear a helmet.",
+      "options": [
+        "were",
+        "was",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was در این عبارت رایج نیست.",
+        "2": "am حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. If I were you."
+    },
+    {
+      "external_id": "u05-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "If they had found the river sooner, they ___ have survived.",
+      "options": [
+        "would",
+        "will",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای آینده است.",
+        "2": "had ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would have survived."
+    },
+    {
+      "external_id": "u05-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I wouldn't have gotten lost if I ___ the wrong path.",
+      "options": [
+        "hadn't taken",
+        "didn't take",
+        "wouldn't take"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't take گذشتهٔ ساده است.",
+        "2": "wouldn't در if نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't taken» است. hadn't taken."
+    },
+    {
+      "external_id": "u05-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "He would have died if he ___ wearing a helmet.",
+      "options": [
+        "hadn't been",
+        "didn't be",
+        "wasn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "didn't be وجود ندارد.",
+        "2": "wasn't ترتیب را نمی‌رساند."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «hadn't been» است. hadn't been wearing."
+    },
+    {
+      "external_id": "u05-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "If the weather had been better, I ___ have arrived earlier.",
+      "options": [
+        "might",
+        "will",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will برای آینده است.",
+        "2": "must قطعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «might» است. might have arrived."
+    },
+    {
+      "external_id": "u05-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "If I ___ you, I'd make Jimmy wear a helmet.",
+      "options": [
+        "were",
+        "was",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "was در این عبارت رایج نیست.",
+        "2": "am حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. If I were you."
+    },
+    {
+      "external_id": "u05-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "If it hadn't rained, we ___ gone to the beach.",
+      "options": [
+        "would have",
+        "would",
+        "had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would ناقص است.",
+        "2": "had ناقص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would have» است. would have gone."
+    },
+    {
+      "external_id": "u05-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I ___ if I had studied.",
+      "options": [
+        "would have passed",
+        "would pass",
+        "passed"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "would pass شرطی دوم است.",
+        "2": "passed گذشتهٔ ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would have passed» است. would have passed."
+    },
+    {
+      "external_id": "u05-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "If she hadn't missed the bus, she ___ late.",
+      "options": [
+        "wouldn't have been",
+        "won't be",
+        "isn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't be آینده است.",
+        "2": "isn't حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «wouldn't have been» است. wouldn't have been."
+    },
+    {
+      "external_id": "u05-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I wish I ___ ten years younger!",
+      "options": [
+        "was",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "am حال است."
+      },
+      "explanation_fa": "wish + گذشته: was."
+    },
+    {
+      "external_id": "u05-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "I wish I ___ understand what they're saying.",
+      "options": [
+        "could",
+        "can",
+        "will"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can حال است.",
+        "2": "will آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could» است. could."
+    },
+    {
+      "external_id": "u05-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I wish we ___ live so far from my parents.",
+      "options": [
+        "didn't",
+        "don't",
+        "wouldn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't حال است.",
+        "2": "wouldn't برای رفتار است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «didn't» است. didn't live."
+    },
+    {
+      "external_id": "u05-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I wish the bus ___ come. I'm freezing.",
+      "options": [
+        "would",
+        "will",
+        "could"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will آینده است.",
+        "2": "could برای توانایی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would come."
+    },
+    {
+      "external_id": "u05-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I wish you ___ spend more time with the children.",
+      "options": [
+        "would",
+        "will",
+        "won't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will آینده است.",
+        "2": "won't منفی است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. would spend."
+    },
+    {
+      "external_id": "u05-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "I wish you ___ leave your shoes there.",
+      "options": [
+        "wouldn't",
+        "won't",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't آینده است.",
+        "2": "don't حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «wouldn't» است. wouldn't leave."
+    },
+    {
+      "external_id": "u05-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "I wish bike riders ___ ride on the sidewalk!",
+      "options": [
+        "wouldn't",
+        "won't",
+        "didn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "won't آینده است.",
+        "2": "didn't برای وضعیت است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «wouldn't» است. wouldn't ride."
+    },
+    {
+      "external_id": "u05-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "I wish I ___ taller.",
+      "options": [
+        "was",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "am حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. was taller."
+    },
+    {
+      "external_id": "u05-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I wish I ___ speak French.",
+      "options": [
+        "could",
+        "can",
+        "would"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "can حال است.",
+        "2": "would برای رفتار است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «could» است. could speak."
+    },
+    {
+      "external_id": "u05-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "I wish it ___ raining.",
+      "options": [
+        "would stop",
+        "will stop",
+        "stops"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will آینده است.",
+        "2": "stops حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would stop» است. would stop."
+    },
+    {
+      "external_id": "u05-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "I wish I ___ more time.",
+      "options": [
+        "had",
+        "have",
+        "had had"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "had had گذشتهٔ کامل است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had."
+    },
+    {
+      "external_id": "u05-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "I wish she ___ here now.",
+      "options": [
+        "were",
+        "is",
+        "will be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is حال است.",
+        "2": "will be آینده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were» است. were."
+    },
+    {
+      "external_id": "u05-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های شرطی را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If there was a fire",
+          "right": "it would be difficult to escape."
+        },
+        {
+          "left": "If they had found the river",
+          "right": "they would have survived."
+        },
+        {
+          "left": "I wouldn't have gotten lost",
+          "right": "if I hadn't taken the wrong path."
+        },
+        {
+          "left": "If the weather had been better",
+          "right": "I might have arrived earlier."
+        },
+        {
+          "left": "If I were you",
+          "right": "I'd make him wear a helmet."
+        }
+      ],
+      "explanation_fa": "شرطی دوم برای حال/آینده و سوم برای گذشته.",
+      "position": 25
+    },
+    {
+      "external_id": "u05-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های wish را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I wish I",
+          "right": "was taller."
+        },
+        {
+          "left": "I wish I",
+          "right": "could understand."
+        },
+        {
+          "left": "I wish the bus",
+          "right": "would come."
+        },
+        {
+          "left": "I wish you",
+          "right": "wouldn't leave your shoes there."
+        },
+        {
+          "left": "I wish we",
+          "right": "didn't live so far."
+        }
+      ],
+      "explanation_fa": "wish + گذشته برای وضعیت و wish + would برای رفتار.",
+      "position": 26
+    }
+  ]
+}

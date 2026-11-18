@@ -1,0 +1,69 @@
+{
+  "external_id": "aef-3e-starter-u02",
+  "book": "aef-3e-starter",
+  "unit": 2,
+  "title": "تمرین یونیت 2 — کشورها و ملیت‌ها",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u02-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I'm ___ Brazil.",
+      "options": [
+        "of",
+        "from",
+        "in",
+        "at"
+      ],
+      "answer": 1,
+      "explanation_fa": "برای گفتن مبدأ از from استفاده می‌کنیم: I'm from Brazil."
+    },
+    {
+      "external_id": "u02-e02",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She's from Japan. She's ___.",
+      "options": [
+        "Japan",
+        "Japanese",
+        "Japan's",
+        "Japanian"
+      ],
+      "answer": 1,
+      "explanation_fa": "ملیت ژاپنی می‌شود Japanese."
+    },
+    {
+      "external_id": "u02-e03",
+      "position": 3,
+      "type": "fill_blank",
+      "prompt": "Twenty + one = ___.",
+      "answer": [
+        "twenty-one",
+        "twenty one",
+        "21"
+      ],
+      "explanation_fa": "بیست و یک می‌شود twenty-one."
+    },
+    {
+      "external_id": "u02-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "She is from Brazil",
+      "explanation_fa": "ترتیب درست: She is from Brazil."
+    },
+    {
+      "external_id": "u02-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "The number after 99 is ___.",
+      "answer": [
+        "one hundred",
+        "a hundred",
+        "100"
+      ],
+      "explanation_fa": "بعد از ۹۹ عدد یک‌صد یا one hundred است."
+    }
+  ]
+}

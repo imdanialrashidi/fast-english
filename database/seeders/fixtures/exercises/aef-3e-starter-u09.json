@@ -1,0 +1,446 @@
+{
+  "external_id": "aef-3e-starter-u09",
+  "book": "aef-3e-starter",
+  "unit": 9,
+  "title": "American English File Starter · Unit 9",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 9,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "9A",
+      "9B"
+    ],
+    "grammar_bank": "9A p.107, 9B p.107",
+    "workbook": "9A pp.39-40, 9B pp.41-42"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "present continuous",
+      "title_fa": "حال استمراری",
+      "use_fa": "برای کاری که همین حالا یا همین روزها در جریان است. با am/is/are + فعل ing ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "I am (I'm) + verb-ing\nYou / We / They are + verb-ing\nHe / She / It is + verb-ing"
+        },
+        {
+          "label_fa": "منفی",
+          "text": "I'm not + verb-ing\nYou aren't + verb-ing\nHe isn't + verb-ing"
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Are you + verb-ing?\nIs she + verb-ing?\nYes, I am. / No, I'm not."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I'm staying in a nice hotel.",
+          "fa": "من در یک هتل خوب اقامت دارم."
+        },
+        {
+          "en": "It's raining.",
+          "fa": "باران می‌بارد."
+        },
+        {
+          "en": "They aren't watching TV.",
+          "fa": "آن‌ها تلویزیون تماشا نمی‌کنند."
+        },
+        {
+          "en": "What are you doing? — I'm making dinner.",
+          "fa": "چه کار می‌کنی؟ — شام درست می‌کنم."
+        }
+      ],
+      "notes_fa": "حال استمراری برای «همین حالا» است، نه عادت. فعل ing می‌گیرد: work→working، make→making، run→running."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "present continuous or simple present?",
+      "title_fa": "حال استمراری یا حال ساده؟",
+      "use_fa": "حال ساده برای عادت و کارهای همیشگی است؛ حال استمراری برای همین حالا، امروز یا این دوره.",
+      "formulas": [
+        {
+          "label_fa": "حال ساده",
+          "text": "always / usually / every day + simple present\nI usually wear a suit.\nShe drinks coffee every morning."
+        },
+        {
+          "label_fa": "حال استمراری",
+          "text": "now / today / at the moment + present continuous\nToday I'm wearing jeans.\nThey're watching TV now."
+        }
+      ],
+      "examples": [
+        {
+          "en": "He usually works in an office.",
+          "fa": "او معمولاً در دفتر کار می‌کند."
+        },
+        {
+          "en": "Today he's working in a hotel.",
+          "fa": "امروز در هتل کار می‌کند."
+        },
+        {
+          "en": "I usually wear a suit.",
+          "fa": "من معمولاً کت‌وشلوار می‌پوشم."
+        },
+        {
+          "en": "Today I'm wearing jeans.",
+          "fa": "امروز شلوار جین پوشیده‌ام."
+        }
+      ],
+      "notes_fa": "نشانه‌های حال ساده: every day، usually، always. نشانه‌های حال استمراری: now، today، at the moment. فعل حال استمراری همیشه ing دارد."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u09-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ working now.",
+      "options": [
+        "am",
+        "is",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای he/she/it است.",
+        "2": "are برای you/we/they است."
+      },
+      "explanation_fa": "با I از am استفاده می‌کنیم: I am working."
+    },
+    {
+      "external_id": "u09-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ taking a shower.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای you/we/they است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "she با is: She is taking a shower."
+    },
+    {
+      "external_id": "u09-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They ___ listening to the teacher.",
+      "options": [
+        "are",
+        "is",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is برای he/she/it است.",
+        "2": "am فقط با I است."
+      },
+      "explanation_fa": "they با are: They are listening."
+    },
+    {
+      "external_id": "u09-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "He isn't ___.",
+      "options": [
+        "working",
+        "work",
+        "works"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از isn't فعل پایه نمی‌آید.",
+        "2": "works برای حال ساده است."
+      },
+      "explanation_fa": "در حال استمراری بعد از be فعل ing می‌گیرد: isn't working."
+    },
+    {
+      "external_id": "u09-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "___ you working now?",
+      "options": [
+        "Are",
+        "Do",
+        "Is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do با فعل معمولی می‌آید.",
+        "2": "Is برای he/she/it است."
+      },
+      "explanation_fa": "سؤال حال استمراری با Are you ...?"
+    },
+    {
+      "external_id": "u09-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "What ___ he doing?",
+      "options": [
+        "is",
+        "does",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "does برای حال ساده است.",
+        "2": "are برای جمع است."
+      },
+      "explanation_fa": "he با is: What is he doing?"
+    },
+    {
+      "external_id": "u09-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "We're ___ dinner.",
+      "options": [
+        "having",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از be فعل پایه نمی‌آید.",
+        "2": "has برای سوم‌شخص است."
+      },
+      "explanation_fa": "حال استمراری: We're having dinner."
+    },
+    {
+      "external_id": "u09-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "It ___ raining.",
+      "options": [
+        "is",
+        "are",
+        "am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "are برای جمع است.",
+        "2": "am فقط با I می‌آید."
+      },
+      "explanation_fa": "it با is: It is raining."
+    },
+    {
+      "external_id": "u09-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I usually ___ a suit.",
+      "options": [
+        "wear",
+        "wearing",
+        "am wearing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از usually حال ساده می‌آید.",
+        "2": "حال استمراری برای عادت نیست."
+      },
+      "explanation_fa": "usually نشانهٔ حال ساده است: I usually wear."
+    },
+    {
+      "external_id": "u09-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Today I ___ jeans.",
+      "options": [
+        "am wearing",
+        "wear",
+        "wears"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "today نشانهٔ حال استمراری است.",
+        "2": "wears برای سوم‌شخص است."
+      },
+      "explanation_fa": "today + حال استمراری: I'm wearing jeans."
+    },
+    {
+      "external_id": "u09-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "She ___ coffee every morning.",
+      "options": [
+        "drinks",
+        "is drinking",
+        "drink"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every morning نشانهٔ حال ساده است.",
+        "2": "با she فعل s می‌گیرد."
+      },
+      "explanation_fa": "عادت روزمره: She drinks coffee."
+    },
+    {
+      "external_id": "u09-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "Look! It ___.",
+      "options": [
+        "is raining",
+        "rains",
+        "rain"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Look نشانهٔ همین حالاست.",
+        "2": "rain با it s می‌گیرد."
+      },
+      "explanation_fa": "همین حالا: It is raining."
+    },
+    {
+      "external_id": "u09-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "He never ___ up early.",
+      "options": [
+        "gets",
+        "is getting",
+        "get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "never نشانهٔ حال ساده است.",
+        "2": "با he فعل s می‌گیرد."
+      },
+      "explanation_fa": "never + حال ساده: He never gets up early."
+    },
+    {
+      "external_id": "u09-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "We ___ dinner now.",
+      "options": [
+        "are having",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "now نشانهٔ حال استمراری است.",
+        "2": "has برای سوم‌شخص است."
+      },
+      "explanation_fa": "now + حال استمراری: We're having dinner."
+    },
+    {
+      "external_id": "u09-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "They ___ TV at the moment.",
+      "options": [
+        "are watching",
+        "watch",
+        "watches"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "at the moment نشانهٔ حال استمراری است.",
+        "2": "watches برای سوم‌شخص است."
+      },
+      "explanation_fa": "at the moment + حال استمراری: They're watching TV."
+    },
+    {
+      "external_id": "u09-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "I ___ lunch at 12:00 every day.",
+      "options": [
+        "have",
+        "am having",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "every day نشانهٔ حال ساده است.",
+        "2": "has برای سوم‌شخص است."
+      },
+      "explanation_fa": "عادت روزمره: I have lunch at 12:00."
+    },
+    {
+      "external_id": "u09-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I'm",
+          "right": "working."
+        },
+        {
+          "left": "She's",
+          "right": "taking a shower."
+        },
+        {
+          "left": "They're",
+          "right": "listening to the teacher."
+        },
+        {
+          "left": "He isn't",
+          "right": "playing soccer."
+        },
+        {
+          "left": "Are you",
+          "right": "working now?"
+        }
+      ],
+      "explanation_fa": "حال استمراری: am/is/are + فعل ing."
+    },
+    {
+      "external_id": "u09-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر عبارت زمانی را به زمان درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "every day",
+          "right": "I have lunch at 12:00."
+        },
+        {
+          "left": "now",
+          "right": "We're having dinner."
+        },
+        {
+          "left": "usually",
+          "right": "I wear a suit."
+        },
+        {
+          "left": "at the moment",
+          "right": "They're watching TV."
+        },
+        {
+          "left": "today",
+          "right": "I'm wearing jeans."
+        }
+      ],
+      "explanation_fa": "every day و usually با حال ساده؛ now، at the moment و today با حال استمراری."
+    }
+  ]
+}

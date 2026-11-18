@@ -13,9 +13,9 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * One unit = one flashcard session. The unit page is the player: cards in
- * book order, image first, then the word/audio after three seconds. The
- * results page groups every card by its latest self-report.
+ * One unit's flashcard session (a child of the unit hub): text-first cards
+ * in book order with an explicit answer reveal. The results page groups
+ * every card by its latest self-report.
  */
 class FlashcardUnitController extends Controller
 {
@@ -114,6 +114,14 @@ class FlashcardUnitController extends Controller
             'title_en' => (string) $unit->title_en,
             'title_fa' => $unit->title_fa,
             'subtitle' => $unit->subtitle,
+            'url' => route('flashcards.unit', [
+                'book' => $unit->book->slug,
+                'unit' => $unit->number,
+            ]),
+            'hub_url' => route('books.unit', [
+                'book' => $unit->book->slug,
+                'unit' => $unit->number,
+            ]),
             'results_url' => route('flashcards.results', [
                 'book' => $unit->book->slug,
                 'unit' => $unit->number,

@@ -1,0 +1,450 @@
+{
+  "external_id": "aef-3e-starter-u11",
+  "book": "aef-3e-starter",
+  "unit": 11,
+  "title": "American English File Starter · Unit 11",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 11,
+  "source": {
+    "edition": "3rd",
+    "student_book": "Starter",
+    "lessons": [
+      "11A",
+      "11B"
+    ],
+    "grammar_bank": "11A p.112, 11B p.112",
+    "workbook": "11A pp.47-48, 11B pp.49-50"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "simple past: regular verbs",
+      "title_fa": "گذشتهٔ ساده: افعال باقاعده",
+      "use_fa": "برای کارهایی که در گذشته تمام شده‌اند. فعل با ed جمع می‌بندد و برای همهٔ فاعل‌ها یک شکل است.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + verb + -ed\nI arrived at 7:00.\nShe liked the movie."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "subject + didn't + base verb\nI didn't arrive at 7:00."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Did + subject + base verb?\nDid you watch TV?\nYes, I did. / No, I didn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I arrived at the airport at 7:00.",
+          "fa": "ساعت ۷ به فرودگاه رسیدم."
+        },
+        {
+          "en": "We studied Spanish at school.",
+          "fa": "ما در مدرسه اسپانیایی خواندیم."
+        },
+        {
+          "en": "They stopped at a café.",
+          "fa": "آن‌ها در یک کافه توقف کردند."
+        },
+        {
+          "en": "Did she walk to work? — Yes, she did.",
+          "fa": "او پیاده سر کار رفت؟ — بله."
+        }
+      ],
+      "notes_fa": "قواعد ed: work→worked، live→lived (e + d)، study→studied (y بعد از صامت)، stop→stopped (دوبرابر شدن صامت). بعد از didn't و did فعل پایه می‌آید."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "simple past irregular verbs: get, go, have, do",
+      "title_fa": "گذشتهٔ سادهٔ افعال بی‌قاعده: get، go، have، do",
+      "use_fa": "چهار فعل پرکاربرد در گذشته شکل خودشان را دارند: get→got، go→went، have→had، do→did. منفی و سؤالی با didn't/did و فعل پایه ساخته می‌شود.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "get → got\ngo → went\nhave → had\ndo → did\nI got up late yesterday."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "didn't + base verb\nI didn't get up late.\nHe didn't go to work by car."
+        },
+        {
+          "label_fa": "سؤالی",
+          "text": "Did + subject + base verb?\nDid you get up late?\nWhat time did you get up?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I got up late yesterday.",
+          "fa": "دیروز دیر بیدار شدم."
+        },
+        {
+          "en": "He went to work by car.",
+          "fa": "او با ماشین سر کار رفت."
+        },
+        {
+          "en": "She had eggs for breakfast.",
+          "fa": "او صبحانه تخم‌مرغ خورد."
+        },
+        {
+          "en": "We did yoga yesterday.",
+          "fa": "ما دیروز یوگا کردیم."
+        }
+      ],
+      "notes_fa": "بعد از didn't و did شکل گذشته نمی‌آید: didn't go (نه didn't went) و Did you have ...? (نه Did you had ...?)."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u11-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ at the airport at 7:00.",
+      "options": [
+        "arrived",
+        "arrive",
+        "arrives"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "زمان گذشته است.",
+        "2": "arrives برای حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ arrive: arrived."
+    },
+    {
+      "external_id": "u11-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She ___ the movie.",
+      "options": [
+        "liked",
+        "like",
+        "likes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله دربارهٔ گذشته است.",
+        "2": "likes حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ like می‌شود liked: She liked the movie."
+    },
+    {
+      "external_id": "u11-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "We ___ Spanish at school.",
+      "options": [
+        "studied",
+        "study",
+        "studies"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "studies حال ساده است."
+      },
+      "explanation_fa": "study → studied (y بعد از صامت)."
+    },
+    {
+      "external_id": "u11-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "They ___ at a café.",
+      "options": [
+        "stopped",
+        "stop",
+        "stops"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "stops حال ساده است."
+      },
+      "explanation_fa": "stop → stopped (صامت آخر دوبرابر)."
+    },
+    {
+      "external_id": "u11-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I ___ arrive at the airport at 7:00.",
+      "options": [
+        "didn't",
+        "don't",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "doesn't برای سوم‌شخص حال است."
+      },
+      "explanation_fa": "منفی گذشته: didn't + فعل پایه."
+    },
+    {
+      "external_id": "u11-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Did you ___ TV yesterday?",
+      "options": [
+        "watch",
+        "watched",
+        "watches"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did فعل پایه می‌آید.",
+        "2": "watches حال ساده است."
+      },
+      "explanation_fa": "بعد از Did فعل پایه: Did you watch ...?"
+    },
+    {
+      "external_id": "u11-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "It ___ yesterday.",
+      "options": [
+        "rained",
+        "rain",
+        "rains"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "rains حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ rain می‌شود rained: It rained yesterday."
+    },
+    {
+      "external_id": "u11-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "___ she walk to work?",
+      "options": [
+        "Did",
+        "Does",
+        "Was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای حال است.",
+        "2": "Was برای فعل be است."
+      },
+      "explanation_fa": "سؤال گذشته با Did."
+    },
+    {
+      "external_id": "u11-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I ___ up late yesterday.",
+      "options": [
+        "got",
+        "get",
+        "gets"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "gets حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ get می‌شود got: I got up late."
+    },
+    {
+      "external_id": "u11-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "He ___ to work by car.",
+      "options": [
+        "went",
+        "go",
+        "goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "goes حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ go می‌شود went: He went to work."
+    },
+    {
+      "external_id": "u11-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "She ___ eggs for breakfast.",
+      "options": [
+        "had",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "has حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ have می‌شود had: She had eggs."
+    },
+    {
+      "external_id": "u11-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "We ___ yoga yesterday.",
+      "options": [
+        "did",
+        "do",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "گذشته لازم است.",
+        "2": "does حال ساده است."
+      },
+      "explanation_fa": "گذشتهٔ do می‌شود did: We did yoga."
+    },
+    {
+      "external_id": "u11-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I didn't ___ up late.",
+      "options": [
+        "get",
+        "got",
+        "gets"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't شکل گذشته نمی‌آید.",
+        "2": "gets حال ساده است."
+      },
+      "explanation_fa": "بعد از didn't فعل پایه: get."
+    },
+    {
+      "external_id": "u11-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Did he ___ to work by car?",
+      "options": [
+        "go",
+        "went",
+        "goes"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did شکل گذشته نمی‌آید.",
+        "2": "goes حال ساده است."
+      },
+      "explanation_fa": "بعد از Did فعل پایه: go."
+    },
+    {
+      "external_id": "u11-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "They didn't ___ their homework.",
+      "options": [
+        "do",
+        "did",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از didn't فعل پایه می‌آید.",
+        "2": "does برای حال است."
+      },
+      "explanation_fa": "بعد از didn't: do."
+    },
+    {
+      "external_id": "u11-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "What time did you ___ up?",
+      "options": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از did فعل پایه می‌آید.",
+        "2": "-ing اینجا نمی‌آید."
+      },
+      "explanation_fa": "بعد از did: get up."
+    },
+    {
+      "external_id": "u11-t1-m01",
+      "topic": "t1",
+      "position": 17,
+      "type": "matching",
+      "prompt": "هر فعل را به شکل گذشته‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "arrive",
+          "right": "arrived"
+        },
+        {
+          "left": "finish",
+          "right": "finished"
+        },
+        {
+          "left": "study",
+          "right": "studied"
+        },
+        {
+          "left": "stop",
+          "right": "stopped"
+        },
+        {
+          "left": "live",
+          "right": "lived"
+        }
+      ],
+      "explanation_fa": "قواعد ed: arrive→arrived، finish→finished، study→studied، stop→stopped، live→lived."
+    },
+    {
+      "external_id": "u11-t2-m01",
+      "topic": "t2",
+      "position": 18,
+      "type": "matching",
+      "prompt": "هر فعل را به شکل گذشته‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "get up",
+          "right": "got up"
+        },
+        {
+          "left": "go",
+          "right": "went"
+        },
+        {
+          "left": "have",
+          "right": "had"
+        },
+        {
+          "left": "do",
+          "right": "did"
+        },
+        {
+          "left": "see",
+          "right": "saw"
+        }
+      ],
+      "explanation_fa": "گذشتهٔ بی‌قاعده: get up→got up، go→went، have→had، do→did، see→saw."
+    }
+  ]
+}

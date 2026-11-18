@@ -1,0 +1,661 @@
+{
+  "external_id": "aef-3e-2-u08",
+  "book": "aef-3e-2",
+  "unit": 8,
+  "title": "American English File 2 · Unit 8",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 8,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "8A",
+      "8B",
+      "8C"
+    ],
+    "grammar_bank": "8A p.142, 8B p.142, 8C p.142",
+    "workbook": "8A, 8B, 8C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "should / shouldn't",
+      "title_fa": "should و shouldn't",
+      "use_fa": "برای نصیحت و گفتن کار درست. should برای همهٔ فاعل‌ها یک شکل است و بعد از آن فعل پایه می‌آید.",
+      "formulas": [
+        {
+          "label_fa": "مثبت",
+          "text": "subject + should + base verb\nYou should leave your boyfriend."
+        },
+        {
+          "label_fa": "منفی",
+          "text": "subject + shouldn't + base verb\nShe shouldn't work so hard."
+        },
+        {
+          "label_fa": "نصیحت",
+          "text": "I think you should ...\nI don't think you should ..."
+        }
+      ],
+      "examples": [
+        {
+          "en": "You should leave your boyfriend.",
+          "fa": "باید دوست‌پسرت را ترک کنی."
+        },
+        {
+          "en": "She shouldn't work so hard.",
+          "fa": "او نباید این‌قدر سخت کار کند."
+        },
+        {
+          "en": "I think you should get a new job.",
+          "fa": "فکر می‌کنم باید کار جدیدی بگیری."
+        },
+        {
+          "en": "I don't think you should speak to him.",
+          "fa": "فکر نمی‌کنم باید با او حرف بزنی."
+        }
+      ],
+      "notes_fa": "بعد از should فعل پایه می‌آید: should go (نه should to go). می‌توان به‌جای آن از ought to هم استفاده کرد."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "first conditional: if + present, will / won't + infinitive",
+      "title_fa": "شرطی نوع اول",
+      "use_fa": "برای موقعیت ممکن در آینده و نتیجه‌اش. جملهٔ if با حال ساده و جملهٔ نتیجه با will/won't + فعل پایه.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "If + present, will/won't + base verb\nIf you tell her, she won't believe you."
+        },
+        {
+          "label_fa": "ترتیب",
+          "text": "If-clause first or second\nShe won't be happy if you don't go."
+        },
+        {
+          "label_fa": "جای will",
+          "text": "imperative or can\nIf you miss the bus, get a taxi."
+        }
+      ],
+      "examples": [
+        {
+          "en": "If we get to the airport early, the flight will be delayed.",
+          "fa": "اگر زود به فرودگاه برسیم، پرواز تأخیر می‌کند."
+        },
+        {
+          "en": "If you tell her the truth, she won't believe you.",
+          "fa": "اگر حقیقت را به او بگویی، باور نمی‌کند."
+        },
+        {
+          "en": "What will you do if you don't find a job?",
+          "fa": "اگر کار پیدا نکنی چه می‌کنی؟"
+        },
+        {
+          "en": "If you miss the last bus, get a taxi.",
+          "fa": "اگر اتوبوس آخر را از دست دادی، تاکسی بگیر."
+        }
+      ],
+      "notes_fa": "در جملهٔ if هرگز will نمی‌آید: If it rains (نه If it will rain). comma وقتی if اول جمله است."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "possessive pronouns",
+      "title_fa": "ضمیرهای ملکی",
+      "use_fa": "به‌جای «صفت ملکی + اسم» می‌آیند: mine یعنی my + noun. با اسم نمی‌آیند.",
+      "formulas": [
+        {
+          "label_fa": "جدول",
+          "text": "my → mine\nyour → yours\nhis → his\nher → hers\nour → ours\ntheir → theirs"
+        },
+        {
+          "label_fa": "پرسش",
+          "text": "Whose coat is it?\nIt's mine. / Is it yours?"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Whose coat is it? — It's mine.",
+          "fa": "این پالتوی کیست؟ — مال من است."
+        },
+        {
+          "en": "Whose jacket is it? — It's yours.",
+          "fa": "این کاپشن کیست؟ — مال توست."
+        },
+        {
+          "en": "Whose phone is it? — It's his.",
+          "fa": "این تلفن کیست؟ — مال اوست."
+        },
+        {
+          "en": "Whose house is it? — It's theirs.",
+          "fa": "این خانهٔ کیست؟ — مال آن‌هاست."
+        }
+      ],
+      "notes_fa": "ضمیر ملکی با اسم نمی‌آید: It's mine (نه mine book). با the هم نمی‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u08-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "You ___ leave your boyfriend.",
+      "options": [
+        "should",
+        "shouldn't",
+        "ought"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله نصیحت مثبت است.",
+        "2": "ought به‌تنهایی to می‌خواهد."
+      },
+      "explanation_fa": "نصیحت مثبت: should."
+    },
+    {
+      "external_id": "u08-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "She's very stressed. She ___ work so hard.",
+      "options": [
+        "shouldn't",
+        "should",
+        "doesn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله نصیحت منفی است.",
+        "2": "doesn't برای عادت است."
+      },
+      "explanation_fa": "نصیحت منفی: shouldn't."
+    },
+    {
+      "external_id": "u08-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "You ___ drink coffee in the evening.",
+      "options": [
+        "shouldn't",
+        "should",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله نصیحت منفی است.",
+        "2": "aren't برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «shouldn't» است. shouldn't drink."
+    },
+    {
+      "external_id": "u08-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "I think you ___ get a new job.",
+      "options": [
+        "should",
+        "shouldn't",
+        "ought"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "نصیحت مثبت است.",
+        "2": "ought به to نیاز دارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «should» است. I think you should."
+    },
+    {
+      "external_id": "u08-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I ___ think you should speak to him.",
+      "options": [
+        "don't",
+        "doesn't",
+        "aren't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فاعل I است.",
+        "2": "aren't برای be است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «don't» است. I don't think you should."
+    },
+    {
+      "external_id": "u08-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "You ___ to leave your boyfriend.",
+      "options": [
+        "ought",
+        "ought not",
+        "should"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ought not منفی است.",
+        "2": "should با to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «ought» است. ought to = should."
+    },
+    {
+      "external_id": "u08-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "She ___ to work so hard.",
+      "options": [
+        "ought not",
+        "ought",
+        "shouldn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "ought مثبت است.",
+        "2": "shouldn't با to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «ought not» است. ought not to."
+    },
+    {
+      "external_id": "u08-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "___ I call her?",
+      "options": [
+        "Should",
+        "Do",
+        "Am"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do برای فعل معمولی است.",
+        "2": "Am برای be است."
+      },
+      "explanation_fa": "نصیحت: Should I call?"
+    },
+    {
+      "external_id": "u08-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "If we ___ to the airport early, the flight will be delayed.",
+      "options": [
+        "get",
+        "gets",
+        "will get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با we فعل پایه می‌آید.",
+        "2": "بعد از if هرگز will نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «get» است. after if: simple present."
+    },
+    {
+      "external_id": "u08-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "If you tell her the truth, she ___ believe you.",
+      "options": [
+        "won't",
+        "don't",
+        "won't to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't برای حال است.",
+        "2": "won't to وجود ندارد."
+      },
+      "explanation_fa": "نتیجهٔ منفی: won't."
+    },
+    {
+      "external_id": "u08-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "What ___ you do if you don't find a job?",
+      "options": [
+        "will",
+        "do",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do برای حال است.",
+        "2": "are با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "نتیجه: will you do."
+    },
+    {
+      "external_id": "u08-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "If you don't go, she won't ___ very happy.",
+      "options": [
+        "be",
+        "being",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از won't فعل ing نمی‌آید.",
+        "2": "is بعد از won't نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be» است. won't be happy."
+    },
+    {
+      "external_id": "u08-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "If you miss the last bus, ___ a taxi.",
+      "options": [
+        "get",
+        "getting",
+        "to get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "در جملهٔ نتیجه امری فعل پایه است.",
+        "2": "to get اینجا نمی‌آید."
+      },
+      "explanation_fa": "امری: get a taxi."
+    },
+    {
+      "external_id": "u08-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "If you miss the last bus, you ___ get a taxi.",
+      "options": [
+        "can",
+        "will can",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will can وجود ندارد.",
+        "2": "are با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "can + فعل پایه."
+    },
+    {
+      "external_id": "u08-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "She won't be happy ___ you don't go.",
+      "options": [
+        "if",
+        "when",
+        "that"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "when برای زمان است.",
+        "2": "that اینجا شرط نمی‌سازد."
+      },
+      "explanation_fa": "جملهٔ شرط با if."
+    },
+    {
+      "external_id": "u08-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "If it ___ tomorrow, we'll stay home.",
+      "options": [
+        "rains",
+        "rain",
+        "will rain"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "با it فعل s می‌گیرد.",
+        "2": "بعد از if will نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «rains» است. If it rains."
+    },
+    {
+      "external_id": "u08-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "Whose coat is it? — It's ___.",
+      "options": [
+        "mine",
+        "my",
+        "me"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "my قبل از اسم می‌آید.",
+        "2": "me ضمیر مفعولی است."
+      },
+      "explanation_fa": "ضمیر ملکی: mine."
+    },
+    {
+      "external_id": "u08-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "Whose jacket is it? — It's ___.",
+      "options": [
+        "yours",
+        "your",
+        "you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "your قبل از اسم می‌آید.",
+        "2": "you ضمیر فاعلی است."
+      },
+      "explanation_fa": "ضمیر ملکی: yours."
+    },
+    {
+      "external_id": "u08-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "Whose phone is it? — It's ___.",
+      "options": [
+        "his",
+        "him",
+        "he"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "him ضمیر مفعولی است.",
+        "2": "he ضمیر فاعلی است."
+      },
+      "explanation_fa": "ضمیر ملکی: his."
+    },
+    {
+      "external_id": "u08-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Whose bag is it? — It's ___.",
+      "options": [
+        "hers",
+        "her",
+        "she"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "her قبل از اسم می‌آید.",
+        "2": "she ضمیر فاعلی است."
+      },
+      "explanation_fa": "ضمیر ملکی: hers."
+    },
+    {
+      "external_id": "u08-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "Whose dog is it? — It's ___.",
+      "options": [
+        "ours",
+        "our",
+        "us"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "our قبل از اسم می‌آید.",
+        "2": "us ضمیر مفعولی است."
+      },
+      "explanation_fa": "ضمیر ملکی: ours."
+    },
+    {
+      "external_id": "u08-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "Whose house is it? — It's ___.",
+      "options": [
+        "theirs",
+        "their",
+        "them"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "their قبل از اسم می‌آید.",
+        "2": "them ضمیر مفعولی است."
+      },
+      "explanation_fa": "ضمیر ملکی: theirs."
+    },
+    {
+      "external_id": "u08-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "Is this ___?",
+      "options": [
+        "yours",
+        "your",
+        "you"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "your قبل از اسم می‌آید.",
+        "2": "you ضمیر فاعلی است."
+      },
+      "explanation_fa": "بدون اسم: yours."
+    },
+    {
+      "external_id": "u08-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "It's ___ book.",
+      "options": [
+        "my",
+        "mine",
+        "me"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "mine بدون اسم می‌آید.",
+        "2": "me ضمیر مفعولی است."
+      },
+      "explanation_fa": "با اسم: my book."
+    },
+    {
+      "external_id": "u08-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های نصیحت را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "You should",
+          "right": "leave your boyfriend."
+        },
+        {
+          "left": "She shouldn't",
+          "right": "work so hard."
+        },
+        {
+          "left": "You shouldn't",
+          "right": "drink coffee at night."
+        },
+        {
+          "left": "I think you should",
+          "right": "get a new job."
+        },
+        {
+          "left": "I don't think you should",
+          "right": "speak to him."
+        }
+      ],
+      "explanation_fa": "should/shouldn't + فعل پایه برای نصیحت."
+    },
+    {
+      "external_id": "u08-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "If we get to the airport early",
+          "right": "the flight will be delayed."
+        },
+        {
+          "left": "If you tell her the truth",
+          "right": "she won't believe you."
+        },
+        {
+          "left": "What will you do",
+          "right": "if you don't find a job?"
+        },
+        {
+          "left": "If you don't go",
+          "right": "she won't be happy."
+        },
+        {
+          "left": "If you miss the bus",
+          "right": "get a taxi."
+        }
+      ],
+      "explanation_fa": "if + حال ساده، نتیجه با will/won't یا امری."
+    },
+    {
+      "external_id": "u08-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "هر صفت ملکی را به ضمیر ملکی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "my",
+          "right": "mine"
+        },
+        {
+          "left": "your",
+          "right": "yours"
+        },
+        {
+          "left": "her",
+          "right": "hers"
+        },
+        {
+          "left": "our",
+          "right": "ours"
+        },
+        {
+          "left": "their",
+          "right": "theirs"
+        }
+      ],
+      "explanation_fa": "my→mine، your→yours، her→hers، our→ours، their→theirs."
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "external_id": "aef-3e-starter-u10",
+  "book": "aef-3e-starter",
+  "unit": 10,
+  "title": "تمرین یونیت 10 — هتل و مکان‌ها",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u10-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "The keys are ___ the table.",
+      "options": [
+        "on",
+        "in",
+        "at",
+        "of"
+      ],
+      "answer": 0,
+      "explanation_fa": "روی میز می‌شود on the table."
+    },
+    {
+      "external_id": "u10-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "I'd like a room ___ a view.",
+      "answer": [
+        "with"
+      ],
+      "explanation_fa": "اتاق با منظره: a room with a view."
+    },
+    {
+      "external_id": "u10-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "There ___ a TV in the room.",
+      "options": [
+        "is",
+        "are",
+        "have",
+        "has"
+      ],
+      "answer": 0,
+      "explanation_fa": "یک تلویزیون مفرد است: There is."
+    },
+    {
+      "external_id": "u10-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "The hotel is near the beach",
+      "explanation_fa": "ترتیب درست: The hotel is near the beach."
+    },
+    {
+      "external_id": "u10-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "The lamp is ___ the bed. (کنار)",
+      "answer": [
+        "next to",
+        "beside",
+        "near"
+      ],
+      "explanation_fa": "کنار تخت: next to / beside the bed."
+    }
+  ]
+}

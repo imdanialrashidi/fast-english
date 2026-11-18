@@ -1,0 +1,621 @@
+{
+  "external_id": "aef-3e-1-u06",
+  "book": "aef-3e-1",
+  "unit": 6,
+  "title": "American English File 1 · Unit 6",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 6,
+  "source": {
+    "edition": "3rd",
+    "student_book": "1",
+    "lessons": [
+      "6A",
+      "6B",
+      "6C"
+    ],
+    "grammar_bank": "6A p.136, 6B p.136, 6C p.136",
+    "workbook": "6A, 6B, 6C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "object pronouns",
+      "title_fa": "ضمیرهای مفعولی",
+      "use_fa": "ضمیر مفعولی جای اسمی می‌آید که مفعول فعل یا بعد از حرف اضافه است: me, you, him, her, it, us, them.",
+      "formulas": [
+        {
+          "label_fa": "جدول",
+          "text": "I → me\nYou → you\nHe → him\nShe → her\nIt → it\nWe → us\nThey → them"
+        },
+        {
+          "label_fa": "جای ضمیر",
+          "text": "after a verb: I love you.\nafter a preposition: Listen to me!"
+        }
+      ],
+      "examples": [
+        {
+          "en": "Can you help me?",
+          "fa": "می‌توانی کمکم کنی؟"
+        },
+        {
+          "en": "I love you.",
+          "fa": "دوستت دارم."
+        },
+        {
+          "en": "She doesn't love him.",
+          "fa": "او او را دوست ندارد."
+        },
+        {
+          "en": "Wait for us!",
+          "fa": "منتظر ما بمان!"
+        }
+      ],
+      "notes_fa": "ضمیر مفعولی بعد از فعل می‌آید، نه قبل از آن: I love you. (نه I you love.) بعد از حرف اضافه هم مفعولی است: with her، to him."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "like + (verb + -ing)",
+      "title_fa": "like + فعل ing‌دار",
+      "use_fa": "برای گفتن اینکه از چه کاری خوشمان می‌آید. بعد از like/love/don't mind/hate/enjoy/prefer فعل ing می‌گیرد.",
+      "formulas": [
+        {
+          "label_fa": "الگو",
+          "text": "like / love / don't mind / hate / enjoy / prefer + verb-ing\nI love shopping.\nI don't mind getting up early."
+        },
+        {
+          "label_fa": "قواعد ing",
+          "text": "cook → cooking\nstudy → studying\ndance → dancing\nshop → shopping (دوبرابر)"
+        }
+      ],
+      "examples": [
+        {
+          "en": "I love shopping.",
+          "fa": "من عاشق خرید کردن هستم."
+        },
+        {
+          "en": "I don't mind getting up early.",
+          "fa": "زود بیدار شدن برایم مهم نیست."
+        },
+        {
+          "en": "I hate doing housework.",
+          "fa": "از کار خانه متنفرم."
+        },
+        {
+          "en": "I enjoy watching soccer on TV.",
+          "fa": "از تماشای فوتبال در تلویزیون لذت می‌برم."
+        }
+      ],
+      "notes_fa": "بعد از این فعل‌ها فعل پایه نمی‌آید: I like reading. (نه I like read.)"
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "be or do?",
+      "title_fa": "be یا do؟",
+      "use_fa": "اگر جمله فعل be داشته باشد، سؤال و منفی با am/is/are ساخته می‌شود؛ اگر فعل معمولی باشد، با do/does.",
+      "formulas": [
+        {
+          "label_fa": "با be",
+          "text": "Are you Thai?\nIs she friendly?\nShe isn't very friendly."
+        },
+        {
+          "label_fa": "با do",
+          "text": "Do you like Thai food?\nDoes he work here?\nShe doesn't like coffee."
+        },
+        {
+          "label_fa": "پاسخ کوتاه",
+          "text": "Yes, I am. / Yes, I do.\nNo, she isn't. / No, he doesn't."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Are you Thai? — Yes, I am.",
+          "fa": "تایلندی هستی؟ — بله."
+        },
+        {
+          "en": "Do you like Thai food? — Yes, I do.",
+          "fa": "غذای تایلندی دوست داری؟ — بله."
+        },
+        {
+          "en": "She isn't very friendly.",
+          "fa": "او خیلی خوش‌برخورد نیست."
+        },
+        {
+          "en": "She doesn't like coffee.",
+          "fa": "او قهوه دوست ندارد."
+        }
+      ],
+      "notes_fa": "در پاسخ کوتاه، همان فعل کمکی تکرار می‌شود: Are you ...? → Yes, I am. / Do you ...? → Yes, I do."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u06-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Can you help ___?",
+      "options": [
+        "me",
+        "I",
+        "my"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "I ضمیر فاعلی است.",
+        "2": "my قبل از اسم می‌آید."
+      },
+      "explanation_fa": "بعد از فعل، ضمیر مفعولی: help me."
+    },
+    {
+      "external_id": "u06-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "I love ___.",
+      "options": [
+        "you",
+        "your",
+        "yours"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "your قبل از اسم می‌آید.",
+        "2": "yours بدون اسم می‌آید."
+      },
+      "explanation_fa": "مفعول فعل: love you."
+    },
+    {
+      "external_id": "u06-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "She doesn't love ___.",
+      "options": [
+        "him",
+        "he",
+        "his"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "he ضمیر فاعلی است.",
+        "2": "his صفت ملکی است."
+      },
+      "explanation_fa": "بعد از فعل: him."
+    },
+    {
+      "external_id": "u06-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "He calls ___ every day.",
+      "options": [
+        "her",
+        "she",
+        "hers"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "she ضمیر فاعلی است.",
+        "2": "hers بدون اسم می‌آید."
+      },
+      "explanation_fa": "بعد از فعل: her."
+    },
+    {
+      "external_id": "u06-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I don't like ___.",
+      "options": [
+        "it",
+        "its",
+        "it's"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "its صفت ملکی است.",
+        "2": "it's یعنی it is."
+      },
+      "explanation_fa": "مفعول چیز: it."
+    },
+    {
+      "external_id": "u06-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "Wait for ___!",
+      "options": [
+        "us",
+        "we",
+        "our"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "we ضمیر فاعلی است.",
+        "2": "our قبل از اسم می‌آید."
+      },
+      "explanation_fa": "بعد از حرف اضافه: for us."
+    },
+    {
+      "external_id": "u06-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Please help ___.",
+      "options": [
+        "them",
+        "they",
+        "their"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "they ضمیر فاعلی است.",
+        "2": "their صفت ملکی است."
+      },
+      "explanation_fa": "بعد از فعل: them."
+    },
+    {
+      "external_id": "u06-t2-q01",
+      "topic": "t2",
+      "position": 8,
+      "type": "choice",
+      "prompt": "I love ___.",
+      "options": [
+        "shopping",
+        "shop",
+        "to shop"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از love فعل پایه نمی‌آید.",
+        "2": "الگوی این درس verb-ing است."
+      },
+      "explanation_fa": "بعد از love فعل به شکل ing می‌آید: love shopping."
+    },
+    {
+      "external_id": "u06-t2-q02",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "I don't mind ___ early.",
+      "options": [
+        "getting up",
+        "get up",
+        "to get up"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از mind فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از mind فعل ing می‌گیرد: don’t mind getting up."
+    },
+    {
+      "external_id": "u06-t2-q03",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "I hate ___ early.",
+      "options": [
+        "getting up",
+        "get up",
+        "to get up"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از hate فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از hate فعل ing می‌گیرد: hate getting up."
+    },
+    {
+      "external_id": "u06-t2-q04",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I enjoy ___ soccer on TV.",
+      "options": [
+        "watching",
+        "watch",
+        "to watch"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از enjoy فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از enjoy فعل ing می‌گیرد: enjoy watching."
+    },
+    {
+      "external_id": "u06-t2-q05",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "I prefer ___ there.",
+      "options": [
+        "being",
+        "be",
+        "to be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از prefer فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از prefer فعل ing می‌گیرد: prefer being there."
+    },
+    {
+      "external_id": "u06-t2-q06",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "She likes ___ to music.",
+      "options": [
+        "listening",
+        "listen",
+        "to listen"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از likes فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از like فعل ing می‌گیرد: likes listening."
+    },
+    {
+      "external_id": "u06-t2-q07",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "They don't like ___ housework.",
+      "options": [
+        "doing",
+        "do",
+        "to do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از like فعل پایه نمی‌آید.",
+        "2": "الگوی درس verb-ing است."
+      },
+      "explanation_fa": "بعد از like فعل ing می‌گیرد: don’t like doing."
+    },
+    {
+      "external_id": "u06-t3-q01",
+      "topic": "t3",
+      "position": 15,
+      "type": "choice",
+      "prompt": "___ you Thai?",
+      "options": [
+        "Are",
+        "Do",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Do با فعل معمولی می‌آید.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "با Thai (صفت) فعل be: Are you Thai?"
+    },
+    {
+      "external_id": "u06-t3-q02",
+      "topic": "t3",
+      "position": 16,
+      "type": "choice",
+      "prompt": "___ you like Thai food?",
+      "options": [
+        "Do",
+        "Are",
+        "Does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Are برای be است.",
+        "2": "Does برای سوم‌شخص است."
+      },
+      "explanation_fa": "با فعل like: Do you like ...?"
+    },
+    {
+      "external_id": "u06-t3-q03",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "A: Are you tired?\nB: Yes, I ___.",
+      "options": [
+        "am",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do پاسخ Do you ...? است.",
+        "2": "is برای سوم‌شخص است."
+      },
+      "explanation_fa": "پاسخ کوتاه be: Yes, I am."
+    },
+    {
+      "external_id": "u06-t3-q04",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "A: Do you work here?\nB: Yes, I ___.",
+      "options": [
+        "do",
+        "am",
+        "does"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "am پاسخ Are you ...? است.",
+        "2": "does برای سوم‌شخص است."
+      },
+      "explanation_fa": "پاسخ کوتاه do: Yes, I do."
+    },
+    {
+      "external_id": "u06-t3-q05",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "She ___ very friendly.",
+      "options": [
+        "isn't",
+        "doesn't",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای فعل معمولی است.",
+        "2": "don't برای I/you/we/they است."
+      },
+      "explanation_fa": "با صفت friendly: isn't."
+    },
+    {
+      "external_id": "u06-t3-q06",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "She ___ like coffee.",
+      "options": [
+        "doesn't",
+        "isn't",
+        "don't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "isn't برای be است.",
+        "2": "don't برای جمع است."
+      },
+      "explanation_fa": "با فعل like: doesn't."
+    },
+    {
+      "external_id": "u06-t3-q07",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "___ he work at night?",
+      "options": [
+        "Does",
+        "Is",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Is برای be است.",
+        "2": "Are برای جمع است."
+      },
+      "explanation_fa": "با فعل work: Does he work?"
+    },
+    {
+      "external_id": "u06-t3-q08",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "___ he a teacher?",
+      "options": [
+        "Is",
+        "Does",
+        "Are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Does برای فعل معمولی است.",
+        "2": "Are برای جمع است."
+      },
+      "explanation_fa": "با اسم teacher: Is he a teacher?"
+    },
+    {
+      "external_id": "u06-t1-m01",
+      "topic": "t1",
+      "position": 23,
+      "type": "matching",
+      "prompt": "هر ضمیر فاعلی را به مفعولی‌اش وصل کن.",
+      "pairs": [
+        {
+          "left": "I",
+          "right": "me"
+        },
+        {
+          "left": "he",
+          "right": "him"
+        },
+        {
+          "left": "she",
+          "right": "her"
+        },
+        {
+          "left": "we",
+          "right": "us"
+        },
+        {
+          "left": "they",
+          "right": "them"
+        }
+      ],
+      "explanation_fa": "I→me، he→him، she→her، we→us، they→them."
+    },
+    {
+      "external_id": "u06-t2-m01",
+      "topic": "t2",
+      "position": 24,
+      "type": "matching",
+      "prompt": "هر فعل را به شکل ing‌دارش وصل کن.",
+      "pairs": [
+        {
+          "left": "cook",
+          "right": "cooking"
+        },
+        {
+          "left": "study",
+          "right": "studying"
+        },
+        {
+          "left": "dance",
+          "right": "dancing"
+        },
+        {
+          "left": "shop",
+          "right": "shopping"
+        },
+        {
+          "left": "swim",
+          "right": "swimming"
+        }
+      ],
+      "explanation_fa": "cook→cooking، study→studying، dance→dancing، shop→shopping، swim→swimming."
+    },
+    {
+      "external_id": "u06-t3-m01",
+      "topic": "t3",
+      "position": 25,
+      "type": "matching",
+      "prompt": "هر سؤال را به پاسخ کوتاهش وصل کن.",
+      "pairs": [
+        {
+          "left": "Are you Thai?",
+          "right": "Yes, I am."
+        },
+        {
+          "left": "Do you like Thai food?",
+          "right": "Yes, I do."
+        },
+        {
+          "left": "Is she friendly?",
+          "right": "No, she isn't."
+        },
+        {
+          "left": "Does he work here?",
+          "right": "No, he doesn't."
+        },
+        {
+          "left": "Are they students?",
+          "right": "Yes, they are."
+        }
+      ],
+      "explanation_fa": "پاسخ کوتاه همان فعل کمکی سؤال را تکرار می‌کند."
+    }
+  ]
+}

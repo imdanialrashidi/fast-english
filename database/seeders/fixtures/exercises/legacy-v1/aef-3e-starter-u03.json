@@ -1,0 +1,65 @@
+{
+  "external_id": "aef-3e-starter-u03",
+  "book": "aef-3e-starter",
+  "unit": 3,
+  "title": "تمرین یونیت 3 — وسایل کوچک",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u03-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "Where ___ my keys?",
+      "options": [
+        "is",
+        "are",
+        "am",
+        "be"
+      ],
+      "answer": 1,
+      "explanation_fa": "keys جمع است، پس are."
+    },
+    {
+      "external_id": "u03-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "This is my ___. (کیف پول)",
+      "answer": [
+        "wallet"
+      ],
+      "explanation_fa": "کیف پول می‌شود wallet."
+    },
+    {
+      "external_id": "u03-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "___ is my cell phone.",
+      "options": [
+        "This",
+        "These",
+        "Those",
+        "They"
+      ],
+      "answer": 0,
+      "explanation_fa": "برای یک چیز نزدیک از This استفاده می‌کنیم."
+    },
+    {
+      "external_id": "u03-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا سؤال درست ساخته شود.",
+      "answer": "Where are my keys",
+      "explanation_fa": "ترتیب درست: Where are my keys?"
+    },
+    {
+      "external_id": "u03-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "These ___ my sunglasses.",
+      "answer": [
+        "are"
+      ],
+      "explanation_fa": "sunglasses جمع است، پس are."
+    }
+  ]
+}

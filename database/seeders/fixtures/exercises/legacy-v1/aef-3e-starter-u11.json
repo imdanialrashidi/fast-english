@@ -1,0 +1,65 @@
+{
+  "external_id": "aef-3e-starter-u11",
+  "book": "aef-3e-starter",
+  "unit": 11,
+  "title": "تمرین یونیت 11 — گذشتهٔ افعال باقاعده",
+  "instructions_fa": "به پنج سؤال جواب بده. بعد از ثبت، نتیجه و توضیح هر سؤال را می‌بینی.",
+  "items": [
+    {
+      "external_id": "u11-e01",
+      "position": 1,
+      "type": "choice",
+      "prompt": "I ___ in London last year.",
+      "options": [
+        "live",
+        "lived",
+        "living",
+        "lives"
+      ],
+      "answer": 1,
+      "explanation_fa": "گذشتهٔ منظم live می‌شود lived."
+    },
+    {
+      "external_id": "u11-e02",
+      "position": 2,
+      "type": "fill_blank",
+      "prompt": "She ___ (marry) in 2020.",
+      "answer": [
+        "married"
+      ],
+      "explanation_fa": "marry → married."
+    },
+    {
+      "external_id": "u11-e03",
+      "position": 3,
+      "type": "choice",
+      "prompt": "They ___ to a new house last month.",
+      "options": [
+        "move",
+        "moved",
+        "moving",
+        "moves"
+      ],
+      "answer": 1,
+      "explanation_fa": "move → moved."
+    },
+    {
+      "external_id": "u11-e04",
+      "position": 4,
+      "type": "order",
+      "prompt": "کلمات را مرتب کن تا جملهٔ درست ساخته شود.",
+      "answer": "I lived in London last year",
+      "explanation_fa": "ترتیب درست: I lived in London last year."
+    },
+    {
+      "external_id": "u11-e05",
+      "position": 5,
+      "type": "fill_blank",
+      "prompt": "He ___ (start) a new job last week.",
+      "answer": [
+        "started"
+      ],
+      "explanation_fa": "start → started."
+    }
+  ]
+}

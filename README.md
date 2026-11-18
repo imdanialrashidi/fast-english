@@ -116,6 +116,64 @@ you.
 One-command alternative: `composer setup` (install + env + key + migrate + build).
 
 Staff content work: [docs/ops/CONTENT_UPLOAD_FA.md](docs/ops/CONTENT_UPLOAD_FA.md).
+
+### Flashcards (book units + lesson vocabulary)
+
+The books section lives at `/app/books`; a book unit is a hub with a
+flashcard entry and an exercise entry, and the player is a child route. Cards
+are text-first: the English word and a speaker, then an explicit «نمایش
+پاسخ» for the Persian meaning, example and IPA. There is no picture prompt and
+no card-image route. Two decks share the player:
+
+- **Book units.** One deck per unit, two self-reports («درست گفتم / درست
+  نگفتم»), previous/next and per-unit result buckets, backed by a two-grade
+  Anki-style schedule. The first book is American English File Starter (12
+  units, 258 cards). Family and Friends stays in Kidotalks (children-only).
+- **Lesson vocabulary.** The article's glossary is its deck; grading writes
+  the same notebook row «واژه‌ها» schedules, so one word has one schedule. No
+  entry cap: an article with N key words yields N cards.
+
+Import a curated book dataset (the folder containing `manifest.json`):
+
+```bash
+php artisan flashcards:import storage/app/private/imports/aef-3e-starter
+php artisan flashcards:import <path> --dry-run   # validate counts only
+php artisan flashcards:import <path> --force     # re-process media
+```
+
+Import reviewed word clips for lesson decks (Underdog Woof workflow):
+
+```bash
+php artisan flashcards:audio:import storage/app/private/imports/word-audio/manifest.json
+php artisan flashcards:audio:import <manifest> --dry-run
+```
+
+Both flashcard commands are idempotent and never touch learner schedules.
+Media is private and `no-store`. Full contract and verification:
+[docs/FLASHCARDS.md](docs/FLASHCARDS.md); audio production:
+[docs/ops/FLASHCARD_AUDIO_FA.md](docs/ops/FLASHCARD_AUDIO_FA.md).
+
+### Book exercises
+
+Every book unit can carry one reviewed exercise set: choice, fill-blank and
+order questions with server marking, a result page that reveals the key and
+the Persian explanation only after submit, and a retry that creates a new
+attempt. The unit hub links it, with the latest score, when a published set
+exists.
+
+```bash
+php artisan exercises:import database/seeders/fixtures/exercises
+php artisan exercises:import <set.json> --draft
+php artisan exercises:import <set.json> --dry-run
+```
+
+Twelve AEF Starter sets (five items each) ship as fixtures; the command
+accepts one JSON file or a directory. Sets and items are upserted by stable
+ids; learner attempts are never touched. Progress reads on the shelf (`تمرین: X از Y`), the unit row, the hub
+(last/best/attempts) and Today (a fresh or review exercise task). The
+cross-track review hub at `/app/review` gathers due words, due book cards and
+latest-attempt exercise mistakes, with one primary action. Contract, JSON
+shape and limits: [docs/EXERCISES.md](docs/EXERCISES.md).
 Agent content upload (MCP): staff-only bearer tokens, draft-first writes, staged MP3/cover uploads, and publish only with an explicit `content:publish` ability. Setup, client config, tools, and troubleshooting: [docs/ops/MCP_CONTENT_UPLOAD_FA.md](docs/ops/MCP_CONTENT_UPLOAD_FA.md).
 Full admin-panel operator handbook (login/2FA, content, payments, users, settings, import/export): [docs/ops/ADMIN_PANEL_FA.md](docs/ops/ADMIN_PANEL_FA.md).
 Android build, signing, and publish notes: [mobile/README.md](mobile/README.md).

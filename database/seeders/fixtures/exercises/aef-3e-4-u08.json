@@ -1,0 +1,590 @@
+{
+  "external_id": "aef-3e-4-u08",
+  "book": "aef-3e-4",
+  "unit": 8,
+  "title": "American English File 4 · Unit 8",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 8,
+  "source": {
+    "edition": "3rd",
+    "student_book": "4",
+    "lessons": [
+      "8A",
+      "8B"
+    ],
+    "grammar_bank": "8A p.148, 8B p.148",
+    "workbook": "8A, 8B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "the passive (all forms)",
+      "title_fa": "مجهول در همهٔ شکل‌ها",
+      "use_fa": "مجهول با be + قسمت سوم ساخته می‌شود و زمانش را be نشان می‌دهد. وقتی مهم نیست چه کسی کار را کرده از آن استفاده می‌کنیم.",
+      "formulas": [
+        {
+          "label_fa": "حال/گذشته",
+          "text": "is being held / was arrested"
+        },
+        {
+          "label_fa": "کامل/آینده",
+          "text": "had been broken / will be released"
+        },
+        {
+          "label_fa": "پس از حرف اضافه",
+          "text": "avoid being sent to jail"
+        }
+      ],
+      "examples": [
+        {
+          "en": "The trial is being held this week.",
+          "fa": "دادگاه این هفته برگزار می‌شود."
+        },
+        {
+          "en": "Jim was arrested last month.",
+          "fa": "جیم ماه گذشته بازداشت شد."
+        },
+        {
+          "en": "We saw that one of the windows had been broken.",
+          "fa": "دیدیم یکی از پنجره‌ها شکسته شده بود."
+        },
+        {
+          "en": "He paid a fine to avoid being sent to jail.",
+          "fa": "او جریمه داد تا به زندان فرستاده نشود."
+        }
+      ],
+      "notes_fa": "زمان جمله را از روی be بفهم: is being (حال استمراری)، was (گذشته)، had been (گذشتهٔ کامل)، will be (آینده)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "have something done; it is said that...",
+      "title_fa": "have something done و مجهول‌های impersonal",
+      "use_fa": "have + مفعول + قسمت سوم برای کاری که دیگری برایمان انجام می‌دهد (یا برایمان اتفاق می‌افتد). it is said that / he is thought to برای نقل عقیدهٔ عمومی.",
+      "formulas": [
+        {
+          "label_fa": "have sth done",
+          "text": "I had my hair cut.\nWe had the house painted.\nHe had his wallet stolen."
+        },
+        {
+          "label_fa": "impersonal",
+          "text": "It is said that the fire was started deliberately.\nThe mayor is thought to resign.\nThe man is said to be in his 40s."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I had my hair cut yesterday.",
+          "fa": "دیروز موهایم را کوتاه کردم (آرایشگر کوتاه کرد)."
+        },
+        {
+          "en": "We had the house painted.",
+          "fa": "خانه را رنگ کردیم (کسی برایمان رنگ کرد)."
+        },
+        {
+          "en": "It is said that the fire was started deliberately.",
+          "fa": "می‌گویند آتش عمداً روشن شده است."
+        },
+        {
+          "en": "The mayor is thought to resign.",
+          "fa": "گمان می‌رود شهردار استعفا کند."
+        }
+      ],
+      "notes_fa": "have something done یعنی کار را دیگری انجام می‌دهد. در impersonal passive، that-clause یا to + فعل می‌آید."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u08-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "The trial ___ this week.",
+      "options": [
+        "is being held",
+        "is holding",
+        "holds"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is holding معلوم است.",
+        "2": "holds حال ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is being held» است. is being held."
+    },
+    {
+      "external_id": "u08-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Jim ___ last month.",
+      "options": [
+        "was arrested",
+        "arrested",
+        "is arresting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "arrested معلوم است.",
+        "2": "is arresting حال استمراری است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was arrested» است. was arrested."
+    },
+    {
+      "external_id": "u08-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "We saw that one of the windows ___.",
+      "options": [
+        "had been broken",
+        "had broken",
+        "was breaking"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "had broken معلوم است.",
+        "2": "was breaking معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had been broken» است. had been broken."
+    },
+    {
+      "external_id": "u08-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "People used to ___ for stealing bread.",
+      "options": [
+        "be imprisoned",
+        "imprison",
+        "imprisoning"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "imprison معلوم است.",
+        "2": "imprisoning بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «be imprisoned» است. be imprisoned."
+    },
+    {
+      "external_id": "u08-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "He paid a fine to avoid ___ to jail.",
+      "options": [
+        "being sent",
+        "sending",
+        "sent"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sending معلوم است.",
+        "2": "sent بدون being نیست."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «being sent» است. being sent."
+    },
+    {
+      "external_id": "u08-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "People think he ___ by his ex-wife.",
+      "options": [
+        "was blackmailed",
+        "blackmailed",
+        "is blackmailing"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "blackmailed معلوم است.",
+        "2": "is blackmailing حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was blackmailed» است. was blackmailed."
+    },
+    {
+      "external_id": "u08-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "The purse ___ by a dog-walker.",
+      "options": [
+        "was discovered",
+        "discovered",
+        "is discovering"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "discovered معلوم است.",
+        "2": "is discovering حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was discovered» است. was discovered."
+    },
+    {
+      "external_id": "u08-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "Murderers ___ usually sentenced to life in prison.",
+      "options": [
+        "are",
+        "is",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "murderers جمع است.",
+        "2": "have با sentenced نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «are» است. are sentenced."
+    },
+    {
+      "external_id": "u08-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "The prisoner ___ next month.",
+      "options": [
+        "will be released",
+        "will release",
+        "releases"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "will release معلوم است.",
+        "2": "releases حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «will be released» است. will be released."
+    },
+    {
+      "external_id": "u08-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "The tense of a passive sentence is shown by ___.",
+      "options": [
+        "the verb be",
+        "the past participle",
+        "the object"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "قسمت سوم تغییر نمی‌کند.",
+        "2": "مفعول زمان را نشان نمی‌دهد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «the verb be» است. the verb be."
+    },
+    {
+      "external_id": "u08-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "The house ___ at the moment.",
+      "options": [
+        "is being painted",
+        "is painting",
+        "paints"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is painting معلوم است.",
+        "2": "paints حال ساده است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is being painted» است. is being painted."
+    },
+    {
+      "external_id": "u08-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "The letters ___ yesterday.",
+      "options": [
+        "were sent",
+        "sent",
+        "are sending"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "sent معلوم است.",
+        "2": "are sending حال است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «were sent» است. were sent."
+    },
+    {
+      "external_id": "u08-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I ___ my hair cut yesterday.",
+      "options": [
+        "had",
+        "have",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have حال است.",
+        "2": "did با cut نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had my hair cut."
+    },
+    {
+      "external_id": "u08-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "She's going to ___ her car repaired.",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has بعد از to نمی‌آید.",
+        "2": "having بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have repaired."
+    },
+    {
+      "external_id": "u08-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "We need to ___ the house painted.",
+      "options": [
+        "have",
+        "has",
+        "having"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has بعد از to نمی‌آید.",
+        "2": "having بعد از to نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have painted."
+    },
+    {
+      "external_id": "u08-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "He ___ his wallet stolen.",
+      "options": [
+        "had",
+        "has",
+        "have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "have با he نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had stolen."
+    },
+    {
+      "external_id": "u08-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "It ___ that the fire was started deliberately.",
+      "options": [
+        "is said",
+        "is saying",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "is saying حال استمراری است.",
+        "2": "says معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is said» است. is said."
+    },
+    {
+      "external_id": "u08-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "The mayor ___ to resign.",
+      "options": [
+        "is thought",
+        "thought",
+        "thinks"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "thought گذشته است.",
+        "2": "thinks معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is thought» است. is thought."
+    },
+    {
+      "external_id": "u08-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "The man ___ to be in his 40s.",
+      "options": [
+        "is said",
+        "said",
+        "says"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "said گذشته است.",
+        "2": "says معلوم است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is said» است. is said."
+    },
+    {
+      "external_id": "u08-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "Where did you ___ your hair done?",
+      "options": [
+        "have",
+        "get",
+        "make"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "get هم ممکن است ولی الگوی درس have است.",
+        "2": "make اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have it done."
+    },
+    {
+      "external_id": "u08-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "I need to ___ my eyes tested.",
+      "options": [
+        "have",
+        "do",
+        "make"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do اینجا نمی‌آید.",
+        "2": "make اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have» است. have tested."
+    },
+    {
+      "external_id": "u08-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "She had her nails ___.",
+      "options": [
+        "done",
+        "did",
+        "do"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "did گذشته است.",
+        "2": "do فعل پایه است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «done» است. done."
+    },
+    {
+      "external_id": "u08-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "We ___ the window broken in the storm.",
+      "options": [
+        "had",
+        "have",
+        "did"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "did با broken نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «had» است. had."
+    },
+    {
+      "external_id": "u08-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "He is thought ___ be rich.",
+      "options": [
+        "to",
+        "that",
+        "for"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "that با be نمی‌آید.",
+        "2": "for اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to» است. to be."
+    },
+    {
+      "external_id": "u08-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "هر جملهٔ معلوم را به مجهولش وصل کن.",
+      "pairs": [
+        {
+          "left": "They are holding the trial.",
+          "right": "The trial is being held."
+        },
+        {
+          "left": "Someone arrested Jim.",
+          "right": "Jim was arrested."
+        },
+        {
+          "left": "They will release the prisoner.",
+          "right": "The prisoner will be released."
+        },
+        {
+          "left": "Someone had broken the window.",
+          "right": "The window had been broken."
+        },
+        {
+          "left": "A dog-walker discovered the purse.",
+          "right": "The purse was discovered."
+        }
+      ],
+      "explanation_fa": "مجهول: be + قسمت سوم در همان زمان.",
+      "position": 25
+    },
+    {
+      "external_id": "u08-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I had my hair",
+          "right": "cut."
+        },
+        {
+          "left": "We had the house",
+          "right": "painted."
+        },
+        {
+          "left": "It is said",
+          "right": "that the fire was started."
+        },
+        {
+          "left": "The mayor is thought",
+          "right": "to resign."
+        },
+        {
+          "left": "The man is said",
+          "right": "to be in his 40s."
+        }
+      ],
+      "explanation_fa": "have sth done و مجهول impersonal.",
+      "position": 26
+    }
+  ]
+}

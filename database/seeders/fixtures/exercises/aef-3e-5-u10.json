@@ -1,0 +1,586 @@
+{
+  "external_id": "aef-3e-5-u10",
+  "book": "aef-3e-5",
+  "unit": 10,
+  "title": "American English File 5 · Unit 10",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 10,
+  "source": {
+    "edition": "3rd",
+    "student_book": "5",
+    "lessons": [
+      "10A",
+      "10B"
+    ],
+    "grammar_bank": "10A p.157, 10B p.158",
+    "workbook": "10A, 10B"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "adding emphasis (2): cleft sentences",
+      "title_fa": "تأکید (۲): جمله‌های شکافته",
+      "use_fa": "برای برجسته کردن بخشی از جمله از What ... is / It was ... that/who استفاده می‌کنیم.",
+      "formulas": [
+        {
+          "label_fa": "what",
+          "text": "What I need is a good sleep.\nAll I want is some peace."
+        },
+        {
+          "label_fa": "it was",
+          "text": "It was my brother who broke it.\nIt was in 2019 that we met."
+        }
+      ],
+      "examples": [
+        {
+          "en": "What I need is a good night's sleep.",
+          "fa": "چیزی که لازم دارم یک خواب خوب است."
+        },
+        {
+          "en": "It was my brother who broke the window.",
+          "fa": "برادرم بود که پنجره را شکست."
+        },
+        {
+          "en": "It was in 2019 that we met.",
+          "fa": "در ۲۰۱۹ بود که همدیگر را دیدیم."
+        },
+        {
+          "en": "All I want is some peace.",
+          "fa": "تنها چیزی که می‌خواهم کمی آرامش است."
+        }
+      ],
+      "notes_fa": "در جملهٔ شکافته، بخش تأکیدشده بین It was و that/who می‌آید. با What، فعل بعدی is می‌گیرد."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "relative clauses",
+      "title_fa": "جمله‌های وصفی",
+      "use_fa": "who برای شخص، which/that برای چیز، where برای مکان، whose برای مالکیت و why برای دلیل.",
+      "formulas": [
+        {
+          "label_fa": "شخص/چیز",
+          "text": "the woman who lives next door\nthe book which I bought"
+        },
+        {
+          "label_fa": "مکان/مالکیت/دلیل",
+          "text": "the house where we lived\nthe man whose car was stolen\nthe reason why I left"
+        }
+      ],
+      "examples": [
+        {
+          "en": "The woman who lives next door is a doctor.",
+          "fa": "زنی که همسایه است دکتر است."
+        },
+        {
+          "en": "That's the house where we lived.",
+          "fa": "آن خانه‌ای است که در آن زندگی می‌کردیم."
+        },
+        {
+          "en": "The man whose car was stolen called the police.",
+          "fa": "مردی که ماشینش دزدیده شد پلیس را خبر کرد."
+        },
+        {
+          "en": "I met a girl who speaks five languages.",
+          "fa": "دختری را دیدم که پنج زبان صحبت می‌کند."
+        }
+      ],
+      "notes_fa": "برای چیز after که می‌توان that آورد ولی for person who/that: the woman who/that lives here."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u10-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "___ I need is a good night's sleep.",
+      "options": [
+        "What",
+        "That",
+        "It"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "that جمله را ناقص می‌کند.",
+        "2": "it اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «What» است. What I need is ..."
+    },
+    {
+      "external_id": "u10-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "It ___ my brother who broke the window.",
+      "options": [
+        "was",
+        "is",
+        "be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "جمله گذشته است.",
+        "2": "be بدون صرف است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. It was."
+    },
+    {
+      "external_id": "u10-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "It was in 2019 ___ we met.",
+      "options": [
+        "that",
+        "when",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "when در cleft نمی‌آید.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «that» است. that."
+    },
+    {
+      "external_id": "u10-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "___ was John who called you.",
+      "options": [
+        "It",
+        "What",
+        "That"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "what فاعل جمله نمی‌شود.",
+        "2": "that اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «It» است. It was John."
+    },
+    {
+      "external_id": "u10-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "What she wants ___ to be left alone.",
+      "options": [
+        "is",
+        "are",
+        "was"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "what مفرد است.",
+        "2": "was زمان را عوض می‌کند."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is."
+    },
+    {
+      "external_id": "u10-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "It was the manager ___ made the decision.",
+      "options": [
+        "who",
+        "which",
+        "what"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "what اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «who» است. who."
+    },
+    {
+      "external_id": "u10-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "All I want ___ some peace.",
+      "options": [
+        "is",
+        "are",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "all مفرد است.",
+        "2": "were گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is."
+    },
+    {
+      "external_id": "u10-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "It's the noise ___ I can't stand.",
+      "options": [
+        "that",
+        "what",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "what اینجا نمی‌آید.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «that» است. that."
+    },
+    {
+      "external_id": "u10-t1-q09",
+      "topic": "t1",
+      "position": 9,
+      "type": "choice",
+      "prompt": "What happened ___ that he lost his job.",
+      "options": [
+        "was",
+        "were",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "what مفرد است.",
+        "2": "is زمان را عوض می‌کند."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «was» است. was."
+    },
+    {
+      "external_id": "u10-t1-q10",
+      "topic": "t1",
+      "position": 10,
+      "type": "choice",
+      "prompt": "It was then ___ I realized the truth.",
+      "options": [
+        "that",
+        "when",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "when در cleft نمی‌آید.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «that» است. that."
+    },
+    {
+      "external_id": "u10-t1-q11",
+      "topic": "t1",
+      "position": 11,
+      "type": "choice",
+      "prompt": "What I like ___ the music.",
+      "options": [
+        "is",
+        "are",
+        "were"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "what مفرد است.",
+        "2": "were گذشته است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «is» است. is."
+    },
+    {
+      "external_id": "u10-t1-q12",
+      "topic": "t1",
+      "position": 12,
+      "type": "choice",
+      "prompt": "It was in Paris ___ they got married.",
+      "options": [
+        "that",
+        "where",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "where در cleft نمی‌آید.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «that» است. that."
+    },
+    {
+      "external_id": "u10-t2-q01",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "The woman ___ lives next door is a doctor.",
+      "options": [
+        "who",
+        "which",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «who» است. who."
+    },
+    {
+      "external_id": "u10-t2-q02",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "The book ___ I bought is great.",
+      "options": [
+        "which",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «which» است. which."
+    },
+    {
+      "external_id": "u10-t2-q03",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "That's the house ___ we lived.",
+      "options": [
+        "where",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «where» است. where."
+    },
+    {
+      "external_id": "u10-t2-q04",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "The man ___ car was stolen called the police.",
+      "options": [
+        "whose",
+        "who",
+        "which"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who با car نمی‌آید.",
+        "2": "which برای چیز است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «whose» است. whose."
+    },
+    {
+      "external_id": "u10-t2-q05",
+      "topic": "t2",
+      "position": 17,
+      "type": "choice",
+      "prompt": "The film ___ we saw was boring.",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «that» است. that."
+    },
+    {
+      "external_id": "u10-t2-q06",
+      "topic": "t2",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She's the teacher ___ helped me.",
+      "options": [
+        "who",
+        "which",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «who» است. who."
+    },
+    {
+      "external_id": "u10-t2-q07",
+      "topic": "t2",
+      "position": 19,
+      "type": "choice",
+      "prompt": "The city ___ I grew up is small.",
+      "options": [
+        "where",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «where» است. where."
+    },
+    {
+      "external_id": "u10-t2-q08",
+      "topic": "t2",
+      "position": 20,
+      "type": "choice",
+      "prompt": "The dog ___ bit him was brown.",
+      "options": [
+        "that",
+        "who",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "who برای شخص است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «that» است. that."
+    },
+    {
+      "external_id": "u10-t2-q09",
+      "topic": "t2",
+      "position": 21,
+      "type": "choice",
+      "prompt": "This is the reason ___ I left.",
+      "options": [
+        "why",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «why» است. why."
+    },
+    {
+      "external_id": "u10-t2-q10",
+      "topic": "t2",
+      "position": 22,
+      "type": "choice",
+      "prompt": "The people ___ live here are friendly.",
+      "options": [
+        "who",
+        "which",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «who» است. who."
+    },
+    {
+      "external_id": "u10-t2-q11",
+      "topic": "t2",
+      "position": 23,
+      "type": "choice",
+      "prompt": "The table ___ leg is broken needs repair.",
+      "options": [
+        "whose",
+        "which",
+        "who"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which با leg نمی‌آید.",
+        "2": "who برای شخص است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «whose» است. whose."
+    },
+    {
+      "external_id": "u10-t2-q12",
+      "topic": "t2",
+      "position": 24,
+      "type": "choice",
+      "prompt": "I met a girl ___ speaks five languages.",
+      "options": [
+        "who",
+        "which",
+        "where"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "which برای چیز است.",
+        "2": "where برای مکان است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «who» است. who."
+    },
+    {
+      "external_id": "u10-t1-m01",
+      "topic": "t1",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "What I need",
+          "right": "is a good sleep."
+        },
+        {
+          "left": "It was my brother",
+          "right": "who broke the window."
+        },
+        {
+          "left": "It was in 2019",
+          "right": "that we met."
+        },
+        {
+          "left": "All I want",
+          "right": "is some peace."
+        },
+        {
+          "left": "It was the manager",
+          "right": "who made the decision."
+        }
+      ],
+      "explanation_fa": "جمله‌های شکافته با what/it was.",
+      "position": 25
+    },
+    {
+      "external_id": "u10-t2-m01",
+      "topic": "t2",
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "The woman who lives next door",
+          "right": "is a doctor."
+        },
+        {
+          "left": "The book which I bought",
+          "right": "is great."
+        },
+        {
+          "left": "That's the house",
+          "right": "where we lived."
+        },
+        {
+          "left": "The man whose car was stolen",
+          "right": "called the police."
+        },
+        {
+          "left": "The city where I grew up",
+          "right": "is small."
+        }
+      ],
+      "explanation_fa": "who/which/where/whose برای شخص، چیز، مکان و مالکیت.",
+      "position": 26
+    }
+  ]
+}

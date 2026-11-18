@@ -19,6 +19,13 @@ final class SpacedRepetition
     public const GRADES = ['again', 'hard', 'good', 'easy'];
 
     /**
+     * A hard ceiling on the interval. Without it, repeated Easy grades grow
+     * the interval without bound and eventually produce a date the database
+     * or Carbon cannot represent (observed as year 39326 in the lane).
+     */
+    public const MAX_INTERVAL_DAYS = 365;
+
+    /**
      * @param  array{ease_factor: float, interval_days: int, repetitions: int, lapses: int}  $state
      * @return array{ease_factor: float, interval_days: int, repetitions: int, lapses: int, due_at: CarbonInterface, last_reviewed_at: CarbonInterface}
      *
@@ -58,6 +65,8 @@ final class SpacedRepetition
             $ease = round($ease + 0.15, 2);
             $interval = $interval < 1 ? 4 : (int) max(1, round($interval * $ease * 1.3));
         }
+
+        $interval = min($interval, self::MAX_INTERVAL_DAYS);
 
         return [
             'ease_factor' => $ease,

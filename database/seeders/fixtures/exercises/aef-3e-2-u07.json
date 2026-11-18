@@ -1,0 +1,665 @@
+{
+  "external_id": "aef-3e-2-u07",
+  "book": "aef-3e-2",
+  "unit": 7,
+  "title": "American English File 2 · Unit 7",
+  "instructions_fa": "هر مبحث را بخوان، بعد سؤال‌های همان مبحث را جواب بده. پاسخ درست و توضیحش بلافاصله نشان داده می‌شود.",
+  "sort_order": 7,
+  "source": {
+    "edition": "3rd",
+    "student_book": "2",
+    "lessons": [
+      "7A",
+      "7B",
+      "7C"
+    ],
+    "grammar_bank": "7A p.140, 7B p.140, 7C p.140",
+    "workbook": "7A, 7B, 7C"
+  },
+  "topics": [
+    {
+      "key": "t1",
+      "position": 1,
+      "title_en": "uses of the infinitive",
+      "title_fa": "کاربردهای مصدر با to",
+      "use_fa": "مصدر با to بعد از برخی فعل‌ها و صفت‌ها، بعد از کلمهٔ پرسشی و برای گفتن دلیل می‌آید. منفی‌اش not to است.",
+      "formulas": [
+        {
+          "label_fa": "بعد از فعل/صفت",
+          "text": "need to be\ntry not to talk\nIt's important not to be late."
+        },
+        {
+          "label_fa": "بعد از کلمهٔ پرسشی",
+          "text": "I don't know where to go."
+        },
+        {
+          "label_fa": "دلیل",
+          "text": "I came here to learn English."
+        }
+      ],
+      "examples": [
+        {
+          "en": "You need to be on time.",
+          "fa": "باید سر وقت باشی."
+        },
+        {
+          "en": "Try not to talk too much.",
+          "fa": "سعی کن زیاد حرف نزنی."
+        },
+        {
+          "en": "It'll be nice to meet new people.",
+          "fa": "آشنایی با آدم‌های جدید خوب است."
+        },
+        {
+          "en": "I came to this school to learn English.",
+          "fa": "به این مدرسه آمدم تا انگلیسی یاد بگیرم."
+        }
+      ],
+      "notes_fa": "برای دلیل از to + فعل پایه استفاده می‌کنیم، نه for: to learn English (نه for learn)."
+    },
+    {
+      "key": "t2",
+      "position": 2,
+      "title_en": "uses of the gerund (verb + -ing)",
+      "title_fa": "کاربردهای اسم مصدر (فعل + ing)",
+      "use_fa": "فعل ing‌دار می‌تواند نقش اسم را بازی کند: فاعل، مفعول، بعد از برخی فعل‌ها و بعد از حرف اضافه.",
+      "formulas": [
+        {
+          "label_fa": "فاعل/مفعول",
+          "text": "Eating outside makes me feel good.\nHappiness is getting up late."
+        },
+        {
+          "label_fa": "بعد از فعل",
+          "text": "I love having breakfast in bed.\nI hate not getting to the airport early."
+        },
+        {
+          "label_fa": "بعد از حرف اضافه",
+          "text": "I'm thinking of buying a car.\nHe left without saying goodbye."
+        }
+      ],
+      "examples": [
+        {
+          "en": "Eating outside in the summer makes me feel good.",
+          "fa": "تابستان بیرون غذا خوردن حالم را خوب می‌کند."
+        },
+        {
+          "en": "Happiness is getting up late.",
+          "fa": "خوشبختی یعنی دیر بیدار شدن."
+        },
+        {
+          "en": "I'm thinking of buying a new car.",
+          "fa": "به خرید ماشین نو فکر می‌کنم."
+        },
+        {
+          "en": "Jim left without saying goodbye.",
+          "fa": "جیم بدون خداحافظی رفت."
+        }
+      ],
+      "notes_fa": "بعد از حرف اضافه همیشه ing می‌آید: without saying (نه without say). منفی‌اش not + ing است: not getting."
+    },
+    {
+      "key": "t3",
+      "position": 3,
+      "title_en": "have to, don't have to, must, must not, can't",
+      "title_fa": "have to، don't have to، must، must not و can't",
+      "use_fa": "have to برای اجبار و قانون؛ don't have to یعنی لازم نیست؛ must/must not و can't برای اجبار و ممنوعیت.",
+      "formulas": [
+        {
+          "label_fa": "اجبار",
+          "text": "have to / has to + base verb\nI have to speak English at work."
+        },
+        {
+          "label_fa": "لازم نبودن",
+          "text": "don't / doesn't have to\nWe don't have to wear a uniform."
+        },
+        {
+          "label_fa": "ممنوعیت",
+          "text": "must not / can't + base verb\nYou must not smoke here."
+        }
+      ],
+      "examples": [
+        {
+          "en": "I have to speak English at work.",
+          "fa": "باید سر کار انگلیسی صحبت کنم."
+        },
+        {
+          "en": "She has to get up at seven.",
+          "fa": "او باید ساعت هفت بیدار شود."
+        },
+        {
+          "en": "We don't have to wear a uniform.",
+          "fa": "لازم نیست لباس فرم بپوشیم."
+        },
+        {
+          "en": "You must not smoke here.",
+          "fa": "اینجا نباید سیگار بکشی."
+        }
+      ],
+      "notes_fa": "don't have to با must not فرق دارد: اولی «لازم نیست» و دومی «ممنوع است». سؤال و منفی have to با do/does ساخته می‌شود."
+    }
+  ],
+  "items": [
+    {
+      "external_id": "u07-t1-q01",
+      "topic": "t1",
+      "position": 1,
+      "type": "choice",
+      "prompt": "You need ___ on time.",
+      "options": [
+        "to be",
+        "be",
+        "being"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از need فعل پایه با to می‌آید.",
+        "2": "being اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to be» است. need to be on time."
+    },
+    {
+      "external_id": "u07-t1-q02",
+      "topic": "t1",
+      "position": 2,
+      "type": "choice",
+      "prompt": "Try ___ too much.",
+      "options": [
+        "not to talk",
+        "not talk",
+        "to not talk"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "منفی مصدر not to است.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not to talk» است. Try not to talk."
+    },
+    {
+      "external_id": "u07-t1-q03",
+      "topic": "t1",
+      "position": 3,
+      "type": "choice",
+      "prompt": "It'll be nice ___ new people.",
+      "options": [
+        "to meet",
+        "meet",
+        "meeting"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از صفت، مصدر با to.",
+        "2": "meeting اسم مصدر است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to meet» است. nice to meet."
+    },
+    {
+      "external_id": "u07-t1-q04",
+      "topic": "t1",
+      "position": 4,
+      "type": "choice",
+      "prompt": "It's important ___ late.",
+      "options": [
+        "not to be",
+        "not be",
+        "to not be"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "منفی مصدر not to است.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not to be» است. important not to be late."
+    },
+    {
+      "external_id": "u07-t1-q05",
+      "topic": "t1",
+      "position": 5,
+      "type": "choice",
+      "prompt": "I don't know where ___.",
+      "options": [
+        "to go",
+        "go",
+        "going"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از where مصدر با to.",
+        "2": "going اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to go» است. where to go."
+    },
+    {
+      "external_id": "u07-t1-q06",
+      "topic": "t1",
+      "position": 6,
+      "type": "choice",
+      "prompt": "I came to this school ___ English.",
+      "options": [
+        "to learn",
+        "for learn",
+        "learning"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "برای دلیل to می‌آید.",
+        "2": "learning بدون to است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «to learn» است. to learn English."
+    },
+    {
+      "external_id": "u07-t1-q07",
+      "topic": "t1",
+      "position": 7,
+      "type": "choice",
+      "prompt": "Why did you wear a suit? — ___ a good impression.",
+      "options": [
+        "To make",
+        "Make",
+        "Making"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "پاسخ به why با to.",
+        "2": "Make بدون to است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «To make» است. To make a good impression."
+    },
+    {
+      "external_id": "u07-t1-q08",
+      "topic": "t1",
+      "position": 8,
+      "type": "choice",
+      "prompt": "What ___ you do?",
+      "options": [
+        "would",
+        "do",
+        "are"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do با would نمی‌آید.",
+        "2": "are با فعل پایه نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «would» است. What would you do?"
+    },
+    {
+      "external_id": "u07-t2-q01",
+      "topic": "t2",
+      "position": 9,
+      "type": "choice",
+      "prompt": "___ outside in summer makes me feel good.",
+      "options": [
+        "Eating",
+        "Eat",
+        "Eaten"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "فاعل جمله باید اسم باشد.",
+        "2": "eaten قسمت سوم است."
+      },
+      "explanation_fa": "اسم مصدر: Eating."
+    },
+    {
+      "external_id": "u07-t2-q02",
+      "topic": "t2",
+      "position": 10,
+      "type": "choice",
+      "prompt": "Happiness is ___ up late.",
+      "options": [
+        "getting",
+        "get",
+        "to get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از is اسم لازم است.",
+        "2": "to get اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «getting» است. getting up late."
+    },
+    {
+      "external_id": "u07-t2-q03",
+      "topic": "t2",
+      "position": 11,
+      "type": "choice",
+      "prompt": "I love ___ breakfast in bed.",
+      "options": [
+        "having",
+        "have",
+        "to have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از love فعل ing می‌گیرد.",
+        "2": "to have در این الگو نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «having» است. love having."
+    },
+    {
+      "external_id": "u07-t2-q04",
+      "topic": "t2",
+      "position": 12,
+      "type": "choice",
+      "prompt": "I hate ___ to the airport early.",
+      "options": [
+        "not getting",
+        "not get",
+        "to not get"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از hate فعل ing.",
+        "2": "ترتیب to not غلط است."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «not getting» است. hate not getting."
+    },
+    {
+      "external_id": "u07-t2-q05",
+      "topic": "t2",
+      "position": 13,
+      "type": "choice",
+      "prompt": "I'm thinking of ___ a new car.",
+      "options": [
+        "buying",
+        "buy",
+        "to buy"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از حرف اضافه of فعل ing.",
+        "2": "to buy بعد از of نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «buying» است. thinking of buying."
+    },
+    {
+      "external_id": "u07-t2-q06",
+      "topic": "t2",
+      "position": 14,
+      "type": "choice",
+      "prompt": "Jim left without ___ goodbye.",
+      "options": [
+        "saying",
+        "say",
+        "to say"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از without فعل ing.",
+        "2": "say بعد از without نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «saying» است. without saying."
+    },
+    {
+      "external_id": "u07-t2-q07",
+      "topic": "t2",
+      "position": 15,
+      "type": "choice",
+      "prompt": "I enjoy ___ books.",
+      "options": [
+        "reading",
+        "read",
+        "to read"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از enjoy فعل ing.",
+        "2": "to read بعد از enjoy نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «reading» است. enjoy reading."
+    },
+    {
+      "external_id": "u07-t2-q08",
+      "topic": "t2",
+      "position": 16,
+      "type": "choice",
+      "prompt": "She's good at ___.",
+      "options": [
+        "cooking",
+        "cook",
+        "to cook"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "بعد از at فعل ing.",
+        "2": "to cook بعد از at نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «cooking» است. good at cooking."
+    },
+    {
+      "external_id": "u07-t3-q01",
+      "topic": "t3",
+      "position": 17,
+      "type": "choice",
+      "prompt": "I ___ speak English at work.",
+      "options": [
+        "have to",
+        "has to",
+        "must to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "has to برای سوم‌شخص است.",
+        "2": "must to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «have to» است. I have to speak."
+    },
+    {
+      "external_id": "u07-t3-q02",
+      "topic": "t3",
+      "position": 18,
+      "type": "choice",
+      "prompt": "She ___ get up at seven.",
+      "options": [
+        "has to",
+        "have to",
+        "must to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "have to با she نمی‌آید.",
+        "2": "must to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «has to» است. She has to get up."
+    },
+    {
+      "external_id": "u07-t3-q03",
+      "topic": "t3",
+      "position": 19,
+      "type": "choice",
+      "prompt": "We ___ wear a uniform.",
+      "options": [
+        "don't have to",
+        "doesn't have to",
+        "mustn't"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "doesn't برای سوم‌شخص است.",
+        "2": "mustn't یعنی ممنوع."
+      },
+      "explanation_fa": "لازم نیست: don't have to."
+    },
+    {
+      "external_id": "u07-t3-q04",
+      "topic": "t3",
+      "position": 20,
+      "type": "choice",
+      "prompt": "He ___ work on Saturdays.",
+      "options": [
+        "doesn't have to",
+        "don't have to",
+        "hasn't to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't با he نمی‌آید.",
+        "2": "hasn't to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «doesn't have to» است. doesn't have to."
+    },
+    {
+      "external_id": "u07-t3-q05",
+      "topic": "t3",
+      "position": 21,
+      "type": "choice",
+      "prompt": "___ I have to buy a book?",
+      "options": [
+        "Do",
+        "Am",
+        "Have"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "Am با have to نمی‌آید.",
+        "2": "Have I to وجود ندارد."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «Do» است. Do I have to ...?"
+    },
+    {
+      "external_id": "u07-t3-q06",
+      "topic": "t3",
+      "position": 22,
+      "type": "choice",
+      "prompt": "What time ___ he have to get up?",
+      "options": [
+        "does",
+        "do",
+        "is"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "do با he نمی‌آید.",
+        "2": "is اینجا نمی‌آید."
+      },
+      "explanation_fa": "طبق قاعدهٔ این مبحث، پاسخ «does» است. does he have to."
+    },
+    {
+      "external_id": "u07-t3-q07",
+      "topic": "t3",
+      "position": 23,
+      "type": "choice",
+      "prompt": "You ___ smoke here. It's prohibited.",
+      "options": [
+        "must not",
+        "must",
+        "don't have to"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "must یعنی اجبار.",
+        "2": "don't have to یعنی لازم نیست."
+      },
+      "explanation_fa": "ممنوعیت: must not."
+    },
+    {
+      "external_id": "u07-t3-q08",
+      "topic": "t3",
+      "position": 24,
+      "type": "choice",
+      "prompt": "You ___ park here.",
+      "options": [
+        "can't",
+        "don't have to",
+        "must"
+      ],
+      "answer": 0,
+      "feedback": {
+        "1": "don't have to یعنی لازم نیست.",
+        "2": "must یعنی باید."
+      },
+      "explanation_fa": "ممنوعیت: can't."
+    },
+    {
+      "external_id": "u07-t1-m01",
+      "topic": "t1",
+      "position": 25,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "You need",
+          "right": "to be on time."
+        },
+        {
+          "left": "It's important",
+          "right": "not to be late."
+        },
+        {
+          "left": "I don't know where",
+          "right": "to go."
+        },
+        {
+          "left": "I came here",
+          "right": "to learn English."
+        },
+        {
+          "left": "I wore a suit",
+          "right": "to make a good impression."
+        }
+      ],
+      "explanation_fa": "مصدر با to بعد از فعل/صفت، بعد از کلمهٔ پرسشی و برای دلیل."
+    },
+    {
+      "external_id": "u07-t2-m01",
+      "topic": "t2",
+      "position": 26,
+      "type": "matching",
+      "prompt": "هر عبارت را به ادامهٔ درستش وصل کن.",
+      "pairs": [
+        {
+          "left": "enjoy",
+          "right": "reading"
+        },
+        {
+          "left": "thinking of",
+          "right": "buying a car"
+        },
+        {
+          "left": "without",
+          "right": "saying goodbye"
+        },
+        {
+          "left": "good at",
+          "right": "cooking"
+        },
+        {
+          "left": "hate",
+          "right": "getting up early"
+        }
+      ],
+      "explanation_fa": "بعد از فعل‌ها و حرف‌های اضافه، فعل ing می‌گیرد."
+    },
+    {
+      "external_id": "u07-t3-m01",
+      "topic": "t3",
+      "position": 27,
+      "type": "matching",
+      "prompt": "نیمه‌های جمله را به هم وصل کن.",
+      "pairs": [
+        {
+          "left": "I have to",
+          "right": "speak English at work."
+        },
+        {
+          "left": "She has to",
+          "right": "get up at seven."
+        },
+        {
+          "left": "We don't have to",
+          "right": "wear a uniform."
+        },
+        {
+          "left": "You must not",
+          "right": "smoke here."
+        },
+        {
+          "left": "Do I have to",
+          "right": "buy a book?"
+        }
+      ],
+      "explanation_fa": "have to برای اجبار، don't have to برای عدم اجبار و must not برای ممنوعیت."
+    }
+  ]
+}
