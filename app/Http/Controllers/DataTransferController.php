@@ -44,7 +44,7 @@ class DataTransferController extends Controller
             ]);
         }
 
-        return $this->download($absolute, $name);
+        return $this->download($absolute, $name, deleteAfterSend: true);
     }
 
     /** Validate an uploaded archive, keep a safety copy, replace data. */
@@ -122,12 +122,19 @@ class DataTransferController extends Controller
         return $this->download($absolute, basename($absolute));
     }
 
-    private function download(string $absolute, string $name): BinaryFileResponse
+    private function download(string $absolute, string $name, bool $deleteAfterSend = false): BinaryFileResponse
     {
         $response = response()->download($absolute, $name, [
             'X-Robots-Tag' => 'noindex, nofollow',
         ]);
         $response->headers->set('Cache-Control', 'private, no-store');
+
+        // A full export contains password hashes, 2FA secrets and receipts.
+        // Remove it as soon as the bytes have been sent; a safety copy stays
+        // on the private disk so an import can still be undone.
+        if ($deleteAfterSend) {
+            $response->deleteFileAfterSend(true);
+        }
 
         return $response;
     }

@@ -1,3 +1,32 @@
+## 2026-11-18 — security patch pass (admin, auth, dependencies)
+
+- **Dependency advisories closed.** `composer audit` reported 15 advisories
+  across 8 packages (Livewire authorization bypass, Laravel task-output
+  injection, Symfony serializer/http-foundation/http-kernel/routing/mime and
+  html-sanitizer). A targeted `composer update` moved Laravel to **13.43.0**,
+  Livewire to **4.4.8**, Symfony to **8.1.11** (serializer, http-foundation,
+  http-kernel, routing, mime, html-sanitizer) and their contracts; the audit
+  now reports **no advisories**. Evidence: full Pest **461 passed**, full
+  Chromium **96 passed**, typecheck + build PASS.
+- **Export hygiene.** A full data export (password hashes, 2FA secrets,
+  receipts) is removed from the private disk as soon as the download has been
+  sent; the pre-import safety copy stays for undo. The hourly sweep remains
+  as a backstop.
+- **Admin review confirmed.** Local staff pass through `/admin` (dashboard,
+  plans, plan edit, payment queue, payment view with a private receipt image,
+  users, user view, business settings, import/export) with zero console
+  errors; a learner session gets **403**. Production keeps CSRF (419), the
+  MCP bearer gate (401), private media, Filament's 5/minute login limit and
+  the 30-minute staff idle gate.
+- **Open admin item (owner action).** The only staff account has an
+  unconfirmed TOTP secret (`two_factor_confirmed_at` null, no recovery
+  codes), so the panel fail-closes to the setup page until the owner scans
+  the provisioning key and confirms; `staff:2fa-reset` is the fallback.
+- **Known residual gaps.** No Content-Security-Policy yet (needs a nonce
+  pipeline); `trustProxies('*')` is safe only while 8080 stays internal (it
+  does); npm's advisories are build-tool only (vite/picomatch) and need a Vite
+  major upgrade; the Filament avatar defaults to ui-avatars.com.
+
 ## 2026-11-18 — article-only flashcards, exercise-only books
 
 - **Owner decision: flashcards belong to articles, not to book units.** The
