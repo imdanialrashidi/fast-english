@@ -1,3 +1,37 @@
+## 2026-11-19 — hardening: CSP, trusted proxies, local avatars, encrypted sessions
+
+- **CSP on every HTML response.** `ContentSecurityPolicy` sets self-only
+  sources, `object-src 'none'`, `base-uri 'self'`, `frame-ancestors 'self'`,
+  `form-action 'self'`, self fonts/images/media, and no third-party hosts.
+  Learner/public pages keep `script-src 'self' 'unsafe-inline'`; the Filament
+  panel adds `'unsafe-eval'` for Alpine. Blob URLs are allowed for upload
+  previews. A regression test pins the public policy and the panel variant.
+- **Trusted proxies narrowed.** `trustProxies` now accepts only loopback and
+  RFC1918 ranges (127.0.0.1, ::1, 10/8, 172.16/12, 192.168/16) instead of
+  `*`; live HTTPS detection, canonical URLs and Secure cookies still work, and
+  a direct public client can no longer spoof `X-Forwarded-*`.
+- **No third-party avatar.** The Filament panel draws staff initials as a
+  local data-URI SVG (`LocalAvatarProvider`), so `ui-avatars.com` is gone and
+  the staff name never leaves the server.
+- **Encrypted session payloads.** `SESSION_ENCRYPT=true` in
+  `compose.prod.yml` and `.env.production.example`; existing sessions are
+  invalidated once at rollout.
+- **npm clean.** Pruned extraneous packages; `npm audit` now reports
+  **0 vulnerabilities** (the previous 2 critical were orphaned
+  concurrently/shell-quote installs, not in package.json).
+- **Deployed 2026-11-19.** Commit `d897275`; image
+  `uerwghnhy5ezsd3ghxo96ugl_app:d897275659d3…`; Coolify deployment
+  `cf407d5a-141f-4cc8-92b8-257f8477c70c`; container
+  `app-uerwghnhy5ezsd3ghxo96ugl-20261118T220144` (healthy); nothing to
+  migrate, `ops:status ok`, smoke **27/27**. Live: CSP present on `/` and
+  `/admin/login` (panel variant includes `unsafe-eval`), canonical and asset
+  URLs are HTTPS, session/XSRF cookies are `Secure` + `HttpOnly`, a wrong
+  login returns the generic Persian error, and Chromium shows zero console
+  errors or external requests on `/`, `/sample`, `/login`, `/download`,
+  `/admin/login`. Evidence: Pest **462 passed / 5,591 assertions**, Pint
+  **PASS** (406 files), typecheck + build **PASS**, Playwright **96 passed**,
+  `composer audit` and `npm audit` both clean.
+
 ## 2026-11-18 — security patch pass (admin, auth, dependencies)
 
 - **Dependency advisories closed.** `composer audit` reported 15 advisories

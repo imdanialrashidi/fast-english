@@ -1,5 +1,17 @@
 # Fast English — launch readiness review
 
+> **Hardening 2026-11-19 (commit `d897275`, deployment `cf407d5a…`,
+> container `app-…-20261118T220144`).** CSP is live on every HTML response
+> (self-only; learner pages no eval, panel adds `unsafe-eval` for Alpine),
+> trusted proxies are loopback + RFC1918 only, avatars are local data URIs,
+> sessions are encrypted, `npm audit` is clean and export archives delete
+> after send. Live smoke **27/27**; `/`, `/sample`, `/login`, `/download` and
+> `/admin/login` render in Chromium with zero console errors and zero
+> external requests; canonical/asset URLs stay HTTPS and cookies are
+> `Secure`+`HttpOnly`. Pest **462**, Playwright **96**. Still owner-gated:
+> staff TOTP confirmation, Sentry/alert DSN and an off-server backup
+> destination.
+
 > **Security patch 2026-11-18 (commit `9362e5e`, deployment `e4c5bc12…`,
 > container `app-…-20261118T134857`).** `composer audit` went from **15
 > advisories / 8 packages** to **none** (Laravel 13.43.0, Livewire 4.4.8,
