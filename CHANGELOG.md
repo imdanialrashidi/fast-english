@@ -18,6 +18,14 @@
   errors; a learner session gets **403**. Production keeps CSRF (419), the
   MCP bearer gate (401), private media, Filament's 5/minute login limit and
   the 30-minute staff idle gate.
+- **Deployed 2026-11-18.** Commit `9362e5e`; image
+  `uerwghnhy5ezsd3ghxo96ugl_app:9362e5e2d511…`; Coolify deployment
+  `e4c5bc12-2616-4b76-be5d-88c9bbd61174`; container
+  `app-uerwghnhy5ezsd3ghxo96ugl-20261118T134857` (healthy). `release.sh`
+  reported nothing to migrate and `ops:status ok`; smoke **27/27**; live
+  versions are Laravel **13.43.0**, Livewire **4.4.8** and Symfony
+  **8.1.11** (http-foundation/serializer), `/admin/login` 200 and the
+  panel guard still 302s guests.
 - **Open admin item (owner action).** The only staff account has an
   unconfirmed TOTP secret (`two_factor_confirmed_at` null, no recovery
   codes), so the panel fail-closes to the setup page until the owner scans

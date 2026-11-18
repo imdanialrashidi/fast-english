@@ -1,5 +1,17 @@
 # Fast English — launch readiness review
 
+> **Security patch 2026-11-18 (commit `9362e5e`, deployment `e4c5bc12…`,
+> container `app-…-20261118T134857`).** `composer audit` went from **15
+> advisories / 8 packages** to **none** (Laravel 13.43.0, Livewire 4.4.8,
+> Symfony 8.1.11 incl. serializer/http-foundation/http-kernel/routing/mime,
+> html-sanitizer 8.1.11). Full Pest **461 passed** and Chromium **96 passed**
+> on the patched tree; live smoke **27/27**. Export archives now delete after
+> download. The one open admin item is owner action: the staff account has an
+> unconfirmed TOTP secret, so `/admin` fail-closes to setup until enrolment is
+> confirmed (fallback `php artisan staff:2fa-reset <email> --by=… --reason=…`).
+> Residual: no CSP; `trustProxies('*')` while 8080 stays internal; npm
+> advisories are build-tool only.
+
 > **Deployed 2026-11-18 — article-only flashcards, exercise-only books
 > (commit `4b5049b`, image `uerwghnhy5ezsd3ghxo96ugl_app:4b5049b1a324…`,
 > Coolify deployment `41847b09-d27d-40f9-924f-660e257a0c18`, container
