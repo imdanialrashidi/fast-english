@@ -143,7 +143,10 @@ Coolify proxy (TLS) → app container :8080 → php-fpm → PostgreSQL 17 (inter
 ## 1. PostgreSQL 17 resource [untested — Coolify UI only; automatic in the Compose path]
 
 - Compose path: `compose.prod.yml` creates `postgres:17` with a named data
-  volume and `pg_isready` health check; nothing to wire in the UI.
+  volume and `pg_isready` health check; nothing to wire in the UI. The image
+  defaults to `docker.iranserver.com/library/postgres:17-bookworm` because
+  Docker Hub returns 403 to the production host (2026-11-18); set `DB_IMAGE`
+  in the app env on a network that can reach Docker Hub.
 - UI path: create a PostgreSQL 17 database resource; Coolify generates the
   password and exposes internal host/port/user/database.
 - No public port. Only the application reaches it on the internal
