@@ -1,5 +1,23 @@
 # Fast English — launch readiness review
 
+> **Deployed 2026-11-18 — article-only flashcards, exercise-only books
+> (commit `4b5049b`, image `uerwghnhy5ezsd3ghxo96ugl_app:4b5049b1a324…`,
+> Coolify deployment `41847b09-d27d-40f9-924f-660e257a0c18`, container
+> `app-uerwghnhy5ezsd3ghxo96ugl-20261118T121322`).** The five 2026-11-15/16
+> migrations ran; `ops:status ok`; `scripts/coolify-smoke.sh` 27/27 PASS.
+> Live content is **16 topics / 89 published lessons**, **6 books / 66 units
+> / 66 published exercise sets / 1,630 items**, and **803 approved word
+> clips**. An authenticated Chromium pass at 390/1440 opened the books shelf,
+> book, unit, review hub and an article deck, served `/media/words/*` with
+> **206**, and reported zero console errors and zero horizontal overflow; the
+> temporary preview account was deleted. `SALES_ENABLED` remains `false`.
+> The first rollout failed on a Docker Hub 403 for `postgres:17`; compose now
+> pulls the same image from `docker.iranserver.com` (`DB_IMAGE` override),
+> and the database was collation-refreshed + reindexed for the mirror's
+> glibc 2.36. Dumps: `/root/fe-backups/{predeploy,postdeploy}-20261118-article-decks.dump`.
+> Still owner-blocked: AEF/OUP rights, landing/onboarding for the books
+> product, off-server backup, real-device proof, and the sales switch.
+
 > **Deployed 2026-10-29 (image `sha256:9c6305e7…`, Coolify app `fast-english`).**
 > Live checks after the rollout: `/up` 200, `/` 200 with `plansFromLabel`
 > `۳۹۹٬۰۰۰ تومان` (no 299,000 left anywhere), `/login` 200, `/download` 200,

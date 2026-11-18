@@ -30,6 +30,25 @@
 - **Docs.** PRODUCT carries the 2026-11-18 amendment; QUALITY retires AC-29
   and updates AC-30–34; FLASHCARDS, EXERCISES, the AEF pipeline, the
   `aef-unit` skill, README, LAUNCH_INPUTS and the learning-tracks plan follow.
+- **Deployed 2026-11-18.** Commit `4b5049b`; image
+  `uerwghnhy5ezsd3ghxo96ugl_app:4b5049b1a324…`; Coolify deployment
+  `41847b09-d27d-40f9-924f-660e257a0c18`; container
+  `app-uerwghnhy5ezsd3ghxo96ugl-20261118T121322` (healthy). `release.sh` ran
+  the five migrations and reported `ops:status ok`; smoke **27/27**; live
+  counts **6 books / 66 units / 66 published sets / 1,630 items / 803
+  approved clips**. An authenticated 390/1440 pass opened the shelf, book,
+  unit, review hub and an article deck, served `/media/words/*` **206**, and
+  reported zero console errors and zero horizontal overflow. The temporary
+  preview account was deleted (users back to 1). `SALES_ENABLED` stays
+  `false`, so nothing is on sale yet.
+- **Deploy path repaired mid-rollout.** The first 2026-11-18 deployment
+  failed at `docker compose pull db`: Docker Hub answers **403** to the
+  production host's manifest request. `compose.prod.yml` now resolves the
+  same PostgreSQL 17 image from `docker.iranserver.com` (override with
+  `DB_IMAGE` on another network) and the rollout completed. The database had
+  been created under glibc **2.41** while the mirror image provides **2.36**,
+  so the release refreshed the collation version and reindexed the database
+  (pre/post dumps in `/root/fe-backups/`).
 - Evidence: full Pest **461 passed / 5,581 assertions** on PostgreSQL 17;
   Pint **PASS** (418 files); `npm run typecheck` **PASS**; `npm run build`
   **PASS**; full Chromium **96 passed**; the five new migrations ran on a
