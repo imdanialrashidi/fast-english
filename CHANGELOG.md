@@ -1,3 +1,30 @@
+## 2026-11-22 — reading library and TED content live
+
+- **Deployed.** Coolify build of `11cdb25` replaced the 2026-11-18
+  container; `docker/release.sh` ran the two pending migrations
+  (`library_nodes`/`reading_documents`/`reading_progress`/`reading_attempts`
+  and `ted_talks`) and created the 254-node shelf skeleton. Deployment
+  `1b8da630-…` finished, the new container is healthy, and `ops:status`
+  reports zero failed jobs and 2.1 GB free.
+- **Reading library.** Imported 168 published documents (story 26,
+  IELTS 72, Inside Reading 156 nodes) with 1.70 GB of private audio/page
+  art. All 5,364 files match the source sizes, sampled SHA-256 values are
+  identical, all 5,264 document file references exist, and all 168 reader
+  pages render `Library/Reader` with HTTP 200 for an authorized user.
+- **TED.** Published the reviewed 53-talk pack (49 topic-matched, 4 pool)
+  after the owner permission note was recorded in the pack's
+  `license_note`; every audio/cover file exists and all 49 topic pages
+  render `Reader/Ted` with HTTP 200. The 4 pool talks stay unassigned.
+- **Production media fix.** Nginx's static-asset regex answered 404 for
+  library page art ending in `.webp` before Laravel could authorize it.
+  `docker/nginx.conf` now sends every `/media/` path to Laravel
+  (`b3dc30b`); the live container was patched and reloaded, and the same
+  fix ships in the next image build.
+- **Evidence.** `scripts/coolify-smoke.sh` 27/27 PASS; guest library/TED
+  media returns 302/403 without bytes; no 5xx or exception lines in the
+  deployment window; production counts: 50 topics, 295 lessons, 2,164 word
+  clips, 254 library nodes, 168 reading documents, 53 TED talks.
+
 ## 2026-11-21 — TED Talk seventh reader tab (local, unpublished)
 
 - **Seventh tab.** Each podcast reader can show a `TED Talk` pill beside

@@ -13,7 +13,7 @@ TED تاک‌ها را با **CC BY-NC-ND 4.0** منتشر می‌کند: است
 
 - `ted:import` پیش‌فرض **draft** است و بدون `--publish --reviewer=...` منتشر نمی‌کند.
 - هر ردیف `source_license` و `license_note` دارد و مسیر منبع را نگه می‌دارد.
-- تا وقتی مالک اجازهٔ TED یا جایگزین مجوزدار را ثبت نکند، این بخش فقط در محیط محلی/خصوصی اثبات می‌شود.
+- در ۲۰۲۶-۱۱-۲۲ مالک اجازهٔ انتشار تجاری را در `license_note` پک ثبت کرد و همان پک با `--publish --reviewer=admin@fastenglishpodcast.ir` روی production منتشر شد: ۵۳ تاک (۴۹ مچ‌شده + ۴ استخر). تا زمانی که سند بیرونیِ این اجازه در جای دیگری نگه‌داری نشود، `license_note` هر ردیف مرجع ثبت‌شده است.
 
 ## ۱. ورودی و پک
 
@@ -76,4 +76,4 @@ docker exec <app-container> php artisan ted:import /path/to/dist
 docker exec <app-container> php artisan ted:import /path/to/dist --publish --reviewer=...
 ```
 
-انتشار این بخش تا روشن‌شدن مجوز TED انجام نشده است.
+انتشار این بخش روی production در ۲۰۲۶-۱۱-۲۲ پس از ثبت اجازهٔ مالک در `license_note` انجام شد (۵۳ تاک published، ۰ خطا). آرشیو یا انتشار دوباره فقط با همان مسیر `ted:import --publish --reviewer=...` و بازبینی تازه انجام می‌شود.
