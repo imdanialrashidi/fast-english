@@ -6,6 +6,16 @@ Source: scope §17 (UI/UX), §6 (routes/nav), §7 (flows), §13 (player/progress
 >
 > **Commercial correction 2026-10-29.** The 299,000-toman single-package note is retired. The live catalog is the owner's three plans (399,000 / 957,600 / 3,351,600 toman, see `PlanCatalogSeeder`); the landing quotes the cheapest active plan from the database instead of a hardcoded amount.
 
+## Owner instruction 2026-11-21 — TED Talk tab
+
+- **Placement.** The seventh pill sits at the end of the existing level row (same height, same active fill, label `TED Talk` in the English font). On the talk page the same row renders with TED active and A1–C2 linking back, so the section is a peer of the levels without becoming one.
+- **Composition (fixed order).** meta line (`TED Talk` chip · minutes · speaker) → English title → topic link → section tabs → play card → collapsed `new words` → 16:9 cover → transcript → source/licence line. The play card holds one wide play/pause CTA and one quiet line explaining the highlight; the fixed shell player is the only audio console.
+- **Highlight.** One warm-paper token `--color-highlight: #F3E5C3` (ink on it ≈ 13:1). The active sentence gets that background with 0.06em vertical padding and `box-decoration-break: clone`; no saturated marker, no bold jump, no layout shift, 180 ms fade, disabled under reduced motion. Only one sentence is active at a time and `aria-current` marks it.
+- **Follow.** The page scrolls the active sentence into view only when it leaves a 96 px / 140 px comfort band; a wheel, touch or key press pauses following for 8 s so reading back is never fought.
+- **New words.** A native `<details>` summary: book icon, `new words`, count, chevron that rotates when open. Closed by default; open content is a two-column definition list (word in EN bold, short EN gloss, and the optional FA gloss set inline beside it). Nothing is hidden behind a client-only script and the summary is a 44 px target.
+- **Cover.** 16:9, licensed CC0/PD editorial photography with a light grade and soft vignette; no baked text, no TED thumbnail, no recognisable political face. The licence record lives beside the image.
+- **Motion, colour, typography.** Reuse the existing type scale and tokens; no new hue, no card wall, no permanent animation. The tab adds exactly one colour token because the highlight must be calmer than the teal accent.
+
 ## Owner instruction 2026-10-25 — app-like shell, one lockup, denser discovery
 
 This supersedes the earlier quiet brand header, the mobile monogram/wordmark rule, and the full-width filter card. The palette, permanent-light rule, RTL/LTR split, and one-player contract are unchanged.
@@ -38,7 +48,7 @@ This supersedes the earlier quiet brand header, the mobile monogram/wordmark rul
 
 This is the current owner direction and supersedes every sentence-cue, English-kicker, and account-navigation rule later in this file.
 
-- **Plain reader:** the learner reader, public sample, and landing preview render normal English paragraphs beside the normal player. No sentence highlight, bold/active row, click-to-seek, cue follow-scroll, or cue-derived copy. Cue columns, validators, staff editor, and cue tests were removed.
+- **Plain reader:** the learner reader, public sample, and landing preview render normal English paragraphs beside the normal player. No sentence highlight, bold/active row, click-to-seek, cue follow-scroll, or cue-derived copy. (The TED Talk tab is the single owner-approved exception: it highlights the active sentence from official cues.) Cue columns, validators, staff editor, and cue tests were removed.
 - **Persian chrome:** remove the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the English `Example` field label. English remains only for lesson content, level codes, timestamps, and the brand.
 - **App shell:** remove the in-app marketing footer, the duplicate signed-in header account CTA, and the account page’s duplicate main-navigation chips. The bottom tabs / desktop rail are the only main navigation.
 - **Account:** an app-style profile screen — identity card, level/goal summary, subscription status with exactly one next action, a quiet settings list (settings, saved, placement), and logout. Persian dates and digits; email stays LTR.
@@ -867,3 +877,51 @@ Owner request: one place to see what is due across both tracks, without merging 
 - **Zero state.** Each queue says «امروز چیزی نمانده» / «تمرین‌ها پاک است» with a check, not a fake count. The badge stays a muted zero.
 - **Tone and a11y.** No celebration, no merged score; 44px actions, visible focus, count badges labelled by their section, `data-review-*` hooks for the browser proof. Persian digits via `fa()`.
 - **Evidence.** `test-results/browser-shots/review-hub-393.png`; Playwright `review.spec.ts` 2/2 at 393/320; `tests/Feature/ReviewHubTest.php` (6).
+
+## Reading tracks 2026-11-21 — four-item shelf and the adult reader
+
+Owner decisions are in `docs/PRODUCT.md`; the content contract is in
+`docs/READERS.md`. This section owns the visual rules.
+
+- **Shelf.** Four collection cards on the warm paper canvas. Real AEF covers
+  were extracted from the owner's PDFs; story covers are the printed covers
+  with the scan watermark cropped; IELTS uses a designed type cover instead
+  of a third-party marketing image. A card is a cover, a Persian title, an
+  English kicker, three quiet chips and one readiness bar. Preparing tracks
+  stay visible and honest.
+- **Cover treatment.** Covers sit on a warm mat (`#EFE9DD`) with a restrained
+  shadow, never stretched or recoloured. The collection tiles use real
+  covers on the same mat; the AEF tile is a 3×2 shelf, not a fake single
+  book.
+- **Browse.** Tabs are pills; the active tab is ink, the rest are quiet
+  outlines. A browse page has a breadcrumb, one compact header plate (no
+  cover for a container, a portrait cover for a book/variant), then cards
+  for levels/books/passages and quiet rows for tests/units. Empty nodes say
+  «محتوای این بخش هنوز آماده نیست» with a way back, never a fake book.
+- **Reader rhythm.** The story page is image-first; the word pill sits above
+  the image and is collapsed by default. The text measure is 66ch on the
+  warm surface, English LTR, 17–18px with 1.8 line height. Desktop uses two
+  columns (sticky image, text). The transport is a static card below the
+  frame on mobile, never an overlay on the text, and a centered 720px bar
+  on desktop.
+- **Frames without a sheet panel.** The first frame of a chapter gets a
+  16:9 chapter opener built from the real cover + chapter title; later
+  frames get the same cover as a slim chapter strip. This is a deliberate
+  chapter header, not a scene inherited from another frame. Six mapped
+  frames switch to the real 2×3 panel as soon as the owner delivers the
+  sheet; the other frames keep the chapter header.
+- **Highlight.** Warm sand `#F5E8C8` behind the active sentence; evidence
+  uses `#FBE0B3` with a thin inset underline. Glossary words get a dotted
+  primary underline, never a loud fill. The text colour does not change, so
+  contrast stays the owner pair (ink on the tint).
+- **IELTS.** Guided mode teaches one paragraph at a time: words (open),
+  paragraph, transport. Full mode shows the whole passage with paragraph
+  letters and a sticky question jump. Explanations are quiet plates under
+  the question, correct/incorrect is stated with icon + text, and the
+  evidence action moves the page to the stored sentence.
+- **Translation.** A selection opens one bottom sheet with the selected
+  English and the precomputed Persian sentence(s); no modal, no page jump.
+- **a11y and proof.** 44px controls, visible focus, `aria-expanded` on the
+  word pill, `role="img"` with the Persian alt on the sheet crop, no
+  horizontal overflow at 393/320. Screenshots and tests are listed in
+  `docs/READERS.md` §7.

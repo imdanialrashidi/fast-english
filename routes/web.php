@@ -15,18 +15,24 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LessonAudioController;
 use App\Http\Controllers\LessonFlashcardController;
 use App\Http\Controllers\LessonProgressController;
+use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\LibraryMediaController;
 use App\Http\Controllers\PaymentReceiptController;
 use App\Http\Controllers\PaymentRequestController;
 use App\Http\Controllers\PhoneLoginController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Controllers\PlacementController;
 use App\Http\Controllers\PwaController;
+use App\Http\Controllers\ReadingAttemptController;
+use App\Http\Controllers\ReadingProgressController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SavedTopicsController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StaffPlacementController;
 use App\Http\Controllers\StaffTwoFactorController;
 use App\Http\Controllers\SubscribeController;
+use App\Http\Controllers\TedTalkAudioController;
+use App\Http\Controllers\TedTalkController;
 use App\Http\Controllers\TodayController;
 use App\Http\Controllers\TopicLibraryController;
 use App\Http\Controllers\TopicReaderController;
@@ -240,12 +246,24 @@ Route::get('/app/review', [ReviewController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('review.index');
 
-// Books section (owner request 2026-11-15; exercise-only 2026-11-18): the
-// shelf, one book, and the unit page. Deep links from the pre-books URLs
-// are redirected at the bottom of this block.
-Route::get('/app/books', [FlashcardBookController::class, 'index'])
+// Books section (owner decisions 2026-11-21): /app/books is now the shelf
+// of four items. The coursebook shelf moved one level down; the three
+// reading tracks resolve the library_nodes tree below /app/books/{track}.
+Route::get('/app/books', [LibraryController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
-    ->name('flashcards.index');
+    ->name('books.index');
+Route::get('/app/books/american-english-file', [FlashcardBookController::class, 'index'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->name('books.aef');
+Route::get('/app/books/{track}', [LibraryController::class, 'track'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->whereIn('track', ['story', 'ielts', 'inside-reading'])
+    ->name('library.track');
+Route::get('/app/books/{track}/{path}', [LibraryController::class, 'node'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->whereIn('track', ['story', 'ielts', 'inside-reading'])
+    ->where('path', '.*')
+    ->name('library.node');
 Route::get('/app/books/{book:slug}', [FlashcardBookController::class, 'show'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('flashcards.book');
@@ -299,6 +317,24 @@ Route::get('/media/words/{wordAudio}/audio', [FlashcardMediaController::class, '
     ->whereNumber('wordAudio')
     ->name('media.word.audio');
 
+// Reading-track progress and IELTS submissions: owner-scoped JSON behind the
+// paid gate. The node document is the authority for both.
+Route::post('/app/library/{node}/progress', [ReadingProgressController::class, 'store'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed', 'throttle:120,1'])
+    ->name('library.progress');
+Route::post('/app/library/{node}/attempts', [ReadingAttemptController::class, 'store'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed', 'throttle:30,1'])
+    ->name('library.attempts');
+
+Route::get('/media/library/{node}/audio/{file}', [LibraryMediaController::class, 'audio'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->where('file', '[A-Za-z0-9][A-Za-z0-9._-]*')
+    ->name('library.audio');
+Route::get('/media/library/{node}/image/{file}', [LibraryMediaController::class, 'image'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->where('file', '[A-Za-z0-9][A-Za-z0-9._-]*')
+    ->name('library.image');
+
 // S4 progress + bookmarks (scope §13.2–13.3): authenticated, policy-checked,
 // private no-store JSON. The service worker never caches these (POST +
 // network-only allowlist), so the S2 cache proofs keep passing.
@@ -323,9 +359,18 @@ Route::delete('/app/bookmarks/{topic}', [BookmarkController::class, 'destroy'])
 Route::get('/app/topics/{topic:slug}', [TopicReaderController::class, 'show'])
     ->name('reader.show');
 
+// Owner request 2026-11-21: the seventh tab. A TED talk is its own content
+// type, not a CEFR level; same public URL + inline paid gate as the reader.
+Route::get('/app/topics/{topic:slug}/ted', [TedTalkController::class, 'show'])
+    ->name('ted.show');
+
 // S1 audio: policy-checked private delivery with HTTP Range support.
 Route::get('/media/lessons/{lesson}/audio', [LessonAudioController::class, 'show'])
     ->name('media.lesson.audio');
+
+// TED audio: same private, policy-checked, range-aware delivery.
+Route::get('/media/ted-talks/{tedTalk}/audio', [TedTalkAudioController::class, 'show'])
+    ->name('media.ted.audio');
 
 // S5 payment intake (scope §6–7, §10): snapshot before transfer, private
 // receipt, owner-visible status. Pending grants no access (S5-3); approval

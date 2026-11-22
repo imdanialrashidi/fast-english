@@ -27,8 +27,21 @@ final class FlashcardPresenter
             'edition' => $book->edition,
             'units_count' => $unitsCount,
             'exercise' => $exercise,
+            'cover_url' => self::coverUrl((string) $book->slug),
             'url' => route('flashcards.book', ['book' => $book->slug]),
         ];
+    }
+
+    /**
+     * Real coursebook cover when the owner-supplied asset exists; null keeps
+     * the quiet typographic fallback instead of inventing a cover.
+     */
+    private static function coverUrl(string $slug): ?string
+    {
+        $name = str_replace('aef-3e-', '', $slug);
+        $relative = "/images/books/aef/{$name}.webp";
+
+        return is_file(public_path(ltrim($relative, '/'))) ? $relative : null;
     }
 
     /**

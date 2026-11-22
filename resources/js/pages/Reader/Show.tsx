@@ -2,12 +2,13 @@ import { Head, Link } from '@inertiajs/react';
 import { Bookmark, BookOpen, Check, Clock, Gauge, Headphones, Layers, RotateCcw } from 'lucide-react';
 import * as React from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
+import { LevelTabs } from '@/components/LevelTabs';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Toast } from '@/components/Toast';
 import AppLayout from '@/layouts/AppLayout';
 import { deleteJson, postJson } from '@/lib/http';
 import { usePlayerActions } from '@/lib/player';
-import type { GlossaryEntry, LessonPayload, ReadingContent, SharedProps, TopicPayload } from '@/types';
+import type { GlossaryEntry, LessonPayload, ReadingContent, SharedProps, TedTabLink, TopicPayload } from '@/types';
 
 /**
  * M1 immersive reader (READ-01/02): the composed reading environment —
@@ -29,6 +30,7 @@ interface ReaderProps extends SharedProps, ReadingContent {
     completed: boolean;
     bookmarked: boolean;
     isGuest: boolean;
+    ted: TedTabLink | null;
 }
 
 function GlossaryRow({
@@ -117,6 +119,7 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
     completed: completedProp,
     bookmarked: bookmarkedProp,
     isGuest,
+    ted,
     paragraphs,
     glossary,
 }: ReaderProps): React.JSX.Element => {
@@ -291,27 +294,12 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                             className="block aspect-video h-auto w-40 rounded-xl border border-line bg-canvas object-cover sm:w-full sm:max-w-[26rem] sm:rounded-3xl"
                         />
                     )}
-                    <nav aria-label="سطح درس" className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                        <p className="m-0 text-sm font-bold text-muted">سطح این مطلب:</p>
-                        <div className="flex flex-wrap gap-2">
-                            {availableLevels.map((level) => (
-                                <Link
-                                    key={level}
-                                    href={`/app/topics/${topic.slug}?level=${level}`}
-                                    aria-current={level === lesson.level ? 'page' : undefined}
-                                    className={
-                                        level === lesson.level
-                                            ? 'inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-5 py-2 font-en font-bold text-surface no-underline'
-                                            : 'inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-surface px-5 py-2 font-en text-ink no-underline hover:bg-canvas'
-                                    }
-                                >
-                                    <span lang="en" dir="ltr">
-                                        {level}
-                                    </span>
-                                </Link>
-                            ))}
-                        </div>
-                    </nav>
+                    <LevelTabs
+                        topicSlug={topic.slug}
+                        levels={availableLevels}
+                        activeLevel={lesson.level}
+                        ted={ted}
+                    />
                 </header>
 
                 {/* Lesson binding for the persistent player (S1 no-mixing

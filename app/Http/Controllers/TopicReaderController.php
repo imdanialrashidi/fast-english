@@ -140,8 +140,18 @@ class TopicReaderController extends Controller
                 ->exists();
         }
 
+        // The seventh tab exists only when a published talk is attached;
+        // the pill is never a dead link.
+        $ted = $topic->tedTalk()
+            ->where('status', 'published')
+            ->first(['id', 'duration_seconds']);
+
         return Inertia::render('Reader/Show', array_merge($payload, [
             'availableLevels' => $availableLevels,
+            'ted' => $ted === null ? null : [
+                'url' => route('ted.show', $topic),
+                'minutes' => max(1, (int) round($ted->duration_seconds / 60)),
+            ],
             'initialPosition' => (float) $initialPosition,
             'completed' => $completed,
             'bookmarked' => $bookmarked,

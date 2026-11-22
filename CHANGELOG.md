@@ -1,3 +1,28 @@
+## 2026-11-21 — TED Talk seventh reader tab (local, unpublished)
+
+- **Seventh tab.** Each podcast reader can show a `TED Talk` pill beside
+  A1–C2. A talk is its own content type (`ted_talks`), not a CEFR level:
+  nullable unique topic, private audio, official sentence cues, ten words,
+  licensed cover, draft/published lifecycle.
+- **Reader.** `Reader/Ted` plays through the persistent player
+  (`kind: 'ted'`, no progress writes), highlights the active sentence with a
+  warm-paper token, follows it only when it leaves the viewport, and keeps a
+  collapsed `new words` panel above the cover and transcript.
+- **Access.** Premium gate identical to lessons; guests and lapsed accounts
+  get the locked page, drafts 404, and audio only flows through
+  `/media/ted-talks/{talk}/audio` (Range/416, private no-store). Lesson audio
+  now shares the same `ServesPrivateAudio` trait.
+- **Content pipeline.** `php artisan ted:import <pack>` is idempotent,
+  content-addressed and draft-only; `--publish --reviewer=<staff email>`
+  records the review. The 53-talk pack (49 matched + 4 pool) lives outside
+  the repo; see `docs/ops/TED_PIPELINE_FA.md`.
+- **Licensing boundary.** TED is CC BY-NC-ND 4.0 (non-commercial, no
+  derivatives); the tab is not published on production until the owner
+  clears that boundary.
+- **Tests.** `tests/Feature/TedTalkTest.php` (9 tests) covers payload, gate,
+  404s, private audio Range, the conditional pill, content validation and
+  the one-talk-per-topic constraint. Typecheck/build pass.
+
 ## 2026-11-19 — hardening: CSP, trusted proxies, local avatars, encrypted sessions
 
 - **CSP on every HTML response.** `ContentSecurityPolicy` sets self-only

@@ -4,6 +4,15 @@ Source baseline: `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0 (2026-10-07). It is 
 
 Authority order: latest explicit owner instruction → accepted slice contract → scope + recorded fresh decisions → repository docs. Conflicting behaviors are never both planned as valid (see conflict log in the active exec plan).
 
+## Owner instruction 2026-11-21 — seventh TED Talk tab
+
+- **One TED talk per podcast topic, as the seventh tab.** The reader shows A1–C2 exactly as before plus a `TED Talk` tab. A TED talk is a separate content type attached to one topic; it is **not** a CEFR level, never appears in the level filter, placement, or preferred-level logic, and never changes the level-is-content rule.
+- **Reading experience.** The talk plays through the existing persistent player (listening only, no lesson progress writes). The official TED cue times highlight the sentence being read; the highlight is a calm warm-paper tint, and paragraph auto-follow only nudges when the active sentence leaves the viewport (a manual scroll pauses it for eight seconds). A collapsed `new words` panel at the top holds at most ten pre-taught entries (English gloss, Persian only for technical terms); the cover and the full transcript follow it.
+- **Access and privacy.** The TED tab is premium content on the same gate as lessons: guests and ineligible accounts get the locked page, never the transcript or a usable media URL. Audio is served only through the policy-checked private route; the storage path never travels in HTML or Inertia props.
+- **Coverage.** All 49 live topics are matched one-to-one; reviewed talks without a close topic stay in the pool unattached. A topic with no published talk renders no pill (never a dead link).
+- **Content pipeline.** The pack is imported with `php artisan ted:import` and is draft-only by default; publishing requires `--publish --reviewer=<active staff email>` so an import never self-reviews. The import is idempotent and content-addressed.
+- **Licensing boundary (open, blocking public launch of this tab).** TED publishes talks under CC BY-NC-ND 4.0: non-commercial, no derivatives. The product edits transcripts and sells access, so public production publication needs TED's written permission. The tab ships behind that boundary; the import records the licence on every talk.
+
 ## Owner instruction 2026-10-25 — app-like shell, one brand lockup, pagination
 
 - **One owner-supplied brand set.** The supplied app icon and header lockup are the sources (`Logo/fast_english_app_favicon.png`, `Logo/fastenglish_header_logo.png`); `public/icons/*`, `public/favicon.ico`, and `public/images/brand/*` are derived from them. The light lockup sits on paper, the warm-paper lockup on the deep footer. The old icon-plus-text approximation is gone.
@@ -72,7 +81,7 @@ Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `
 | LIB-02 | Find content | Level/category filter + simple title search |
 | READ-01 | Lesson page | Level selector, English body, audio of the same lesson version |
 | READ-02 | Key words | Small per-lesson glossary, no dictionary service |
-| READ-03 | Sentence audio cues (RETIRED 2026-10-21) | Owner removed sentence-level sync. Reader/sample/landing render plain paragraphs with the normal player; cue storage and editor were removed too. |
+| READ-03 | Sentence audio cues (RETIRED 2026-10-21 for lessons) | Owner removed sentence-level sync from lessons. Reader/sample/landing still render plain paragraphs; the TED Talk tab (2026-11-21) is the deliberate exception and uses TED's official cue times. |
 | VOCAB-01 | Vocabulary notebook + SRS | Save lesson words with meaning/example/context; Again/Hard/Good/Easy review with deterministic next-review scheduling; due/learning/known states; owner-only |
 | PLAN-01 | Daily learning path | 5/10/15-minute goal with tasks (continue lesson, listen, review due words, next lesson) derived from persisted progress; respects level and premium access |
 | FLASH-01 | Book flashcards (**RETIRED 2026-11-18**) | One book unit = one text-prompt session (no card image): word + audio, explicit reveal of Persian meaning/IPA/example, two self-reports, previous/next, per-unit buckets and a two-grade Anki-style schedule; paid-only, private media. Retired by the owner: the books track is exercises only. |
@@ -287,3 +296,27 @@ All of §25 remains owner/Domain input at its launch boundary: stack confirmatio
    catalog with the 66 real unit titles, and the word-audio batch. The legacy
    `flashcards`, `user_flashcards` and `flashcard_reviews` tables stay in the
    schema for rollback but nothing writes or serves them.
+
+## Owner decision 2026-11-21 — reading tracks
+
+1. **Shelf.** `/app/books` is a four-item shelf: the existing AEF coursebooks
+   under «کتاب», plus «استوری‌بوک», «کمبریج آیلتس» and «اینساید ریدینگ». The
+   tab row is URL state; the bottom navigation stays five destinations.
+2. **Story books.** Oxford Bookworms levels map Starter→A2, 1→B1, 2→B2,
+   3→C1, 4→C2. Image first, one 2×3 sheet per book, at most five page words
+   above the image, optional pre-reading, original audio with real sentence
+   sync and a warm highlight.
+3. **Cambridge IELTS.** 19 (Academic + General), 20 and 21 Academic; Academic
+   Reading → Test 1–4 → Passage 1–3, General → Section 1–3. Paragraph words
+   are taught before the paragraph audio; the real question types are
+   answerable; the full reading and a selected-text Persian translation are
+   always available; a wrong answer exposes the evidence span and a Persian
+   explanation.
+4. **Inside Reading.** Intro–4; Intro/1 use Persian glosses for B1+, levels
+   2–4 use simple English definitions for B2+ with Persian where needed; at
+   most ten words per paragraph, every highlighted word glossed, original
+   audio, image first and a preview control.
+5. **Implementation contract.** The tracks share one navigation tree, one
+   versioned document per readable leaf, a content-pack importer and private
+   media. The owning document is `docs/READERS.md`; the reader UI contract is
+   recorded in `docs/DESIGN.md`.

@@ -43,8 +43,12 @@ word + audio, explicit reveal, no picture.
   only through `/media/words/{wordAudio}/audio` with `private, no-store`.
 - Import: `php artisan flashcards:audio:import <manifest.json>` (idempotent;
   a bad or oversized file fails the batch).
-- Coverage (2026-11-18): 803 unique words across 16 published topics and 89
-  published lessons; 803 approved clips imported.
+- Coverage (2026-11-21): 2,164 approved clips. The 2026-11-20 batch added
+  34 published topics and 203 lessons; 1,361 new clips cover 1,458 of its
+  1,459 glossary words, so every card of that batch plays except «Who»
+  (WHO), which the voice could not pronounce correctly.
+- Credit: every clip carries `artist=Underdog Woof` and
+  `comment=Voice by Underdog Woof` in its ID3 tags.
 
 ## Data model
 

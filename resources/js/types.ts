@@ -87,6 +87,8 @@ export interface SharedProps extends InertiaPageProps {
  * controller 403s before rendering otherwise).
  */
 export interface PlayerTrack {
+    /** `lesson` saves progress; `ted` is a listening-only talk. */
+    kind?: 'lesson' | 'ted';
     lessonId: number;
     audioUrl: string;
     audioRevision: number;
@@ -150,6 +152,39 @@ export interface LessonPayload {
 export interface ReadingContent {
     paragraphs: string[];
     glossary: GlossaryEntry[];
+}
+
+/** Owner request 2026-11-21: the seventh reader tab. */
+export interface TedWord {
+    word: string;
+    en: string;
+    fa: string | null;
+}
+
+export interface TedSentence {
+    t: number;
+    text: string;
+}
+
+export interface TedTalkPayload {
+    id: number;
+    title_en: string;
+    speaker: string;
+    area: string;
+    duration_seconds: number;
+    estimated_minutes: number;
+    audio_revision: number;
+    audio_url: string;
+    cover_url: string | null;
+    segments: TedSentence[][];
+    words: TedWord[];
+    source_url: string;
+    source_license: string;
+}
+
+export interface TedTabLink {
+    url: string;
+    minutes: number;
 }
 
 /** Owner request 2026-11-15: AEF book flashcards (two-grade scheduler). */
@@ -241,8 +276,174 @@ export interface BookRow {
     edition: string | null;
     units_count: number;
     exercise: BookExerciseProgress | null;
+    cover_url: string | null;
     url: string;
 }
+
+/** The four-item books shelf and the tabs shared by every screen below it. */
+export interface LibraryTab {
+    key: string;
+    label: string;
+    url: string;
+    active: boolean;
+}
+
+export interface LibraryCollection {
+    key: string;
+    title_fa: string;
+    title_en: string;
+    subtitle_fa: string;
+    description_fa: string;
+    cover_url: string | null;
+    url: string;
+    chips: string[];
+    ready: number;
+    total: number;
+    status: 'ready' | 'preparing';
+}
+
+export interface LibraryBreadcrumb {
+    title: string;
+    url: string | null;
+}
+
+export interface LibraryProgressBadge {
+    page_key: string;
+    position_ms: number;
+    completed: boolean;
+}
+
+export interface LibraryCard {
+    id: number;
+    track: 'story' | 'ielts' | 'inside_reading';
+    kind: string;
+    title_en: string | null;
+    title_fa: string | null;
+    subtitle_fa: string | null;
+    level: string | null;
+    cover_url: string | null;
+    url: string | null;
+    readable: boolean;
+    status: 'ready' | 'preparing';
+    chips: string[];
+    progress: LibraryProgressBadge | null;
+}
+
+/** Reader document pieces (App\Support\Library\ReadingPayload). */
+export interface ReadingWord {
+    word: string;
+    meaning_fa: string | null;
+    definition_en: string | null;
+    part_of_speech: string | null;
+    start_utf16: number | null;
+    end_utf16: number | null;
+    audio_url: string | null;
+}
+
+export interface ReadingSentence {
+    start_utf16: number;
+    end_utf16: number;
+    start_ms: number | null;
+    end_ms: number | null;
+    text_fa: string | null;
+}
+
+export interface ReadingPage {
+    id: string;
+    number: number | null;
+    label: string | null;
+    text_en: string;
+    text_fa: string | null;
+    panel_index: number | null;
+    image_url: string | null;
+    alt_fa: string | null;
+    audio_url: string | null;
+    audio_start_ms: number | null;
+    audio_end_ms: number | null;
+    sync_confidence: number | null;
+    words: ReadingWord[];
+    sentences: ReadingSentence[];
+}
+
+export interface ReadingChapter {
+    id: string;
+    title_en: string | null;
+    title_fa: string | null;
+    audio_url: string | null;
+    duration_ms: number | null;
+    pages: ReadingPage[];
+}
+
+export interface ReadingArt {
+    url: string | null;
+    columns: number;
+    rows: number;
+    alt_fa: string | null;
+}
+
+export type IeltsQuestionType = 'choice' | 'multi_choice' | 'tfng' | 'ynng' | 'completion' | 'short_answer';
+
+export interface IeltsQuestion {
+    id: string;
+    number: number | null;
+    number_end: number | null;
+    weight: number;
+    type: IeltsQuestionType;
+    instructions_fa: string | null;
+    prompt: string;
+    options: string[];
+    word_limit: number | null;
+    max_answers: number | null;
+}
+
+export interface IeltsEvidence {
+    page_key: string;
+    start_utf16: number;
+    end_utf16: number;
+}
+
+export interface IeltsResultItem {
+    id: string;
+    number: number | null;
+    number_end: number | null;
+    weight: number;
+    is_correct: boolean;
+    given: string | string[] | null;
+    correct: string;
+    explanation_fa: string | null;
+    why_wrong_fa: string | null;
+    evidence: IeltsEvidence | null;
+}
+
+export interface IeltsResult {
+    score: number;
+    total: number;
+    items: IeltsResultItem[];
+}
+
+export interface ReadingEndpoints {
+    progress: string;
+    attempts: string | null;
+}
+
+export interface ReadingNode {
+    id: number;
+    track: 'story' | 'ielts' | 'inside_reading';
+    kind: string;
+    title_en: string | null;
+    title_fa: string | null;
+    level: string | null;
+    cover_url: string | null;
+}
+
+export interface ReadingProgressState {
+    page_key: string;
+    position_ms: number;
+    completed: boolean;
+    same_revision: boolean;
+}
+
+
 
 export interface BookUnitRow {
     number: number;

@@ -50,9 +50,10 @@ test('the reader query count stays constant as sibling lessons grow', function (
     DB::disableQueryLog();
 
     // Fixed: a levels pluck plus the single column-scoped lesson row, so
-    // siblings 2 -> 6 change nothing. Fixed app queries: 8 (7 core + the
-    // constant shared due-words badge query added 2026-10-25).
-    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(8);
+    // siblings 2 -> 6 change nothing. Fixed app queries: 9 (7 core + the
+    // constant shared due-words badge query added 2026-10-25 + the constant
+    // TED-tab lookup added 2026-11-21).
+    expect($large)->toHaveCount(count($small))->and($small)->toHaveCount(9);
 });
 
 test('today stays constant as words and completed lessons grow', function () {

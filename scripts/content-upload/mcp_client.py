@@ -120,7 +120,9 @@ class Client:
                 last_error = f"HTTP 429 (retry after {wait}s)"
                 time.sleep(wait + 2)
                 continue
-            if r.status_code >= 500:
+            # 499 (client closed request) is what the host network returns on large PUTs;
+            # the standard treats it as a transport error and retries with backoff.
+            if r.status_code >= 500 or r.status_code in (408, 499):
                 last_error = f"HTTP {r.status_code}"
                 time.sleep(5 * attempt)
                 continue

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ServesPrivateAudio;
 use App\Models\Lesson;
 use App\Support\Entitlement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -26,6 +26,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class LessonAudioController extends Controller
 {
+    use ServesPrivateAudio;
+
     public function show(Request $request, Lesson $lesson): Response
     {
         if ($lesson->status !== 'published' || $lesson->topic->status !== 'published') {
@@ -58,71 +60,6 @@ class LessonAudioController extends Controller
 
     private function serve(Request $request, Lesson $lesson): Response
     {
-        $path = Storage::disk('local')->path((string) $lesson->audio_path);
-        if (! is_file($path)) {
-            abort(404);
-        }
-
-        $size = filesize($path);
-        $range = (string) $request->header('Range', '');
-        if ($range !== '' && ! $this->isRangeSatisfiable($range, $size)) {
-            abort(response('', 416, ['Content-Range' => "bytes */{$size}"]));
-        }
-
-        // S9a: production hands bytes to nginx after the policy check.
-        // Nginx owns Range/206/416/HEAD for the redirected file; the
-        // PHP pre-check above keeps the 416 contract identical in both
-        // modes. Cache-Control stays private, no-store in both modes.
-        if (app()->environment('production')) {
-            return response('', 200, [
-                'X-Accel-Redirect' => '/_private/'.$lesson->audio_path,
-                'Content-Type' => 'audio/mpeg',
-                'Accept-Ranges' => 'bytes',
-                'Cache-Control' => 'private, no-store',
-            ]);
-        }
-
-        // BinaryFileResponse defaults to `public`; that directive would let
-        // a shared cache store private audio. setPrivate() after
-        // construction removes it deterministically (scope §16).
-        $response = response()->file($path, [
-            'Content-Type' => 'audio/mpeg',
-            'Accept-Ranges' => 'bytes',
-        ]);
-        $response->setPrivate();
-        $response->headers->addCacheControlDirective('no-store');
-
-        return $response;
-    }
-
-    /**
-     * Symfony's file response ignores unsatisfiable ranges (200). Scope
-     * §16 requires 416 with Content-Range for out-of-range requests, so
-     * that case is rejected here; valid ranges still stream via the file
-     * response. Malformed headers are ignored per RFC 9110 (200).
-     */
-    private function isRangeSatisfiable(string $range, int $size): bool
-    {
-        if (! str_starts_with($range, 'bytes=')) {
-            return true;
-        }
-
-        $spec = substr($range, strlen('bytes='));
-        if (str_contains($spec, ',') || ! preg_match('/^(\d*)-(\d*)$/', $spec, $m)) {
-            return true;
-        }
-
-        [$start, $end] = [$m[1], $m[2]];
-        if ($start === '' && $end === '') {
-            return true;
-        }
-        if ($start === '') {
-            return (int) $end > 0 && $size > 0;
-        }
-        if ((int) $start >= $size) {
-            return false;
-        }
-
-        return $end === '' || (int) $end >= (int) $start;
+        return $this->servePrivateAudio($request, (string) $lesson->audio_path);
     }
 }

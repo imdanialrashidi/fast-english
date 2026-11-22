@@ -17,7 +17,7 @@ test('the shelf, book and unit read the same answered-question progress', functi
     $student = ContentFixtures::subscribedStudent();
 
     $this->actingAs($student)
-        ->get(route('flashcards.index'))
+        ->get(route('books.aef'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('books.0.exercise.questions', 3)
@@ -36,7 +36,7 @@ test('the shelf, book and unit read the same answered-question progress', functi
     )->assertOk();
 
     $this->actingAs($student)
-        ->get(route('flashcards.index'))
+        ->get(route('books.aef'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('books.0.exercise.answered', 1));
@@ -54,7 +54,7 @@ test('the shelf, book and unit read the same answered-question progress', functi
     )->assertOk();
 
     $this->actingAs($student)
-        ->get(route('flashcards.index'))
+        ->get(route('books.aef'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->where('books.0.exercise.answered', 1));

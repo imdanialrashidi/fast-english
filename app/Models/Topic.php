@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
 class Topic extends Model
@@ -45,6 +46,15 @@ class Topic extends Model
     public function bookmarks(): HasMany
     {
         return $this->hasMany(Bookmark::class);
+    }
+
+    /**
+     * The seventh reader tab. One published talk per topic at most; the
+     * unique index on ted_talks.topic_id owns that rule.
+     */
+    public function tedTalk(): HasOne
+    {
+        return $this->hasOne(TedTalk::class);
     }
 
     protected static function booted(): void

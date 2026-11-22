@@ -58,6 +58,12 @@ fi
 echo "== release: migrating =="
 php artisan migrate --force --no-interaction
 
+# The reading tracks ship as an empty shelf until their catalog exists. This
+# command only creates/refreshes titles, levels and order; it never resets a
+# node that already owns an imported document.
+echo "== release: reading catalog =="
+php artisan library:catalog --no-interaction
+
 echo "== release: health =="
 php artisan ops:status
 echo "== release: done =="

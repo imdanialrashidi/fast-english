@@ -42,7 +42,7 @@ test('unit page: topics, an answered question and persisted progress', async ({ 
     await page.goto('/app/books/aef-3e-starter');
     await expect(page.locator('[data-unit-exercise-status]').first()).toContainText('۱ از ۱۸ سؤال');
 
-    await page.goto('/app/books');
+    await page.goto('/app/books/american-english-file');
     await expect(page.locator('[data-book-exercise]').first()).toContainText('۱ از');
 });
 

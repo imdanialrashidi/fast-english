@@ -6,6 +6,7 @@ use App\Models\FlashcardBook;
 use App\Models\User;
 use App\Support\Exercises\ExerciseProgress;
 use App\Support\Flashcards\FlashcardPresenter;
+use App\Support\Library\LibraryPresenter;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -37,8 +38,9 @@ class FlashcardBookController extends Controller
             $exercise[$book->id] ?? null,
         ))->all();
 
-        return Inertia::render('Books/Index', [
+        return Inertia::render('Books/AefIndex', [
             'books' => $rows,
+            'tabs' => LibraryPresenter::tabs('aef'),
         ]);
     }
 

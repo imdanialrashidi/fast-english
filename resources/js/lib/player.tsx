@@ -105,7 +105,12 @@ export function usePlayerExpanded(): boolean {
 }
 
 function trackKey(track: PlayerTrack): string {
-    return `${track.lessonId}:${track.audioRevision}`;
+    // A TED talk may share an id with a lesson, so the kind is part of the
+    // identity. Lesson keys keep their historical shape: the progress
+    // adapters parse `id:revision` from it.
+    return track.kind === 'ted'
+        ? `ted:${track.lessonId}:${track.audioRevision}`
+        : `${track.lessonId}:${track.audioRevision}`;
 }
 
 const NOOP_CALLBACKS: ProgressCallbacks = { canSave: false, onCompleted: () => {}, onStale: () => {} };

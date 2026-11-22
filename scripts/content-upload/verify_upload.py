@@ -19,6 +19,11 @@ FE_KEY = os.environ.get("FE_KEY", str(Path("~/.ssh/fe_fastenglishpodcast").expan
 APP_FILTER = os.environ.get("FE_APP_FILTER", "app-uerwghnhy5ezsd3ghxo96ugl")
 DB_FILTER = os.environ.get("FE_DB_FILTER", "db-uerwghnhy5ezsd3ghxo96ugl")
 SSH = ["ssh", "-i", FE_KEY, "-o", "BatchMode=yes", "-o", "ConnectTimeout=25", FE_HOST]
+# Exactly the levels that must carry the free-sample flag (see pipeline §10).
+SAMPLES = {
+    ("an-awkward-moment-danish-state-banquet", "A2"),
+    ("an-awkward-moment-danish-state-banquet", "B1"),
+}
 
 
 def remote_sql(sql: str) -> str:
@@ -107,8 +112,8 @@ def main() -> int:
                 errors.append(f"{slug}/{level}: glossary {rec['glossary_count']} != {len(lesson['glossary'])}")
             if rec["reviewed_by"] is None or rec["reviewed_at"] is None:
                 errors.append(f"{slug}/{level}: no review recorded")
-            if rec["is_public_sample"]:
-                errors.append(f"{slug}/{level}: wrongly flagged as public sample")
+            if bool(rec["is_public_sample"]) != ((slug, level) in SAMPLES):
+                errors.append(f"{slug}/{level}: public sample flag {rec['is_public_sample']} != expected {(slug, level) in SAMPLES}")
             if rec["audio_revision"] != 1:
                 errors.append(f"{slug}/{level}: audio revision {rec['audio_revision']}")
             audio_paths.append(rec["audio_path"])

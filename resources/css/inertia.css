@@ -23,6 +23,8 @@
     --color-accent-strong: #0B6E6A;
     --color-success: #1B7F4B;
     --color-danger: #B42318;
+    /* TED reader: warm paper tint for the one active sentence. */
+    --color-highlight: #F3E5C3;
 
     --font-sans: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
     --font-en: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -321,6 +323,36 @@ body {
 
 .fe-english-body p {
     margin-block: 0 1.1em;
+}
+
+/* TED reader: one calm active sentence. The tint is warm paper, not a
+   saturated marker; inline padding + clone keeps multi-line wraps tidy. */
+.fe-ted-sentence {
+    border-radius: 0.25rem;
+    padding: 0.06em 0;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition: background-color 180ms ease-out;
+}
+
+.fe-ted-sentence[data-active='true'] {
+    background-color: var(--color-highlight);
+    color: var(--color-ink);
+}
+
+.fe-ted-chevron {
+    transition: transform 160ms ease;
+}
+
+.fe-ted-words[open] .fe-ted-chevron {
+    transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fe-ted-sentence,
+    .fe-ted-chevron {
+        transition: none;
+    }
 }
 
 .fe-pagination a,

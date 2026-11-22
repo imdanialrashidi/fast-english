@@ -48,23 +48,33 @@ export const BooksShow: FunctionComponent<BooksShowProps> & {
             <Head title={book.title_en} />
             <ScreenHeader
                 title={book.title_fa ?? book.title_en}
-                back={{ href: '/app/books', label: 'بازگشت به کتاب‌ها' }}
+                back={{ href: '/app/books/american-english-file', label: 'بازگشت به کتاب' }}
             />
             <div className="mx-auto grid w-full max-w-[900px] gap-5 px-4 py-5">
                 <section className="grid gap-4 rounded-3xl border border-line bg-surface p-4 sm:grid-cols-[180px_1fr] sm:items-center sm:p-5">
-                    <div
-                        className="relative flex aspect-[4/3] w-full flex-col justify-between rounded-2xl bg-ink p-4 text-surface"
-                        dir="ltr"
-                        aria-hidden="true"
-                    >
-                        <span className="font-en text-[0.55rem] font-bold tracking-[0.18em] text-surface/70">
-                            AMERICAN ENGLISH FILE
-                        </span>
-                        <p className="m-0 font-en text-3xl leading-none font-black">{bookLabel(book.slug)}</p>
-                        <span className="font-en text-[0.55rem] font-bold tracking-wide text-surface/70">
-                            {book.level ?? ''}
-                        </span>
-                    </div>
+                    {book.cover_url !== null ? (
+                        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-[#EFE9DD] p-2.5">
+                            <img
+                                src={book.cover_url}
+                                alt={book.title_en}
+                                className="max-h-full max-w-full rounded-sm object-contain shadow-[0_10px_24px_rgb(23_34_56_/_0.18)]"
+                            />
+                        </div>
+                    ) : (
+                        <div
+                            className="relative flex aspect-[4/3] w-full flex-col justify-between rounded-2xl bg-ink p-4 text-surface"
+                            dir="ltr"
+                            aria-hidden="true"
+                        >
+                            <span className="font-en text-[0.55rem] font-bold tracking-[0.18em] text-surface/70">
+                                AMERICAN ENGLISH FILE
+                            </span>
+                            <p className="m-0 font-en text-3xl leading-none font-black">{bookLabel(book.slug)}</p>
+                            <span className="font-en text-[0.55rem] font-bold tracking-wide text-surface/70">
+                                {book.level ?? ''}
+                            </span>
+                        </div>
+                    )}
 
                     <div className="grid gap-2">
                         <div className="flex flex-wrap items-center gap-2">

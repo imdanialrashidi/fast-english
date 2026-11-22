@@ -44,7 +44,7 @@ test('review hub: two queues, primary action and 320 reflow', async ({ sub: page
 test('the books shelf links to the review hub', async ({ sub: page }) => {
     await page.setViewportSize({ width: 393, height: 851 });
 
-    await page.goto('/app/books');
+    await page.goto('/app/books/american-english-file');
     await page.getByRole('link', { name: 'مرور واژه‌ها و تمرین‌ها' }).click();
 
     await expect(page.getByRole('heading', { name: 'مرور', exact: true })).toBeVisible();
