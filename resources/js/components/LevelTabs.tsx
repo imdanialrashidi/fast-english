@@ -1,25 +1,18 @@
 import { Link } from '@inertiajs/react';
 import type { FunctionComponent } from 'react';
-import type { TedTabLink } from '@/types';
-
 /**
- * The reader's section switcher: A1–C2 plus the seventh TED Talk tab.
- *
- * Shared by the podcast reader and the TED reader so the two pages cannot
- * drift. The TED tab renders only when a published talk is attached to the
- * topic (the server sends `ted: null` otherwise), so it is never a dead
- * link. `activeLevel` null means the TED tab is the current page.
+ * The reader's level switcher: A1–C2 only. TED Talks live in their own
+ * section (owner instruction 2026-11-22), so a podcast topic never grows a
+ * seventh pill and the level row keeps its original shape.
  */
 export function LevelTabs({
     topicSlug,
     levels,
     activeLevel,
-    ted,
 }: {
     topicSlug: string;
     levels: string[];
     activeLevel: string | null;
-    ted: TedTabLink | null;
 }): React.JSX.Element {
     const activeClass =
         'inline-flex min-h-11 min-w-11 items-center rounded-full bg-primary px-5 py-2 font-en font-bold text-surface no-underline';
@@ -42,17 +35,6 @@ export function LevelTabs({
                         </span>
                     </Link>
                 ))}
-                {ted !== null && (
-                    <Link
-                        href={ted.url}
-                        aria-current={activeLevel === null ? 'page' : undefined}
-                        className={activeLevel === null ? activeClass : idleClass}
-                    >
-                        <span lang="en" dir="ltr">
-                            TED Talk
-                        </span>
-                    </Link>
-                )}
             </div>
         </nav>
     );

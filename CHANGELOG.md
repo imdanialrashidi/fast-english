@@ -1,3 +1,28 @@
+## 2026-11-22 — reader polish: TED section, one player, six story frames
+
+- **TED is its own section.** `/app/ted` lists every published talk and
+  `/app/ted/{slug}` is one standalone article. The podcast level row is
+  A1–C2 only; old `/app/topics/{topic}/ted` links 301 to the talk. The 4
+  pool talks with no topic are now reachable from the index.
+- **Plain TED transcript.** The sentence highlight, cue follow-scroll and
+  play card are removed for everyone. The page shows metadata, `new words`,
+  the cover, the transcript and the source/licence line; audio is the one
+  persistent shell player.
+- **One player.** Story and IELTS no longer mount `ReaderAudioBar` or a
+  second `<audio>`; both bind a bounded page slice to the persistent
+  player (`startSeconds`/`endSeconds`). The console shows page-relative
+  time, seek and skip, and the reader still saves its own progress.
+- **Six story frames.** All six mapped panels stay in an always-present
+  strip; the current chapter's panel remains the large image for every
+  page in that chapter. The story layout is now media-first with a ~68ch
+  text measure instead of a narrow side column.
+- **Tests.** Library/TED feature suite passes (19 tests, 228 assertions);
+  focused reader browser tests pass for story, IELTS, Inside Reading, the
+  Woof-credited book and the standalone TED index/talk.
+- **Docs.** PRODUCT/DESIGN/READERS/ARCHITECTURE and the TED pipeline record
+  the 2026-11-22 owner instruction; the 2026-11-21 seventh-tab section is
+  marked superseded.
+
 ## 2026-11-22 — reading library and TED content live
 
 - **Deployed.** Coolify build of `11cdb25` replaced the 2026-11-18

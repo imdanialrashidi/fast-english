@@ -72,6 +72,7 @@ export const LibraryReader: FunctionComponent<ReaderProps> & {
                     attempt={props.attempt ?? null}
                     progress={props.progress}
                     endpoints={props.endpoints}
+                    revision={props.revision}
                     credit={credit ?? (typeof meta.credit === 'string' ? meta.credit : null)}
                 />
             ) : (
@@ -82,6 +83,7 @@ export const LibraryReader: FunctionComponent<ReaderProps> & {
                     art={props.art ?? null}
                     progress={props.progress}
                     endpoints={props.endpoints}
+                    revision={props.revision}
                     credit={credit ?? (typeof meta.credit === 'string' ? meta.credit : null)}
                 />
             )}

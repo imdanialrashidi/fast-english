@@ -80,23 +80,31 @@ export interface SharedProps extends InertiaPageProps {
 /** Page-specific URL bags are declared at their page (Landing only). */
 
 /**
- * M1 player track: the single lesson version bound to the persistent
- * audio element. One track at a time; switching lessons replaces it
- * (old audio stops, nothing auto-plays). The audio URL is only ever
- * present for a lesson the server already authorized (the reader
- * controller 403s before rendering otherwise).
+ * M1 player track: the single audio identity bound to the persistent
+ * element. Lessons and reading pages share the same element and console;
+ * switching identity replaces the source (old audio stops).
+ *
+ * `reading` tracks may be a bounded slice of a chapter file: `startSeconds`
+ * and `endSeconds` keep the console time relative to the page while the
+ * underlying element still stores absolute chapter time.
  */
 export interface PlayerTrack {
-    /** `lesson` saves progress; `ted` is a listening-only talk. */
-    kind?: 'lesson' | 'ted';
+    /** `lesson` saves lesson progress; `ted`/`reading` never do. */
+    kind?: 'lesson' | 'ted' | 'reading';
+    /** Unique per reading page; the key change rebinds the element. */
+    key?: string;
     lessonId: number;
     audioUrl: string;
     audioRevision: number;
     titleEn: string;
     level: string;
     coverUrl: string | null;
-    /** Server-confirmed resume position for this revision; applied once. */
+    /** Resume offset in seconds relative to the bound slice; applied once. */
     initialPosition: number;
+    startSeconds?: number;
+    endSeconds?: number;
+    /** Start playing as soon as metadata is ready (continuous page turn). */
+    autoplay?: boolean;
 }
 
 /** M1 library row: metadata only — never bodies, glossaries, or audio. */
@@ -154,7 +162,7 @@ export interface ReadingContent {
     glossary: GlossaryEntry[];
 }
 
-/** Owner request 2026-11-21: the seventh reader tab. */
+/** Standalone TED section (owner instruction 2026-11-22). */
 export interface TedWord {
     word: string;
     en: string;
@@ -168,9 +176,11 @@ export interface TedSentence {
 
 export interface TedTalkPayload {
     id: number;
+    slug: string;
     title_en: string;
     speaker: string;
     area: string;
+    area_label: string;
     duration_seconds: number;
     estimated_minutes: number;
     audio_revision: number;
@@ -182,9 +192,21 @@ export interface TedTalkPayload {
     source_license: string;
 }
 
-export interface TedTabLink {
-    url: string;
+export interface TedTalkCard {
+    slug: string;
+    title_en: string;
+    speaker: string;
+    area: string;
+    area_label: string;
     minutes: number;
+    cover_url: string | null;
+    url: string;
+}
+
+export interface TedArea {
+    key: string;
+    label: string;
+    count: number;
 }
 
 /** Owner request 2026-11-15: AEF book flashcards (two-grade scheduler). */
@@ -280,7 +302,7 @@ export interface BookRow {
     url: string;
 }
 
-/** The four-item books shelf and the tabs shared by every screen below it. */
+/** The five-item books shelf and the tabs shared by every screen below it. */
 export interface LibraryTab {
     key: string;
     label: string;

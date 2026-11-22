@@ -21,7 +21,7 @@ class TedTalkAudioController extends Controller
 
     public function show(Request $request, TedTalk $tedTalk): Response
     {
-        if ($tedTalk->status !== 'published' || $tedTalk->topic?->status !== 'published') {
+        if (! $tedTalk->isPublished()) {
             abort(404);
         }
 

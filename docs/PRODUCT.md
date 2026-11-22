@@ -4,7 +4,15 @@ Source baseline: `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0 (2026-10-07). It is 
 
 Authority order: latest explicit owner instruction → accepted slice contract → scope + recorded fresh decisions → repository docs. Conflicting behaviors are never both planned as valid (see conflict log in the active exec plan).
 
-## Owner instruction 2026-11-21 — seventh TED Talk tab
+## Owner instruction 2026-11-22 — TED is its own section; one player; six story panels
+
+- **TED is a separate reading section.** `/app/books` now has a fifth item, **TED Talk**, with its own index (`/app/ted`) and one page per talk (`/app/ted/{slug}`). A talk is a standalone article and is never a seventh tab inside a podcast topic. The old `/app/topics/{topic}/ted` links redirect permanently to the talk page. Pool talks with no topic are still readable from the index.
+- **Plain transcript, no highlight.** The talk page renders the title, area, speaker, minutes, cover, ten-word `new words` panel, the full transcript and the source/licence line. There is no sentence highlight, cue-follow scroll or play card; TED audio is listening only and writes no lesson progress.
+- **One player everywhere.** Lesson, story, Inside Reading, IELTS and TED audio all bind the single persistent shell player. A reading page binds a bounded slice (`startSeconds`/`endSeconds`) so the console time and seek stay relative to the page; the page never mounts a second console. A small in-page copy may explain where the player is, but it is not a control.
+- **Six story frames stay.** Every mapped panel from a book's 2×3 sheet remains in a six-frame strip; the current chapter's panel stays beside the text for every page in that chapter and never disappears on a page turn. A page without its own mapping inherits its chapter's panel, not the previous page's image.
+- **Desktop reading measure.** Story text uses a ~68ch measure inside a single media-first column; the panel and six-frame strip sit above the text on narrow screens and remain in view beside it on wide screens. IELTS text keeps its ~68ch measure. No fixed-width desktop layout may leave the reading column narrower than a comfortable measure.
+
+## Owner instruction 2026-11-21 — seventh TED Talk tab (superseded 2026-11-22)
 
 - **One TED talk per podcast topic, as the seventh tab.** The reader shows A1–C2 exactly as before plus a `TED Talk` tab. A TED talk is a separate content type attached to one topic; it is **not** a CEFR level, never appears in the level filter, placement, or preferred-level logic, and never changes the level-is-content rule.
 - **Reading experience.** The talk plays through the existing persistent player (listening only, no lesson progress writes). The official TED cue times highlight the sentence being read; the highlight is a calm warm-paper tint, and paragraph auto-follow only nudges when the active sentence leaves the viewport (a manual scroll pauses it for eight seconds). A collapsed `new words` panel at the top holds at most ten pre-taught entries (English gloss, Persian only for technical terms); the cover and the full transcript follow it.
@@ -81,7 +89,7 @@ Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `
 | LIB-02 | Find content | Level/category filter + simple title search |
 | READ-01 | Lesson page | Level selector, English body, audio of the same lesson version |
 | READ-02 | Key words | Small per-lesson glossary, no dictionary service |
-| READ-03 | Sentence audio cues (RETIRED 2026-10-21 for lessons) | Owner removed sentence-level sync from lessons. Reader/sample/landing still render plain paragraphs; the TED Talk tab (2026-11-21) is the deliberate exception and uses TED's official cue times. |
+| READ-03 | Sentence audio cues (RETIRED 2026-10-21 for lessons) | Owner removed sentence-level sync from lessons. Reader/sample/landing render plain paragraphs; the standalone TED page (2026-11-22) also renders a plain transcript with no highlight or follow. |
 | VOCAB-01 | Vocabulary notebook + SRS | Save lesson words with meaning/example/context; Again/Hard/Good/Easy review with deterministic next-review scheduling; due/learning/known states; owner-only |
 | PLAN-01 | Daily learning path | 5/10/15-minute goal with tasks (continue lesson, listen, review due words, next lesson) derived from persisted progress; respects level and premium access |
 | FLASH-01 | Book flashcards (**RETIRED 2026-11-18**) | One book unit = one text-prompt session (no card image): word + audio, explicit reveal of Persian meaning/IPA/example, two self-reports, previous/next, per-unit buckets and a two-grade Anki-style schedule; paid-only, private media. Retired by the owner: the books track is exercises only. |

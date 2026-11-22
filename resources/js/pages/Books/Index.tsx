@@ -8,10 +8,10 @@ import AppLayout from '@/layouts/AppLayout';
 import type { LibraryCollection, LibraryTab, SharedProps } from '@/types';
 
 /**
- * The books shelf (owner decisions 2026-11-21): four items — the existing
- * American English File coursebooks, the Oxford Bookworms story library,
- * Cambridge IELTS reading, and Inside Reading. Each item keeps its own
- * hierarchy and reader; this page only routes the learner to the right one.
+ * The books shelf: five independent items — American English File, Oxford
+ * Bookworms story books, Cambridge IELTS reading, Inside Reading, and the
+ * standalone TED Talks section. Each item keeps its own hierarchy and
+ * reader; this page only routes the learner to the right one.
  */
 
 interface BooksIndexProps extends SharedProps {
@@ -30,12 +30,12 @@ export const BooksIndex: FunctionComponent<BooksIndexProps> & {
                 <header className="grid min-w-0 grid-cols-1 gap-2">
                     <p className="fe-meta m-0 inline-flex items-center gap-1.5 text-accent-strong">
                         <LibraryBig size={18} aria-hidden="true" />
-                        چهار بخش مستقل
+                        پنج بخش مستقل
                     </p>
                     <h1 className="fe-title m-0 text-2xl leading-10 sm:text-3xl">از گرامر تا داستان و آیلتس.</h1>
                     <p className="fe-prose m-0 max-w-[68ch] text-muted">
                         هر بخش مسیر خودش را دارد: کتاب دوره با یونیت و تمرین، استوری‌بوک با تصویر و صدای هم‌زمان،
-                        آیلتس با تست و پسیج، و اینساید ریدینگ با متن و صدای اصلی. پیشرفت هر بخش جدا ذخیره می‌شود.
+                        آیلتس با تست و پسیج، اینساید ریدینگ با متن و صدای اصلی، و TED Talk با گفتارهای مستقل. پیشرفت هر بخش جدا ذخیره می‌شود.
                     </p>
                     <BookTabs tabs={tabs} />
                 </header>

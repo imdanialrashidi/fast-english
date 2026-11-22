@@ -27,19 +27,20 @@ test('story reader: real audio, word preview, sentence highlight and page turn',
     await expect(page.getByRole('heading', { name: 'پلیس تلویزیون', exact: true }).first()).toBeVisible();
     await expect(page.getByText('1 / 61')).toBeVisible();
     await expect(page.getByText(/Dan and Sue are police officers/)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'پخش خوانش' })).toBeVisible();
+    await expect(page.locator('#player-play')).toBeVisible();
+    await expect(page.locator('[aria-label="شش قاب این کتاب"] button')).toHaveCount(6);
     await expectNoHorizontalOverflow(page);
 
-    const audioSource = await page.evaluate(() => document.querySelector('audio')?.src ?? '');
-    expect(audioSource).toContain('/media/library/');
+    await expect(page.locator('#lesson-audio')).toHaveAttribute('src', /\/media\/library\//);
 
     const preview = page.getByRole('button', { name: /پیش‌خوانی/ }).first();
     await expect(preview).toBeVisible();
     await preview.click();
     await expect(page.getByText('عصبانی', { exact: true })).toBeVisible();
-    await page.getByRole('button', { name: 'پخش خوانش' }).click();
-    await expect(page.getByRole('button', { name: 'توقف' })).toBeVisible();
+    await page.locator('#player-play').click();
+    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
     await expect(page.locator('[data-sentence-active="true"]').first()).toBeVisible();
+    await expect(page.locator('#player-play')).toHaveCount(1);
     await page.screenshot({ path: 'test-results/browser-shots/library-story-reader-393.png', fullPage: true });
 
     await page.getByRole('button', { name: 'صفحهٔ بعد' }).click();
@@ -55,12 +56,11 @@ test('IELTS reader: real Passage 1, answer, score, explanation and evidence jump
     await expect(page.getByText('given a position in a list')).toBeVisible();
     await expectNoHorizontalOverflow(page);
 
-    const audioSource = await page.evaluate(() => document.querySelector('audio')?.src ?? '');
-    expect(audioSource).toContain('/media/library/');
-    await page.getByRole('button', { name: 'پخش پاراگراف' }).click();
-    await expect(page.getByRole('button', { name: 'توقف' })).toBeVisible();
+    await expect(page.locator('#lesson-audio')).toHaveAttribute('src', /\/media\/library\//);
+    await page.locator('#player-play').click();
+    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
     await expect(page.locator('[data-sentence-active="true"]').first()).toBeVisible();
-    await page.getByRole('button', { name: 'توقف' }).click();
+    await page.locator('#player-play').click();
 
     const retry = page.getByRole('button', { name: 'تلاش دوباره' });
     if ((await retry.count()) > 0) {
@@ -92,15 +92,15 @@ test('Inside Reading reader: original audio, paragraph words and sentence highli
     await rewind(page, 'صفحهٔ قبل');
 
     await expect(page.getByRole('heading', { name: 'نقشه مغز اولیه', exact: true }).first()).toBeVisible();
-    await expect(page.getByRole('button', { name: 'پخش خوانش' })).toBeVisible();
+    await expect(page.locator('#player-play')).toBeVisible();
     await expectNoHorizontalOverflow(page);
 
     const preview = page.getByRole('button', { name: /پیش‌خوانی/ }).first();
     await preview.click();
     await expect(page.getByText('رفتار', { exact: true })).toBeVisible();
 
-    await page.getByRole('button', { name: 'پخش خوانش' }).click();
-    await expect(page.getByRole('button', { name: 'توقف' })).toBeVisible();
+    await page.locator('#player-play').click();
+    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
     await expect(page.locator('[data-sentence-active="true"]').first()).toBeVisible();
     await page.screenshot({ path: 'test-results/browser-shots/library-ir-reader-393.png', fullPage: true });
 });
@@ -130,13 +130,12 @@ test('a Woof-generated story frame carries the required credit and audio', async
     await rewind(page, 'صفحهٔ قبل');
 
     await expect(page.getByRole('heading', { name: 'هنری هشتم و شش همسرش', exact: true }).first()).toBeVisible();
-    await expect(page.getByRole('button', { name: 'پخش خوانش' })).toBeVisible();
+    await expect(page.locator('#player-play')).toBeVisible();
     await expect(page.getByText('Voice by Underdog Woof')).toBeVisible();
 
-    const source = await page.evaluate(() => document.querySelector('audio')?.src ?? '');
-    expect(source).toContain('/media/library/');
-    await page.getByRole('button', { name: 'پخش خوانش' }).click();
-    await expect(page.getByRole('button', { name: 'توقف' })).toBeVisible();
+    await expect(page.locator('#lesson-audio')).toHaveAttribute('src', /\/media\/library\//);
+    await page.locator('#player-play').click();
+    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
     await expect(page.locator('[data-sentence-active="true"]').first()).toBeVisible();
 });
 
@@ -1335,27 +1334,35 @@ test('Inside Reading level 1: bicycle text, original audio and word preview', as
 
     await expect(page.getByRole('heading', { name: 'تاریخچه دوچرخه', exact: true }).first()).toBeVisible();
     await expect(page.getByText('The bicycle was not invented by one individual')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'پخش خوانش' })).toBeVisible();
+    await expect(page.locator('#player-play')).toBeVisible();
     await expectNoHorizontalOverflow(page);
 
     await page.getByRole('button', { name: /پیش‌خوانی/ }).first().click();
     await expect(page.getByText('دوچرخه', { exact: true }).first()).toBeVisible();
 
-    await page.getByRole('button', { name: 'پخش خوانش' }).click();
-    await expect(page.getByRole('button', { name: 'توقف' })).toBeVisible();
+    await page.locator('#player-play').click();
+    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
     await expect(page.locator('[data-sentence-active="true"]').first()).toBeVisible();
     await page.screenshot({ path: 'test-results/browser-shots/library-ir-level1-393.png', fullPage: true });
 });
 
-test('TED talk: transcript, ten words, audio and sentence highlight', async ({ sub: page }) => {
+test('TED is a standalone section with a plain transcript and one player', async ({ sub: page }) => {
     await page.setViewportSize({ width: 393, height: 851 });
-    await page.goto('/app/topics/china-eu-trade-deal/ted');
-    await expect(page.getByRole('heading', { name: 'What are tariffs, and how do they work?', exact: true }).first()).toBeVisible();
-    await expect(page.getByText('۱۰ واژه')).toBeVisible();
+    await page.goto('/app/ted');
+    await expect(page.getByRole('heading', { name: 'ایده‌های بزرگ، هر کدام یک صفحهٔ جدا.' })).toBeVisible();
+    await expect(page.locator('[aria-label="فهرست گفتارها"] a')).toHaveCount(53);
     await expectNoHorizontalOverflow(page);
 
-    await page.getByRole('button', { name: 'پخش و دنبال‌کردن متن' }).click();
-    await expect(page.getByRole('button', { name: 'توقف پخش' })).toBeVisible();
+    await page.goto('/app/ted/ted_ed_what_are_tariffs_and_how_do_they_work');
+    await expect(page.getByRole('heading', { name: 'What are tariffs, and how do they work?', exact: true }).first()).toBeVisible();
+    await expect(page.getByText('۱۰ واژه')).toBeVisible();
+    await expect(page.locator('[data-sentence-active]')).toHaveCount(0);
+    await expect(page.locator('#player-play')).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#player-play').click();
+    await expect(page.locator('#player-play')).toHaveAccessibleName('توقف');
+    await expect(page.locator('#player-play')).toHaveCount(1);
     await page.screenshot({ path: 'test-results/browser-shots/library-ted-393.png', fullPage: true });
 });
 
@@ -1371,7 +1378,7 @@ test('Inside Reading all five levels: title, text, audio and word preview', asyn
         await page.goto(`/app/books/inside-reading/${level}/unit-1/reading-1`);
         await rewind(page, 'صفحهٔ قبل');
         await expect(page.getByRole('heading', { name: title, exact: true }).first()).toBeVisible();
-        await expect(page.getByRole('button', { name: 'پخش خوانش' })).toBeVisible();
+        await expect(page.locator('#player-play')).toBeVisible();
         await expectNoHorizontalOverflow(page);
         await page.getByRole('button', { name: /پیش‌خوانی/ }).first().click();
         await expect(page.locator('[data-word-card], .word-card').first()).toBeVisible({ timeout: 5000 }).catch(() => {});

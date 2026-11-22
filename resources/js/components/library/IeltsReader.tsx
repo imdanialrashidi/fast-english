@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, Check, Eye, Headphones, Play, X } from 'lucide-react';
 import { HighlightedText } from '@/components/library/HighlightedText';
-import { ReaderAudioBar } from '@/components/library/ReaderAudioBar';
 import { WordPreview } from '@/components/library/WordPreview';
 import { postJson } from '@/lib/http';
+import { useReaderTrack } from '@/lib/reader-player';
 import { activeSentenceIndex, sentencesForRange, selectionWithin, wordsForRange } from '@/lib/reading';
 import type {
     IeltsQuestion,
@@ -33,6 +33,7 @@ interface IeltsReaderProps {
     attempt: IeltsResult | null;
     progress: ReadingProgressState | null;
     endpoints: ReadingEndpoints;
+    revision: number;
     credit?: string | null;
 }
 
@@ -47,7 +48,7 @@ const YNNG = ['YES', 'NO', 'NOT GIVEN'];
  * the real question types. The key and the evidence arrive only after a
  * submission; a wrong answer can jump to the exact sentence.
  */
-export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, progress, endpoints, credit }: IeltsReaderProps): React.JSX.Element {
+export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, progress, endpoints, revision, credit }: IeltsReaderProps): React.JSX.Element {
     const paragraphs = passage.paragraphs;
     const [mode, setMode] = useState<'guided' | 'full'>('guided');
     const initialIndex =
@@ -68,15 +69,9 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
     const [result, setResult] = useState<IeltsResult | null>(attempt);
     const [evidence, setEvidence] = useState<{ page_key: string; start_utf16: number; end_utf16: number } | null>(null);
     const [translation, setTranslation] = useState<{ en: string; fa: string } | null>(null);
-    const [playing, setPlaying] = useState(false);
-    const [timeMs, setTimeMs] = useState(0);
-    const [durationMs, setDurationMs] = useState(0);
-    const [rate, setRate] = useState(1);
-    const [continuous, setContinuous] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const audioRef = useRef<HTMLAudioElement | null>(null);
     const wordAudioRef = useRef<HTMLAudioElement | null>(null);
     const paragraphRefs = useRef(new Map<string, HTMLParagraphElement>());
     const wordQueueRef = useRef<{ words: ReadingWord[]; index: number; repeat: number; wasPlaying: boolean }>({
@@ -88,76 +83,52 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
     const autoplayRef = useRef(false);
 
     const paragraph = paragraphs[index];
-    const audioSrc = paragraph?.audio_url ?? null;
+    const resumeMs =
+        progress !== null && progress.same_revision && progress.page_key === paragraph?.id ? progress.position_ms : 0;
+    const audio = useReaderTrack({
+        audioUrl: paragraph?.audio_url ?? null,
+        pageKey: `${node.id}:${paragraph?.id ?? 'none'}`,
+        titleEn: passage.title_en ?? node.title_en ?? 'IELTS',
+        level: node.level ?? 'IELTS',
+        coverUrl: node.cover_url,
+        audioRevision: revision,
+        startMs: 0,
+        endMs: paragraph?.audio_end_ms ?? null,
+        initialPositionMs: resumeMs,
+        autoplay: autoplayRef.current,
+    });
+    const timeMs = audio.timeMs;
     const activeIndex = activeSentenceIndex(paragraph?.sentences ?? [], timeMs);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (audio === null) {
-            return;
-        }
-
-        if (audioSrc === null) {
-            audio.pause();
-            audio.removeAttribute('src');
-            audio.load();
-            setDurationMs(0);
-
-            return;
-        }
-
-        const absolute = new URL(audioSrc, window.location.href).href;
-        if (audio.src !== absolute) {
-            audio.src = audioSrc;
-            audio.load();
-        } else {
-            audio.currentTime = 0;
-        }
-    }, [audioSrc]);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (audio === null) {
-            return;
-        }
-        audio.pause();
-        audio.currentTime = 0;
-        setTimeMs(0);
-        setPlaying(false);
-    }, [index]);
+    const timeRef = useRef(0);
+    timeRef.current = timeMs;
 
     useEffect(() => {
         const current = paragraphs[index];
-        const audio = audioRef.current;
-
-        return () => {
-            if (current !== undefined) {
-                void postJson(endpoints.progress, {
-                    page_key: current.id,
-                    position_ms: Math.max(0, Math.round((audio?.currentTime ?? 0) * 1000)),
-                }).catch(() => undefined);
-            }
-        };
-    }, [endpoints.progress, index, paragraphs]);
-
-    useEffect(() => {
-        if (!playing) {
-            return;
-        }
-
         const timer = window.setInterval(() => {
-            const current = paragraphs[index];
-            const audio = audioRef.current;
-            if (current !== undefined && audio !== null) {
+            if (current !== undefined && audio.playing) {
                 void postJson(endpoints.progress, {
                     page_key: current.id,
-                    position_ms: Math.max(0, Math.round(audio.currentTime * 1000)),
+                    position_ms: Math.max(0, Math.round(timeRef.current)),
                 }).catch(() => undefined);
             }
         }, 5000);
 
-        return () => window.clearInterval(timer);
-    }, [endpoints.progress, index, paragraphs, playing]);
+        return () => {
+            window.clearInterval(timer);
+            if (current !== undefined) {
+                void postJson(endpoints.progress, {
+                    page_key: current.id,
+                    position_ms: Math.max(0, Math.round(timeRef.current)),
+                }).catch(() => undefined);
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, audio.playing]);
+
+    // A one-shot flag: the next bind may autoplay, later revisits must not.
+    useEffect(() => {
+        autoplayRef.current = false;
+    }, [index]);
 
     const playWords = (words: ReadingWord[]): void => {
         const playable = words.filter((word) => word.audio_url !== null);
@@ -165,9 +136,8 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
             return;
         }
 
-        const narration = audioRef.current;
-        const wasPlaying = narration !== null && !narration.paused;
-        narration?.pause();
+        const wasPlaying = audio.playing;
+        audio.pause();
         wordQueueRef.current = { words: playable, index: 0, repeat: 0, wasPlaying };
         playNextWord();
     };
@@ -175,21 +145,21 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
     const playNextWord = (): void => {
         const queue = wordQueueRef.current;
         const word = queue.words[queue.index];
-        const audio = wordAudioRef.current;
+        const wordAudio = wordAudioRef.current;
 
-        if (word === undefined || audio === null) {
+        if (word === undefined || wordAudio === null) {
             if (queue.wasPlaying) {
-                void audioRef.current?.play().catch(() => setPlaying(false));
+                audio.play();
             }
 
             return;
         }
 
-        audio.src = word.audio_url ?? '';
-        audio.onended = () => {
+        wordAudio.src = word.audio_url ?? '';
+        wordAudio.onended = () => {
             if (queue.repeat === 0) {
                 queue.repeat = 1;
-                window.setTimeout(() => void audio.play().catch(() => undefined), 400);
+                window.setTimeout(() => void wordAudio.play().catch(() => undefined), 400);
 
                 return;
             }
@@ -198,14 +168,14 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
             queue.index += 1;
             if (queue.index >= queue.words.length) {
                 if (queue.wasPlaying) {
-                    void audioRef.current?.play().catch(() => setPlaying(false));
+                    audio.play();
                 }
 
                 return;
             }
             playNextWord();
         };
-        void audio.play().catch(() => undefined);
+        void wordAudio.play().catch(() => undefined);
     };
 
     const goToParagraph = (next: number, options?: { play?: boolean }): void => {
@@ -326,8 +296,7 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                     type="button"
                     onClick={() => {
                         setMode((value) => (value === 'guided' ? 'full' : 'guided'));
-                        setPlaying(false);
-                        audioRef.current?.pause();
+                        audio.pause();
                     }}
                     className="fe-press inline-flex min-h-10 items-center gap-1.5 rounded-full border border-line bg-surface px-4 text-xs font-bold text-ink"
                 >
@@ -387,47 +356,13 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                             <HighlightedText
                                 text={paragraph.text_en}
                                 sentences={paragraph.sentences}
-                                activeIndex={playing ? activeIndex : null}
+                                activeIndex={audio.playing ? activeIndex : null}
                                 words={paragraph.words}
                                 evidence={evidence?.page_key === paragraph.id ? { start: evidence.start_utf16, end: evidence.end_utf16 } : null}
                                 onWordClick={(word) => playWords([word])}
                             />
                         </p>
                     </div>
-
-                    <ReaderAudioBar
-                        disabled={audioSrc === null}
-                        playing={playing}
-                        timeMs={timeMs}
-                        durationMs={durationMs}
-                        onToggle={() => {
-                            const audio = audioRef.current;
-                            if (audio === null) {
-                                return;
-                            }
-                            if (audio.paused) {
-                                void audio.play().catch(() => setPlaying(false));
-                            } else {
-                                audio.pause();
-                            }
-                        }}
-                        onSeek={(ms) => {
-                            if (audioRef.current !== null) {
-                                audioRef.current.currentTime = ms / 1000;
-                                setTimeMs(ms);
-                            }
-                        }}
-                        rate={rate}
-                        onRate={(next) => {
-                            setRate(next);
-                            if (audioRef.current !== null) {
-                                audioRef.current.playbackRate = next;
-                            }
-                        }}
-                        continuous={continuous}
-                        onContinuous={setContinuous}
-                        label="پخش پاراگراف"
-                    />
 
                     <div className="flex items-center justify-between gap-2">
                         <button
@@ -506,7 +441,7 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                                 <HighlightedText
                                     text={item.text_en}
                                     sentences={item.sentences}
-                                    activeIndex={index === itemIndex && playing ? activeIndex : null}
+                                    activeIndex={index === itemIndex && audio.playing ? activeIndex : null}
                                     words={item.words}
                                     evidence={evidence?.page_key === item.id ? { start: evidence.start_utf16, end: evidence.end_utf16 } : null}
                                     onWordClick={(word) => playWords([word])}
@@ -514,40 +449,6 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                             </p>
                         </article>
                     ))}
-
-                    <ReaderAudioBar
-                        disabled={audioSrc === null}
-                        playing={playing}
-                        timeMs={timeMs}
-                        durationMs={durationMs}
-                        onToggle={() => {
-                            const audio = audioRef.current;
-                            if (audio === null) {
-                                return;
-                            }
-                            if (audio.paused) {
-                                void audio.play().catch(() => setPlaying(false));
-                            } else {
-                                audio.pause();
-                            }
-                        }}
-                        onSeek={(ms) => {
-                            if (audioRef.current !== null) {
-                                audioRef.current.currentTime = ms / 1000;
-                                setTimeMs(ms);
-                            }
-                        }}
-                        rate={rate}
-                        onRate={(next) => {
-                            setRate(next);
-                            if (audioRef.current !== null) {
-                                audioRef.current.playbackRate = next;
-                            }
-                        }}
-                        continuous={continuous}
-                        onContinuous={setContinuous}
-                        label="پخش پاراگراف"
-                    />
                 </section>
             )}
 
@@ -758,41 +659,6 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
             )}
 
             {credit !== null && credit !== undefined && <p className="m-0 text-center text-[0.65rem] text-muted">{credit}</p>}
-
-            <audio
-                ref={audioRef}
-                preload="metadata"
-                onLoadedMetadata={() => {
-                    const audio = audioRef.current;
-                    if (audio === null) {
-                        return;
-                    }
-                    audio.currentTime = 0;
-                    audio.playbackRate = rate;
-                    setDurationMs(Number.isFinite(audio.duration) ? audio.duration * 1000 : 0);
-                    setTimeMs(0);
-                    if (autoplayRef.current) {
-                        autoplayRef.current = false;
-                        void audio.play().catch(() => setPlaying(false));
-                    }
-                }}
-                onTimeUpdate={() => {
-                    const audio = audioRef.current;
-                    if (audio !== null) {
-                        setTimeMs(audio.currentTime * 1000);
-                    }
-                }}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-                onEnded={() => {
-                    setPlaying(false);
-                    if (continuous && index < paragraphs.length - 1) {
-                        autoplayRef.current = true;
-                        setIndex(index + 1);
-                    }
-                }}
-                className="hidden"
-            />
             <audio ref={wordAudioRef} preload="none" className="hidden" />
         </div>
     );

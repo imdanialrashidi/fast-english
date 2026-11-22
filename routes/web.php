@@ -359,10 +359,16 @@ Route::delete('/app/bookmarks/{topic}', [BookmarkController::class, 'destroy'])
 Route::get('/app/topics/{topic:slug}', [TopicReaderController::class, 'show'])
     ->name('reader.show');
 
-// Owner request 2026-11-21: the seventh tab. A TED talk is its own content
-// type, not a CEFR level; same public URL + inline paid gate as the reader.
-Route::get('/app/topics/{topic:slug}/ted', [TedTalkController::class, 'show'])
+// Owner instruction 2026-11-22: TED is a separate reading section, not a
+// seventh tab inside a podcast topic. The index and talk pages carry the
+// same inline paid gate as the reader; audio stays on the private route.
+Route::get('/app/ted', [TedTalkController::class, 'index'])
+    ->name('ted.index');
+Route::get('/app/ted/{tedTalk:slug}', [TedTalkController::class, 'show'])
     ->name('ted.show');
+// Old seventh-tab links land on the talk's own page.
+Route::get('/app/topics/{topic:slug}/ted', [TedTalkController::class, 'legacyTopic'])
+    ->name('ted.legacy');
 
 // S1 audio: policy-checked private delivery with HTTP Range support.
 Route::get('/media/lessons/{lesson}/audio', [LessonAudioController::class, 'show'])

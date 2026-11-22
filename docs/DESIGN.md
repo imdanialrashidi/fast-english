@@ -6,7 +6,18 @@ Source: scope §17 (UI/UX), §6 (routes/nav), §7 (flows), §13 (player/progress
 >
 > **Commercial correction 2026-10-29.** The 299,000-toman single-package note is retired. The live catalog is the owner's three plans (399,000 / 957,600 / 3,351,600 toman, see `PlanCatalogSeeder`); the landing quotes the cheapest active plan from the database instead of a hardcoded amount.
 
-## Owner instruction 2026-11-21 — TED Talk tab
+## Owner instruction 2026-11-22 — separate TED read, one console, persistent story frames
+
+This supersedes the 2026-11-21 TED-tab placement, highlight and play-card rules.
+
+- **Placement.** TED is a fifth books-shelf item with its own index and talk page. The podcast level row is A1–C2 only; no seventh pill, no topic link on the talk page.
+- **Composition.** Talk page: meta chips (`TED Talk`, area, minutes, speaker) → English title → plain hint that the shell player owns audio → collapsed `new words` → 16:9 cover → plain transcript (~68ch) → source/licence line. No play card and no duplicate console.
+- **No highlight.** The transcript is plain text for everyone: no warm-paper sentence tint, no `aria-current` sentence, no follow-scroll, no highlight toggle. The one console below the content is the only audio surface.
+- **Story frames.** Keep all six mapped panels in a always-present strip (three columns on mobile, six on desktop); the current chapter's panel is the large image for every page in that chapter. A page without a mapping inherits its chapter panel; never the previous picture.
+- **One player.** Story and IELTS bind the persistent player with a bounded page slice; remove their page-level transport. Desktop text uses a ~68ch measure in a media-first column, not a narrow side column.
+
+
+## Owner instruction 2026-11-21 — TED Talk tab (superseded 2026-11-22)
 
 - **Placement.** The seventh pill sits at the end of the existing level row (same height, same active fill, label `TED Talk` in the English font). On the talk page the same row renders with TED active and A1–C2 linking back, so the section is a peer of the levels without becoming one.
 - **Composition (fixed order).** meta line (`TED Talk` chip · minutes · speaker) → English title → topic link → section tabs → play card → collapsed `new words` → 16:9 cover → transcript → source/licence line. The play card holds one wide play/pause CTA and one quiet line explaining the highlight; the fixed shell player is the only audio console.

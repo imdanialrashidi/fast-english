@@ -60,6 +60,8 @@ export interface AudioTransport {
     /** Highest buffered position as a 0–1 fraction of the duration. */
     bufferedFraction: number;
     toggle: () => void;
+    play: () => void;
+    pause: () => void;
     seekTo: (seconds: number) => void;
     /** Seek from a 0–100 range input (one mapping for both adapters). */
     seekToFraction: (percent: number) => void;
@@ -241,7 +243,7 @@ export function useAudioTransport(options: TransportOptions = {}): AudioTranspor
         }
     }, [rate, audioRef, node]);
 
-    const toggle = React.useCallback((): void => {
+    const play = React.useCallback((): void => {
         const audio = audioRef.current;
         if (audio === null) {
             return;
@@ -250,17 +252,29 @@ export function useAudioTransport(options: TransportOptions = {}): AudioTranspor
             setHasError(false);
             audio.load();
         }
-        if (audio.paused) {
-            setBuffering(true);
-            void audio.play().catch(() => {
-                setBuffering(false);
-                setHasError(true);
-                setExpanded(true);
-            });
-        } else {
-            audio.pause();
-        }
+        setBuffering(true);
+        void audio.play().catch(() => {
+            setBuffering(false);
+            setHasError(true);
+            setExpanded(true);
+        });
     }, [audioRef, hasError]);
+
+    const pause = React.useCallback((): void => {
+        audioRef.current?.pause();
+    }, [audioRef]);
+
+    const toggle = React.useCallback((): void => {
+        const audio = audioRef.current;
+        if (audio === null) {
+            return;
+        }
+        if (audio.paused) {
+            play();
+        } else {
+            pause();
+        }
+    }, [audioRef, pause, play]);
 
     const seekTo = React.useCallback(
         (seconds: number): void => {
@@ -333,6 +347,8 @@ export function useAudioTransport(options: TransportOptions = {}): AudioTranspor
         fraction,
         bufferedFraction,
         toggle,
+        play,
+        pause,
         seekTo,
         seekToFraction,
         skipBy,

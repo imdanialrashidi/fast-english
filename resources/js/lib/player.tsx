@@ -48,6 +48,8 @@ interface PlayerActions {
     setTrack: (track: PlayerTrack, callbacks: ProgressCallbacks) => void;
     clearTrack: () => void;
     toggle: () => void;
+    play: () => void;
+    pause: () => void;
     seekTo: (seconds: number) => void;
     seekToFraction: (percent: number) => void;
     skipBy: (delta: number) => void;
@@ -105,12 +107,17 @@ export function usePlayerExpanded(): boolean {
 }
 
 function trackKey(track: PlayerTrack): string {
-    // A TED talk may share an id with a lesson, so the kind is part of the
-    // identity. Lesson keys keep their historical shape: the progress
-    // adapters parse `id:revision` from it.
-    return track.kind === 'ted'
-        ? `ted:${track.lessonId}:${track.audioRevision}`
-        : `${track.lessonId}:${track.audioRevision}`;
+    // A TED talk or reading page may share an id with a lesson, so the kind
+    // is part of the identity. Lesson keys keep their historical shape: the
+    // progress adapters parse `id:revision` from it.
+    if (track.kind === 'reading') {
+        return `reading:${track.key ?? track.lessonId}:${track.audioRevision}`;
+    }
+    if (track.kind === 'ted') {
+        return `ted:${track.lessonId}:${track.audioRevision}`;
+    }
+
+    return `${track.lessonId}:${track.audioRevision}`;
 }
 
 const NOOP_CALLBACKS: ProgressCallbacks = { canSave: false, onCompleted: () => {}, onStale: () => {} };
@@ -123,6 +130,8 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
 
     const loadedKey = React.useRef<string | null>(null);
     const pendingSeek = React.useRef<number | null>(null);
+    const trackRef = React.useRef<PlayerTrack | null>(null);
+    trackRef.current = track;
     const callbacks = React.useRef<ProgressCallbacks>(NOOP_CALLBACKS);
     const lastSave = React.useRef(0);
     const retrySave = React.useRef<(() => void) | null>(null);
@@ -192,6 +201,9 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
                 audio.currentTime = Math.min(pendingSeek.current, Math.max(0, audio.duration - 0.5));
                 pendingSeek.current = null;
             }
+            if (trackRef.current?.autoplay === true) {
+                void audio.play().catch(() => undefined);
+            }
         },
         onEnded: () => {
             const current = callbacks.current;
@@ -212,18 +224,56 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
         },
     });
 
-    const { bindRef, toggle, seekTo, seekToFraction, skipBy, cycleRate, retry } = transport;
+    const { bindRef, toggle: rawToggle, play, pause, seekTo, cycleRate, retry } = transport;
+
+    // Reading pages bind a slice of a chapter file. These wrappers keep the
+    // shell console relative to that slice: the underlying element still
+    // holds absolute chapter time, but seek/skip/end stay inside the page.
+    const activeBounds = (): { start: number; end: number } => {
+        const current = trackRef.current;
+        const start = current?.startSeconds ?? 0;
+        const end = current?.endSeconds ?? (Number.isFinite(audioRef.current?.duration ?? NaN) ? (audioRef.current?.duration ?? 0) : 0);
+
+        return { start, end: Math.max(start, end) };
+    };
+
+    const toggle = React.useCallback((): void => {
+        const audio = audioRef.current;
+        if (audio === null) {
+            return;
+        }
+        const { start, end } = activeBounds();
+        if (audio.paused && end > start && audio.currentTime >= end - 0.2) {
+            seekTo(start);
+        }
+        rawToggle();
+    }, [rawToggle, seekTo]);
+
+    const seekToFraction = React.useCallback((percent: number): void => {
+        const { start, end } = activeBounds();
+        seekTo(start + (Math.min(Math.max(0, percent), 100) / 100) * (end - start));
+    }, [seekTo]);
+
+    const skipBy = React.useCallback((delta: number): void => {
+        const audio = audioRef.current;
+        if (audio === null) {
+            return;
+        }
+        const { start, end } = activeBounds();
+        seekTo(Math.min(Math.max(start, audio.currentTime + delta), end));
+    }, [seekTo]);
 
     const setTrack = React.useCallback((next: PlayerTrack, nextCallbacks: ProgressCallbacks) => {
         callbacks.current = nextCallbacks;
         if (loadedKey.current === trackKey(next)) {
-            // Same lesson version (back/forward revisit): keep the
-            // element, its time, and its play state untouched.
+            // Same version (back/forward revisit): keep the element, its
+            // time, and its play state untouched.
             setTrackState(next);
             return;
         }
         audioRef.current?.pause();
-        pendingSeek.current = next.initialPosition > 1 ? next.initialPosition : null;
+        const start = next.startSeconds ?? 0;
+        pendingSeek.current = start > 0 || next.initialPosition > 0.5 ? start + next.initialPosition : null;
         setTrackState(next);
     }, []);
 
@@ -290,8 +340,8 @@ export function PlayerProvider({ children }: React.PropsWithChildren): React.JSX
     );
 
     const actions = React.useMemo<PlayerActions>(
-        () => ({ setTrack, clearTrack, toggle, seekTo, seekToFraction, skipBy, cycleRate, retry, retrySaveNow }),
-        [setTrack, clearTrack, toggle, seekTo, seekToFraction, skipBy, cycleRate, retry, retrySaveNow],
+        () => ({ setTrack, clearTrack, toggle, play, pause, seekTo, seekToFraction, skipBy, cycleRate, retry, retrySaveNow }),
+        [setTrack, clearTrack, toggle, play, pause, seekTo, seekToFraction, skipBy, cycleRate, retry, retrySaveNow],
     );
 
     return (

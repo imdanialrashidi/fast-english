@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { test } from './helpers';
 
-// Owner decisions 2026-11-21: the books shelf has four items and each one
+// Owner decisions 2026-11-21/22: the books shelf has five items and each one
 // keeps its own hierarchy. This spec proves the navigation skeleton without
 // pretending that a preparing leaf has content.
 
@@ -11,17 +11,22 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
     expect(overflow).toBeLessThanOrEqual(1);
 }
 
-test('the books shelf shows the four items and each track drills down', async ({ sub: page }) => {
+test('the books shelf shows the five items and each track drills down', async ({ sub: page }) => {
     await page.setViewportSize({ width: 393, height: 851 });
     await page.goto('/app/books');
 
     await expect(page.getByRole('heading', { name: 'کتاب‌ها', exact: true })).toBeVisible();
-    for (const name of ['کتاب', 'استوری‌بوک', 'کمبریج آیلتس', 'اینساید ریدینگ']) {
+    for (const name of ['کتاب', 'استوری‌بوک', 'کمبریج آیلتس', 'اینساید ریدینگ', 'TED Talk']) {
         await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
     }
     await expectNoHorizontalOverflow(page);
     await page.screenshot({ path: 'test-results/browser-shots/library-shelf-393.png', fullPage: true });
 
+    await page.getByRole('heading', { name: 'TED Talk', exact: true }).click();
+    await page.waitForURL('**/app/ted');
+    await expect(page.getByRole('heading', { name: 'ایده‌های بزرگ، هر کدام یک صفحهٔ جدا.' })).toBeVisible();
+
+    await page.goto('/app/books');
     await page.getByRole('heading', { name: 'استوری‌بوک', exact: true }).click();
     await page.waitForURL('**/app/books/story');
     await expect(page.getByRole('heading', { name: 'استوری‌بوک', exact: true }).last()).toBeVisible();

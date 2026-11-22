@@ -58,7 +58,7 @@ const DESTINATIONS: Destination[] = [
         label: 'کتاب‌ها',
         shortLabel: 'کتاب‌ها',
         icon: <Library size={20} aria-hidden="true" />,
-        match: (url) => url.startsWith('/app/books') || url.startsWith('/app/flashcards'),
+        match: (url) => url.startsWith('/app/books') || url.startsWith('/app/ted') || url.startsWith('/app/flashcards'),
     },
     {
         href: '/app/account',

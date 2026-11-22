@@ -8,8 +8,8 @@ use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
 /**
- * The seventh reader tab (owner request 2026-11-21): access, payload,
- * private audio and the "no talk → no tab" rule.
+ * Standalone TED section (owner instruction 2026-11-22): access, payload,
+ * private audio, the independent index and the no-podcast-tab rule.
  */
 beforeEach(function () {
     $this->topic = ContentFixtures::publishedTopic(['slug' => 'ted-topic']);
@@ -25,17 +25,20 @@ beforeEach(function () {
     $this->subscriber = ContentFixtures::subscribedStudent();
 });
 
-test('an eligible subscriber reads the talk with its cues and words', function () {
+test('an eligible subscriber reads a standalone talk', function () {
     $this->actingAs($this->subscriber)
-        ->get(route('ted.show', $this->topic))
+        ->get(route('ted.show', $this->talk))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Reader/Ted')
             ->where('talk.id', $this->talk->id)
+            ->where('talk.slug', $this->talk->slug)
             ->where('talk.title_en', $this->talk->title_en)
+            ->where('talk.area_label', 'سیاست')
             ->where('talk.audio_url', route('media.ted.audio', $this->talk))
             ->where('talk.source_license', 'CC BY-NC-ND 4.0')
-            ->where('availableLevels', ['B1'])
+            ->missing('topic')
+            ->missing('availableLevels')
             ->has('talk.segments', 1)
             ->has('talk.segments.0', 2)
             ->where('talk.segments.0.0.text', 'This is the first sentence of the talk.')
@@ -44,35 +47,38 @@ test('an eligible subscriber reads the talk with its cues and words', function (
 });
 
 test('guests and ineligible accounts get the locked page without premium text', function () {
-    $this->get(route('ted.show', $this->topic))
+    $this->get(route('ted.show', $this->talk))
         ->assertForbidden()
         ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'))
         ->assertDontSee('This is the first sentence of the talk.');
 
     $this->actingAs(ContentFixtures::student())
-        ->get(route('ted.show', $this->topic))
+        ->get(route('ted.show', $this->talk))
         ->assertForbidden()
         ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'));
 
+    $this->get(route('ted.index'))->assertForbidden();
+    $this->actingAs(ContentFixtures::student())->get(route('ted.index'))->assertForbidden();
+
     // Staff pass without a subscription.
     $this->actingAs(ContentFixtures::staff())
-        ->get(route('ted.show', $this->topic))
+        ->get(route('ted.show', $this->talk))
         ->assertOk();
 });
 
-test('a draft talk or draft topic is not found for anyone', function () {
+test('a draft talk is not found and a published talk no longer depends on a topic', function () {
     $this->talk->update(['status' => 'draft', 'published_at' => null]);
 
     $this->actingAs(ContentFixtures::staff())
-        ->get(route('ted.show', $this->topic))
+        ->get(route('ted.show', $this->talk))
         ->assertNotFound();
 
     $this->talk->update(['status' => 'published', 'published_at' => now()]);
     $this->topic->update(['status' => 'draft', 'published_at' => null]);
 
     $this->actingAs(ContentFixtures::staff())
-        ->get(route('ted.show', $this->topic))
-        ->assertNotFound();
+        ->get(route('ted.show', $this->talk))
+        ->assertOk();
 });
 
 test('private audio is range-aware, no-store, and policy checked', function () {
@@ -101,20 +107,41 @@ test('the private audio route refuses guests', function () {
     $this->get(route('media.ted.audio', $this->talk))->assertForbidden();
 });
 
-test('the reader shows the TED tab only when a published talk exists', function () {
+test('the podcast reader has no TED tab and the TED index is its own section', function () {
     $this->actingAs($this->subscriber)
         ->get(route('reader.show', ['topic' => $this->topic->slug, 'level' => 'B1']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->missing('ted'));
+
+    $this->actingAs($this->subscriber)
+        ->get(route('ted.index'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('ted.url', route('ted.show', $this->topic))
-            ->where('ted.minutes', 11));
+            ->component('Ted/Index')
+            ->has('tabs', 6)
+            ->has('talks', 1)
+            ->where('talks.0.slug', $this->talk->slug)
+            ->where('talks.0.url', route('ted.show', $this->talk))
+            ->missing('talks.0.segments'));
+});
 
-    $this->talk->update(['status' => 'archived', 'published_at' => null]);
+test('an old topic TED link redirects to the talk page', function () {
+    $this->actingAs($this->subscriber)
+        ->get('/app/topics/'.$this->topic->slug.'/ted')
+        ->assertRedirect(route('ted.show', $this->talk));
+});
+
+test('a pool talk with no topic still serves its private audio', function () {
+    $pool = TedTalk::factory()->create([
+        'topic_id' => null,
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
 
     $this->actingAs($this->subscriber)
-        ->get(route('reader.show', ['topic' => $this->topic->slug, 'level' => 'B1']))
+        ->get(route('media.ted.audio', $pool))
         ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => $page->where('ted', null));
+        ->assertHeader('content-type', 'audio/mpeg');
 });
 
 test('content validation rejects bad cues and more than ten words', function () {

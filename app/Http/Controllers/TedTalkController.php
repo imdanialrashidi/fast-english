@@ -3,76 +3,121 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\LockedResponse;
+use App\Models\TedTalk;
 use App\Models\Topic;
-use App\Support\Levels;
+use App\Support\Entitlement;
+use App\Support\Library\LibraryPresenter;
 use App\Support\TopicCover;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
-use Inertia\Response as InertiaResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 /**
- * The seventh reader tab: one TED talk attached to a podcast topic.
+ * TED Talks are their own reading section (owner instruction 2026-11-22).
  *
- * Access mirrors the lesson reader: the talk and its topic must be
- * published, then the Gate decides. Ineligible readers get the locked page
- * before any transcript, word list or media URL travels in the payload.
- * The talk is not a CEFR level; the A1–C2 tabs stay in the same header so
- * the reader can step back into the podcast.
+ * A talk is a standalone article with its own shelf entry, index and URL.
+ * It is never rendered as a seventh tab inside a podcast topic, and its
+ * transcript is plain text: no sentence highlight, no cue-follow scroll.
+ * Audio still travels only through the policy-checked private route.
  */
 class TedTalkController extends Controller
 {
-    /**
-     * @return Response|InertiaResponse
-     */
-    public function show(Request $request, Topic $topic)
+    private const AREA_LABELS = [
+        'politics' => 'سیاست',
+        'cinema' => 'سینما',
+        'sports' => 'ورزش',
+        'health' => 'سلامت',
+        'tech' => 'فناوری',
+        'celebrity' => 'سلبریتی',
+        'literature' => 'ادبیات',
+    ];
+
+    private const AREA_ORDER = ['politics', 'cinema', 'sports', 'health', 'tech', 'celebrity', 'literature'];
+
+    public function index(Request $request): Response|HttpResponse
     {
-        if ($topic->status !== 'published') {
-            abort(404);
-        }
-
-        $talk = $topic->tedTalk()
-            ->where('status', 'published')
-            ->first();
-
-        if ($talk === null) {
-            abort(404);
-        }
-
-        if (Gate::denies('view', $talk)) {
+        if (! Entitlement::eligible($request->user())) {
             return LockedResponse::forbidden($request, $request->user());
         }
 
-        $levels = $topic->lessons()
-            ->where('status', 'published')
-            ->orderByRaw(Levels::orderExpression())
-            ->pluck('level')
-            ->all();
+        $talks = TedTalk::query()->published()->orderBy('title_en')->get();
+        $activeArea = (string) $request->query('area', '');
+        if ($activeArea !== '' && ! array_key_exists($activeArea, self::AREA_LABELS)) {
+            $activeArea = '';
+        }
 
-        return Inertia::render('Reader/Ted', [
-            'topic' => [
-                'id' => (int) $topic->id,
-                'slug' => (string) $topic->slug,
-                'title_en' => (string) $topic->title_en,
-                'cover_url' => TopicCover::url($topic->cover_path),
-            ],
-            'availableLevels' => $levels,
-            'talk' => [
-                'id' => (int) $talk->id,
+        $visible = $activeArea === ''
+            ? $talks
+            : $talks->where('area', $activeArea)->values();
+
+        $areas = [];
+        foreach (self::AREA_ORDER as $key) {
+            $count = $talks->where('area', $key)->count();
+            if ($count > 0) {
+                $areas[] = ['key' => $key, 'label' => self::AREA_LABELS[$key], 'count' => $count];
+            }
+        }
+
+        return Inertia::render('Ted/Index', [
+            'talks' => $visible->map(fn (TedTalk $talk): array => [
+                'slug' => (string) $talk->slug,
                 'title_en' => (string) $talk->title_en,
                 'speaker' => (string) ($talk->speaker ?? ''),
                 'area' => (string) $talk->area,
-                'duration_seconds' => (int) $talk->duration_seconds,
-                'audio_revision' => (int) $talk->audio_revision,
-                'estimated_minutes' => $talk->estimatedMinutes(),
-                'audio_url' => route('media.ted.audio', $talk),
+                'area_label' => self::AREA_LABELS[$talk->area] ?? (string) $talk->area,
+                'minutes' => $talk->estimatedMinutes(),
                 'cover_url' => TopicCover::url($talk->cover_path),
-                'segments' => $talk->segments,
-                'words' => $talk->words,
-                'source_url' => (string) $talk->source_url,
-                'source_license' => (string) $talk->source_license,
+                'url' => route('ted.show', $talk),
+            ])->values()->all(),
+            'areas' => $areas,
+            'active_area' => $activeArea,
+            'total' => $talks->count(),
+            'tabs' => LibraryPresenter::tabs('ted'),
+        ]);
+    }
+
+    public function show(Request $request, TedTalk $tedTalk): Response|HttpResponse
+    {
+        if (! $tedTalk->isPublished()) {
+            abort(404);
+        }
+
+        if (Gate::denies('view', $tedTalk)) {
+            return LockedResponse::forbidden($request, $request->user());
+        }
+
+        return Inertia::render('Reader/Ted', [
+            'talk' => [
+                'id' => (int) $tedTalk->id,
+                'slug' => (string) $tedTalk->slug,
+                'title_en' => (string) $tedTalk->title_en,
+                'speaker' => (string) ($tedTalk->speaker ?? ''),
+                'area' => (string) $tedTalk->area,
+                'area_label' => self::AREA_LABELS[$tedTalk->area] ?? (string) $tedTalk->area,
+                'duration_seconds' => (int) $tedTalk->duration_seconds,
+                'audio_revision' => (int) $tedTalk->audio_revision,
+                'estimated_minutes' => $tedTalk->estimatedMinutes(),
+                'audio_url' => route('media.ted.audio', $tedTalk),
+                'cover_url' => TopicCover::url($tedTalk->cover_path),
+                'segments' => $tedTalk->segments,
+                'words' => $tedTalk->words,
+                'source_url' => (string) $tedTalk->source_url,
+                'source_license' => (string) $tedTalk->source_license,
             ],
         ]);
+    }
+
+    /**
+     * Old links from the short-lived seventh-tab era keep working: the talk
+     * simply moves to its own section instead of 404ing in a bookmark.
+     */
+    public function legacyTopic(Topic $topic): HttpResponse
+    {
+        $talk = $topic->tedTalk()->published()->first();
+        abort_if($talk === null, 404);
+
+        return redirect()->route('ted.show', $talk, 301);
     }
 }

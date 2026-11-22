@@ -26,7 +26,6 @@ export function AudioPlayer(): React.JSX.Element | null {
         time,
         duration,
         rate,
-        fraction,
         bufferedFraction,
         hasError,
         expanded,
@@ -63,17 +62,40 @@ export function AudioPlayer(): React.JSX.Element | null {
     // affordance renders — never a dead control. The audio element below
     // stays in a stable position either way so binding a track never
     // remounts it (a remount would orphan the event wiring).
+    // A reading page can bind a slice of a chapter file. The console must
+    // read relative to that slice; the element still stores absolute time.
+    const start = track?.startSeconds ?? 0;
+    const end = track === null ? 0 : (track.endSeconds ?? (Number.isFinite(duration) ? duration : 0));
+    const boundedDuration = Math.max(0, end - start);
+    const boundedTime = Math.min(Math.max(0, time - start), boundedDuration);
+    const boundedFraction = boundedDuration > 0 ? boundedTime / boundedDuration : 0;
+    const boundedBuffered =
+        boundedDuration > 0
+            ? Math.min(1, Math.max(0, (bufferedFraction * (Number.isFinite(duration) ? duration : 0) - start) / boundedDuration))
+            : 0;
+
     const bar = track === null ? null : (
         <AudioConsole
             className="fe-playerbar"
-            sectionLabel="پخش‌کننده صوت درس"
-            seekLabel="جست‌وجو در صوت درس"
+            sectionLabel="پخش‌کننده صوت"
+            seekLabel="جست‌وجو در صوت"
             title={track.titleEn}
             level={track.level}
             coverUrl={track.coverUrl}
-            state={{ playing, buffering, time, duration, rate, fraction, bufferedFraction, hasError, expanded, saveError }}
+            state={{
+                playing,
+                buffering,
+                time: boundedTime,
+                duration: boundedDuration,
+                rate,
+                fraction: boundedFraction,
+                bufferedFraction: boundedBuffered,
+                hasError,
+                expanded,
+                saveError,
+            }}
             actions={{ setExpanded, toggle, seekToFraction, skipBy, cycleRate, retry, retrySaveNow }}
-            showSaveError
+            showSaveError={track.kind !== 'reading'}
         />
     );
 

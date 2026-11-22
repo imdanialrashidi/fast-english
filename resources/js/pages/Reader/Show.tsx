@@ -8,7 +8,7 @@ import { Toast } from '@/components/Toast';
 import AppLayout from '@/layouts/AppLayout';
 import { deleteJson, postJson } from '@/lib/http';
 import { usePlayerActions } from '@/lib/player';
-import type { GlossaryEntry, LessonPayload, ReadingContent, SharedProps, TedTabLink, TopicPayload } from '@/types';
+import type { GlossaryEntry, LessonPayload, ReadingContent, SharedProps, TopicPayload } from '@/types';
 
 /**
  * M1 immersive reader (READ-01/02): the composed reading environment —
@@ -30,7 +30,6 @@ interface ReaderProps extends SharedProps, ReadingContent {
     completed: boolean;
     bookmarked: boolean;
     isGuest: boolean;
-    ted: TedTabLink | null;
 }
 
 function GlossaryRow({
@@ -119,7 +118,6 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
     completed: completedProp,
     bookmarked: bookmarkedProp,
     isGuest,
-    ted,
     paragraphs,
     glossary,
 }: ReaderProps): React.JSX.Element => {
@@ -298,7 +296,6 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                         topicSlug={topic.slug}
                         levels={availableLevels}
                         activeLevel={lesson.level}
-                        ted={ted}
                     />
                 </header>
 
