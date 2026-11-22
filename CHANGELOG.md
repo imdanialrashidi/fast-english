@@ -5,11 +5,11 @@
   there. The Books shelf returns to its four reading tracks. Each card
   opens the plain-text talk article at `/app/ted/{slug}`; the 4 pool talks
   are included.
-- **Story images are page-bound.** Each page shows its own mapped panel
-  directly above its text; the next page shows its own panel or no image.
-  The six-frame strip and inherited chapter panel are gone. Story text is
-  a single ~72ch column with the image above it, so desktop reading gets
-  the full measure instead of a narrow side column.
+- **One story image stays at the top.** The first mapped panel appears at
+  the top; it persists through text-only pages and is replaced when the
+  next mapped panel's page arrives. The six-frame strip and gallery are
+  gone. Story text is a single ~72ch column with the image above it, so
+  desktop reading gets the full measure instead of a narrow side column.
 - **Inside Reading has no CEFR chips.** B1/B2/C1 labels are hidden on its
   shelf, level cards, reader and player; the Intro/Level 1–4 names remain.
   Level fallbacks now show the level title, never the internal `LEVEL`.

@@ -80,9 +80,23 @@ export function StoryReader({
 
     const entry = flat[index];
     const page = entry?.page;
-    const panelIndex = page?.panel_index ?? null;
-    const imageUrl = page?.image_url ?? null;
-    const hasImage = panelIndex !== null || imageUrl !== null;
+
+    // One image stays at the top until the next mapped panel's page arrives.
+    // Before the first mapped page, show that first panel so the reader always
+    // has a relevant picture; after the last one, keep the last picture.
+    const imagePage = (() => {
+        for (let cursor = index; cursor >= 0; cursor -= 1) {
+            const candidate = flat[cursor]?.page;
+            if (candidate !== undefined && (candidate.panel_index !== null || candidate.image_url !== null)) {
+                return candidate;
+            }
+        }
+
+        return flat.find((item) => item.page.panel_index !== null || item.page.image_url !== null)?.page;
+    })();
+    const panelIndex = imagePage?.panel_index ?? null;
+    const imageUrl = imagePage?.image_url ?? null;
+    const hasImage = imagePage !== undefined;
     const pageStart = page !== undefined && page.audio_url !== null ? 0 : (page?.audio_start_ms ?? 0);
     const initialPosition = savedIndex === index && progress !== null ? Math.max(0, progress.position_ms - pageStart) : 0;
     const audio = useReaderTrack({
@@ -235,7 +249,7 @@ export function StoryReader({
                         art={art}
                         panelIndex={panelIndex}
                         imageUrl={imageUrl}
-                        alt={page.alt_fa}
+                        alt={imagePage?.alt_fa ?? null}
                         className="aspect-[2/1] w-full"
                     />
                 )}

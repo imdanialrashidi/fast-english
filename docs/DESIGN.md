@@ -13,7 +13,7 @@ This supersedes the 2026-11-21 TED-tab placement, highlight and play-card rules.
 - **Placement.** TED is a **TED Talk category** in the main Discover library (`/app?category=ted-talk`), with the same editorial cards as articles; `/app/ted` redirects there. The Books shelf stays four items. The podcast level row is A1–C2 only; no seventh pill, no topic link on the talk page.
 - **Composition.** Talk page: meta chips (`TED Talk`, area, minutes, speaker) → English title → plain hint that the shell player owns audio → collapsed `new words` → 16:9 cover → plain transcript (~68ch) → source/licence line. No play card and no duplicate console.
 - **No highlight.** The transcript is plain text for everyone: no warm-paper sentence tint, no `aria-current` sentence, no follow-scroll, no highlight toggle. The one console below the content is the only audio surface.
-- **Story images.** One page = one text + (when mapped) its own panel directly above the text. The next page shows its own panel or no image; no six-frame strip, no inherited picture. Text-only pages have no image.
+- **Story images.** One relevant panel stays at the top; it is replaced only when the next mapped panel's page arrives. Text-only pages keep the previous panel. No six-frame strip, no gallery, no second picture.
 - **One player.** Story and IELTS bind the persistent player with a bounded page slice; remove their page-level transport. Desktop text uses a ~68ch measure in a media-first column, not a narrow side column.
 
 

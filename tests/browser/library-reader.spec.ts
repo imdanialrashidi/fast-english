@@ -10,7 +10,7 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
 /** The reader restores the last page; tests always start at page one. */
 async function rewind(page: Page, label: string): Promise<void> {
     const button = page.getByRole('button', { name: label });
-    for (let index = 0; index < 6; index += 1) {
+    for (let index = 0; index < 80; index += 1) {
         if (!(await button.isEnabled())) {
             break;
         }
@@ -119,7 +119,22 @@ test('a mapped 2x3 panel is served on its frame', async ({ sub: page }) => {
     const panel = page.locator('div[role="img"]').first();
     await expect(panel).toBeVisible();
     const background = await panel.evaluate((element) => getComputedStyle(element).backgroundImage);
+    const position = await panel.evaluate((element) => getComputedStyle(element).backgroundPosition);
     expect(background).toContain('/media/library/');
+
+    // The current panel stays at the top through text-only pages until the
+    // next mapped frame arrives.
+    await page.getByRole('button', { name: 'صفحهٔ بعد' }).click();
+    await expect(page.getByText('6 / 61')).toBeVisible();
+    await expect(panel).toBeVisible();
+    await expect(panel).toHaveCSS('background-position', position);
+
+    for (let index = 0; index < 11; index += 1) {
+        await page.getByRole('button', { name: 'صفحهٔ بعد' }).click();
+    }
+    await expect(page.getByText('17 / 61')).toBeVisible();
+    await expect(panel).toBeVisible();
+    await expect(panel).not.toHaveCSS('background-position', position);
     await page.screenshot({ path: 'test-results/browser-shots/library-story-panel-393.png', fullPage: true });
 });
 
