@@ -2,123 +2,118 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExerciseItem;
+use App\Models\FlashcardUnit;
 use App\Models\Lesson;
-use App\Models\Plan;
-use App\Models\Topic;
+use App\Models\LibraryNode;
+use App\Models\PlacementQuestion;
+use App\Models\ReadingDocument;
+use App\Models\TedTalk;
 use App\Support\Faq;
-use App\Support\Levels;
 use App\Support\PublicSeo;
 use App\Support\ReadingPayload;
 use App\Support\Release;
 use App\Support\Toman;
-use App\Support\TopicCard;
+use App\Support\TopicCover;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * S8 landing (scope §6, PUB-01): the public introduction to Fast English.
+ * S8 landing (scope §6, PUB-01), rewritten for the owner instruction of
+ * 2026-11-22.
  *
- * - The promise, a link to the real S1 sample, how it works, the plan
- *   list from the database, install/download links, and an FAQ link.
- * - Plan cards show the active plan's Persian name, duration, and its
- *   server-formatted toman price. The "from" label reads the cheapest
- *   active plan from the same collection, so the public copy cannot drift
- *   from checkout. No raw integer amount crosses the Inertia boundary.
- * - Hero preview stages the real sample (cover, title, level, opening
- *   paragraph) and plays the sample's own stream with a real transport —
- *   never a mock player, never autoplay, and no fabricated testimonials,
- *   counts, ratings, or claims. With no published sample the empty preview
- *   is not rendered and sample links are not offered.
- * - Sales switch (config sales.enabled, off by default): when off, the
- *   plan cards still show their prices, the CTA is disabled, and a calm
- *   notice explains that sales are not open yet.
+ * The page sells one paid path. It carries no free-sample link, no
+ * trial, and no public audio. Two kinds of claim appear:
+ * - owner-supplied marketing decisions in `config/site.php`: the 16,355
+ *   learner figure and the 990,000 → 641,000 toman offer;
+ * - measured library facts read from the database in contentStats():
+ *   reading texts, words, listening hours, AEF units, exercises, and
+ *   TED Talks.
+ *
+ * Only formatted price labels cross the Inertia boundary; raw toman
+ * integers stay server-side. No lesson body, glossary, audio URL, or
+ * authenticated app URL travels with this page.
  */
 class LandingController extends Controller
 {
     public function index(Request $request): Response
     {
-        $plans = Plan::query()
-            ->where('is_active', true)
-            ->orderBy('display_order')
-            ->orderBy('id')
-            ->get(['id', 'name_fa', 'price_toman', 'duration_days']);
+        $stats = app()->environment('testing')
+            ? $this->contentStats()
+            : Cache::remember('landing:content-stats:v2', now()->addHour(), fn (): array => $this->contentStats());
 
-        // The "from" line quotes the cheapest active plan. Only formatted
-        // labels cross the Inertia boundary; raw integer amounts do not.
-        $fromPrice = $plans->min('price_toman');
+        $learners = max(0, (int) config('site.marketing.learners', 0));
 
-        $sample = Lesson::query()
-            ->where('is_public_sample', true)
-            ->where('status', 'published')
-            ->whereHas('topic', fn ($topics) => $topics->where('status', 'published'))
-            ->with('topic')
-            ->orderBy('id')
-            ->first();
+        $compareAt = max(1, (int) config('site.marketing.offer.compare_at_toman', 990000));
+        $price = (int) config('site.marketing.offer.price_toman', 641000);
+        $duration = max(1, (int) config('site.marketing.offer.duration_days', 90));
 
-        // A small editorial selection of representative lessons.
-        $featured = Topic::query()
-            ->where('status', 'published')
-            ->whereHas('lessons', fn ($lessons) => $lessons->where('status', 'published'))
-            ->with(['lessons' => fn ($lessons) => $lessons
-                // Cards read only level + estimated_minutes; the FK stays
-                // so lessons still match their topics. Levels travel in
-                // CEFR order, the same order the library uses.
-                ->where('status', 'published')
-                ->orderByRaw(Levels::orderExpression())
-                ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
-            ])
+        // Never render a negative or absurd discount if staff edit the
+        // config into an impossible pair.
+        $price = max(0, min($price, $compareAt));
+        $discount = (int) round((1 - ($price / $compareAt)) * 100);
+
+        $offer = [
+            'price_label' => Toman::format($price),
+            'compare_label' => Toman::format($compareAt),
+            // Daily value framing is a factual division of the owner's
+            // price by the access window, formatted server-side.
+            'per_day_label' => Toman::format((int) round($price / $duration)),
+            'discount_percent' => $discount,
+            'duration_days' => $duration,
+        ];
+
+        // Three real talks prove the library without leaking audio or a
+        // paid transcript. The card's video link points at the public
+        // TED source; the in-app talk page stays behind the paid gate.
+        $talks = TedTalk::query()
+            ->published()
             ->orderByDesc('published_at')
             ->orderByDesc('id')
             ->limit(3)
-            ->get();
+            ->get(['id', 'title_en', 'speaker', 'area', 'duration_seconds', 'cover_path', 'source_url'])
+            ->map(fn (TedTalk $talk): array => [
+                'title_en' => (string) $talk->title_en,
+                'speaker' => (string) ($talk->speaker ?? ''),
+                'area_label' => $talk->areaLabel(),
+                'minutes' => $talk->estimatedMinutes(),
+                'cover_url' => TopicCover::url($talk->cover_path),
+                'source_url' => (string) $talk->source_url,
+            ])
+            ->all();
 
-        // The hero preview plays the same public sample the /sample page
-        // serves. ReadingPayload owns the opening-paragraph slice and the
-        // sample's own stream URL.
-        $preview = ReadingPayload::preview($sample);
+        $faqs = Faq::landing();
 
-        $faqs = Faq::landing($sample !== null);
+        $seoDescription = 'Fast English: خواندن و شنیدن هم‌زمان در شش سطح A1 تا C2؛ '
+            .number_format($stats['texts']).' متن و سخنرانی، '
+            .number_format($stats['words']).' کلمه و '
+            .$stats['listeningHours'].' ساعت صدا. اشتراک از '.$offer['price_label'].'.';
 
-        // M0 Inertia transport (ADR-0002): the same gating and the same
-        // fields as the Blade landing. Props are an allowlist — never
-        // bodies, glossaries, raw amounts, or private paths. Prices cross
-        // only as server-formatted Persian labels. The only audio URL is
-        // the public sample's own stream, which /sample already serves to
-        // guests.
-        return Inertia::render('Landing/Index', array_merge($preview, [
-            'featured' => $featured->map(fn (Topic $topic) => TopicCard::preview($topic))->all(),
-            'plans' => $plans->map(fn (Plan $plan) => [
-                'id' => $plan->id,
-                'name_fa' => $plan->name_fa,
-                'price_label' => Toman::format((int) $plan->price_toman),
-                'duration_days' => $plan->duration_days,
-            ])->all(),
+        return Inertia::render('Landing/Index', [
+            'stats' => [...$stats, 'learners' => $learners],
+            'talks' => $talks,
+            'offer' => $offer,
             'faqs' => $faqs,
-            'salesOn' => (bool) config('sales.enabled', false),
-            'plansFromLabel' => $fromPrice === null ? null : Toman::format((int) $fromPrice),
-            // The hero's primary action follows reality: while no real APK
-            // exists, the sample is primary and /download is informational.
-            // Once published, the landing's main download action points at
-            // the real APK file (one click), while /download keeps the
-            // metadata/checksum details.
+            // The download action follows the real release metadata. A
+            // guest always gets a working path even while the APK is
+            // unpublished: registration opens the library.
             'releasePublished' => Release::published(),
             'downloadUrl' => Release::metadata()['file_url'],
-            // Guest-only funnel: the landing never links into the
-            // authenticated app. Plan interest goes through registration;
-            // the primary conversion is the download page.
             'urls' => [
-                'sample' => route('sample'),
                 'register' => route('register'),
                 'download' => route('download'),
+                'install' => route('install'),
                 'faq' => route('trust.faq'),
+                'support' => route('trust.support'),
             ],
             // Server-rendered in app.blade.php so crawlers see the title,
             // description, social tags, and JSON-LD before React runs.
             'seo' => PublicSeo::page(
-                'Fast English: انگلیسی را با داستان کوتاه بخوان و بشنو',
-                'Fast English: متن‌های کوتاه انگلیسی در سطح A1 تا C2 با صوت همان نسخه؛ بخوان و بشنو، سرعت را تنظیم کن و واژه بساز.',
+                'Fast English | انگلیسی را با متن، صدا و TED Talk یاد بگیر',
+                $seoDescription,
                 route('landing'),
                 [
                     '@context' => 'https://schema.org',
@@ -138,15 +133,87 @@ class LandingController extends Controller
                             'applicationCategory' => 'EducationalApplication',
                             'operatingSystem' => 'Android, Web',
                             'inLanguage' => 'fa-IR',
-                            'description' => 'یادگیری انگلیسی با متن‌های کوتاه و صوت همراه آن در شش سطح A1 تا C2.',
-                            'url' => route('download'),
+                            'description' => 'کتابخانهٔ خواندن و شنیدن انگلیسی در شش سطح A1 تا C2، همراه با TED Talks، کتاب American English File، واژه‌نامه و مرور زمان‌بندی‌شده.',
+                            'url' => route('landing'),
                             'image' => PublicSeo::absolute(PublicSeo::DEFAULT_IMAGE),
                         ],
                         Faq::schema($faqs),
                     ],
                 ],
             ),
-        ]));
+        ]);
+    }
+
+    /**
+     * Measured content facts for the landing. The costly part is the TED
+     * word count (it walks the stored sentence arrays), so the result is
+     * cached for an hour outside tests; a publish/edit is visible on the
+     * next cache window.
+     *
+     * @return array{levels: int, texts: int, words: int, listeningHours: int, units: int, exercises: int, talks: int, talkWords: int, talkHours: int, stories: int, ielts: int, inside: int, placementQuestions: int}
+     */
+    private function contentStats(): array
+    {
+        $talkSeconds = (int) TedTalk::query()->published()->sum('duration_seconds');
+        $talkCount = (int) TedTalk::query()->published()->count();
+
+        $talkWords = 0;
+        foreach (TedTalk::query()->published()->select(['id', 'segments'])->cursor() as $talk) {
+            $talkWords += $this->sentenceWords($talk->segments);
+        }
+
+        $publishedDocuments = ReadingDocument::query()->whereNotNull('published_at');
+        $libraryWords = (int) (clone $publishedDocuments)->sum('word_count');
+        $libraryMs = (int) (clone $publishedDocuments)->sum('duration_ms');
+
+        $readable = LibraryNode::query()
+            ->whereHas('document', fn ($documents) => $documents->whereNotNull('published_at'));
+        $readings = (int) (clone $readable)->count();
+
+        $stories = (int) (clone $readable)->where('track', 'story')->count();
+        $ielts = (int) (clone $readable)->where('track', 'ielts')->count();
+        $inside = (int) (clone $readable)->where('track', 'inside_reading')->count();
+
+        $placementQuestions = (int) PlacementQuestion::query()
+            ->whereHas('test', fn ($tests) => $tests->where('status', 'published')->where('is_current', true))
+            ->count();
+
+        return [
+            'levels' => 6,
+            'texts' => $readings + $talkCount,
+            'words' => $libraryWords + $talkWords,
+            'listeningHours' => (int) round((($libraryMs / 1000) + $talkSeconds) / 3600),
+            'units' => (int) FlashcardUnit::query()->count(),
+            'exercises' => (int) ExerciseItem::query()->count(),
+            'talks' => $talkCount,
+            'talkWords' => $talkWords,
+            'talkHours' => (int) round($talkSeconds / 3600),
+            'stories' => $stories,
+            'ielts' => $ielts,
+            'inside' => $inside,
+            'placementQuestions' => $placementQuestions,
+        ];
+    }
+
+    /**
+     * TED `segments` is [[{t, text}, ...], ...]. Count only the words that
+     * are actually rendered as sentences; malformed rows are ignored.
+     */
+    private function sentenceWords(mixed $segments): int
+    {
+        if (! is_array($segments)) {
+            return 0;
+        }
+
+        $count = 0;
+        foreach ($segments as $paragraph) {
+            foreach ((array) $paragraph as $sentence) {
+                $text = is_array($sentence) ? (string) ($sentence['text'] ?? '') : '';
+                $count += str_word_count($text);
+            }
+        }
+
+        return $count;
     }
 
     /**

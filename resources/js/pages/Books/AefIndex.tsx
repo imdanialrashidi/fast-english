@@ -83,7 +83,7 @@ export const BooksAefIndex: FunctionComponent<BooksIndexProps> & {
                                 >
                                     <Link href={book.url} className="block no-underline" tabIndex={-1} aria-hidden="true">
                                         {book.cover_url !== null ? (
-                                            <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#EFE9DD] p-3">
+                                            <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-canvas p-3">
                                                 <img
                                                     src={book.cover_url}
                                                     alt=""

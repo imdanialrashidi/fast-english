@@ -22,16 +22,6 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
  */
 class TedTalkController extends Controller
 {
-    private const AREA_LABELS = [
-        'politics' => 'سیاست',
-        'cinema' => 'سینما',
-        'sports' => 'ورزش',
-        'health' => 'سلامت',
-        'tech' => 'فناوری',
-        'celebrity' => 'سلبریتی',
-        'literature' => 'ادبیات',
-    ];
-
     public function index(): RedirectResponse
     {
         return redirect()->route('app.home', ['category' => 'ted-talk']);
@@ -54,7 +44,7 @@ class TedTalkController extends Controller
                 'title_en' => (string) $tedTalk->title_en,
                 'speaker' => (string) ($tedTalk->speaker ?? ''),
                 'area' => (string) $tedTalk->area,
-                'area_label' => self::AREA_LABELS[$tedTalk->area] ?? (string) $tedTalk->area,
+                'area_label' => $tedTalk->areaLabel(),
                 'duration_seconds' => (int) $tedTalk->duration_seconds,
                 'audio_revision' => (int) $tedTalk->audio_revision,
                 'estimated_minutes' => $tedTalk->estimatedMinutes(),

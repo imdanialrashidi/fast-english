@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 
 // M0 Inertia foundation: the landing page renders through the full
-// Laravel → Inertia → React path with real seeded data (S1 sample +
-// S5 plans). Persian copy parity with the Blade landing is asserted on
-// the rendered DOM; the HTTP contract lives in M0InertiaFoundationTest.
-test('landing renders the React page with the real sample and one plans state', async ({ page }) => {
+// Laravel → Inertia → React path. Owner rewrite 2026-11-22: the page
+// sells the paid library, carries the owner learner count and offer, and
+// puts the support channel in the chrome. No free sample exists here.
+test('landing renders the React page with the offer and support paths', async ({ page }) => {
   const pageErrors: string[] = [];
   const badResponses: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(String(error)));
@@ -41,41 +41,29 @@ test('landing renders the React page with the real sample and one plans state', 
   });
   expect(component).toBe('Landing/Index');
   await expect(page.locator('#app')).not.toBeEmpty();
-  await expect(page.locator('#app')).toContainText('انگلیسی را با داستان‌های کوتاه بخوان و بشنو');
+  await expect(page.locator('#app')).toContainText('روزی ۱۵ دقیقه بخوان و بشنو');
 
-  // Hero: staged real sample with a level deep link (seeded S1 sample).
-  // Paid-only slice: the deep link targets the public sample experience.
-  await expect(page.getByRole('heading', { name: 'یک نمونه واقعی، بدون ثبت‌نام' })).toBeVisible();
-  const sampleLink = page.locator('section[aria-label="نمونه واقعی"] a[href*="level="]').first();
-  await expect(sampleLink).toBeVisible();
-  expect(await sampleLink.getAttribute('href')).toMatch(/\/sample\?topic=.+&level=[A-C][12]/);
+  // The owner's figures and price are the first thing a buyer reads.
+  await expect(page.getByText('۱۶٬۳۵۵').first()).toBeVisible();
+  await expect(page.getByText('۶۴۱٬۰۰۰ تومان', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('۹۹۰٬۰۰۰ تومان', { exact: true })).toBeVisible();
 
-  // Preview: real opening paragraph beside the sample audio.
-  await expect(page.locator('#app')).toContainText('بخشی از متن نمونه');
-  await expect(page.locator('section[aria-label="پیش‌نمایش روش یادگیری با نمونه واقعی"] p[lang="en"]').first()).not.toBeEmpty();
+  // Support: chrome strip plus the inline paths, all on the confirmed
+  // number, with Bale and Telegram as real external destinations.
+  await expect(page.getByText('09924930667').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'پیام در بله' }).first()).toHaveAttribute('href', 'https://ble.ir/+989924930667');
+  await expect(page.getByRole('link', { name: 'پیام در تلگرام' }).first()).toHaveAttribute('href', 'https://t.me/+989924930667');
 
-  // Plans: exactly one of the two sales states renders (one purchase
-  // CTA per plan card when sales are on, one preparing panel when off).
-  const ctaCount = await page.getByText('ساخت حساب و خرید').count();
-  const prepCount = await page.getByText('در دست آماده‌سازی').count();
-  if (prepCount === 1) {
-    expect(ctaCount).toBe(0);
-  } else {
-    expect(ctaCount).toBeGreaterThanOrEqual(1);
-    expect(prepCount).toBe(0);
-  }
-
-  // FAQ + final CTA + install links all render.
-  await expect(page.locator('#app')).toContainText('بدون اشتراک می‌توانم امتحان کنم؟');
-  await expect(page.getByRole('link', { name: 'شروع با نمونه رایگان' }).first()).toBeVisible();
-  // No APK is published in the lane: the download entry names its status
-  // instead of promising an install.
-  await expect(page.getByRole('link', { name: 'وضعیت نسخه اندروید' }).first()).toBeVisible();
+  // FAQ and the paid CTA render; no sample path and no audio player.
+  await expect(page.locator('#app')).toContainText('برای چه سطحی مناسب است؟');
+  await expect(page.getByRole('link', { name: /ثبت‌نام و فعال‌سازی دسترسی/ })).toBeVisible();
+  await expect(page.locator('audio')).toHaveCount(0);
+  await expect(page.locator('a[href="/sample"]')).toHaveCount(0);
 
   expect(pageErrors).toEqual([]);
   expect(badResponses.filter((line) => !line.includes('/storage/'))).toEqual([]);
 
-  await page.screenshot({ path: 'test-results/browser-shots/m0-landing-desktop.png' });
+  await page.screenshot({ path: 'test-results/browser-shots/m0-landing-desktop.png', fullPage: true });
 });
 
 test('landing has no horizontal overflow on a narrow phone', async ({ page }) => {

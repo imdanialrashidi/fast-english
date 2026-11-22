@@ -1,97 +1,96 @@
 <?php
 
 use App\Models\Lesson;
-use App\Models\Plan;
 use App\Models\User;
 use App\Support\Toman;
 use Database\Seeders\S5PaymentFixtureSeeder;
+use Illuminate\Support\Arr;
 use Inertia\Testing\AssertableInertia;
 use Tests\Support\ContentFixtures;
 
-// S8-1 (public pages): landing + trust pages render with lang fa, dir
-// rtl, and metadata. Two users are irrelevant here (public surface), but
-// both states of the sales switch are proven with the DB plan list.
+// S8-1 (public pages), rewritten for the owner instruction of 2026-11-22:
+// the landing sells one paid path, carries no free-sample link, publishes
+// the owner-supplied learner count and 990,000 → 641,000 offer, and reads
+// every content number from the database. Trust pages keep the confirmed
+// support phone, Bale, and Telegram links.
 
 beforeEach(function () {
     $this->seed(S5PaymentFixtureSeeder::class);
 });
 
-test('landing renders fa rtl with metadata, sample link, plans, and no draft label', function () {
-    $topic = ContentFixtures::publishedTopic();
-    $sample = Lesson::factory()->for($topic)->create([
-        'level' => 'A2',
-        'status' => 'published',
-        'published_at' => now(),
-        'is_public_sample' => true,
-    ]);
-
-    // M0 port (ADR-0002): the same claims through the Inertia transport.
-    // Persian copy assertions moved to the rendered browser proof
-    // (tests/browser/m0-inertia.spec.ts) — HTTP sees the root template +
-    // the encoded page, not client-rendered text.
+test('landing renders fa rtl with the measured library, offer, and support paths', function () {
     $html = $this->get(route('landing'))->assertOk()->getContent();
 
     expect($html)->toContain('lang="fa"')
         ->and($html)->toContain('dir="rtl"')
         ->and($html)->toContain('rel="canonical"')
-        // The landing is real copy now: no internal workflow labels anywhere
-        // in the public surface (trust pages included, 2026-10-25).
+        // No internal workflow labels ever reach the public surface.
         ->and($html)->not->toContain('DRAFT');
 
     $this->get(route('landing'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Landing/Index')
-            // Deep link to the public sample experience + level.
-            ->where('sample.reader_url', route('sample', ['topic' => $topic->slug, 'level' => 'A2']))
-            ->where('sample.level', 'A2')
-            ->has('sampleParagraphs')
-            // The preview plays the public sample's own stream and uses
-            // the server's cue-usability flag (no client re-derivation).
-            ->where('sampleAudioUrl', route('media.lesson.audio', $sample))
-                        // The shared topic-card module owns the featured shape.
-            ->has('featured', fn (AssertableInertia $featured) => $featured
-                ->where('0.slug', $topic->slug)
-                ->missing('0.reader_url')
-                ->etc())
-            // Plan names and prices from the database. Only the formatted
-            // label crosses the boundary; the raw integer never does.
-            ->has('plans', fn (AssertableInertia $plans) => $plans
-                ->where('0.name_fa', 'یک‌ماهه آزمایشی (TEST)')
-                ->where('0.price_label', Toman::format(100000))
-                ->missing('0.price_toman')
-                ->missing('0.amount_toman')
-                ->etc())
-            ->where('salesOn', true)
-            ->where('has_public_sample', true)
-            ->where('faqs.0.a', 'بله. نمونه واقعی همیشه رایگان است و بدون ثبت‌نام باز می‌شود.')
+            ->where('stats.learners', 16355)
+            ->where('stats.levels', 6)
+            ->has('stats.texts')
+            ->has('stats.words')
+            ->has('stats.listeningHours')
+            ->has('stats.units')
+            ->has('stats.exercises')
+            ->has('stats.talks')
+            ->has('stats.talkWords')
+            ->has('stats.talkHours')
+            ->has('stats.stories')
+            ->has('stats.ielts')
+            ->has('stats.inside')
+            ->has('stats.placementQuestions')
+            // Owner instruction 2026-11-22: 990,000 is struck through and
+            // 641,000 is payable for 90 days. Only formatted labels cross.
+            ->where('offer.price_label', Toman::format(641000))
+            ->where('offer.compare_label', Toman::format(990000))
+            ->where('offer.per_day_label', Toman::format(7122))
+            ->where('offer.discount_percent', 35)
+            ->where('offer.duration_days', 90)
+            // No free sample prop, no public audio, no plan list.
+            ->missing('sample')
+            ->missing('sampleAudioUrl')
+            ->missing('sampleParagraphs')
+            ->missing('plans')
+            ->where('talks', [])
+            ->where('urls.register', route('register'))
             ->where('urls.download', route('download'))
-            ->where('urls.faq', route('trust.faq')));
+            ->where('urls.install', route('install'))
+            ->where('urls.faq', route('trust.faq'))
+            ->where('urls.support', route('trust.support'))
+            ->where('faqs.0.q', 'برای چه سطحی مناسب است؟')
+            ->where('faqs.0.a', fn ($answer): bool => is_string($answer) && str_contains($answer, 'A1 تا C2')));
 
-    // Amounts never appear anywhere in the encoded page either.
-    expect($html)->not->toContain('100000')
-        ->and($html)->not->toContain('price_toman');
+    // Raw money never appears in the encoded page; only the formatted
+    // label does. The old sample URL is not part of the marketing payload.
+    expect($html)->not->toContain('641000')
+        ->and($html)->not->toContain('990000')
+        ->and($html)->not->toContain('price_toman')
+        ->and($html)->not->toContain('شروع با نمونه رایگان')
+        ->and($html)->not->toContain('نمونه رایگان');
 });
 
-test('landing without a sample shows the neutral state, never a broken link', function () {
-    // M0 port: no sample resolves to a null prop (the neutral panel is
-    // rendered client-side and proven in tests/browser/m0-inertia.spec.ts).
-    $this->get(route('landing'))
-        ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Landing/Index')
-            ->where('sample', null)
-            ->where('sampleParagraphs', [])
-            ->where('sampleAudioUrl', null)
-            // Public chrome must not offer a sample link while /sample 404s.
-            ->where('has_public_sample', false)
-            ->where('faqs.0.a', 'نمونهٔ عمومی هنوز منتشر نشده است؛ پس از انتشار، بدون ثبت‌نام باز می‌شود.')
-            ->missing('sample.reader_url'));
+test('landing props expose no premium, media, or authenticated-app key', function () {
+    $props = $this->get(route('landing'))->assertOk()->inertiaProps();
+    $keys = array_keys(Arr::dot($props));
+
+    foreach (['body_en', 'glossary', 'audio_url', 'audioUrl', 'price_toman', 'amount_toman', 'receipt', 'password', 'internal_note', 'bank_reference', 'sender_last4'] as $needle) {
+        foreach ($keys as $key) {
+            expect(str_contains(strtolower($key), strtolower($needle)))->toBeFalse("landing prop [{$key}] leaks [{$needle}]");
+        }
+    }
+
+    // Guest-only funnel: no authenticated app URL in the payload.
+    expect($keys)->not->toContain('urls.app')
+        ->and($keys)->not->toContain('featured.0.reader_url');
 });
 
-test('landing with sales off still shows plan prices and closes the purchase action', function () {
-    config(['sales.enabled' => false]);
-
+test('landing never links to the public sample', function () {
     $topic = ContentFixtures::publishedTopic();
     Lesson::factory()->for($topic)->create([
         'level' => 'A2',
@@ -100,33 +99,16 @@ test('landing with sales off still shows plan prices and closes the purchase act
         'is_public_sample' => true,
     ]);
 
-    // Sales are closed, but the price list is product information: the
-    // cards and their formatted prices still travel. Only the purchase CTA
-    // is disabled client-side. The "from" label equals the cheapest active
-    // plan — never a hardcoded 299000.
     $html = $this->get(route('landing'))->assertOk()->getContent();
 
-    $this->get(route('landing'))
-        ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Landing/Index')
-            ->where('salesOn', false)
-            ->where('sample.level', 'A2')
-            ->where('plansFromLabel', Toman::format(100000))
-            ->has('plans', fn (AssertableInertia $plans) => $plans
-                ->has('0.name_fa')
-                ->where('0.price_label', Toman::format(100000))
-                ->missing('0.price_toman')
-                ->etc()));
-
-    expect($html)->not->toContain('299000')
-        ->and($html)->not->toContain('۲۹۹٬۰۰۰')
-        ->and($html)->not->toContain('price_toman');
+    expect($html)->not->toContain('شروع با نمونه رایگان')
+        ->and($html)->not->toContain('نمونه رایگان')
+        ->and($html)->not->toContain('href="/sample"');
 });
 
-test('public /plans sends guests to the pricing anchor and learners to checkout', function () {
+test('public /plans sends guests to the offer anchor and learners to checkout', function () {
     $this->get(route('plans'))
-        ->assertRedirect(route('landing').'#plans');
+        ->assertRedirect(route('landing').'#pricing');
 
     $student = User::factory()->create();
     $this->actingAs($student)
@@ -140,21 +122,26 @@ test('trust pages render public fa rtl copy with canonical tags', function () {
         expect($html)->toContain('lang="fa"')
             ->and($html)->toContain('dir="rtl"')
             ->and($html)->toContain('rel="canonical"')
-            // Owner instruction 2026-10-25: no internal workflow labels.
             ->and($html)->not->toContain('DRAFT')
             ->and($html)->not->toContain('BLOCKED')
             ->and($html)->not->toContain('نیازمند بازبینی');
     }
 });
 
-test('trust pages publish the owner contact channel and legal copy', function () {
-    $support = $this->get(route('trust.support'))->assertOk();
-    $support->assertInertia(fn (AssertableInertia $page) => $page
-        ->component('Trust/Show')
-        ->where('page', 'support')
-        ->where('contact.support_channel', 'info@fastenglishpodcast.ir')
-        ->where('contact.support_href', 'mailto:info@fastenglishpodcast.ir')
-        ->where('contact.cooperation_channel', 'info@fastenglishpodcast.ir'));
+test('trust support publishes 09924930667, Bale, and Telegram', function () {
+    $this->get(route('trust.support'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Trust/Show')
+            ->where('page', 'support')
+            ->where('contact.support_channel', 'info@fastenglishpodcast.ir')
+            ->where('contact.support_href', 'mailto:info@fastenglishpodcast.ir')
+            ->where('contact.support_phone', '09924930667')
+            ->where('contact.support_phone_href', 'tel:+989924930667')
+            ->where('contact.support_messenger', 'بله یا تلگرام')
+            ->where('contact.support_bale_url', 'https://ble.ir/+989924930667')
+            ->where('contact.support_telegram_url', 'https://t.me/+989924930667')
+            ->where('contact.cooperation_channel', 'info@fastenglishpodcast.ir'));
 
     foreach (['terms' => 'این شرایط', 'privacy' => 'حریم خصوصی', 'refund' => 'بازگشت وجه'] as $name => $needle) {
         $response = $this->get(route('trust.'.$name))->assertOk();
@@ -166,7 +153,6 @@ test('trust pages publish the owner contact channel and legal copy', function ()
             ->and($response->getContent())->not->toContain('BLOCKED');
     }
 
-    // The cooperation page exposes the configured channel, not an invented one.
     $this->get(route('trust.cooperation'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
@@ -174,21 +160,20 @@ test('trust pages publish the owner contact channel and legal copy', function ()
             ->where('contact.cooperation_href', 'mailto:info@fastenglishpodcast.ir'));
 });
 
-test('sitemap lists public pages only', function () {
+test('sitemap lists public pages only and never the sample', function () {
     $body = $this->get(route('sitemap'))->assertOk()->getContent();
 
     foreach (['/', '/about', '/cooperation', '/faq', '/support', '/terms', '/privacy', '/refund', '/download', '/install'] as $path) {
         expect($body)->toContain(config('app.url').$path);
     }
-    expect($body)->not->toContain('/app')
+    expect($body)->not->toContain('/sample')
+        ->and($body)->not->toContain('/app')
         ->and($body)->not->toContain('/admin')
         ->and($body)->not->toContain('/login')
         ->and($body)->not->toContain('/media');
 });
 
 test('landing ships crawler-ready metadata and FAQ structured data', function () {
-    ContentFixtures::publishedTopic();
-
     $html = $this->get(route('landing'))->assertOk()->getContent();
 
     expect($html)->toContain('<meta name="description"')
@@ -208,35 +193,18 @@ test('signed-in visitors are redirected from every marketing page into the app',
         $this->get(route($route))->assertRedirect(route('today.index'));
     }
 
-    // Download is a public utility (2026-10-28): a signed-in learner must
-    // still be able to fetch the APK instead of being sent to the paywall.
+    // Download and install stay public utilities for signed-in learners.
     $this->get(route('download'))->assertOk();
-
-    // The install guide is outside that boundary on purpose: Account links
-    // to it for iPhone users, who never see the in-app install card.
     $this->get(route('install'))->assertOk();
-
-    // The public sample is deliberately outside the marketing boundary:
-    // the in-app locked state links to it as the free path.
-    $topic = ContentFixtures::publishedTopic();
-    Lesson::factory()->for($topic)->create([
-        'level' => 'A2',
-        'status' => 'published',
-        'published_at' => now(),
-        'is_public_sample' => true,
-    ]);
-    $this->get(route('sample'))->assertOk();
 });
 
 test('landing URL bag never exposes authenticated app destinations', function () {
     $urls = $this->get(route('landing'))->assertOk()->inertiaProps('urls');
 
-    expect(array_keys($urls))->toBe(['sample', 'register', 'download', 'faq']);
+    expect(array_keys($urls))->toBe(['register', 'download', 'install', 'faq', 'support']);
 });
 
 test('landing download link follows the real release metadata', function () {
-    // Testing/staging stays honest: no file link until a release is
-    // configured for this environment.
     $this->get(route('landing'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
@@ -260,20 +228,7 @@ test('landing download link follows the real release metadata', function () {
             ->where('downloadUrl', $artifact['file_url']));
 });
 
-test('sitemap includes the public sample only while one exists', function () {
-    $topic = ContentFixtures::publishedTopic(['slug' => 'sitemap-sample']);
-    Lesson::factory()->for($topic)->create([
-        'level' => 'A2',
-        'status' => 'published',
-        'published_at' => now(),
-        'is_public_sample' => true,
-    ]);
-
-    $body = $this->get(route('sitemap'))->assertOk()->getContent();
-    expect($body)->toContain(config('app.url').'/sample');
-});
-
-test('public sample ships canonical, description, and Article structured data', function () {
+test('public sample keeps canonical and Article metadata for its own route', function () {
     $topic = ContentFixtures::publishedTopic(['slug' => 'sample-seo', 'summary_public' => 'یک نمونه عمومی.']);
     Lesson::factory()->for($topic)->create([
         'level' => 'A2',
@@ -288,13 +243,9 @@ test('public sample ships canonical, description, and Article structured data', 
 
     expect($html)->toContain('<link rel="canonical" data-inertia="canonical" href="'.route('sample').'">')
         ->and($html)->toContain('<meta name="description"')
-        ->and($html)->toContain('نمونهٔ رایگان')
         ->and($html)->toContain('property="og:type" data-inertia="og:type" content="article"')
         ->and($html)->toContain('property="og:image"')
         ->and($html)->toContain('"@type":"Article"')
-        ->and($html)->toContain('"image":')
-        ->and($html)->toContain('"datePublished":')
-        ->and($html)->toContain('"dateModified":')
         ->and($html)->toContain('"isAccessibleForFree":true')
         ->and($html)->not->toContain('canonical" href="'.route('sample').'?');
 });

@@ -47,6 +47,8 @@ export interface SupportContact {
     email_href: string | null;
     messenger: string;
     messenger_note: string;
+    telegram_url: string | null;
+    bale_url: string | null;
     hours: string | null;
 }
 

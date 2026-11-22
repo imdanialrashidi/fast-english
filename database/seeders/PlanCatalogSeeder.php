@@ -7,11 +7,12 @@ use App\Models\Plan;
 use Illuminate\Database\Seeder;
 
 /**
- * Owner-provided production/staging catalog (2026-10-25).
+ * Owner-provided production/staging catalog.
  *
  * Prices are integer toman:
  * - 30 days: 399,000
- * - 90 days: 20% off three months = 957,600
+ * - 90 days: 641,000 (owner instruction 2026-11-22; the landing quotes
+ *   this as 990,000 struck through, 641,000 payable for 90 days)
  * - 365 days: 30% off twelve months = 3,351,600
  *
  * Run explicitly after deploy:
@@ -37,15 +38,15 @@ class PlanCatalogSeeder extends Seeder
             ],
             [
                 'slug' => 'quarterly',
-                'name_fa' => 'سه‌ماهه — ۲۰٪ تخفیف',
-                'price_toman' => 957600,
+                'name_fa' => 'سه‌ماهه',
+                'price_toman' => 641000,
                 'duration_days' => 90,
                 'is_active' => true,
                 'display_order' => 2,
             ],
             [
                 'slug' => 'annual',
-                'name_fa' => 'یک‌ساله — ۳۰٪ تخفیف',
+                'name_fa' => 'یک‌ساله (۳۰٪ تخفیف)',
                 'price_toman' => 3351600,
                 'duration_days' => 365,
                 'is_active' => true,

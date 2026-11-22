@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lesson;
-
 /**
  * S8 sitemap (scope §19.1): public marketing pages only. Auth, learner,
- * staff, and media routes never appear here.
+ * staff, and media routes never appear here. Owner instruction
+ * 2026-11-22 removed the public sample from the marketing surface, so it
+ * is not advertised in the sitemap either.
  */
 class SitemapController extends Controller
 {
@@ -24,23 +24,6 @@ class SitemapController extends Controller
             ['loc' => route('download'), 'lastmod' => null],
             ['loc' => route('install'), 'lastmod' => null],
         ];
-
-        // The public sample is the primary indexable content surface. It
-        // joins the sitemap only while a published sample actually exists;
-        // its real update time is the only trustworthy lastmod here.
-        $sample = Lesson::query()
-            ->where('is_public_sample', true)
-            ->where('status', 'published')
-            ->whereHas('topic', fn ($topics) => $topics->where('status', 'published'))
-            ->orderBy('id')
-            ->first();
-
-        if ($sample !== null) {
-            $urls[] = [
-                'loc' => route('sample'),
-                'lastmod' => $sample->updated_at?->toAtomString(),
-            ];
-        }
 
         // The XML declaration cannot live in a Blade file (the embedded
         // close tag would end the compiled PHP block), so it is built here

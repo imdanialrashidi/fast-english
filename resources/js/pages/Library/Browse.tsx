@@ -65,7 +65,7 @@ export const LibraryBrowse: FunctionComponent<BrowseProps> & {
                     }`}
                 >
                     {showCover && (
-                        <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-2xl bg-[#EFE9DD] sm:aspect-[3/4]">
+                        <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-2xl bg-canvas sm:aspect-[3/4]">
                             <img src={node.cover_url ?? ''} alt="" className="h-full w-full object-cover object-top" />
                         </div>
                     )}

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Support\Faq;
-use App\Support\PublicSample;
 use App\Support\PublicSeo;
 use App\Support\SiteSettings;
 use Inertia\Inertia;
@@ -59,7 +58,7 @@ class TrustController extends Controller
     private function trustPage(string $page): Response
     {
         $support = SiteSettings::supportContacts();
-        $faqs = $page === 'faq' ? Faq::trust(PublicSample::exists()) : [];
+        $faqs = $page === 'faq' ? Faq::trust() : [];
 
         return Inertia::render('Trust/Show', [
             'page' => $page,
@@ -73,6 +72,8 @@ class TrustController extends Controller
                 'support_email_href' => $support['email_href'],
                 'support_messenger' => $support['messenger'],
                 'support_messenger_note' => $support['messenger_note'],
+                'support_telegram_url' => $support['telegram_url'],
+                'support_bale_url' => $support['bale_url'],
                 'support_hours' => SiteSettings::supportHours(),
                 'cooperation_channel' => SiteSettings::cooperationChannel(),
                 'cooperation_href' => SiteSettings::contactHref(SiteSettings::cooperationChannel()),
@@ -95,7 +96,7 @@ class TrustController extends Controller
         $copy = [
             'about' => [
                 'title' => 'درباره Fast English | خواندن و شنیدن انگلیسی',
-                'description' => 'Fast English متن‌های کوتاه انگلیسی در شش سطح A1 تا C2 با صوت همان نسخه است. روش کار، دامنهٔ محصول و نمونهٔ رایگان را اینجا بشناس.',
+                'description' => 'Fast English کتابخانهٔ خواندن و شنیدن انگلیسی در شش سطح A1 تا C2 است: متن و صوت همان نسخه، TED Talk، کتاب American English File و مرور واژه‌ها.',
             ],
             'cooperation' => [
                 'title' => 'همکاری با Fast English',
@@ -103,7 +104,7 @@ class TrustController extends Controller
             ],
             'faq' => [
                 'title' => 'پرسش‌های پرتکرار Fast English',
-                'description' => 'پاسخ پرسش‌های رایج دربارهٔ نمونهٔ رایگان، سطح‌ها، خرید اشتراک، تأیید پرداخت و فایل نصب Fast English.',
+                'description' => 'پاسخ پرسش‌های رایج دربارهٔ سطح‌ها، محتوای کتابخانه، خرید اشتراک، تأیید پرداخت، نصب روی گوشی و پشتیبانی Fast English.',
             ],
             'support' => [
                 'title' => 'پشتیبانی Fast English',

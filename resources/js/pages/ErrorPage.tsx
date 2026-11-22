@@ -43,7 +43,6 @@ export const ErrorPage: FunctionComponent<{ status: number }> & { layout?: (page
     const title = `${status}: ${copy.title}`;
     const { props } = usePage<SharedProps>();
     const signedIn = props.auth.user !== null;
-    const hasPublicSample = props.has_public_sample;
 
     return (
         <>
@@ -74,14 +73,6 @@ export const ErrorPage: FunctionComponent<{ status: number }> & { layout?: (page
                     >
                         {signedIn ? 'بازگشت به برنامه' : 'بازگشت به صفحه اصلی'}
                     </Link>
-                    {!signedIn && hasPublicSample && (
-                        <Link
-                            href="/sample"
-                            className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-line bg-surface px-6 py-2 font-bold text-ink no-underline hover:bg-canvas"
-                        >
-                            دیدن نمونه رایگان
-                        </Link>
-                    )}
                 </p>
             </div>
         </>

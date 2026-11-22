@@ -1,17 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-// Slice redesign: the landing is real copy with a hero, a working
-// sample preview, the three-step method, the real sample, newest topics,
-// the DB plan list (sales-on lane), FAQ, and a final CTA. No DRAFT
-// badge, no fabricated claims. No horizontal scroll and every touch
-// target is at least 44px.
+// Landing contract, owner rewrite 2026-11-22: a paid conversion page with
+// the 16,355 learner figure, the 990,000 → 641,000 offer, real library
+// numbers, TED Talks, and support in Bale/Telegram on 09924930667.
+// No free sample, no trial CTA, no public audio. No horizontal scroll and
+// every touch target is at least 44px.
 
 async function checkLanding(page, width: number) {
   await page.setViewportSize({ width, height: 844 });
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'انگلیسی را با داستان‌های کوتاه بخوان و بشنو' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+
   // No horizontal scroll.
   const scroll = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
@@ -35,65 +36,73 @@ async function checkLanding(page, width: number) {
   expect(errors).toEqual([]);
 }
 
-test('S8 landing 360: hero, preview, sample, plans, download, faq', async ({ page }) => {
+test('S8 landing 360: promise, offer, support, and library proof', async ({ page }) => {
   await checkLanding(page, 360);
+
   await expect(page.getByText('DRAFT')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'شروع با نمونه رایگان' }).first()).toBeVisible();
-  await expect(page.getByLabel('پیش‌نمایش روش یادگیری با نمونه واقعی')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'تازه‌ترین مطالب' })).toBeVisible();
-  // Sales-on lane state: DB plan names, server-formatted prices, and
-  // durations, with a registration CTA and no closed-sales notice.
-  const plans = page.locator('section[aria-label="پلن‌ها"]');
-  await expect(page.getByText('یک‌ماهه آزمایشی (TEST)')).toBeVisible();
-  await expect(plans.locator('li').first().getByText('۱۰۰٬۰۰۰ تومان', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'ساخت حساب و خرید' }).first()).toBeVisible();
-  await expect(page.getByText('فروش هنوز فعال نشده است')).toHaveCount(0);
-  // No real APK is published in the lane, so the sample is primary and
-  // the download entry is the honest status link.
-  await expect(page.getByRole('link', { name: 'وضعیت نسخه اندروید' }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'مشاهده همه پرسش‌ها' })).toBeVisible();
+  await expect(page.getByText('۱۶٬۳۵۵').first()).toBeVisible();
+  await expect(page.getByText('۶۴۱٬۰۰۰ تومان', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('۹۹۰٬۰۰۰ تومان', { exact: true })).toBeVisible();
+
+  // The two support number placements are visible without opening a menu.
+  await expect(page.getByText('09924930667').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'پیام در بله' }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'پیام در تلگرام' }).first()).toBeVisible();
+
+  // The paid path and its explicit price are one tap away.
+  await expect(page.getByRole('link', { name: /ثبت‌نام و فعال‌سازی دسترسی/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /سخنرانی‌های TED/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'قبل از خرید، این‌ها را بدان.' })).toBeVisible();
+  await expect(page.getByText('برای چه سطحی مناسب است؟')).toBeVisible();
+
+  // No free sample and no public audio exist on this page.
+  await expect(page.locator('audio')).toHaveCount(0);
+  await expect(page.getByText('نمونه رایگان')).toHaveCount(0);
+  await expect(page.locator('a[href="/sample"]')).toHaveCount(0);
+
   // Landing/app separation: no guest-facing link may enter the app.
   const appLinks = await page.locator('a[href^="/app"]').count();
   expect(appLinks).toBe(0);
+
   const html = await page.content();
   expect(html).toContain('lang="fa"');
-  await page.screenshot({ path: 'test-results/browser-shots/s8-landing-360.png' });
+  await page.screenshot({ path: 'test-results/browser-shots/s8-landing-360.png', fullPage: true });
 });
 
 test('S8 landing 390: same states recomposed', async ({ page }) => {
   await checkLanding(page, 390);
-  await expect(page.getByText('یک‌ماهه آزمایشی (TEST)')).toBeVisible();
-  await expect(
-    page.locator('section[aria-label="پلن‌ها"] li').first().getByText('۱۰۰٬۰۰۰ تومان', { exact: true }),
-  ).toBeVisible();
-  await page.screenshot({ path: 'test-results/browser-shots/s8-landing-390.png' });
+  await expect(page.getByText('۱۶٬۳۵۵').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'پیام در بله' }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'پیام در تلگرام' }).first()).toBeVisible();
+  await page.screenshot({ path: 'test-results/browser-shots/s8-landing-390.png', fullPage: true });
 });
 
 test('S8 landing reduced-motion: content renders without animation', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'انگلیسی را با داستان‌های کوتاه بخوان و بشنو' })).toBeVisible();
-  // M0 port (ADR-0002): the React landing renders statically with the
-  // reduced-motion kill-switch in CSS — same oracle as the Blade
-  // .fe-preview check, via the stable aria labels instead of fe-* classes.
-  const preview = page.getByLabel('پیش‌نمایش روش یادگیری با نمونه واقعی');
-  await expect(preview).toBeVisible();
-  const opacity = await preview.evaluate((el) => getComputedStyle(el).opacity);
+  await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+  // No entrance animation may hide the promise when motion is reduced.
+  const hero = page.locator('section[aria-label="معرفی Fast English"]');
+  await expect(hero).toBeVisible();
+  const opacity = await hero.evaluate((el) => getComputedStyle(el).opacity);
   expect(opacity).toBe('1');
-  await expect(page.locator('section[aria-label="پیش‌نمایش روش یادگیری با نمونه واقعی"] p[lang="en"]').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: /TED/ }).first()).toBeVisible();
   await ctx.close();
 });
 
-test('S8 landing hero preview plays the real public sample', async ({ page }) => {
+test('S8 landing exposes real support destinations and no audio player', async ({ page }) => {
   await page.goto('/');
-  const audio = page.locator('audio');
-  await expect(audio).toHaveCount(1);
 
-  await page.getByRole('button', { name: 'پخش نمونه صوتی' }).click();
-  await expect.poll(() => audio.evaluate((el) => !(el as HTMLAudioElement).paused), { timeout: 5000 }).toBe(true);
-  await expect(page.getByRole('button', { name: 'توقف پخش نمونه' })).toBeVisible();
+  const bale = page.getByRole('link', { name: 'پیام در بله' }).first();
+  await expect(bale).toHaveAttribute('href', 'https://ble.ir/+989924930667');
+  await expect(bale).toHaveAttribute('target', '_blank');
 
-  await page.getByRole('button', { name: 'توقف پخش نمونه' }).click();
-  await expect.poll(() => audio.evaluate((el) => (el as HTMLAudioElement).paused), { timeout: 5000 }).toBe(true);
+  const telegram = page.getByRole('link', { name: 'پیام در تلگرام' }).first();
+  await expect(telegram).toHaveAttribute('href', 'https://t.me/+989924930667');
+
+  const phone = page.getByRole('link', { name: /تماس با پشتیبانی/ }).first();
+  await expect(phone).toHaveAttribute('href', 'tel:+989924930667');
+
+  await expect(page.locator('audio')).toHaveCount(0);
 });

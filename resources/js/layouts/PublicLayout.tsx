@@ -1,6 +1,8 @@
 import { Link, router, usePage } from '@inertiajs/react';
+import { MessageCircle, Phone, Send } from 'lucide-react';
 import * as React from 'react';
 import { SeoHead } from '@/components/SeoHead';
+import { supportChannels } from '@/lib/support';
 import type { SharedProps } from '@/types';
 
 /**
@@ -11,6 +13,11 @@ import type { SharedProps } from '@/types';
  * tabs, global player) is never mounted here. Only the twelve
  * owner-approved palette tokens are used; no hex literals, no dark:
  * variant, no backdrop blur, no grain layer, no looping motion.
+ *
+ * Support is part of the chrome, not a page: a slim ink strip above the
+ * masthead carries the owner-confirmed number and both messenger links on
+ * every public page, and the footer repeats them. The strip scrolls away
+ * while the masthead stays sticky, so it never eats the reading area.
  *
  * Mobile first: below 360px the wordmark collapses to the monogram, the
  * section links are hidden, and login/register keep 44px targets. The
@@ -30,9 +37,9 @@ const TRUST_LINKS = [
     { href: '/download', label: 'دانلود' },
 ];
 
-// Signed-in learners reach the public shell only through /sample (the
-// in-app free lesson). Marketing links would bounce them back to /app,
-// so that state gets app-local destinations instead.
+// Signed-in learners reach the public shell through public utilities
+// (/download, /install, /support). Marketing links would bounce them back
+// to /app, so that state gets app-local destinations instead.
 const APP_LINKS = [
     { href: '/app/today', label: 'امروز' },
     { href: '/app', label: 'کشف مطالب' },
@@ -41,7 +48,6 @@ const APP_LINKS = [
     { href: '/app/account', label: 'حساب' },
     { href: '/app/account/settings', label: 'تنظیمات' },
 ];
-
 function MarketingBrand({ onDark, href = '/' }: { onDark: boolean; href?: string | null }): React.JSX.Element {
     // One owner-supplied lockup everywhere: the navy lockup on paper and the
     // warm-paper lockup on the deep footer. No icon-plus-text approximation.
@@ -92,16 +98,13 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     const { props, url } = usePage<SharedProps>();
     const user = props.auth.user;
     const flash = props.flash;
-    // /sample is a 404 until content is uploaded; never offer a free-sample
-    // link that dead-ends. The server flags the real availability on every
-    // public/auth surface.
-    const hasPublicSample = props.has_public_sample;
     const onLogin = url.startsWith('/login');
     const onRegister = url.startsWith('/register');
     // Verification is authenticated and must not show app links that loop
     // back to the same gate. Keep the masthead mark, drop the nav/footer.
     const onVerify = url.startsWith('/email/verify') || url.startsWith('/phone/verify');
     const support = props.support;
+    const channels = supportChannels(support);
     const [navigating, setNavigating] = React.useState(false);
 
     React.useEffect(() => {
@@ -126,7 +129,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
     }, []);
 
     return (
-        <div className="min-h-dvh bg-canvas text-ink">
+        <div className="min-h-dvh overflow-x-clip bg-canvas text-ink">
             <SeoHead />
             <a
                 href="#fe-public-content"
@@ -135,6 +138,45 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                 پرش به محتوا
             </a>
 
+            {!onVerify && (
+                <div className="border-b border-surface/15 bg-ink text-surface">
+                    <div className="mx-auto flex w-full max-w-[1160px] flex-wrap items-center justify-center gap-x-5 gap-y-0 px-4 sm:px-6">
+                        <p className="m-0 flex flex-wrap items-center justify-center gap-x-1.5 text-[0.8125rem]">
+                            <MessageCircle size={15} aria-hidden="true" className="text-accent" />
+                            <span className="text-surface/70">پشتیبانی:</span>
+                            <a
+                                href={channels.phoneHref}
+                                dir="ltr"
+                                aria-label={`تماس با پشتیبانی ${channels.phone}`}
+                                className="inline-flex min-h-11 items-center font-en font-bold text-surface no-underline hover:underline"
+                            >
+                                {channels.phone}
+                            </a>
+                        </p>
+                        <p className="m-0 flex items-center gap-0.5">
+                            <a
+                                href={channels.bale}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-[0.8125rem] font-bold text-surface no-underline hover:bg-surface/10"
+                            >
+                                <MessageCircle size={14} aria-hidden="true" />
+                                بله
+                            </a>
+                            <a
+                                href={channels.telegram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-[0.8125rem] font-bold text-surface no-underline hover:bg-surface/10"
+                            >
+                                <Send size={14} aria-hidden="true" />
+                                تلگرام
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            )}
+
             <header className="sticky top-0 z-40 border-b border-line bg-canvas">
                 <div aria-hidden="true" className={navigating ? 'h-0.5 w-full bg-accent' : 'h-0.5 w-full bg-transparent'} />
                 <div className="mx-auto flex min-h-16 w-full max-w-[1160px] items-center justify-between gap-3 px-4 sm:px-6">
@@ -142,11 +184,9 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <nav aria-label="ناوبری عمومی" className={onVerify ? 'hidden' : 'flex items-center gap-0.5'}>
                         {user === null ? (
                             <>
-                                {hasPublicSample && (
-                                    <NavLink href="/sample" className="hidden lg:flex">
-                                        نمونه رایگان
-                                    </NavLink>
-                                )}
+                                <NavLink href="/support" className="hidden md:flex">
+                                    پشتیبانی
+                                </NavLink>
                                 <NavLink href="/download" className="hidden md:flex">
                                     دانلود
                                 </NavLink>
@@ -198,30 +238,22 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <div className="grid content-start gap-3">
                         <MarketingBrand onDark href={user !== null ? '/app/today' : '/'} />
                         <p className="m-0 max-w-[52ch] text-sm leading-7 text-surface/75">
-                            با Fast English، انگلیسی را هم‌زمان بخوان و بشنو، در سطح خودت. هر مطلب یک متن کوتاه با صوت همان نسخه است.
+                            کتابخانهٔ خواندن و شنیدن انگلیسی در شش سطح A1 تا C2؛ TED Talk، کتاب American English File، واژه‌نامه و
+                            مرور زمان‌بندی‌شده.
                         </p>
                         {user === null && (
                             <p className="m-0 flex flex-wrap gap-2 pt-1">
-                                {hasPublicSample ? (
-                                    <Link
-                                        href="/sample"
-                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-accent-strong px-5 py-2 font-bold text-surface no-underline hover:brightness-110"
-                                    >
-                                        شروع با نمونه رایگان
-                                    </Link>
-                                ) : (
-                                    <Link
-                                        href="/register"
-                                        className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-accent-strong px-5 py-2 font-bold text-surface no-underline hover:brightness-110"
-                                    >
-                                        ساخت حساب
-                                    </Link>
-                                )}
                                 <Link
-                                    href="/download"
+                                    href="/register"
+                                    className="inline-flex min-h-11 min-w-11 items-center rounded-full bg-accent-strong px-5 py-2 font-bold text-surface no-underline hover:brightness-110"
+                                >
+                                    ساخت حساب
+                                </Link>
+                                <Link
+                                    href="/support"
                                     className="inline-flex min-h-11 min-w-11 items-center rounded-full border border-surface/25 px-5 py-2 text-surface no-underline hover:bg-surface/10"
                                 >
-                                    دانلود
+                                    پیام به پشتیبانی
                                 </Link>
                             </p>
                         )}
@@ -238,35 +270,62 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                             </Link>
                         ))}
                     </nav>
-                    <p className="m-0 border-t border-surface/15 pt-4 text-sm text-surface/60 md:col-span-2">
-                        یادگیری انگلیسی با خواندن و شنیدن واقعی، با Fast English.
-                    </p>
-                    {support !== null && (
-                        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-surface/75 md:col-span-2">
-                            <span className="font-bold text-surface">پشتیبانی:</span>
-                            {support.phone_href !== null ? (
-                                <a
-                                    href={support.phone_href}
-                                    dir="ltr"
-                                    className="inline-flex min-h-11 items-center text-surface no-underline hover:underline"
-                                >
-                                    {support.phone}
-                                </a>
-                            ) : (
-                                <span dir="ltr">{support.phone}</span>
-                            )}
-                            {support.messenger !== '' && <span>{support.messenger} با همین شماره</span>}
-                            {support.email_href !== null && (
-                                <a
-                                    href={support.email_href}
-                                    dir="ltr"
-                                    className="inline-flex min-h-11 items-center text-surface/75 no-underline hover:text-surface hover:underline"
-                                >
-                                    {support.email}
-                                </a>
-                            )}
+
+                    <div className="grid gap-3 rounded-2xl border border-surface/15 bg-surface/5 p-4 md:col-span-2">
+                        <p className="m-0 flex items-center gap-2 font-bold text-surface">
+                            <MessageCircle size={18} aria-hidden="true" className="text-accent" />
+                            پشتیبانی، قبل و بعد از خرید.
                         </p>
-                    )}
+                        <p className="m-0 text-sm leading-7 text-surface/75">
+                            در بله یا تلگرام به شمارهٔ{' '}
+                            <span dir="ltr" className="font-en font-bold text-surface">
+                                {channels.phone}
+                            </span>{' '}
+                            پیام بده؛ یا مستقیم تماس بگیر. برای پیگیری پرداخت، شمارهٔ پیگیری یا تصویر رسید را همراه پیام بفرست.
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <a
+                                href={channels.phoneHref}
+                                dir="ltr"
+                                aria-label={`تماس با پشتیبانی ${channels.phone}`}
+                                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-accent-strong px-4 py-2 text-sm font-bold text-surface no-underline hover:brightness-110"
+                            >
+                                <Phone size={16} aria-hidden="true" />
+                                {channels.phone}
+                            </a>
+                            <a
+                                href={channels.bale}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface/25 px-4 py-2 text-sm font-bold text-surface no-underline hover:bg-surface/10"
+                            >
+                                <MessageCircle size={16} aria-hidden="true" />
+                                پیام در بله
+                            </a>
+                            <a
+                                href={channels.telegram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface/25 px-4 py-2 text-sm font-bold text-surface no-underline hover:bg-surface/10"
+                            >
+                                <Send size={16} aria-hidden="true" />
+                                پیام در تلگرام
+                            </a>
+                        </div>
+                        {support !== null && support.email_href !== null && (
+                            <a
+                                href={support.email_href}
+                                dir="ltr"
+                                className="inline-flex min-h-11 w-fit items-center text-sm text-surface/60 no-underline hover:text-surface hover:underline"
+                            >
+                                {support.email}
+                            </a>
+                        )}
+                    </div>
+
+                    <p className="m-0 border-t border-surface/15 pt-4 text-sm text-surface/60 md:col-span-2">
+                        Fast English؛ خواندن و شنیدن واقعی، در سطح خودت.
+                    </p>
                 </div>
             </footer>}
         </div>

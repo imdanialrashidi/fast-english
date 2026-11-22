@@ -18,7 +18,7 @@ test('the owner catalog seeder installs exact prices and a safe placeholder', fu
     $this->seed(PlanCatalogSeeder::class);
 
     expect(Plan::where('slug', 'monthly')->firstOrFail()->price_toman)->toBe(399000)
-        ->and(Plan::where('slug', 'quarterly')->firstOrFail()->price_toman)->toBe(957600)
+        ->and(Plan::where('slug', 'quarterly')->firstOrFail()->price_toman)->toBe(641000)
         ->and(Plan::where('slug', 'annual')->firstOrFail()->price_toman)->toBe(3351600)
         ->and(Plan::where('slug', 'quarterly')->firstOrFail()->duration_days)->toBe(90)
         ->and(Plan::where('slug', 'annual')->firstOrFail()->duration_days)->toBe(365);

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Info, MessageCircle, Phone } from 'lucide-react';
+import { Info, MessageCircle, Phone, Send } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
 import type { SharedProps } from '@/types';
@@ -25,6 +25,8 @@ interface ContactProps {
     support_email_href: string | null;
     support_messenger: string;
     support_messenger_note: string;
+    support_telegram_url: string | null;
+    support_bale_url: string | null;
     support_hours: string | null;
     cooperation_channel: string;
     cooperation_href: string | null;
@@ -121,7 +123,6 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
     contact,
     legal,
     faqs,
-    has_public_sample,
 }: TrustProps): React.JSX.Element => {
     return (
         <>
@@ -131,17 +132,19 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                 {page === 'about' && (
                     <div className="grid gap-3 text-[1.0625rem] leading-9">
                         <p className="m-0">
-                            Fast English یک محصول ساده برای خواندن و شنیدن متن‌های کوتاه انگلیسی در سطح مناسب زبان‌آموز است. هر مطلب در
-                            چند سطح ارائه می‌شود و صوت هر نسخه دقیقاً همان متن را پوشش می‌دهد.
+                            Fast English کتابخانه‌ای برای خواندن و شنیدن انگلیسی واقعی در سطح مناسب زبان‌آموز است: از داستان کوتاه و
+                            آزمون آیلتس تا سخنرانی TED Talk و کتاب American English File. هر متن با صوت همان نسخه همراه است.
                         </p>
                         <p className="m-0">
-                            هر مطلب در شش سطح A1 تا C2 بازنویسی می‌شود و متن و صوت هر نسخه از یک درس می‌آیند؛ سطح فقط سختی متن را
-                            می‌گوید، نه دسترسی را.
+                            محتوا در شش سطح A1 تا C2 ارائه می‌شود و سطح فقط سختی متن را می‌گوید، نه دسترسی را. واژه‌نامه، مرور
+                            زمان‌بندی‌شده، برنامهٔ روزانه و تمرین‌های تعاملی در همان مسیر قرار دارند.
                         </p>
                         <p className="m-0 text-muted">
-                            {has_public_sample
-                                ? 'نمونهٔ واقعی بدون حساب در دسترس است. برای ادامه، حساب بسازید و پلن را انتخاب کنید.'
-                                : 'نمونهٔ عمومی هنوز منتشر نشده است. برای دسترسی به درس‌ها، حساب بسازید و پلن را انتخاب کنید.'}
+                            برای دسترسی به کتابخانه، حساب بسازید و پلن را انتخاب کنید. پشتیبانی در بله یا تلگرام به شمارهٔ{' '}
+                            <span dir="ltr" className="font-en font-bold text-ink">
+                                {contact.support_phone}
+                            </span>{' '}
+                            پاسخ می‌دهد.
                         </p>
                     </div>
                 )}
@@ -167,10 +170,10 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                                 <p className="m-0 leading-8 text-muted">{item.a}</p>
                             </div>
                         ))}
-                        <div className="grid gap-1">
+                        <div className="grid gap-2">
                             <h2 className="m-0 text-lg leading-8 font-bold">اگر پرداخت مشکل داشت چه کنم؟</h2>
                             <p className="m-0 leading-8 text-muted">
-                                به پشتیبانی پیام بده: {' '}
+                                به پشتیبانی پیام بده:{' '}
                                 {contact.support_phone_href !== null ? (
                                     <a href={contact.support_phone_href} dir="ltr" className="inline-flex min-h-11 items-center text-primary">
                                         {contact.support_phone}
@@ -178,12 +181,36 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                                 ) : (
                                     <span dir="ltr">{contact.support_phone}</span>
                                 )}{' '}
-                                ({contact.support_messenger} هم با همین شماره). شرایط بازگشت وجه در صفحهٔ{' '}
+                                در بله یا تلگرام. شمارهٔ پیگیری یا تصویر رسید را همراه پیام بفرست. شرایط بازگشت وجه در صفحهٔ{' '}
                                 <Link href="/refund" className="inline-flex min-h-11 items-center text-primary">
                                     بازگشت وجه
                                 </Link>{' '}
                                 آمده است.
                             </p>
+                            <div className="flex flex-wrap gap-2">
+                                {contact.support_bale_url !== null && (
+                                    <a
+                                        href={contact.support_bale_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-surface no-underline hover:bg-primary-hover"
+                                    >
+                                        <MessageCircle size={16} aria-hidden="true" />
+                                        پیام در بله
+                                    </a>
+                                )}
+                                {contact.support_telegram_url !== null && (
+                                    <a
+                                        href={contact.support_telegram_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-field px-4 py-2 text-sm font-bold text-ink no-underline hover:bg-surface"
+                                    >
+                                        <Send size={16} aria-hidden="true" />
+                                        پیام در تلگرام
+                                    </a>
+                                )}
+                            </div>
                         </div>
                         <div className="grid gap-1">
                             <h2 className="m-0 text-lg leading-8 font-bold">فایل نصب اندروید کجاست؟</h2>
@@ -222,11 +249,35 @@ export const TrustShow: FunctionComponent<TrustProps> & { layout?: (page: ReactN
                             </p>
                             <p className="m-0 flex flex-wrap items-center gap-2 text-muted">
                                 <MessageCircle size={20} aria-hidden="true" />
-                                <span className="font-bold text-ink">پیام‌رسان {contact.support_messenger}:</span>
+                                <span className="font-bold text-ink">پیام در {contact.support_messenger}:</span>
                                 <span className="text-ink" dir="ltr">
                                     {contact.support_phone}
                                 </span>
                             </p>
+                            <div className="flex flex-wrap gap-2">
+                                {contact.support_bale_url !== null && (
+                                    <a
+                                        href={contact.support_bale_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-surface no-underline hover:bg-primary-hover"
+                                    >
+                                        <MessageCircle size={16} aria-hidden="true" />
+                                        پیام در بله
+                                    </a>
+                                )}
+                                {contact.support_telegram_url !== null && (
+                                    <a
+                                        href={contact.support_telegram_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-field px-4 py-2 text-sm font-bold text-ink no-underline hover:bg-canvas"
+                                    >
+                                        <Send size={16} aria-hidden="true" />
+                                        پیام در تلگرام
+                                    </a>
+                                )}
+                            </div>
                             <p className="m-0 text-sm leading-7 text-muted">{contact.support_messenger_note}</p>
                             <p className="m-0 text-sm leading-7 text-muted">
                                 ایمیل:{' '}

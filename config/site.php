@@ -6,19 +6,42 @@
  * useful instead of blanking it.
  *
  * Contact channels and legal copy were supplied by the owner on
- * 2026-10-25. The owner confirmed the support phone and Bale messenger on
- * 2026-11-12. They are ordinary product copy, not legal advice; the owner
- * still reviews the final wording before enabling sales.
+ * 2026-10-25. Owner instruction 2026-11-22 replaced the support number
+ * with 09924930667 and opened both Bale and Telegram on that number.
+ * They are ordinary product copy, not legal advice; the owner still
+ * reviews the final wording before enabling sales.
  */
 return [
     'support' => [
         // Kept for older settings rows and links; the support page shows
-        // the phone and messenger first.
+        // the phone and messengers first.
         'channel' => 'info@fastenglishpodcast.ir',
-        'phone' => '09221889814',
-        'messenger' => 'بله',
-        'messenger_note' => 'پیام‌رسان بله با همین شمارهٔ پشتیبانی در دسترس است.',
+        'phone' => '09924930667',
+        // The number is the same in both messengers; the labels are copy,
+        // not two separate accounts.
+        'messenger' => 'بله یا تلگرام',
+        'messenger_note' => 'شمارهٔ پشتیبانی در بله و تلگرام فعال است؛ پیام بده تا سریع راهنمایی کنم.',
+        'telegram_url' => 'https://t.me/+989924930667',
+        'bale_url' => 'https://ble.ir/+989924930667',
         'hours' => null,
+    ],
+
+    /*
+     * Landing claims. The learner count is owner-supplied on 2026-11-22;
+     * it is a marketing figure, not a count derived from the users table.
+     * The offer is the owner's 2026-11-22 price instruction: 990,000
+     * toman struck through, 641,000 toman payable for 90 days. Every
+     * number on the page that describes content is still read from the
+     * database (LandingController); only these two owner decisions live
+     * here so staff can change them without a code edit.
+     */
+    'marketing' => [
+        'learners' => 16355,
+        'offer' => [
+            'compare_at_toman' => 990000,
+            'price_toman' => 641000,
+            'duration_days' => 90,
+        ],
     ],
 
     'cooperation' => [

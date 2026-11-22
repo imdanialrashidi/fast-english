@@ -4,6 +4,18 @@ Source baseline: `docs/FAST_ENGLISH_BUILD_SCOPE_FA.md` v1.0 (2026-10-07). It is 
 
 Authority order: latest explicit owner instruction → accepted slice contract → scope + recorded fresh decisions → repository docs. Conflicting behaviors are never both planned as valid (see conflict log in the active exec plan).
 
+## Owner instruction 2026-11-22 — paid landing, 16,355 learners, 641,000 offer, support everywhere
+
+This supersedes the landing composition, the free-sample funnel, the 90-day price, and the support number in earlier instructions.
+
+- **One paid path on the landing.** The public landing has no free-sample link, trial CTA, public audio, or plan table. It sells the paid library with measured content proof. The legacy `/sample` controller remains reachable for old direct links, but no public marketing chrome, download/install page, locked state, or sitemap links it; it is not part of the funnel.
+- **Owner-supplied learner figure.** The landing says 16,355 successful learners. This is an owner marketing decision in `config/site.php` (`site.marketing.learners`), not a count derived from the users table.
+- **Offer.** 990,000 toman is struck through and 641,000 toman is payable for 90 days (`config/site.php`). The landing sends only formatted labels; raw integers never cross Inertia. The 90-day catalog plan is now 641,000 (`PlanCatalogSeeder`), so checkout and the landing quote the same payable price.
+- **Measured library numbers.** Reading texts, words, listening hours, AEF units, exercise count, and TED Talks come from the database through `LandingController::contentStats()` and are cached for an hour outside tests. No count is hand-written except the owner learner figure.
+- **TED proof.** The landing shows three published TED talks with real covers and a public source link; the in-app transcript and audio stay behind the paid gate. The video claim is limited to the public TED source page, not an in-app video player.
+- **Support everywhere.** The owner number is 09924930667 in Bale or Telegram. The public top strip, footer, landing hero, offer, FAQ, closing, auth/payment notes, and support/FAQ pages all expose it with direct `tel:`, Bale, and Telegram links (`config/site.php`, `SiteSettings::supportContacts()`). Changing the number in config changes every placement.
+- **No invented proof.** There are no ratings, testimonials, logo bars, or fabricated content counts. The only external destinations on the landing are the real TED source pages and the support messengers.
+
 ## Owner instruction 2026-11-22 — TED is its own section; one player; six story panels
 
 - **TED is a library category, not a book shelf.** TED talks are article cards in the main Discover library under the **TED Talk** category (`/app?category=ted-talk`). `/app/ted` redirects there; each card opens its own plain-text article at `/app/ted/{slug}`. The Books shelf stays four items, and a talk is never a seventh tab inside a podcast topic. Old `/app/topics/{topic}/ted` links redirect permanently to the talk page. Pool talks with no topic are still readable from the category.
@@ -34,7 +46,7 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 
 ## Owner instruction 2026-10-25 — catalog, card fallback, published trust copy
 
-- **Prices:** 30 days = 399,000 toman; 90 days = 20% off (957,600); 365 days = 30% off (3,351,600). Plan names are duration-based. `PlanCatalogSeeder` installs/updates them by stable slug; the staff Plans resource edits them without a deploy.
+- **Prices:** 30 days = 399,000 toman; 90 days = 641,000 (owner instruction 2026-11-22, superseding the earlier 957,600); 365 days = 30% off (3,351,600). Plan names are duration-based. `PlanCatalogSeeder` installs/updates them by stable slug; the staff Plans resource edits them without a deploy.
 - **Domain:** production canonical is `https://fastenglishpodcast.ir`; `fastenglish.ir` has no nameserver/delegation (checked 2026-10-28) and cannot resolve until the owner sets DNS at the registrar. Support/cooperation channel: `info@fastenglishpodcast.ir`; support hours remain unset until the owner supplies them.
 - **Card-to-card is the only checkout (owner decision 2026-10-30).** Staff can replace the active destination and edit transfer instructions in Business settings. A fresh environment gets an obvious placeholder card; checkout is blocked until a real 16-digit card, holder, and bank replace it.
 - **No online gateway.** Provider/merchant/sandbox fields and the driver map were removed on 2026-10-30. There is no online charge, callback, or gateway driver to configure; adding one would be a new product decision and scope change.
@@ -51,7 +63,7 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 
 ## Owner instruction 2026-10-21 — plain reader, Persian app chrome
 
-- READ-03 sentence-level sync is retired: the reader, public sample, and landing preview render plain English paragraphs beside the normal audio player. Text never highlights, bolds, auto-scrolls, or seeks by sentence. The cue columns, validators, staff editor, and cue tests were removed in the same cutover.
+- READ-03 sentence-level sync is retired: the reader and public sample render plain English paragraphs beside the normal audio player. Text never highlights, bolds, auto-scrolls, or seeks by sentence. The cue columns, validators, staff editor, and cue tests were removed in the same cutover. The 2026-11-22 landing has no preview at all.
 - Learner chrome is Persian; the English editorial kickers (`Today`, `Discover`, `Words`, `Review`) and the English `Example` field label are removed.
 - The app shell drops the in-app marketing footer, the duplicate signed-in header account CTA, and the account page's duplicate main-navigation chips.
 - Account becomes an app profile screen: identity, subscription status with one next action, settings list, and logout.
@@ -62,7 +74,7 @@ Authority order: latest explicit owner instruction → accepted slice contract �
 - Account lists recent payment requests (status, plan, snapshot amount) without receipt/bank/internal fields. Renewal reminders are one-per-window; real SMTP remains a launch input.
 - Media Session metadata/controls are published where supported; background audio is still not promised.
 - Learner navigation shows a delayed skeleton, and learner pages share one Persian type scale.
-- `/sample` is indexable while a published sample exists (sitemap, canonical, Article JSON-LD).
+- `/sample` keeps canonical and Article metadata for legacy direct links, but the 2026-11-22 landing, public chrome, and sitemap do not advertise it.
 
 ## Product outcome
 
@@ -81,7 +93,7 @@ Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `
 
 | ID | Requirement | Observable output |
 |---|---|---|
-| PUB-01 | Public intro | Value proposition, real sample, plans, install, support |
+| PUB-01 | Public intro | Value proposition, paid offer, measured library proof, TED talks, install, support |
 | PUB-02 | Trust pages | About, cooperation, FAQ, support, terms, privacy, refund with owner-editable text and a real contact channel |
 | AUTH-01 | Account | Sign-up (name/email/password), login, logout |
 | AUTH-02 | Recovery + session | Reset via real SMTP; valid session after refresh |
@@ -111,7 +123,7 @@ Reference domain: `fastenglishpodcast.ir` (live production origin; the earlier `
 | OPS-01 | Production ops | HTTPS, logs, essential monitoring, backup + restore |
 | QA-01 | Delivery | Real-flow evidence and security/payment/mobile boundaries |
 
-Core journeys (§1, §7): (1) see a real sample before paying; (2) pick topic + level; (3) read text + hear the same version; (4) see a small set of key words; (5) resume from saved position. Revenue path: account → plan → transfer info → off-app card transfer → receipt → staff review → subscription active.
+Core journeys (§1, §7): (1) see the offer and real library proof before paying; (2) pick topic + level; (3) read text + hear the same version; (4) see a small set of key words; (5) resume from saved position. Revenue path: account → plan → transfer info → off-app card transfer → receipt → staff review → subscription active.
 
 ## Level semantics (binding rule)
 
@@ -154,7 +166,7 @@ Owner-approved architectural change (see `docs/adr/0002-inertia-react-learner-fr
 Owner-required product change (supersedes the public-sample-in-learner-shell behavior; all scope/money/time rules stay in force):
 
 1. Paid-only learner app: every learner-app route and learner mutation (library, reader, Today, saved, words/review, progress, bookmarks, placement) enforces an active, valid subscription server-side per request (`subscribed` gate on the existing eligibility formula; staff bypass preserved; disabled accounts stay blocked). No-subscription, pending, expired, and revoked states get a dedicated locked state (403, one subscription CTA) on pages and 403 JSON on mutations/media; no premium content, answers, vocabulary, or media URLs leak in denied responses. Money, snapshot, approval-transaction, integer-toman, and data-integrity invariants are untouched.
-2. One explicit public sample: exactly the published lesson(s) designated by the existing `is_public_sample` flag remain readable without a subscription, through the public `/sample` experience only (same audio + Range contract, read-only glossary). Learner URLs resolving to a sample redirect there; all other lessons and media stay gated. No hardcoded lesson id/slug/title.
+2. One explicit public sample: exactly the published lesson(s) designated by the existing `is_public_sample` flag remain readable without a subscription, through the public `/sample` experience only (same audio + Range contract, read-only glossary). Learner URLs resolving to a sample redirect there; all other lessons and media stay gated. No hardcoded lesson id/slug/title. Since 2026-11-22 the marketing chrome, locked state, download/install pages, and sitemap do not link this route; it is a legacy direct surface only.
 3. Shell split: public marketing (`/`, `/sample`, trust pages, `/download`, auth) renders in a dedicated marketing layout with its own navigation — never the learner sidebar, bottom tabs, or global player. The learner layout (with the locked state) serves only the gated app. Palette, type, and RTL/LTR rules unchanged. The full marketing + learner visual redesign stays a subsequent slice.
 4. Account/status/checkout/payment pages stay reachable without an active subscription under their existing rules and expose no learner content; placement is gated as learner-app functionality (no free public diagnostic).
 
@@ -269,7 +281,7 @@ Owner clarification of the same day's book-flashcard request. It supersedes the 
 
 ## Measurement and operations
 
-- Activation: a user with no in-person help views the sample, submits a payment request, and uses content after approval (§1).
+- Activation: a user with no in-person help sees the offer and library proof, submits a payment request, and uses content after approval (§1).
 - Staff independence: staff publishes a lesson and reviews a receipt without code edits (§1).
 - Invariants: audio/text/progress never mixed across levels or users; duplicate/concurrent requests never double-apply subscription effect (§1).
 - Budgets/targets: list paginated at 12 topics/page, no N+1, `preload=metadata`, no admin assets in learner bundle, real baseline measured in S0 (§20.2). Accessibility target WCAG 2.2 AA on main paths (functional target; full conformance claim needs an audit — see DESIGN.md).

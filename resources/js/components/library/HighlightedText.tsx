@@ -65,8 +65,8 @@ export function HighlightedText({
 
                 const flags = flagsFor(start, end, active, activeIndex, words, evidence);
                 const classes = [
-                    flags.evidence ? 'bg-[#FBE0B3] shadow-[inset_0_-2px_0_#C08A33]' : '',
-                    flags.active && !flags.evidence ? 'bg-[#F5E8C8]' : '',
+                    flags.evidence ? 'bg-highlight shadow-[inset_0_-2px_0_var(--color-highlight-rule)]' : '',
+                    flags.active && !flags.evidence ? 'bg-highlight-soft' : '',
                     flags.word !== null ? 'cursor-pointer border-b border-dotted border-primary/55' : '',
                 ]
                     .filter(Boolean)

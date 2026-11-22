@@ -16,6 +16,17 @@ This supersedes the 2026-11-21 TED-tab placement, highlight and play-card rules.
 - **Story images.** One relevant panel stays at the top; it is replaced only when the next mapped panel's page arrives. Text-only pages keep the previous panel. No six-frame strip, no gallery, no second picture.
 - **One player.** Story and IELTS bind the persistent player with a bounded page slice; remove their page-level transport. Desktop text uses a ~68ch measure in a media-first column, not a narrow side column.
 
+## Owner instruction 2026-11-22 — paid landing, support chrome, offer first on mobile
+
+This supersedes the 2026-11-01 landing composition and the free-sample marketing treatment.
+
+- **Composition.** Ink hero (promise, owner learner count, measured stats, real TED sheet) → measured library with the A1–C2 rail → asymmetric subscription grid → TED band → method and 15-minute session → 990,000 → 641,000 offer → FAQ → ink closing. Folio numbers, hairline rules, and the offset plate remain the identity motif.
+- **No free sample.** The landing has no sample sheet, sample link, public audio, trial, or plan table. The only external destinations are the real TED source pages and the support messengers.
+- **Phone order.** After the promise, the offer and its support box come before the long inclusion list. On desktop the promise and list share the start column and the sticky offer sits beside them, aligned with the promise.
+- **Support chrome.** A slim ink strip above the masthead carries 09924930667 and Bale/Telegram on every public page; the footer repeats it. The landing places support in the hero, offer, FAQ, and closing, and the auth/payment notes keep their support card.
+- **Truth.** The learner figure and the offer are owner config. Every other number (texts, words, listening hours, units, exercises, talks) is measured server-side. The page uses the existing 12-token palette; the only new visual gesture is the offset cover plate and the level rail.
+- **Token hygiene.** The existing story/IELTS highlight tints (`#FBE0B3`, `#F5E8C8`, `#C08A33`) were extracted to `--color-highlight`, `--color-highlight-soft`, and `--color-highlight-rule` so the no-hex rule passes. They are supporting tints for the reading surface, not new brand hues.
+
 
 ## Owner instruction 2026-11-21 — TED Talk tab (superseded 2026-11-22)
 
@@ -189,7 +200,7 @@ Measured contrast (computed WCAG relative luminance, same method as S1/S3, 2026-
 
 ### Page-specific rules (PROPOSED; no page built this turn)
 
-- Landing (publication cover, rewritten 2026-11-01): working sample sheet beside the promise → six-level ink band → four-row session → real sample spread → library contents → DB plans (real data or honest not-on-sale) → FAQ → framed closing action. Folio marks, hairline rules, and the hard-offset cover plate carry the publication identity; the real reader is staged, with no marketing art, fake counts, testimonials, or ratings. Hover/focus motion only; every control keeps a 44px target.
+- Landing (paid conversion page, rewritten 2026-11-22): ink hero with the promise, owner learner count, measured library stats and a real three-talk library sheet → measured library section with the A1–C2 rail → asymmetric inside-the-subscription grid (TED flagship, AEF course, three reading tracks, vocabulary, daily plan) → TED Talk band with real covers and public source links → four-step method plus a 15-minute session layout → 990,000 → 641,000 offer with a phone-first mobile order → FAQ with support beside it → ink closing with the CTA and support. Folio numbers, hairline rules, and the hard-offset cover plate carry the publication identity. No free sample, no public audio, no testimonials, ratings, logo bar, or invented count. Hover/focus motion only; every control keeps a 44px target; the offer is first after the promise on a phone.
 - Today: greeting + Continue Learning first, then plan divider rows, goal ring/progress, due vocab, recommendations; incomplete stays incomplete; goal change never writes `preferred_level`.
 - Discover: editorial rows (cover + EN title LTR + FA meta + level), pill filters + search with labels, result count, empty + reset, pagination 12/page.
 - Reader: title/cover/level/player/LTR body/vocab in one measure; loading/audio-error/locked/missing-level (exact message + available levels, no substitution)/empty-vocab states all designed; mobile safe-area clearance.

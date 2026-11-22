@@ -28,7 +28,7 @@ final class SiteSettings
 
     public static function supportPhone(): string
     {
-        return (string) Setting::read(self::SUPPORT_PHONE, (string) config('site.support.phone', '09221889814'));
+        return (string) Setting::read(self::SUPPORT_PHONE, (string) config('site.support.phone', '09924930667'));
     }
 
     public static function supportEmail(): string
@@ -38,7 +38,7 @@ final class SiteSettings
 
     public static function supportMessenger(): string
     {
-        return (string) Setting::read(self::SUPPORT_MESSENGER, (string) config('site.support.messenger', 'بله'));
+        return (string) Setting::read(self::SUPPORT_MESSENGER, (string) config('site.support.messenger', 'بله یا تلگرام'));
     }
 
     public static function supportHours(): ?string
@@ -48,6 +48,30 @@ final class SiteSettings
         return $value === null || trim($value) === '' ? null : trim($value);
     }
 
+    /**
+     * Direct chat entry for the owner-confirmed messenger. Bale and
+     * Telegram both resolve a phone number to a conversation; the URL
+     * comes from config so no component invents an address.
+     */
+    public static function supportTelegramUrl(): ?string
+    {
+        return self::publicUrl(config('site.support.telegram_url'));
+    }
+
+    public static function supportBaleUrl(): ?string
+    {
+        return self::publicUrl(config('site.support.bale_url'));
+    }
+
+    private static function publicUrl(mixed $value): ?string
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        return preg_match('#^https?://#i', trim($value)) === 1 ? trim($value) : null;
+    }
+
     public static function cooperationChannel(): string
     {
         return (string) Setting::read(self::COOPERATION_CHANNEL, (string) config('site.cooperation.channel', 'info@fastenglishpodcast.ir'));
@@ -55,10 +79,10 @@ final class SiteSettings
 
     /**
      * The support card shown on the support page, the public footer, and
-     * the payment/auth notes. A phone is a `tel:` link; the messenger is
-     * the same number and is labelled, never invented as a broken URL.
+     * the payment/auth notes. A phone is a `tel:` link; Bale and Telegram
+     * are the same number and get their own direct chat links.
      *
-     * @return array{phone: string, phone_href: ?string, email: string, email_href: ?string, messenger: string, messenger_note: string, hours: ?string}
+     * @return array{phone: string, phone_href: ?string, email: string, email_href: ?string, messenger: string, messenger_note: string, telegram_url: ?string, bale_url: ?string, hours: ?string}
      */
     public static function supportContacts(): array
     {
@@ -72,7 +96,9 @@ final class SiteSettings
             'email' => $email,
             'email_href' => filter_var($email, FILTER_VALIDATE_EMAIL) ? 'mailto:'.$email : null,
             'messenger' => trim(self::supportMessenger()),
-            'messenger_note' => (string) config('site.support.messenger_note', 'پیام‌رسان بله با همین شمارهٔ پشتیبانی در دسترس است.'),
+            'messenger_note' => (string) config('site.support.messenger_note', 'شمارهٔ پشتیبانی در بله و تلگرام فعال است؛ پیام بده تا سریع راهنمایی کنم.'),
+            'telegram_url' => self::supportTelegramUrl(),
+            'bale_url' => self::supportBaleUrl(),
             'hours' => self::supportHours(),
         ];
     }

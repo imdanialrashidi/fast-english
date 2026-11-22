@@ -53,7 +53,7 @@ export const BooksShow: FunctionComponent<BooksShowProps> & {
             <div className="mx-auto grid w-full max-w-[900px] gap-5 px-4 py-5">
                 <section className="grid gap-4 rounded-3xl border border-line bg-surface p-4 sm:grid-cols-[180px_1fr] sm:items-center sm:p-5">
                     {book.cover_url !== null ? (
-                        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-[#EFE9DD] p-2.5">
+                        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-canvas p-2.5">
                             <img
                                 src={book.cover_url}
                                 alt={book.title_en}

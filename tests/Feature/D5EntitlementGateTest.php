@@ -68,7 +68,7 @@ test('locked props carry one CTA and no premium content', function () {
     expect($guest['isGuest'])->toBeTrue()
         ->and($signed['isGuest'])->toBeFalse()
         ->and($signed['subscribeUrl'])->toBe(route('subscribe.index'))
-        ->and($signed['sampleUrl'])->toBe(route('sample'));
+        ->and($signed)->not->toHaveKey('sampleUrl');
 
     $encoded = json_encode([$guest, $signed]);
     foreach (['body_en', 'glossary', 'audio_url', 'correct_option', 'receipt_path'] as $leak) {

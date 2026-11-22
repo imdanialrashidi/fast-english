@@ -54,7 +54,7 @@ test('faq page emits faqpage structured data from the same server list', functio
     $props = $this->get(route('trust.faq'))->assertOk()->inertiaProps();
 
     expect($html)->toContain('"@type":"FAQPage"')
-        ->and($html)->toContain('آیا بدون حساب می‌توانم نمونه را ببینم؟')
+        ->and($html)->toContain('Fast English برای چه کسی ساخته شده است؟')
         ->and($html)->toContain('سطح‌ها چه معنایی دارند؟')
         ->and($props['faqs'])->toHaveCount(4);
 });

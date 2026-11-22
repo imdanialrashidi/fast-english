@@ -2,10 +2,13 @@ import { expect } from '@playwright/test';
 import { test } from './helpers';
 
 // M1 public-to-learning journey (PUB-01, LIB-01/02, READ-01/02/03):
-// landing → sample CTA → library (search/filter/pagination/empty) →
-// reader (level select, audio, plain paragraphs, glossary, save/progress) with the
-// locked, missing-level, and fallback states. Real seeded data on the
-// browser lane; one fresh account per run keeps mutations deterministic.
+// landing → paid registration funnel → library (search/filter/pagination/
+// empty) → reader (level select, audio, plain paragraphs, glossary,
+// save/progress) with the locked, missing-level, and fallback states.
+// Real seeded data on the browser lane; one fresh account per run keeps
+// mutations deterministic. The landing no longer offers a free sample
+// (owner instruction 2026-11-22); the direct /sample route keeps its own
+// coverage in the reader tests below.
 
 // Paid-only slice: the sample resolves through the public experience;
 // the library and learner-reader legs need an active subscription.
@@ -16,26 +19,25 @@ const LEARNER_CITY_A2 = '/app/topics/city-park?level=A2';
 const LEARNER_MARKET_A1 = '/app/topics/morning-market?level=A1';
 
 
-test('M1 landing stages the real sample and its CTA opens the reader', async ({ page }) => {
+test('M1 landing CTA opens the paid registration funnel', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'fa');
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
 
-    const cta = page.getByRole('link', { name: 'شروع با نمونه رایگان' }).first();
+    const cta = page.getByRole('link', { name: /شروع کن با .* تخفیف/ }).first();
     await expect(cta).toBeVisible();
-    await expect(page.locator('section[aria-label="نمونه واقعی"]')).toBeVisible();
-
     await cta.click();
-    await page.waitForURL(/\/sample/);
-    await expect(page.locator('article.fe-english-body').first()).toBeVisible();
+    await page.waitForURL(/\/register/);
+    await expect(page.getByRole('heading', { name: 'ساخت حساب' })).toBeVisible();
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'یک نمونه واقعی، بدون ثبت‌نام' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
     await page.screenshot({ path: 'test-results/browser-shots/m1-landing-390.png' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'یک نمونه واقعی، بدون ثبت‌نام' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
     const landingScroll = await page.evaluate(() => ({
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth: window.innerWidth,

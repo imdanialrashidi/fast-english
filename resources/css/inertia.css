@@ -24,6 +24,13 @@
     --color-success: #1B7F4B;
     --color-danger: #B42318;
 
+    /* Supporting tints for the story/IELTS word and evidence highlights.
+     * They are existing reading-surface colours, not new brand hues; the
+     * components consume them as tokens so no hex literal lives in TSX. */
+    --color-highlight: #FBE0B3;
+    --color-highlight-soft: #F5E8C8;
+    --color-highlight-rule: #C08A33;
+
     --font-sans: 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
     --font-en: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 

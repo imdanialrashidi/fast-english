@@ -64,15 +64,15 @@ test('learners without a subscription are locked out of every learner page', fun
             ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'));
     }
 
-    // The locked page carries the subscription CTA and the free sample
-    // path — and no premium lesson content. URLs travel as decoded
-    // Inertia props (the initial HTML only carries the JSON page).
+    // The locked page carries the subscription CTA, never a free-sample
+    // path (owner instruction 2026-11-22), and no premium lesson content.
+    // URLs travel as decoded Inertia props.
     $this->actingAs($this->noSub)->get(route('today.index'))
         ->assertForbidden()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Locked/Index')
             ->where('subscribeUrl', route('subscribe.index'))
-            ->where('sampleUrl', route('sample')))
+            ->missing('sampleUrl'))
         ->assertDontSee('The night train left the station');
     $html = $this->actingAs($this->noSub)->get(route('today.index'))->getContent();
     expect($html)->not->toContain('body_en');

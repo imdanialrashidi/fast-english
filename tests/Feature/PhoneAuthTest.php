@@ -311,10 +311,12 @@ test('an unknown provider outcome keeps the code the learner may have received',
         ->toBe(SmsMessage::STATUS_UNKNOWN);
 });
 
-test('the confirmed support phone and Bale channel are published on the support page', function () {
+test('the confirmed support phone, Bale, and Telegram channels are published', function () {
     $this->get(route('trust.support'))->assertOk()->assertInertia(fn ($page) => $page
-        ->where('contact.support_phone', '09221889814')
-        ->where('contact.support_phone_href', 'tel:+989221889814')
-        ->where('contact.support_messenger', 'بله')
+        ->where('contact.support_phone', '09924930667')
+        ->where('contact.support_phone_href', 'tel:+989924930667')
+        ->where('contact.support_messenger', 'بله یا تلگرام')
+        ->where('contact.support_bale_url', 'https://ble.ir/+989924930667')
+        ->where('contact.support_telegram_url', 'https://t.me/+989924930667')
         ->where('contact.support_email', 'info@fastenglishpodcast.ir'));
 });

@@ -28,7 +28,7 @@ async function checkGuide(page: Page, width: number): Promise<void> {
   expect(scroll.scrollWidth).toBeLessThanOrEqual(scroll.innerWidth);
 
   // Primary actions keep 44px touch targets.
-  for (const name of ['ساخت حساب', 'نمونهٔ رایگان', 'صفحهٔ دانلود']) {
+  for (const name of ['ساخت حساب', 'پلن‌ها و قیمت', 'صفحهٔ دانلود']) {
     const box = await page.getByRole('link', { name }).first().boundingBox();
     expect(box, `${name} has a box`).not.toBeNull();
     expect(box!.height).toBeGreaterThanOrEqual(44);

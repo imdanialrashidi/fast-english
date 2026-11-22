@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Download as DownloadIcon, Play, Smartphone } from 'lucide-react';
+import { Download as DownloadIcon, Smartphone } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { publicLayout } from '@/layouts/PublicLayout';
 import type { SharedProps } from '@/types';
@@ -26,7 +26,6 @@ interface DownloadProps extends SharedProps {
 export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page: ReactNode) => ReactNode } = ({
     release,
     published,
-    has_public_sample,
 }: DownloadProps): React.JSX.Element => {
     const sizeLabel =
         release.size_bytes !== null
@@ -74,22 +73,12 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
                             می‌شود.
                         </p>
                         <p className="m-0">
-                            {has_public_sample ? (
-                                <Link
-                                    href="/sample"
-                                    className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                                >
-                                    <Play size={20} aria-hidden="true" />
-                                    شروع با نمونه رایگان
-                                </Link>
-                            ) : (
-                                <Link
-                                    href="/register"
-                                    className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
-                                >
-                                    ساخت حساب
-                                </Link>
-                            )}
+                            <Link
+                                href="/register"
+                                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
+                            >
+                                ساخت حساب
+                            </Link>
                         </p>
                     </div>
                 ) : (

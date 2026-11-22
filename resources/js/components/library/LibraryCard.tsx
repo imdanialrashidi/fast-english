@@ -21,7 +21,7 @@ export function LibraryCard({ card }: { card: LibraryCardData }): React.JSX.Elem
             href={card.url ?? '#'}
             className="fe-press group grid overflow-hidden rounded-3xl border border-line bg-surface no-underline transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
-            <div className="relative aspect-[3/4] overflow-hidden bg-[#EFE9DD]">
+            <div className="relative aspect-[3/4] overflow-hidden bg-canvas">
                 {card.cover_url !== null ? (
                     <img
                         src={card.cover_url}

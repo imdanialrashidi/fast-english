@@ -19,7 +19,7 @@ export function PanelImage({ art, panelIndex, imageUrl, alt, className = '' }: P
 
     if (imageUrl !== null) {
         return (
-            <div className={`overflow-hidden rounded-3xl bg-[#EFE9DD] ${className}`}>
+            <div className={`overflow-hidden rounded-3xl bg-canvas ${className}`}>
                 <img src={imageUrl} alt={label} loading="lazy" className="h-full w-full object-cover" />
             </div>
         );
@@ -33,7 +33,7 @@ export function PanelImage({ art, panelIndex, imageUrl, alt, className = '' }: P
         <div
             role="img"
             aria-label={label}
-            className={`relative overflow-hidden rounded-3xl bg-[#EFE9DD] ${className}`}
+            className={`relative overflow-hidden rounded-3xl bg-canvas ${className}`}
             style={{
                 ...panelCropStyle(panelIndex, art.columns, art.rows),
                 backgroundImage: `url(${art.url})`,

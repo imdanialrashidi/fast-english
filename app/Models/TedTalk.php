@@ -24,6 +24,22 @@ class TedTalk extends Model
     /** @use HasFactory<TedTalkFactory> */
     use HasFactory;
 
+    /**
+     * Public labels for the editor-supplied area slug. The reader and the
+     * landing share this map so the same talk never gets two spellings.
+     *
+     * @var array<string, string>
+     */
+    public const AREA_LABELS = [
+        'politics' => 'سیاست',
+        'cinema' => 'سینما',
+        'sports' => 'ورزش',
+        'health' => 'سلامت',
+        'tech' => 'فناوری',
+        'celebrity' => 'سلبریتی',
+        'literature' => 'ادبیات',
+    ];
+
     protected $fillable = [
         'topic_id',
         'slug',
@@ -84,6 +100,11 @@ class TedTalk extends Model
     public function estimatedMinutes(): int
     {
         return max(1, (int) round($this->duration_seconds / 60));
+    }
+
+    public function areaLabel(): string
+    {
+        return self::AREA_LABELS[(string) $this->area] ?? (string) $this->area;
     }
 
     protected static function booted(): void

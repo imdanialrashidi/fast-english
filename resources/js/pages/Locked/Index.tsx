@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { BookOpen, Lock, Play, UserPlus } from 'lucide-react';
+import { Lock, UserPlus } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
@@ -10,9 +10,9 @@ import type { SharedProps } from '@/types';
  * ineligible learner-page request renders — no subscription, pending,
  * expired, or revoked. Status stays 403 and no premium body, glossary,
  * audio URL, answer, or vocabulary travels in the props. One primary
- * CTA (subscribe for signed-in learners, register for guests) plus the
- * public sample as the honest free path. Uses the learner shell: this
- * is the learner experience's own permission state, not a marketing page.
+ * CTA (subscribe for signed-in learners, register for guests). Owner
+ * instruction 2026-11-22 removed the free-sample block: the paid library
+ * is the only path. Uses the learner shell.
  */
 
 interface LockedProps extends SharedProps {
@@ -20,7 +20,6 @@ interface LockedProps extends SharedProps {
     subscribeUrl: string;
     registerUrl: string;
     loginUrl: string;
-    sampleUrl: string;
 }
 
 export const LockedIndex: FunctionComponent<LockedProps> & { layout?: (page: ReactNode) => ReactNode } = ({
@@ -28,7 +27,6 @@ export const LockedIndex: FunctionComponent<LockedProps> & { layout?: (page: Rea
     subscribeUrl,
     registerUrl,
     loginUrl,
-    sampleUrl,
 }: LockedProps): React.JSX.Element => {
     return (
         <>
@@ -74,22 +72,6 @@ export const LockedIndex: FunctionComponent<LockedProps> & { layout?: (page: Rea
                                 مشاهده پلن‌ها و خرید
                             </Link>
                         )}
-                    </p>
-                </section>
-                <section aria-label="نمونه رایگان" className="grid justify-items-start gap-2 rounded-3xl border border-line bg-surface p-6">
-                    <h2 className="m-0 flex items-center gap-2 text-lg leading-8">
-                        <BookOpen size={20} aria-hidden="true" />
-                        هنوز مطمئن نیستی؟
-                    </h2>
-                    <p className="m-0 leading-8 text-muted">نمونه واقعی همیشه رایگان است و بدون اشتراک باز می‌شود.</p>
-                    <p className="m-0">
-                        <Link
-                            href={sampleUrl}
-                            className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-ink no-underline hover:bg-canvas"
-                        >
-                            <Play size={20} aria-hidden="true" />
-                            شنیدن نمونه رایگان
-                        </Link>
                     </p>
                 </section>
             </div>

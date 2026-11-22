@@ -98,9 +98,10 @@ final class Entitlement
 
     /**
      * Props for the locked state: one primary CTA (subscribe for
-     * signed-in learners, register for guests) plus the public sample
-     * link. No premium content, answers, vocabulary, or media URLs travel
-     * here.
+     * signed-in learners, register for guests). Owner instruction
+     * 2026-11-22 removed the public-sample link; the paid library is the
+     * only path. No premium content, answers, vocabulary, or media URLs
+     * travel here.
      *
      * @return array<string, mixed>
      */
@@ -111,7 +112,6 @@ final class Entitlement
             'subscribeUrl' => route('subscribe.index'),
             'registerUrl' => route('register'),
             'loginUrl' => route('login'),
-            'sampleUrl' => route('sample'),
         ];
     }
 }
