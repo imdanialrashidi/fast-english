@@ -63,6 +63,7 @@ php artisan migrate --force --no-interaction
 # node that already owns an imported document.
 echo "== release: reading catalog =="
 php artisan library:catalog --no-interaction
+php artisan ted:catalog --no-interaction
 
 echo "== release: health =="
 php artisan ops:status

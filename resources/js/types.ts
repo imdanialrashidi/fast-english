@@ -192,23 +192,6 @@ export interface TedTalkPayload {
     source_license: string;
 }
 
-export interface TedTalkCard {
-    slug: string;
-    title_en: string;
-    speaker: string;
-    area: string;
-    area_label: string;
-    minutes: number;
-    cover_url: string | null;
-    url: string;
-}
-
-export interface TedArea {
-    key: string;
-    label: string;
-    count: number;
-}
-
 /** Owner request 2026-11-15: AEF book flashcards (two-grade scheduler). */
 export type FlashcardRating = 'again' | 'good';
 

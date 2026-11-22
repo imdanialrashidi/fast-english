@@ -5,7 +5,6 @@ namespace App\Support\Library;
 use App\Models\FlashcardBook;
 use App\Models\LibraryNode;
 use App\Models\ReadingProgress;
-use App\Models\TedTalk;
 
 /**
  * One shape per shelf card. The hub, every browse level and the reader's
@@ -23,7 +22,7 @@ final class LibraryPresenter
     ];
 
     /**
-     * The five shelf items. AEF is still the existing coursebook shelf; its
+     * The four shelf items. AEF is still the existing coursebook shelf; its
      * count comes from the coursebook tables, not from library_nodes.
      *
      * @return list<array<string, mixed>>
@@ -44,8 +43,6 @@ final class LibraryPresenter
 
         $irReadings = LibraryNode::query()->track('inside_reading')->where('kind', 'reading')->visible()->get();
         $irReady = $irReadings->filter(fn (LibraryNode $node): bool => $node->isReadable())->count();
-
-        $tedTalks = TedTalk::query()->published()->count();
 
         return [
             [
@@ -92,26 +89,13 @@ final class LibraryPresenter
                 'title_fa' => 'اینساید ریدینگ',
                 'title_en' => 'Inside Reading',
                 'subtitle_fa' => 'خواندن با صدای اصلی',
-                'description_fa' => 'پنج سطح از Intro تا ۴؛ واژه‌های سخت هر پاراگراف، صدای اصلی کتاب و هایلایت جمله.',
+                'description_fa' => 'متن‌های بلند با صدای اصلی، واژه‌های سخت هر پاراگراف و خوانش هم‌زمان؛ بدون برچسب سطح CEFR.',
                 'cover_url' => '/images/books/inside-reading/collection.webp',
                 'url' => route('library.track', ['track' => 'inside-reading']),
-                'chips' => ['۵ سطح', $irReadings->count().' ریدینگ', $irReady.' آماده'],
+                'chips' => [$irReadings->count().' ریدینگ', $irReady.' آماده'],
                 'ready' => $irReady,
                 'total' => $irReadings->count(),
                 'status' => $irReady > 0 ? 'ready' : 'preparing',
-            ],
-            [
-                'key' => 'ted',
-                'title_fa' => 'TED Talk',
-                'title_en' => 'TED',
-                'subtitle_fa' => 'ایده‌های بزرگ، یک‌جا',
-                'description_fa' => 'پنجاه‌وسه گفتار مستقل با متن، ده واژهٔ کلیدی و صدای اصلی؛ هر گفتار صفحهٔ خودش را دارد و با درس‌های پادکست قاطی نمی‌شود.',
-                'cover_url' => null,
-                'url' => route('ted.index'),
-                'chips' => [$tedTalks.' گفتار', 'مستقل از سطح', 'متن + صدا'],
-                'ready' => $tedTalks,
-                'total' => $tedTalks,
-                'status' => $tedTalks > 0 ? 'ready' : 'preparing',
             ],
         ];
     }
@@ -130,7 +114,7 @@ final class LibraryPresenter
             'title_en' => $node->title_en,
             'title_fa' => $node->title_fa,
             'subtitle_fa' => $node->subtitle_fa,
-            'level' => $node->level,
+            'level' => $node->track === 'inside_reading' ? null : $node->level,
             'cover_url' => $node->cover_path,
             'url' => $node->url(),
             'readable' => $readable,
@@ -150,7 +134,7 @@ final class LibraryPresenter
         $meta = is_array($node->meta) ? $node->meta : [];
         $chips = [];
 
-        if ($node->level !== null) {
+        if ($node->track !== 'inside_reading' && $node->level !== null) {
             $chips[] = $node->level;
         }
 
@@ -159,7 +143,7 @@ final class LibraryPresenter
                 array_unshift($chips, (string) $meta['stage']);
             }
             if ($children > 0) {
-                $chips[] = $children.' کتاب';
+                $chips[] = $children.' '.($node->track === 'inside_reading' ? 'یونیت' : 'کتاب');
             }
         }
 
@@ -236,7 +220,6 @@ final class LibraryPresenter
             ['key' => 'story', 'label' => 'استوری‌بوک', 'url' => route('library.track', ['track' => 'story']), 'active' => $active === 'story'],
             ['key' => 'ielts', 'label' => 'آیلتس', 'url' => route('library.track', ['track' => 'ielts']), 'active' => $active === 'ielts'],
             ['key' => 'inside_reading', 'label' => 'اینساید ریدینگ', 'url' => route('library.track', ['track' => 'inside-reading']), 'active' => $active === 'inside_reading'],
-            ['key' => 'ted', 'label' => 'TED Talk', 'url' => route('ted.index'), 'active' => $active === 'ted'],
         ];
     }
 }

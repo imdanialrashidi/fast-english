@@ -11,6 +11,10 @@ export function LibraryCard({ card }: { card: LibraryCardData }): React.JSX.Elem
     const english = card.title_en ?? '';
     const started = card.progress !== null;
     const showStatus = !['level', 'test', 'unit'].includes(card.kind);
+    // A level without a CEFR badge (Inside Reading) still needs an honest
+    // typographic cover. Use the level's own title, never the internal kind.
+    const fallbackLabel = card.level ?? (card.kind === 'level' ? (card.title_en ?? '') : card.kind.toUpperCase());
+    const fallbackSub = card.kind === 'level' ? (card.title_fa ?? '') : english;
 
     return (
         <Link
@@ -29,10 +33,10 @@ export function LibraryCard({ card }: { card: LibraryCardData }): React.JSX.Elem
                     <div className="grid h-full w-full place-items-center bg-ink px-4 text-center text-surface">
                         <div className="grid gap-2">
                             <span className="font-en text-[1.65rem] leading-none font-black text-surface/90">
-                                {card.level ?? card.kind.toUpperCase()}
+                                {fallbackLabel}
                             </span>
                             <span lang="en" dir="ltr" className="font-en text-xs leading-5 font-bold text-surface/70">
-                                {english || title}
+                                {fallbackSub || title}
                             </span>
                         </div>
                     </div>

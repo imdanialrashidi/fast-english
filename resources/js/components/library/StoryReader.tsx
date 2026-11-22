@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, BookOpen, Images } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
 import { HighlightedText } from '@/components/library/HighlightedText';
 import { PanelImage } from '@/components/library/PanelImage';
 import { WordPreview } from '@/components/library/WordPreview';
@@ -25,15 +25,6 @@ interface FlatPage {
     pageIndex: number;
 }
 
-interface StoryPanel {
-    panelIndex: number;
-    imageUrl: string | null;
-    alt: string | null;
-    chapterIndex: number;
-    chapterTitle: string | null;
-    flatIndex: number;
-}
-
 interface StoryReaderProps {
     node: ReadingNode;
     breadcrumbs: LibraryBreadcrumb[];
@@ -48,11 +39,11 @@ interface StoryReaderProps {
 /**
  * Story / Inside Reading reader.
  *
- * The six art panels are content, not decoration: every mapped panel stays
- * in the six-frame strip, and the panel that belongs to the current chapter
- * stays beside the text on every page of that chapter instead of vanishing
- * when the page turns. Audio is a slice of the one persistent shell player;
- * this page never mounts a second console.
+ * One page = one text, and (when the book's 2×3 sheet maps one) one panel.
+ * The image belongs to that page only and is shown directly above its text;
+ * the next page shows its own text/panel or no image at all. There is no
+ * six-frame strip and no inherited picture. Audio is a slice of the one
+ * persistent shell player, never a second console.
  */
 export function StoryReader({
     node,
@@ -87,51 +78,18 @@ export function StoryReader({
     const endHandled = useRef<string | null>(null);
     const wordAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    // Every page that names a panel contributes exactly one frame. This is
-    // the full six-frame set, not one-per-chapter (a chapter can own two).
-    const panels = useMemo<StoryPanel[]>(() => {
-        const seen = new Set<number>();
-        const found: StoryPanel[] = [];
-
-        flat.forEach((entry, flatIndex) => {
-            const panelIndex = entry.page.panel_index;
-            if (panelIndex === null || panelIndex === undefined || seen.has(panelIndex)) {
-                return;
-            }
-            seen.add(panelIndex);
-            found.push({
-                panelIndex,
-                imageUrl: entry.page.image_url,
-                alt: entry.page.alt_fa,
-                chapterIndex: entry.chapterIndex,
-                chapterTitle: entry.chapter.title_en ?? entry.chapter.title_fa ?? null,
-                flatIndex,
-            });
-        });
-
-        return found.sort((left, right) => left.panelIndex - right.panelIndex);
-    }, [flat]);
-
-    // The chapter's first mapped panel is the one that stays visible for
-    // every page in that chapter.
-    const chapterPanel = useMemo<(StoryPanel | undefined)[]>(
-        () =>
-            chapters.map((_, chapterIndex) => panels.find((panel) => panel.chapterIndex === chapterIndex)),
-        [chapters, panels],
-    );
-
     const entry = flat[index];
     const page = entry?.page;
-    const panel = page?.panel_index !== null && page?.panel_index !== undefined
-        ? panels.find((candidate) => candidate.panelIndex === page.panel_index)
-        : chapterPanel[entry?.chapterIndex ?? 0];
+    const panelIndex = page?.panel_index ?? null;
+    const imageUrl = page?.image_url ?? null;
+    const hasImage = panelIndex !== null || imageUrl !== null;
     const pageStart = page !== undefined && page.audio_url !== null ? 0 : (page?.audio_start_ms ?? 0);
     const initialPosition = savedIndex === index && progress !== null ? Math.max(0, progress.position_ms - pageStart) : 0;
     const audio = useReaderTrack({
         audioUrl: page?.audio_url ?? entry?.chapter.audio_url ?? null,
         pageKey: `${node.id}:${page?.id ?? 'none'}`,
         titleEn: entry?.chapter.title_en ?? entry?.chapter.title_fa ?? node.title_en ?? 'خواندن',
-        level: node.level ?? '',
+        level: node.track === 'inside_reading' ? '' : (node.level ?? ''),
         coverUrl: node.cover_url,
         audioRevision: revision,
         startMs: pageStart,
@@ -235,7 +193,7 @@ export function StoryReader({
     }
 
     return (
-        <div className="mx-auto grid w-full max-w-[860px] gap-4 px-4 py-4 pb-32 sm:gap-5 sm:py-5 sm:pb-32">
+        <div className="mx-auto grid w-full max-w-[920px] gap-4 px-4 py-4 pb-32 sm:gap-5 sm:py-5 sm:pb-32">
             <header className="grid gap-2">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <h2 className="m-0 text-xl leading-8 font-extrabold sm:text-2xl">{node.title_fa ?? node.title_en}</h2>
@@ -269,87 +227,23 @@ export function StoryReader({
                 </div>
             </header>
 
-            <section aria-label="تصویر این بخش" className="grid gap-3">
-                {panel !== undefined ? (
-                    <div className="relative">
-                        <PanelImage
-                            art={art}
-                            panelIndex={panel.panelIndex}
-                            imageUrl={panel.imageUrl}
-                            alt={panel.alt}
-                            className="aspect-[2/1] w-full"
-                        />
-                        <p className="m-0 mt-2 flex items-center justify-between gap-2 text-[0.7rem] font-bold text-muted">
-                            <span>
-                                قاب {panel.panelIndex.toLocaleString('fa-IR')} از {panels.length.toLocaleString('fa-IR')}
-                            </span>
-                            {panel.chapterTitle !== null && (
-                                <span lang="en" dir="ltr" className="font-en">
-                                    {panel.chapterTitle}
-                                </span>
-                            )}
-                        </p>
-                    </div>
-                ) : (
-                    node.cover_url !== null && (
-                        <div className="relative aspect-[2/1] overflow-hidden rounded-3xl bg-ink">
-                            <img src={node.cover_url} alt="" className="h-full w-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
-                            <p className="absolute inset-x-0 bottom-0 m-0 p-4 font-en text-sm font-bold text-surface" dir="ltr">
-                                {chapterLabel ?? node.title_en}
-                            </p>
-                        </div>
-                    )
-                )}
-
-                {panels.length > 0 && (
-                    <div aria-label="شش قاب این کتاب" className="grid gap-2 rounded-3xl border border-line bg-surface p-3.5">
-                        <div className="flex items-center justify-between gap-2">
-                            <p className="m-0 inline-flex items-center gap-1.5 text-sm font-extrabold text-ink">
-                                <Images size={16} aria-hidden="true" className="text-primary" />
-                                شش قاب این کتاب
-                            </p>
-                            <span className="text-[0.68rem] font-bold text-muted">
-                                {panels.length.toLocaleString('fa-IR')} قاب
-                            </span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-                            {panels.map((item) => {
-                                const active = item.panelIndex === panel?.panelIndex;
-                                return (
-                                    <button
-                                        key={item.panelIndex}
-                                        type="button"
-                                        onClick={() => goTo(item.flatIndex, audio.playing)}
-                                        aria-label={`رفتن به ${item.chapterTitle ?? `قاب ${item.panelIndex}`}`}
-                                        aria-current={active ? 'true' : undefined}
-                                        className={`group overflow-hidden rounded-xl border-2 p-0.5 transition-colors ${
-                                            active ? 'border-primary bg-primary/10' : 'border-transparent hover:border-line'
-                                        }`}
-                                    >
-                                        <PanelImage
-                                            art={art}
-                                            panelIndex={item.panelIndex}
-                                            imageUrl={item.imageUrl}
-                                            alt={item.alt}
-                                            className="aspect-[4/3]"
-                                        />
-                                        <span className="sr-only">{item.chapterTitle ?? `قاب ${item.panelIndex}`}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-            </section>
-
             <WordPreview words={page.words} onPlay={playWord} />
 
-            <article className="grid w-full max-w-[68ch] gap-4 rounded-3xl border border-line bg-surface p-4 sm:p-6">
+            <article className="mx-auto grid w-full max-w-[72ch] gap-4 rounded-3xl border border-line bg-surface p-4 sm:p-6 lg:p-7">
+                {hasImage && (
+                    <PanelImage
+                        art={art}
+                        panelIndex={panelIndex}
+                        imageUrl={imageUrl}
+                        alt={page.alt_fa}
+                        className="aspect-[2/1] w-full"
+                    />
+                )}
+
                 <p
                     lang="en"
                     dir="ltr"
-                    className="m-0 font-en text-[1.08rem] leading-[1.95] text-ink text-pretty sm:text-[1.15rem]"
+                    className="m-0 font-en text-[1.12rem] leading-[1.95] text-ink text-pretty sm:text-[1.18rem]"
                 >
                     <HighlightedText
                         text={page.text_en}

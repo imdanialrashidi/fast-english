@@ -47,7 +47,7 @@ function libraryNode(string $track, string $slug, string $kind = 'book', array $
     ]);
 }
 
-test('the reading shelf is paid-only and always has five items', function () {
+test('the reading shelf is paid-only and always has four items', function () {
     $this->get(route('books.index'))->assertRedirect();
 
     $this->actingAs(ContentFixtures::student())
@@ -59,13 +59,12 @@ test('the reading shelf is paid-only and always has five items', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Books/Index')
-            ->has('collections', 5)
+            ->has('collections', 4)
             ->where('collections.0.key', 'aef')
             ->where('collections.1.key', 'story')
             ->where('collections.2.key', 'ielts')
             ->where('collections.3.key', 'inside_reading')
-            ->where('collections.4.key', 'ted')
-            ->has('tabs', 6));
+            ->has('tabs', 5));
 });
 
 test('the story catalog drills from levels to books without inventing content', function () {

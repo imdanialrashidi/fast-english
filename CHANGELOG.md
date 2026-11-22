@@ -1,3 +1,21 @@
+## 2026-11-22 — TED Talk becomes a library category; story images follow their page
+
+- **TED Talk category.** The 53 talks are article cards in the main
+  Discover library under `/app?category=ted-talk`; `/app/ted` redirects
+  there. The Books shelf returns to its four reading tracks. Each card
+  opens the plain-text talk article at `/app/ted/{slug}`; the 4 pool talks
+  are included.
+- **Story images are page-bound.** Each page shows its own mapped panel
+  directly above its text; the next page shows its own panel or no image.
+  The six-frame strip and inherited chapter panel are gone. Story text is
+  a single ~72ch column with the image above it, so desktop reading gets
+  the full measure instead of a narrow side column.
+- **Inside Reading has no CEFR chips.** B1/B2/C1 labels are hidden on its
+  shelf, level cards, reader and player; the Intro/Level 1–4 names remain.
+  Level fallbacks now show the level title, never the internal `LEVEL`.
+- **Tests.** TED category, shelf and story reader focused suites pass;
+  browser shelf/TED/story flows checked on the local lane.
+
 ## 2026-11-22 — reader polish: TED section, one player, six story frames
 
 - **TED is its own section.** `/app/ted` lists every published talk and

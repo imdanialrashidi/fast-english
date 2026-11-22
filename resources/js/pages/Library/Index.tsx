@@ -205,6 +205,7 @@ export const LibraryIndex: FunctionComponent<LibraryProps> & { layout?: (page: R
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <p role="status" aria-live="polite" data-total={pagination.total} className="m-0 text-sm text-muted">
                         {fa(pagination.total)} مطلب
+                        {selectedCategoryName !== null && selectedCategoryName !== '' ? ` در ${selectedCategoryName}` : ''}
                     </p>
                     {hasFilters && (
                         <Link

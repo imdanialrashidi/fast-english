@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Actions\PublishLesson;
 use App\Models\Category;
+use App\Models\TedTalk;
 use App\Models\Topic;
 use App\Support\ClampsPagination;
 use App\Support\Levels;
 use App\Support\TopicCard;
+use App\Support\TopicCover;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -41,6 +43,13 @@ class TopicLibraryController extends Controller
         $queryParam = $request->query('q');
         $query = is_string($queryParam) ? trim($queryParam) : '';
         $query = $query !== '' ? mb_substr($query, 0, 120) : null;
+
+        // TED Talks are articles, so they use the same Discover surface and
+        // the TED Talk category. They have no CEFR level, so the level filter
+        // is intentionally not applied to this category.
+        if ($categorySlug === 'ted-talk') {
+            return $this->tedCategory($request, $query);
+        }
 
         $topics = Topic::query()
             ->where('topics.status', 'published')
@@ -98,6 +107,64 @@ class TopicLibraryController extends Controller
             'activeCategory' => $categorySlug,
             'activeQuery' => $query,
             'hasFilters' => $level !== null || $categorySlug !== null || $query !== null,
+        ]);
+    }
+
+    /**
+     * The TED Talk category on Discover. Cards use the same editorial row as
+     * topics and link to the standalone talk article; no lesson or CEFR
+     * level is invented for the talk.
+     */
+    private function tedCategory(Request $request, ?string $query): Response|RedirectResponse
+    {
+        $search = $query === null ? null : str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $query);
+
+        $talks = TedTalk::query()
+            ->published()
+            ->when($search !== null, fn ($talks) => $talks->where('title_en', 'ilike', '%'.$search.'%'))
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->paginate(12)
+            ->withQueryString();
+
+        if (($redirect = $this->redirectOutOfRangePage($request, $talks)) !== null) {
+            return $redirect;
+        }
+
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->orderBy('display_order')
+            ->orderBy('name_fa')
+            ->select(['id', 'name_fa', 'slug'])
+            ->get();
+
+        return Inertia::render('Library/Index', [
+            'topics' => $talks->getCollection()->map(fn (TedTalk $talk): array => [
+                'slug' => (string) $talk->slug,
+                'title_en' => (string) $talk->title_en,
+                'cover_url' => TopicCover::url($talk->cover_path),
+                'category_name' => 'TED Talk',
+                'levels' => [],
+                'first_level' => null,
+                'extra_levels' => 0,
+                'minutes' => $talk->estimatedMinutes(),
+                'reader_url' => route('ted.show', $talk),
+            ])->all(),
+            'pagination' => [
+                'current_page' => $talks->currentPage(),
+                'last_page' => $talks->lastPage(),
+                'total' => $talks->total(),
+                'per_page' => $talks->perPage(),
+            ],
+            'categories' => $categories->map(fn (Category $category) => [
+                'slug' => $category->slug,
+                'name_fa' => $category->name_fa,
+            ])->all(),
+            'levels' => PublishLesson::LEVELS,
+            'activeLevel' => null,
+            'activeCategory' => 'ted-talk',
+            'activeQuery' => $query,
+            'hasFilters' => true,
         ]);
     }
 }

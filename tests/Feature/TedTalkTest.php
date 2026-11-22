@@ -57,8 +57,12 @@ test('guests and ineligible accounts get the locked page without premium text', 
         ->assertForbidden()
         ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'));
 
-    $this->get(route('ted.index'))->assertForbidden();
-    $this->actingAs(ContentFixtures::student())->get(route('ted.index'))->assertForbidden();
+    $this->get(route('ted.index'))->assertRedirect(route('app.home', ['category' => 'ted-talk']));
+    $this->actingAs(ContentFixtures::student())->get(route('ted.index'))
+        ->assertRedirect(route('app.home', ['category' => 'ted-talk']));
+    $this->actingAs(ContentFixtures::student())
+        ->get(route('app.home', ['category' => 'ted-talk']))
+        ->assertForbidden();
 
     // Staff pass without a subscription.
     $this->actingAs(ContentFixtures::staff())
@@ -107,22 +111,31 @@ test('the private audio route refuses guests', function () {
     $this->get(route('media.ted.audio', $this->talk))->assertForbidden();
 });
 
-test('the podcast reader has no TED tab and the TED index is its own section', function () {
+test('TED is a category of articles, not a podcast tab', function () {
     $this->actingAs($this->subscriber)
         ->get(route('reader.show', ['topic' => $this->topic->slug, 'level' => 'B1']))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page->missing('ted'));
 
+    $this->artisan('ted:catalog')->assertExitCode(0);
+
     $this->actingAs($this->subscriber)
         ->get(route('ted.index'))
+        ->assertRedirect(route('app.home', ['category' => 'ted-talk']));
+
+    $this->actingAs($this->subscriber)
+        ->get(route('app.home', ['category' => 'ted-talk']))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Ted/Index')
-            ->has('tabs', 6)
-            ->has('talks', 1)
-            ->where('talks.0.slug', $this->talk->slug)
-            ->where('talks.0.url', route('ted.show', $this->talk))
-            ->missing('talks.0.segments'));
+            ->component('Library/Index')
+            ->where('activeCategory', 'ted-talk')
+            ->has('topics', 1)
+            ->where('topics.0.slug', $this->talk->slug)
+            ->where('topics.0.category_name', 'TED Talk')
+            ->where('topics.0.levels', [])
+            ->where('topics.0.reader_url', route('ted.show', $this->talk))
+            ->where('pagination.total', 1)
+            ->where('categories', fn ($categories) => collect($categories)->contains('slug', 'ted-talk')));
 });
 
 test('an old topic TED link redirects to the talk page', function () {

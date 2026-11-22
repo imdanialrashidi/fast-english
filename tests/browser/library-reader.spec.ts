@@ -28,7 +28,6 @@ test('story reader: real audio, word preview, sentence highlight and page turn',
     await expect(page.getByText('1 / 61')).toBeVisible();
     await expect(page.getByText(/Dan and Sue are police officers/)).toBeVisible();
     await expect(page.locator('#player-play')).toBeVisible();
-    await expect(page.locator('[aria-label="شش قاب این کتاب"] button')).toHaveCount(6);
     await expectNoHorizontalOverflow(page);
 
     await expect(page.locator('#lesson-audio')).toHaveAttribute('src', /\/media\/library\//);
@@ -1346,11 +1345,12 @@ test('Inside Reading level 1: bicycle text, original audio and word preview', as
     await page.screenshot({ path: 'test-results/browser-shots/library-ir-level1-393.png', fullPage: true });
 });
 
-test('TED is a standalone section with a plain transcript and one player', async ({ sub: page }) => {
+test('TED is a category of articles with a plain transcript and one player', async ({ sub: page }) => {
     await page.setViewportSize({ width: 393, height: 851 });
     await page.goto('/app/ted');
-    await expect(page.getByRole('heading', { name: 'ایده‌های بزرگ، هر کدام یک صفحهٔ جدا.' })).toBeVisible();
-    await expect(page.locator('[aria-label="فهرست گفتارها"] a')).toHaveCount(53);
+    await page.waitForURL('**/app?category=ted-talk');
+    await expect(page.getByText('۵۳ مطلب')).toBeVisible();
+    await expect(page.locator('a[href*="/app/ted/"]')).toHaveCount(12);
     await expectNoHorizontalOverflow(page);
 
     await page.goto('/app/ted/ted_ed_what_are_tariffs_and_how_do_they_work');

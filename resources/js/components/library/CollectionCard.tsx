@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, BookOpen, Headphones, Mic, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Headphones, Sparkles } from 'lucide-react';
 import type { LibraryCollection } from '@/types';
 
 const ICONS = {
@@ -7,7 +7,6 @@ const ICONS = {
     story: Sparkles,
     ielts: BookOpen,
     inside_reading: Headphones,
-    ted: Mic,
 } as const;
 
 /**
