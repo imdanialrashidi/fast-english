@@ -163,8 +163,11 @@ final class ApprovePayment
             $row->save();
 
             // The first approved payment opens the short post-activation
-            // profile form (owner instruction 2026-11-25).
-            $owner->forceFill(['needs_profile' => true])->save();
+            // profile form (owner instruction 2026-11-25). A renewal must not
+            // reopen it for an already-complete profile.
+            if ($owner->profile_completed_at === null) {
+                $owner->forceFill(['needs_profile' => true])->save();
+            }
 
             return [
                 'request' => $row->fresh(),

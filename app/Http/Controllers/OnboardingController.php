@@ -30,7 +30,15 @@ class OnboardingController extends Controller
             return redirect()->route('app.home');
         }
 
-        if (! $user->needs_profile || $user->profile_completed_at !== null) {
+        if ($user->profile_completed_at !== null) {
+            if ($user->needs_profile) {
+                $user->forceFill(['needs_profile' => false])->save();
+            }
+
+            return redirect()->route('today.index');
+        }
+
+        if (! $user->needs_profile) {
             return redirect()->route('today.index');
         }
 

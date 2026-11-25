@@ -36,7 +36,7 @@ class RequireSubscription
 
         if ($eligible) {
             $user = $request->user();
-            if ($user !== null && $user->needs_profile) {
+            if ($user !== null && $user->needs_profile && $user->profile_completed_at === null) {
                 if ($request->expectsJson()) {
                     return response()->json(['message' => 'برای ادامه، اطلاعات حساب را کامل کنید.'], 409);
                 }

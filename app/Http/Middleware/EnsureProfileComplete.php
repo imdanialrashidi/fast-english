@@ -18,7 +18,7 @@ class EnsureProfileComplete
     {
         $user = $request->user();
 
-        if ($user === null || ! $user->needs_profile) {
+        if ($user === null || ! $user->needs_profile || $user->profile_completed_at !== null) {
             return $next($request);
         }
 
