@@ -137,7 +137,7 @@ test('a story leaf with a published document renders its pages and saves progres
             ->where('node.track', 'story')
             ->has('chapters', 1)
             ->where('chapters.0.pages.0.words.0.meaning_fa', 'عصبانی')
-            ->has('questions', 0));
+            ->has('practiceQuestions', 0));
 
     $this->actingAs($student)
         ->postJson(route('library.progress', ['node' => $node->id]), [

@@ -72,7 +72,7 @@ final class ReadingPayload
         $questions = is_array($doc['questions'] ?? null) ? $doc['questions'] : [];
 
         return $base + [
-            'questions' => array_map(fn (array $question): array => [
+            'practiceQuestions' => array_map(fn (array $question): array => [
                 'id' => (string) ($question['id'] ?? ''),
                 'number' => isset($question['number']) ? (int) $question['number'] : null,
                 'type' => (string) ($question['type'] ?? 'tf'),
