@@ -18,7 +18,9 @@
     // after hydration. The server already has the same URL in the page
     // props; expose it here so the first paint can preload one image.
     $hero = data_get($page, 'props.sample.cover_url')
-        ?? data_get($page, 'props.topic.cover_url');
+        ?? data_get($page, 'props.topic.cover_url')
+        ?? data_get($page, 'props.podcasts.0.cover_url')
+        ?? data_get($page, 'props.talks.0.cover_url');
 @endphp
 <html lang="fa" dir="rtl">
 <head>

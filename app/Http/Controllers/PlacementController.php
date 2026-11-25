@@ -290,8 +290,27 @@ class PlacementController extends Controller
             abort(403);
         }
 
+        // Owner instruction 2026-11-25: one final POST carries every chosen
+        // option. Missing answers are allowed and score as unanswered.
+        $data = $request->validate([
+            'answers' => ['nullable', 'array'],
+            'answers.*' => ['integer', 'min:0', 'max:3'],
+        ], [
+            'answers.array' => 'پاسخ‌ها معتبر نیستند.',
+            'answers.*.integer' => 'گزینهٔ انتخاب‌شده معتبر نیست.',
+            'answers.*.min' => 'گزینهٔ انتخاب‌شده معتبر نیست.',
+            'answers.*.max' => 'گزینهٔ انتخاب‌شده معتبر نیست.',
+        ]);
+
+        $incoming = [];
+        foreach ((array) ($data['answers'] ?? []) as $questionId => $selectedOption) {
+            if (is_numeric($questionId)) {
+                $incoming[(int) $questionId] = (int) $selectedOption;
+            }
+        }
+
         try {
-            $outcome = SubmitPlacement::submit((int) $attempt->id);
+            $outcome = SubmitPlacement::submit((int) $attempt->id, $incoming);
         } catch (ValidationException $e) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => collect($e->errors())->flatten()->implode(' ')], 422)

@@ -114,7 +114,7 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
                         <h2 className="m-0 text-xl leading-8">چه اتفاقی می‌افتد؟</h2>
                         <ol className="m-0 grid list-decimal gap-1.5 ps-5 leading-8 text-muted">
                             <li>مبلغ را دقیقاً به کارت بالا واریز می‌کنی.</li>
-                            <li>تصویر رسید را همین‌جا می‌فرستی.</li>
+                            <li>تصویر رسید را همین‌جا بارگذاری می‌کنی.</li>
                             <li>رسید را بررسی می‌کنیم؛ وضعیت را در همین صفحه می‌بینی.</li>
                             <li>بعد از تأیید، اشتراک فعال می‌شود و به درس‌ها دسترسی پیدا می‌کنی.</li>
                             {activationSms && <li>بعد از فعال‌شدن اشتراک، یک پیامک تأیید برای موبایلت می‌آید.</li>}
@@ -124,9 +124,9 @@ export const PaymentsShow: FunctionComponent<PaymentProps> & { layout?: (page: R
 
                 {request.status === 'awaiting_receipt' && (
                     <section aria-label="ارسال رسید" className="grid gap-4">
-                        <h2 className="m-0 text-xl leading-8">قدم بعدی: واریز و ارسال رسید</h2>
+                        <h2 className="m-0 text-xl leading-8">قدم بعدی: واریز و بارگذاری رسید</h2>
                         <p className="m-0 leading-8 text-muted">
-                            مبلغ بالا را به کارت مقصد واریز کن، سپس تصویر رسید را همین‌جا بفرست. نتیجه بعد از بررسی مشخص می‌شود.
+                            مبلغ بالا را به کارت مقصد واریز کن، سپس تصویر رسید را همین‌جا بارگذاری کن. نتیجه بعد از بررسی مشخص می‌شود.
                         </p>
                         <form onSubmit={submitReceipt} className="fe-filters grid gap-4 rounded-3xl border border-line bg-surface p-5">
                             <div className="grid gap-1.5">

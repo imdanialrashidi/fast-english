@@ -57,7 +57,7 @@ test('livewire update responses are private and uncacheable', function () {
 
 test('media responses are private and uncacheable', function () {
     $this->seed(S1SampleSeeder::class);
-    $other = User::factory()->create(['email' => 'media-b@example.com']);
+    $other = \Tests\Support\ContentFixtures::subscribedStudent();
 
     $lesson = Lesson::where('level', 'A2')
         ->whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))

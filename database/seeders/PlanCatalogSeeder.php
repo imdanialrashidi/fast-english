@@ -9,11 +9,10 @@ use Illuminate\Database\Seeder;
 /**
  * Owner-provided production/staging catalog.
  *
- * Prices are integer toman:
- * - 30 days: 399,000
- * - 90 days: 641,000 (owner instruction 2026-11-22; the landing quotes
- *   this as 990,000 struck through, 641,000 payable for 90 days)
- * - 365 days: 30% off twelve months = 3,351,600
+ * Owner instruction 2026-11-25: one monthly offer at 641,000 toman
+ * (990,000 struck through). The old 90-day and yearly plans stay in the
+ * database for history but are inactive so checkout cannot contradict the
+ * landing.
  *
  * Run explicitly after deploy:
  *   php artisan db:seed --class=PlanCatalogSeeder --force
@@ -30,8 +29,8 @@ class PlanCatalogSeeder extends Seeder
         $plans = [
             [
                 'slug' => 'monthly',
-                'name_fa' => 'یک‌ماهه',
-                'price_toman' => 399000,
+                'name_fa' => 'اشتراک ماهیانه',
+                'price_toman' => 641000,
                 'duration_days' => 30,
                 'is_active' => true,
                 'display_order' => 1,
@@ -41,7 +40,7 @@ class PlanCatalogSeeder extends Seeder
                 'name_fa' => 'سه‌ماهه',
                 'price_toman' => 641000,
                 'duration_days' => 90,
-                'is_active' => true,
+                'is_active' => false,
                 'display_order' => 2,
             ],
             [
@@ -49,7 +48,7 @@ class PlanCatalogSeeder extends Seeder
                 'name_fa' => 'یک‌ساله (۳۰٪ تخفیف)',
                 'price_toman' => 3351600,
                 'duration_days' => 365,
-                'is_active' => true,
+                'is_active' => false,
                 'display_order' => 3,
             ],
         ];

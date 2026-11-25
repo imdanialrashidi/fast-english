@@ -28,7 +28,7 @@ final class SiteSettings
 
     public static function supportPhone(): string
     {
-        return (string) Setting::read(self::SUPPORT_PHONE, (string) config('site.support.phone', '09924930667'));
+        return (string) Setting::read(self::SUPPORT_PHONE, (string) config('site.support.phone', '09936908633'));
     }
 
     public static function supportEmail(): string
@@ -138,7 +138,7 @@ final class SiteSettings
 
     public static function legal(string $page): ?string
     {
-        if (! in_array($page, ['terms', 'privacy', 'refund'], true)) {
+        if (! in_array($page, ['terms', 'privacy'], true)) {
             return null;
         }
 

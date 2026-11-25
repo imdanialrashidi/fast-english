@@ -6,11 +6,10 @@ import { test } from './helpers';
 // synchronisation: no highlighted rows, no click-to-seek, no cue props.
 
 const LEARNER_A2 = '/app/topics/city-park?level=A2';
-const SAMPLE_A2 = '/sample?topic=city-park&level=A2';
 
-test('public sample renders normal paragraphs and normal playback', async ({ page }) => {
+test('subscriber reader renders normal paragraphs and normal playback', async ({ sub: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(SAMPLE_A2);
+  await page.goto(LEARNER_A2);
 
   const body = page.locator('article.fe-english-body');
   await expect(body).toBeVisible();

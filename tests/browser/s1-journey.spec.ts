@@ -1,10 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
 const A2 = '/app/topics/city-park?level=A2';
 const B1 = '/app/topics/city-park?level=B1';
 
 // S1-1 sample journey on the real seeded topic, plus lab baselines.
-test('A2 reader shows only the A2 lesson body and audio', async ({ page }) => {
+test('A2 reader shows only the A2 lesson body and audio', async ({ sub: page }) => {
   await page.goto(A2);
   await expect(page.locator('html')).toHaveAttribute('lang', 'fa');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
@@ -28,7 +29,7 @@ test('A2 reader shows only the A2 lesson body and audio', async ({ page }) => {
   expect(state.currentTime).toBe(0);
 });
 
-test('B1 reader shows only the B1 lesson body and audio', async ({ page }) => {
+test('B1 reader shows only the B1 lesson body and audio', async ({ sub: page }) => {
   await page.goto(B1);
   await expect(page.locator('article.fe-english-body')).toContainText('Sara loves Saturday mornings');
   await expect(page.locator('article.fe-english-body')).not.toContainText('On Saturday morning, Sara walks');
@@ -37,7 +38,7 @@ test('B1 reader shows only the B1 lesson body and audio', async ({ page }) => {
   expect(src).toContain('/media/lessons/');
 });
 
-test('switching level loads the other lesson and stops the old audio', async ({ page }) => {
+test('switching level loads the other lesson and stops the old audio', async ({ sub: page }) => {
   await page.goto(A2);
   const srcA2 = await page.locator('#lesson-audio').getAttribute('src');
 
@@ -47,8 +48,6 @@ test('switching level loads the other lesson and stops the old audio', async ({ 
     .toBe(true);
 
   await page.getByRole('link', { name: 'B1', exact: true }).click();
-  // Paid-only slice: the sample levels resolve inside /sample (the
-  // query carries topic + level, so match the level param, not the tail).
   await page.waitForURL(/level=B1/);
 
   const srcB1 = await page.locator('#lesson-audio').getAttribute('src');
@@ -61,7 +60,7 @@ test('switching level loads the other lesson and stops the old audio', async ({ 
   expect(paused).toBe(true);
 });
 
-test('lab baselines: HTML, player ready', async ({ page }) => {
+test('lab baselines: HTML, player ready', async ({ sub: page }) => {
   const t0 = Date.now();
   await page.goto(B1);
   await page.waitForFunction(() => {

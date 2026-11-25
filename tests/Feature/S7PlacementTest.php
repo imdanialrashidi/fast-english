@@ -162,7 +162,7 @@ test('second start resumes the open attempt and 24-hour restart is refused', fun
 
 // S7-3 (submit validation): duplicate, foreign, or incomplete answers are
 // refused, and no result is stored.
-test('duplicate, foreign, and incomplete submits store no result', function () {
+test('a partial submit completes, foreign questions are refused, and duplicates stay one row', function () {
     $version = s7BuildVersion('s7-valid-v1 (TEST)');
     $otherVersion = PublishPlacementTest::createDraft('s7-valid-v2-draft (TEST)');
     PublishPlacementTest::addQuestion($otherVersion->fresh(), 1, 'FIXTURE foreign question (TEST)', ['FIXTURE A (TEST)', 'FIXTURE B (TEST)', 'FIXTURE C (TEST)', 'FIXTURE D (TEST)'], 0);
@@ -172,18 +172,13 @@ test('duplicate, foreign, and incomplete submits store no result', function () {
     $attempt = PlacementAttempt::where('user_id', $this->studentA->id)->firstOrFail();
     ['questions' => $questions, 'key' => $key] = s7Key($version);
 
-    // Incomplete: 19 of 20 answered → 422, nothing stored.
+    // Owner instruction 2026-11-25: 19 of 20 is enough. The one blank
+    // question simply does not score; it never blocks the result.
     foreach ($questions->take(19) as $question) {
         $this->actingAs($this->studentA)->post(route('placement.answer', $attempt), [
             'question_id' => $question->id, 'selected_option' => (int) $key[$question->id],
         ])->assertRedirect();
     }
-    $this->actingAs($this->studentA)->postJson(route('placement.submit', $attempt))->assertStatus(422);
-    $fresh = $attempt->fresh();
-    expect($fresh->status)->toBe(PlacementAttempt::STATUS_IN_PROGRESS)
-        ->and($fresh->score)->toBeNull()
-        ->and($fresh->recommended_level)->toBeNull()
-        ->and($fresh->completed_at)->toBeNull();
 
     // Foreign: a question from another version is refused with no write.
     $before = PlacementAnswer::where('attempt_id', $attempt->id)->count();
@@ -200,6 +195,18 @@ test('duplicate, foreign, and incomplete submits store no result', function () {
     ])->assertRedirect();
     expect(PlacementAnswer::where('attempt_id', $attempt->id)->where('question_id', $repeat->id)->count())->toBe(1);
 
+    // The partial submit now completes with exactly the saved answers.
+    $this->actingAs($this->studentA)
+        ->postJson(route('placement.submit', $attempt))
+        ->assertOk()
+        ->assertJsonPath('status', PlacementAttempt::STATUS_COMPLETED);
+    $fresh = $attempt->fresh();
+    expect($fresh->status)->toBe(PlacementAttempt::STATUS_COMPLETED)
+        ->and($fresh->score)->toBe(18)
+        ->and($fresh->recommended_level)->not->toBeNull()
+        ->and($fresh->completed_at)->not->toBeNull()
+        ->and(PlacementAnswer::where('attempt_id', $attempt->id)->count())->toBe(19);
+
     // The unique index backs the no-duplicate rule (no raw violating
     // insert here: a failed statement would abort the test transaction
     // on PostgreSQL; the endpoint upsert above already proves one row).
@@ -209,7 +216,7 @@ test('duplicate, foreign, and incomplete submits store no result', function () {
 
     // The other student cannot touch this attempt (negative path).
     $this->actingAs($this->studentB)->postJson(route('placement.submit', $attempt))->assertForbidden();
-    expect($attempt->fresh()->status)->toBe(PlacementAttempt::STATUS_IN_PROGRESS);
+    expect($attempt->fresh()->status)->toBe(PlacementAttempt::STATUS_COMPLETED);
 });
 
 test('a concurrent first answer converges onto one row with the posted value', function () {
@@ -239,4 +246,25 @@ test('a concurrent first answer converges onto one row with the posted value', f
     expect($rows)->toHaveCount(1)
         ->and((int) $rows->first()->selected_option)->toBe(2)
         ->and($rows->first()->is_correct)->toBeNull();
+});
+
+test('one final POST saves every chosen option and allows blanks', function () {
+    $version = s7BuildVersion('s7-single-submit-v1 (TEST)');
+    $this->actingAs($this->studentA)->post(route('placement.start'))->assertRedirect();
+    $attempt = PlacementAttempt::where('user_id', $this->studentA->id)->firstOrFail();
+    ['questions' => $questions, 'key' => $key] = s7Key($version);
+
+    $answers = [];
+    foreach ($questions->take(3) as $question) {
+        $answers[(string) $question->id] = (int) $key[$question->id];
+    }
+
+    $this->actingAs($this->studentA)
+        ->postJson(route('placement.submit', $attempt), ['answers' => $answers])
+        ->assertOk()
+        ->assertJsonPath('status', PlacementAttempt::STATUS_COMPLETED)
+        ->assertJsonPath('score', 3);
+
+    expect(PlacementAnswer::where('attempt_id', $attempt->id)->count())->toBe(3)
+        ->and($attempt->fresh()->score)->toBe(3);
 });

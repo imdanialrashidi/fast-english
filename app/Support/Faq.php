@@ -6,14 +6,18 @@ namespace App\Support;
  * One server source for the public FAQ copy. The landing and the FAQ
  * trust page both render these rows and emit the matching FAQPage
  * structured data, so the visible answer can never drift from the JSON-LD.
+ *
+ * Owner instruction 2026-11-25 fixed the question set and wording:
+ * audience, levels, purchase, and install. The two payment-support
+ * questions that used to live on the FAQ page were removed; support is a
+ * single Bale/Telegram number and receipts are uploaded only in the web
+ * panel.
  */
 final class Faq
 {
     /**
-     * Five concrete questions the buyer asks before paying. Owner
-     * instruction 2026-11-22 removed every free-sample answer: the
-     * product now sells one paid path, so the FAQ explains the library,
-     * the level, the review loop, and the payment rather than a trial.
+     * The four owner-approved questions. Both the landing preview and the
+     * FAQ page use this list.
      *
      * @return list<array{q: string, a: string}>
      */
@@ -21,55 +25,33 @@ final class Faq
     {
         return [
             [
-                'q' => 'برای چه سطحی مناسب است؟',
-                'a' => 'از A1 تا C2. محتوا در شش سطح آماده شده و اگر سطحت را نمی‌دانی، آزمون تعیین سطح ۲۰ سؤالی پیشنهاد یک سطح می‌دهد. سطح فقط سختی محتوا را می‌گوید، نه میزان دسترسی را.',
+                'q' => 'فست انگلیش برای چه کسی ساخته شده؟',
+                'a' => 'برای افرادی که می‌خواهند انگلیسی را به‌صورت جذاب، اصولی و متناسب با سطح خودشان یاد بگیرند.',
             ],
             [
-                'q' => 'داخل اشتراک دقیقاً چه چیزی هست؟',
-                'a' => 'کتابخانهٔ متن و صدا، ۵۳ سخنرانی TED Talk با متن و واژه‌های کلیدی، شش کتاب American English File با ۶۶ یونیت و ۱٬۶۳۰ تمرین، مسیرهای داستان، آیلتس و Inside Reading، واژه‌نامهٔ شخصی و مرور زمان‌بندی‌شده.',
+                'q' => 'سطح‌ها چه معنی دارند؟',
+                'a' => 'مطالب در سطح‌های A1 تا C2 ارائه می‌شوند تا در هر سطحی که هستید، بتوانید سریع محتوای مناسب سطح خودتان را پیدا کنید و یاد بگیرید.',
             ],
             [
-                'q' => 'واژه‌ها چطور مرور می‌شوند؟',
-                'a' => 'هر واژه‌ای که ذخیره کنی سر موعد با کارت مرور برمی‌گردد. با دوباره، سخت، خوب یا آسان زمان‌بندی بعدی را خودت تعیین می‌کنی و واژه از حافظه‌ات دور نمی‌ماند.',
+                'q' => 'خرید چگونه انجام می‌شود؟',
+                'a' => 'وارد حساب کاربری شوید. پس از واریز مبلغ، تصویر رسید را در پنل کاربری وب‌سایت بارگذاری کنید. اشتراک شما پس از تأیید رسید فعال می‌شود.',
             ],
             [
-                'q' => 'خرید و فعال‌سازی چطور انجام می‌شود؟',
-                'a' => 'حساب می‌سازی، پلن را انتخاب می‌کنی، مبلغ را کارت‌به‌کارت می‌کنی و تصویر رسید را در همان صفحه می‌فرستی. پس از بررسی و تأیید، اشتراک فعال می‌شود و دسترسی باز می‌شود.',
-            ],
-            [
-                'q' => 'چطور روی گوشی نصب کنم و اگر سؤالی داشتم چه کنم؟',
-                'a' => 'نسخهٔ وب روی مرورگر گوشی نصب می‌شود (PWA) و نسخهٔ اندروید از صفحهٔ دانلود در دسترس است. برای هر پرسشی در بله یا تلگرام به شمارهٔ ۰۹۹۲۴۹۳۰۶۶۷ پیام بده.',
+                'q' => 'چگونه اپلیکیشن را نصب کنم؟',
+                'a' => 'راهنمای روشن و مرحله‌به‌مرحلهٔ نصب روی اندروید و آیفون در صفحهٔ دانلود قرار دارد. نسخهٔ وب (PWA) روی مرورگر گوشی نصب می‌شود و نسخهٔ اندروید هم از همان صفحه در دسترس است.',
             ],
         ];
     }
 
     /**
-     * The four core questions rendered on /faq. The two support blocks
-     * below them stay page-specific because they contain live contact
-     * links; they are not part of this list.
+     * The same four questions on /faq. Kept as a separate method so a page
+     * can add its own live support block without changing the JSON-LD list.
      *
      * @return list<array{q: string, a: string}>
      */
     public static function trust(): array
     {
-        return [
-            [
-                'q' => 'Fast English برای چه کسی ساخته شده است؟',
-                'a' => 'برای بزرگسالانی که می‌خواهند انگلیسی واقعی را در سطح درست بخوانند و بشنوند؛ از A1 تا C2، با متن و صوت همان نسخه.',
-            ],
-            [
-                'q' => 'سطح‌ها چه معنایی دارند؟',
-                'a' => 'مطالب در سطح‌های A1 تا C2 ارائه می‌شوند. می‌توانید سطح را مستقیم انتخاب کنید یا از آزمون تعیین سطح ۲۰ سؤالی استفاده کنید.',
-            ],
-            [
-                'q' => 'خرید چگونه انجام می‌شود؟',
-                'a' => 'پلن را انتخاب می‌کنی، مبلغ را به کارت مقصد واریز می‌کنی و تصویر رسید را در همان صفحه می‌فرستی. رسید بررسی می‌شود و بعد از تأیید، اشتراک فعال می‌شود و دسترسی باز می‌شود.',
-            ],
-            [
-                'q' => 'بعد از پرداخت چه اتفاقی می‌افتد؟',
-                'a' => 'رسیدت در صف بررسی قرار می‌گیرد. وضعیت را در همان صفحهٔ پرداخت می‌بینی. بعد از تأیید، اشتراک فعال می‌شود و اگر موبایلت تأیید شده باشد، یک پیامک تأیید فعال‌سازی هم می‌گیری.',
-            ],
-        ];
+        return self::landing();
     }
 
     /**

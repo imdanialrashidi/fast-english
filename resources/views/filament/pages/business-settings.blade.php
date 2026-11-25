@@ -106,7 +106,7 @@
 
         <x-filament::section
             heading="Public legal copy"
-            description="Rendered as paragraphs on /terms, /privacy, and /refund. Blank lines separate paragraphs. Review with a qualified adviser before launch."
+            description="Rendered as paragraphs on /terms and /privacy. Blank lines separate paragraphs. Review with a qualified adviser before launch."
         >
             <div class="grid gap-5">
                 <div class="grid gap-2">
@@ -121,14 +121,6 @@
                     <label for="privacy" class="text-sm font-medium">Privacy policy</label>
                     <textarea id="privacy" rows="12" class="fi-input block w-full" dir="rtl" wire:model="privacy"></textarea>
                     @error('privacy')
-                        <p class="text-sm text-danger-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="grid gap-2">
-                    <label for="refund" class="text-sm font-medium">Refund policy</label>
-                    <textarea id="refund" rows="12" class="fi-input block w-full" dir="rtl" wire:model="refund"></textarea>
-                    @error('refund')
                         <p class="text-sm text-danger-600">{{ $message }}</p>
                     @enderror
                 </div>

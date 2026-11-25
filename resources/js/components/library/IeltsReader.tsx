@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, Check, Eye, Headphones, Play, X } from 'lucide-react';
 import { HighlightedText } from '@/components/library/HighlightedText';
 import { WordPreview } from '@/components/library/WordPreview';
+import { WordSheet } from '@/components/library/WordSheet';
 import { postJson } from '@/lib/http';
 import { useReaderTrack } from '@/lib/reader-player';
 import { activeSentenceIndex, sentencesForRange, selectionWithin, wordsForRange } from '@/lib/reading';
@@ -71,6 +72,7 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
     const [translation, setTranslation] = useState<{ en: string; fa: string } | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [activeWord, setActiveWord] = useState<ReadingWord | null>(null);
 
     const wordAudioRef = useRef<HTMLAudioElement | null>(null);
     const paragraphRefs = useRef(new Map<string, HTMLParagraphElement>());
@@ -359,7 +361,8 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                                 activeIndex={audio.playing ? activeIndex : null}
                                 words={paragraph.words}
                                 evidence={evidence?.page_key === paragraph.id ? { start: evidence.start_utf16, end: evidence.end_utf16 } : null}
-                                onWordClick={(word) => playWords([word])}
+                                onWordSelect={setActiveWord}
+                                onWordPlay={(word) => playWords([word])}
                             />
                         </p>
                     </div>
@@ -421,6 +424,7 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                             <WordPreview
                                 words={item.words}
                                 title={`واژه‌های سخت پاراگراف ${item.label ?? itemIndex + 1}`}
+                                defaultOpen
                                 onPlay={(word) => playWords([word])}
                                 onPlayAll={() => playWords(item.words)}
                             />
@@ -444,7 +448,8 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
                                     activeIndex={index === itemIndex && audio.playing ? activeIndex : null}
                                     words={item.words}
                                     evidence={evidence?.page_key === item.id ? { start: evidence.start_utf16, end: evidence.end_utf16 } : null}
-                                    onWordClick={(word) => playWords([word])}
+                                    onWordSelect={setActiveWord}
+                                    onWordPlay={(word) => playWords([word])}
                                 />
                             </p>
                         </article>
@@ -659,6 +664,7 @@ export function IeltsReader({ node, breadcrumbs, passage, questions, attempt, pr
             )}
 
             {credit !== null && credit !== undefined && <p className="m-0 text-center text-[0.65rem] text-muted">{credit}</p>}
+            <WordSheet word={activeWord} onClose={() => setActiveWord(null)} onPlay={(word) => playWords([word as ReadingWord])} />
             <audio ref={wordAudioRef} preload="none" className="hidden" />
         </div>
     );

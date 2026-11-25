@@ -5,6 +5,7 @@ use App\Models\User;
 use Database\Seeders\S1SampleSeeder;
 use Inertia\Testing\AssertableInertia;
 use Livewire\Features\SupportAutoInjectedAssets\SupportAutoInjectedAssets;
+use Tests\Support\ContentFixtures;
 
 // S1-1: anonymous sample journey. Each level view shows only that lesson's
 // body text and audio source, with Persian RTL chrome + English LTR body.
@@ -18,23 +19,20 @@ beforeEach(function () {
         ->firstOrFail();
 });
 
-test('anonymous visitor reads the A2 sample lesson with only its body and audio', function () {
+test('a subscriber reads the A2 lesson with only its body and audio', function () {
     // M1 port (ADR-0002): the same no-mixing claims through the Inertia
     // transport. Persian copy and LTR attributes render client-side and
     // are proven in tests/browser/s1-journey.spec.ts; HTTP asserts the
     // root document direction plus the exact decoded props.
-    // Paid-only slice: the learner URL redirects to the public sample
-    // experience (owner requirement); the claims hold on the followed page.
-    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
-    $response = $this->followRedirects($redirect);
+    $response = $this->actingAs(ContentFixtures::subscribedStudent())
+        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']));
 
     $response->assertOk()
         ->assertSee('lang="fa" dir="rtl"', false);
 
     $a2Audio = route('media.lesson.audio', $this->a2);
     $response->assertInertia(fn (AssertableInertia $page) => $page
-        ->component('Sample/Show')
+        ->component('Reader/Show')
         ->where('lesson.level', 'A2')
         ->where('lesson.audio_url', $a2Audio)
         ->where('topic.slug', 'city-park'));
@@ -48,14 +46,13 @@ test('anonymous visitor reads the A2 sample lesson with only its body and audio'
     $response->assertDontSee('Sara loves Saturday mornings');
 });
 
-test('anonymous visitor reads the B1 sample lesson with only its body and audio', function () {
-    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'B1']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'B1']));
-    $response = $this->followRedirects($redirect);
+test('a subscriber reads the B1 lesson with only its body and audio', function () {
+    $response = $this->actingAs(ContentFixtures::subscribedStudent())
+        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'B1']));
 
     $b1Audio = route('media.lesson.audio', $this->b1);
     $response->assertOk()->assertInertia(fn (AssertableInertia $page) => $page
-        ->component('Sample/Show')
+        ->component('Reader/Show')
         ->where('lesson.level', 'B1')
         ->where('lesson.audio_url', $b1Audio));
 
@@ -67,9 +64,10 @@ test('anonymous visitor reads the B1 sample lesson with only its body and audio'
     $response->assertDontSee('On Saturday morning, Sara walks');
 });
 
-test('sample audio bytes differ per level so a mix-up is detectable', function () {
-    $a2 = $this->get(route('media.lesson.audio', $this->a2));
-    $b1 = $this->get(route('media.lesson.audio', $this->b1));
+test('lesson audio bytes differ per level so a mix-up is detectable', function () {
+    $subscriber = ContentFixtures::subscribedStudent();
+    $a2 = $this->actingAs($subscriber)->get(route('media.lesson.audio', $this->a2));
+    $b1 = $this->actingAs($subscriber)->get(route('media.lesson.audio', $this->b1));
 
     $a2->assertOk();
     $b1->assertOk();
@@ -93,12 +91,11 @@ test('learner shell loads no Filament assets and binds exactly one audio source'
         SupportAutoInjectedAssets::$forceAssetInjection = false;
     }
 
-    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
-    $html = $this->followRedirects($redirect)
+    $html = $this->actingAs(ContentFixtures::subscribedStudent())
+        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Sample/Show')
+            ->component('Reader/Show')
             ->where('lesson.audio_url', route('media.lesson.audio', $this->a2)))
         ->getContent();
 
@@ -118,17 +115,13 @@ test('learner shell loads no Filament assets and binds exactly one audio source'
         ->and(strtolower($sources))->not->toContain('alpine');
 });
 
-test('two users see the same public sample without leaking each other', function () {
+test('two users see their own lesson page without leaking each other', function () {
     User::factory()->create(['email' => 'student-a@example.com']);
     User::factory()->create(['email' => 'student-b@example.com']);
 
-    // Paid-only slice: ineligible learners resolve the sample through
-    // the public experience (redirect); the followed page carries only
-    // the viewer's own shared user, never the other account.
-    $redirect = $this->actingAs(User::where('email', 'student-a@example.com')->first())
+    $followed = $this->actingAs(ContentFixtures::subscribedStudent())
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
-    $followed = $this->followRedirects($redirect)->assertOk();
+        ->assertOk();
     $props = $followed->inertiaProps();
     expect(implode("\n", $props['paragraphs']))->toContain('On Saturday morning, Sara walks')
         ->and($followed->getContent())->not->toContain('student-b@example.com');

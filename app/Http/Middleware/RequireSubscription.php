@@ -35,6 +35,15 @@ class RequireSubscription
         $request->attributes->set(self::ELIGIBLE_ATTRIBUTE, $eligible);
 
         if ($eligible) {
+            $user = $request->user();
+            if ($user !== null && $user->needs_profile) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'برای ادامه، اطلاعات حساب را کامل کنید.'], 409);
+                }
+
+                return redirect()->route('onboarding.show');
+            }
+
             return $next($request);
         }
 

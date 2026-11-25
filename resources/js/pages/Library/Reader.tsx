@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import type { FunctionComponent, ReactNode } from 'react';
 import { IeltsReader } from '@/components/library/IeltsReader';
+import type { StoryQuestion } from '@/components/library/InsideReadingExercises';
 import { StoryReader } from '@/components/library/StoryReader';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
@@ -39,6 +40,7 @@ interface ReaderProps extends SharedProps {
     questions?: IeltsQuestion[];
     attempt?: IeltsResult | null;
     credit?: string | null;
+    practiceQuestions?: StoryQuestion[];
 }
 
 /**
@@ -85,6 +87,7 @@ export const LibraryReader: FunctionComponent<ReaderProps> & {
                     endpoints={props.endpoints}
                     revision={props.revision}
                     credit={credit ?? (typeof meta.credit === 'string' ? meta.credit : null)}
+                    questions={props.practiceQuestions ?? []}
                 />
             )}
         </>

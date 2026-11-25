@@ -19,7 +19,6 @@ test('learner pages mount the learner shell and public pages the public shell', 
     // Guest marketing is observed before actingAs: signed-in visitors
     // are redirected away from the landing by owner decision.
     $this->get(route('landing'))->assertOk();
-    $this->get(route('sample'))->assertOk();
 
     $home = $this->actingAs($student)->get(route('app.home'))->assertOk();
     $directives = collect(explode(',', strtolower((string) $home->headers->get('Cache-Control'))))
@@ -31,7 +30,7 @@ test('page modules bind exactly one shell each', function () {
     $pages = glob(resource_path('js/pages/**/*.tsx')) ?: [];
     expect($pages)->not->toBeEmpty();
 
-    $public = ['Landing/Index', 'Sample/Show', 'Trust/Show', 'Download/Index', 'Install/Index', 'Auth/Login', 'Auth/Register', 'Auth/ForgotPassword', 'Auth/ResetPassword', 'Auth/VerifyEmail', 'Auth/PhoneLogin', 'Auth/VerifyPhone'];
+    $public = ['Landing/Index', 'Trust/Show', 'Download/Index', 'Install/Index', 'Auth/Login', 'Auth/Register', 'Auth/ForgotPassword', 'Auth/ResetPassword', 'Auth/VerifyEmail', 'Auth/PhoneLogin', 'Auth/VerifyPhone'];
     $errors = [];
     foreach ($pages as $file) {
         $relative = str_replace(resource_path('js/pages/'), '', $file);

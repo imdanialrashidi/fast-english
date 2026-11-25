@@ -21,7 +21,7 @@ final class ReadingPayload
 {
     /**
      * @return array{
-     *   topic: array{id: int, slug: string, title_en: string, summary_public: string|null, cover_url: string|null},
+     *   topic: array{id: int, slug: string, title_en: string, summary_public: string|null, summary_a1_en: string|null, cover_url: string|null},
      *   lesson: array{id: int, title_en: string, level: string, estimated_minutes: int, duration_seconds: int, audio_revision: int, audio_url: string},
      *   paragraphs: list<string>,
      *   glossary: list<array{word: string, meaning_fa: string, example_en: string|null}>
@@ -38,6 +38,7 @@ final class ReadingPayload
                 'slug' => (string) $topic->slug,
                 'title_en' => (string) $topic->title_en,
                 'summary_public' => $topic->summary_public,
+                'summary_a1_en' => $topic->summary_a1_en,
                 'cover_url' => TopicCover::url($topic->cover_path),
             ],
             'lesson' => [
@@ -81,7 +82,7 @@ final class ReadingPayload
                 'title_en' => (string) $lesson->title_en,
                 'level' => (string) $lesson->level,
                 'cover_url' => TopicCover::url($lesson->topic->cover_path),
-                'reader_url' => route('sample', [
+                'reader_url' => route('reader.show', [
                     'topic' => $lesson->topic->slug,
                     'level' => $lesson->level,
                 ]),

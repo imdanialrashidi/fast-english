@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\VocabularyWord;
-use App\Support\PublicSample;
 use App\Support\SiteSettings;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -72,11 +71,6 @@ class HandleInertiaRequests extends Middleware
                     ->where('due_at', '<=', now())
                     ->count()
                 : 0,
-            // Public marketing/auth surfaces need to know whether a real
-            // sample exists before offering a «شروع با نمونه رایگان» link;
-            // /sample is a 404 until content is uploaded. Learner routes are
-            // excluded so their fixed query budgets stay untouched.
-            'has_public_sample' => fn (): bool => $this->publicSampleAvailable($request),
             // Owner-confirmed support phone/Bale/email, shown on the
             // support page, footer, payment page, and auth screens. Only
             // the routes that render a support note pay for the settings
@@ -91,7 +85,6 @@ class HandleInertiaRequests extends Middleware
     {
         return $request->routeIs(
             'landing',
-            'sample',
             'download',
             'install',
             'trust.*',
@@ -108,23 +101,4 @@ class HandleInertiaRequests extends Middleware
         );
     }
 
-    private function publicSampleAvailable(Request $request): bool
-    {
-        if (! $request->routeIs(
-            'landing',
-            'sample',
-            'download',
-            'install',
-            'trust.*',
-            'login',
-            'register',
-            'password.*',
-            'verification.*',
-            'phone.*',
-        )) {
-            return false;
-        }
-
-        return PublicSample::exists();
-    }
 }

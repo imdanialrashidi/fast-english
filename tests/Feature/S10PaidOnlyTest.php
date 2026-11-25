@@ -57,32 +57,37 @@ test('guests reach login for learner pages and the locked state for premium cont
     expect(LessonProgress::count())->toBe(0);
 });
 
-test('learners without a subscription are locked out of every learner page', function () {
-    foreach (['app.home', 'today.index', 'app.saved', 'words.index', 'words.review', 'placement.index'] as $route) {
-        $this->actingAs($this->noSub)->get(route($route))
-            ->assertForbidden()
-            ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'));
+test('learners without a subscription can see the shell but no lesson content', function () {
+    // Owner instruction 2026-11-25: the environment and its sections are
+    // visible with lock states; the lesson body, transcript, glossary and
+    // audio stay closed until the monthly subscription is active.
+    foreach (['app.home', 'today.index', 'books.index'] as $route) {
+        $this->actingAs($this->noSub)->get(route($route))->assertOk();
     }
 
-    // The locked page carries the subscription CTA, never a free-sample
-    // path (owner instruction 2026-11-22), and no premium lesson content.
-    // URLs travel as decoded Inertia props.
+    foreach (['app.saved', 'words.index', 'words.review', 'placement.index'] as $route) {
+        $this->actingAs($this->noSub)->get(route($route))
+            ->assertForbidden()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('Locked/Index')
+                ->where('subscribeUrl', route('subscribe.index'))
+                ->missing('sampleUrl'));
+    }
+
     $this->actingAs($this->noSub)->get(route('today.index'))
-        ->assertForbidden()
+        ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Locked/Index')
-            ->where('subscribeUrl', route('subscribe.index'))
-            ->missing('sampleUrl'))
-        ->assertDontSee('The night train left the station');
+            ->component('Today/Index')
+            ->has('plan.tasks'));
     $html = $this->actingAs($this->noSub)->get(route('today.index'))->getContent();
-    expect($html)->not->toContain('body_en');
+    expect($html)->not->toContain('The night train left the station');
 });
 
 test('pending, expired, and revoked learners lose learner functionality', function () {
     // Pending grants nothing.
     $pendingUser = ContentFixtures::student();
     S6Payments::pendingRequest($this, $pendingUser, $this->plan);
-    $this->actingAs($pendingUser)->get(route('today.index'))->assertForbidden();
+    $this->actingAs($pendingUser)->get(route('today.index'))->assertOk();
     $this->actingAs($pendingUser)->postJson(route('progress.store'), [
         'lesson_id' => $this->premium->id,
         'audio_revision' => $this->premium->audio_revision,
@@ -97,7 +102,7 @@ test('pending, expired, and revoked learners lose learner functionality', functi
     $expiredUser = $expiredUser->fresh();
     Carbon::setTestNow($this->now->copy()->addDays(31));
     try {
-        $this->actingAs($expiredUser)->get(route('today.index'))->assertForbidden();
+        $this->actingAs($expiredUser)->get(route('today.index'))->assertOk();
         $this->actingAs($expiredUser)->get(route('media.lesson.audio', $this->premium))->assertForbidden();
     } finally {
         Carbon::setTestNow(null);
@@ -111,7 +116,7 @@ test('pending, expired, and revoked learners lose learner functionality', functi
     $revokedUser = $revokedUser->fresh();
     Carbon::setTestNow($this->now->copy()->addDays(3));
     try {
-        $this->actingAs($revokedUser)->get(route('today.index'))->assertForbidden();
+        $this->actingAs($revokedUser)->get(route('today.index'))->assertOk();
         $this->actingAs($revokedUser)->get(route('reader.show', ['topic' => 'night-trains', 'level' => 'B1']))->assertForbidden();
     } finally {
         Carbon::setTestNow(null);
@@ -176,52 +181,25 @@ test('active subscribers and staff keep full learner access', function () {
         ->assertOk();
 });
 
-test('the public sample stays open through the public experience only', function () {
-    $a2Audio = route('media.lesson.audio', Lesson::whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))->where('level', 'A2')->firstOrFail());
+test('no lesson body or lesson audio opens before an active subscription', function () {
+    $a2 = Lesson::whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))->where('level', 'A2')->firstOrFail();
 
-    // Guests and ineligible learners read the sample with its audio URL —
-    // and nothing from any other lesson.
-    foreach ([$this->get(route('sample')), $this->actingAs($this->noSub)->get(route('sample'))] as $response) {
-        $response->assertOk()
-            ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('Sample/Show')
-                ->where('lesson.level', 'A2')
-                ->where('lesson.audio_url', $a2Audio));
-        expect($response->getContent())->not->toContain('The night train left the station');
-    }
+    $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
+        ->assertForbidden()
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'));
+    $this->actingAs($this->noSub)
+        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
+        ->assertForbidden()
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Locked/Index'));
 
-    // The flagged B1 resolves by level without hardcoding ids or titles.
-    $this->get(route('sample', ['topic' => 'city-park', 'level' => 'B1']))
-        ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('Sample/Show')
-            ->where('lesson.level', 'B1'));
+    $this->get(route('media.lesson.audio', $a2))->assertForbidden();
+    $this->actingAs($this->noSub)->get(route('media.lesson.audio', $a2))->assertForbidden();
 
-    // Non-flagged lessons never resolve as samples.
-    $this->get(route('sample', ['topic' => 'night-trains', 'level' => 'B1']))->assertNotFound();
-    $this->get(route('sample', ['topic' => 'city-park', 'level' => 'C2']))->assertNotFound();
-
-    // Sample audio streams for everyone, premium audio refuses ineligible.
-    $this->get(route('media.lesson.audio', Lesson::whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))->where('level', 'A2')->firstOrFail()))->assertOk();
-    $this->get(route('media.lesson.audio', $this->premium))->assertForbidden();
-    $this->actingAs($this->noSub)->get(route('media.lesson.audio', $this->premium))->assertForbidden();
+    // The public sample route is retired.
+    $this->get('/sample')->assertNotFound();
 });
 
-test('learner URLs resolving to the sample redirect to the public sample', function () {
-    // Guests and ineligible learners leave the learner shell for /sample.
-    $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'A2']));
-    $this->actingAs($this->noSub)
-        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'B1']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'B1']));
-
-    // The redirect target renders the sample, not the locked state.
-    $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
-        ->assertRedirect();
-    $follow = $this->followRedirects($this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2'])));
-    $follow->assertOk()->assertInertia(fn (AssertableInertia $page) => $page->component('Sample/Show'));
-
-    // Eligible subscribers keep the learner reader for the sample lesson.
+test('an eligible subscriber keeps the learner reader for a flagged sample lesson', function () {
     $active = ContentFixtures::subscribedStudent();
     $this->actingAs($active)
         ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))
@@ -233,7 +211,6 @@ test('public pages and checkout stay reachable without a subscription', function
     // Marketing, auth, status, and checkout pages keep their existing
     // authorization: reachable, never a learner-content backdoor.
     $this->get(route('landing'))->assertOk();
-    $this->get(route('sample'))->assertOk();
     $this->get(route('trust.faq'))->assertOk();
     $this->get(route('download'))->assertOk();
     $this->get(route('login'))->assertOk();
@@ -256,14 +233,11 @@ test('public pages render public components with no premium props', function () 
     $this->get(route('landing'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page->component('Landing/Index'));
-    $this->get(route('sample'))
-        ->assertOk()
-        ->assertInertia(fn (AssertableInertia $page) => $page->component('Sample/Show'));
     $this->get(route('trust.faq'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page->component('Trust/Show'));
 
-    foreach ([$this->get(route('landing'))->getContent(), $this->get(route('sample'))->getContent()] as $html) {
+    foreach ([$this->get(route('landing'))->getContent()] as $html) {
         expect($html)->not->toContain('The night train left the station')
             ->and($html)->not->toContain('body_en');
     }

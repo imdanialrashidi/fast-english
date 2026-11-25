@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaymentRequest;
+use App\Support\ProfilePhoto;
 use App\Support\Entitlement;
 use App\Support\Toman;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -70,9 +72,13 @@ class AccountController extends Controller
         return Inertia::render('Account/Index', [
             'user' => [
                 'name' => (string) $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
                 'email' => (string) $user->email,
                 'preferred_level' => $user->preferred_level,
                 'daily_goal_minutes' => (int) ($user->daily_goal_minutes ?? 10),
+                'avatar_url' => $user->avatar_path !== null ? Storage::disk('public')->url($user->avatar_path) : null,
+                'profile_completed' => $user->profile_completed_at !== null,
             ],
             'subscription' => $subscription ? [
                 'active' => $subscriptionActive,
@@ -89,5 +95,47 @@ class AccountController extends Controller
             'latestRequest' => $mapRequest($latestRequest),
             'paymentHistory' => $paymentHistory,
         ]);
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $user = $request->user();
+        if ($user === null || $user->disabled_at !== null) {
+            abort(403);
+        }
+
+        $request->validate([
+            'avatar' => ['required', 'file', 'max:4096'],
+        ], [
+            'avatar.required' => 'یک عکس انتخاب کنید.',
+            'avatar.file' => 'فایل انتخاب‌شده معتبر نیست.',
+            'avatar.max' => 'حجم عکس بیشتر از ۴ مگابایت است.',
+        ]);
+
+        $file = $request->file('avatar');
+        if ($file === null) {
+            return back()->withErrors(['avatar' => 'یک عکس انتخاب کنید.']);
+        }
+
+        $previous = $user->avatar_path;
+        $path = ProfilePhoto::store($file);
+        $user->forceFill(['avatar_path' => $path])->save();
+        ProfilePhoto::delete($previous);
+
+        return back()->with('status', 'عکس پروفایل به‌روز شد.');
+    }
+
+    public function deleteAvatar(Request $request)
+    {
+        $user = $request->user();
+        if ($user === null || $user->disabled_at !== null) {
+            abort(403);
+        }
+
+        $previous = $user->avatar_path;
+        $user->forceFill(['avatar_path' => null])->save();
+        ProfilePhoto::delete($previous);
+
+        return back()->with('status', 'عکس پروفایل حذف شد.');
     }
 }

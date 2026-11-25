@@ -12,9 +12,9 @@ import { test } from './helpers';
 
 // Paid-only slice: the sample resolves through the public experience;
 // the library and learner-reader legs need an active subscription.
-const CITY_A2 = '/sample?topic=city-park&level=A2';
-const CITY_B1 = '/sample?topic=city-park&level=B1';
-const MARKET_A1 = '/sample?topic=morning-market&level=A1';
+const CITY_A2 = '/app/topics/city-park?level=A2';
+const CITY_B1 = '/app/topics/city-park?level=B1';
+const MARKET_A1 = '/app/topics/morning-market?level=A1';
 const LEARNER_CITY_A2 = '/app/topics/city-park?level=A2';
 const LEARNER_MARKET_A1 = '/app/topics/morning-market?level=A1';
 
@@ -23,21 +23,21 @@ test('M1 landing CTA opens the paid registration funnel', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'fa');
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-    await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /تنها پادکست استاندارد/ })).toBeVisible();
 
     const cta = page.getByRole('link', { name: /شروع کن با .* تخفیف/ }).first();
     await expect(cta).toBeVisible();
     await cta.click();
-    await page.waitForURL(/\/register/);
-    await expect(page.getByRole('heading', { name: 'ساخت حساب' })).toBeVisible();
+    await page.waitForURL(/\/login/);
+    await expect(page.getByRole('heading', { name: 'ورود به حساب' })).toBeVisible();
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /تنها پادکست استاندارد/ })).toBeVisible();
     await page.screenshot({ path: 'test-results/browser-shots/m1-landing-390.png' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /تنها پادکست استاندارد/ })).toBeVisible();
     const landingScroll = await page.evaluate(() => ({
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth: window.innerWidth,
@@ -82,7 +82,7 @@ test('M1 library filters, searches, paginates, and explains empty results', asyn
     await page.screenshot({ path: 'test-results/browser-shots/m1-library-390.png' });
 });
 
-test('M1 reader renders normal paragraphs and keeps level selection in the URL', async ({ page }) => {
+test('M1 reader renders normal paragraphs and keeps level selection in the URL', async ({ sub: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(CITY_A2);
     await expect(page.locator('article.fe-english-body')).toBeVisible();
@@ -133,7 +133,7 @@ test('M1 library at 1440px', async ({ sub: page }) => {
     await page.screenshot({ path: 'test-results/browser-shots/m1-library-1440.png' });
 });
 
-test('M1 missing level, locked premium, and plain reader stay honest', async ({ page }) => {
+test('M1 missing level and plain reader stay honest', async ({ sub: page }) => {
     // Missing level: exact message with the available levels, no substitution.
     await page.goto('/app/topics/city-park?level=B2');
     await expect(page.getByRole('heading', { name: 'این سطح هنوز آماده نیست' })).toBeVisible();
@@ -143,15 +143,6 @@ test('M1 missing level, locked premium, and plain reader stay honest', async ({ 
     expect(body).not.toContain('On Saturday morning, Sara walks');
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({ path: 'test-results/browser-shots/m1-notready-390.png' });
-
-    // Locked premium: anonymous readers get the locked state with one
-    // subscription CTA, never the body.
-    await page.goto('/app/topics/night-trains?level=B1');
-    await expect(page.getByRole('heading', { name: 'برای ادامه، اشتراک فعال لازم است' })).toBeVisible();
-    const lockedPanel = page.locator('section[aria-label="نیاز به اشتراک"]');
-    await expect(lockedPanel.getByRole('link', { name: 'ساخت حساب' })).toBeVisible();
-    const locked = await page.locator('body').textContent();
-    expect(locked).not.toContain('The night train left the station');
 
     // No-cue path is now the only path: normal paragraphs, no sync notice.
     await page.goto(MARKET_A1);

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import type { ReadingSentence, ReadingWord } from '@/types';
 import { clamp } from '@/lib/reading';
 
@@ -7,7 +8,8 @@ interface HighlightedTextProps {
     activeIndex: number | null;
     words?: ReadingWord[];
     evidence?: { start: number; end: number } | null;
-    onWordClick?: (word: ReadingWord) => void;
+    onWordSelect?: (word: ReadingWord) => void;
+    onWordPlay?: (word: ReadingWord) => void;
     className?: string;
 }
 
@@ -22,6 +24,10 @@ interface SegmentFlags {
  * paints the flags on the resulting slices. The text itself is never
  * rewritten: only `text.slice(start, end)` ranges are rendered, so spaces,
  * punctuation and dialogue quotes stay exactly as the pack shipped them.
+ *
+ * Owner instruction 2026-11-25: a reading word is a soft background
+ * highlight, never a dotted underline. One tap opens the small meaning
+ * panel; a quick second tap on the same word plays its pronunciation.
  */
 export function HighlightedText({
     text,
@@ -29,7 +35,8 @@ export function HighlightedText({
     activeIndex,
     words = [],
     evidence = null,
-    onWordClick,
+    onWordSelect,
+    onWordPlay,
     className = '',
 }: HighlightedTextProps): React.JSX.Element {
     const length = text.length;
@@ -54,6 +61,20 @@ export function HighlightedText({
 
     const points = [...boundaries].sort((left, right) => left - right);
     const active = activeIndex !== null ? sentences[activeIndex] : undefined;
+    const lastTap = React.useRef<{ word: string; at: number }>({ word: '', at: 0 });
+
+    const activate = (word: ReadingWord): void => {
+        const now = Date.now();
+        if (lastTap.current.word === word.word && now - lastTap.current.at < 420) {
+            lastTap.current = { word: '', at: 0 };
+            onWordPlay?.(word);
+
+            return;
+        }
+
+        lastTap.current = { word: word.word, at: now };
+        onWordSelect?.(word);
+    };
 
     return (
         <span className={`whitespace-pre-wrap ${className}`}>
@@ -66,8 +87,8 @@ export function HighlightedText({
                 const flags = flagsFor(start, end, active, activeIndex, words, evidence);
                 const classes = [
                     flags.evidence ? 'bg-highlight shadow-[inset_0_-2px_0_var(--color-highlight-rule)]' : '',
-                    flags.active && !flags.evidence ? 'bg-highlight-soft' : '',
-                    flags.word !== null ? 'cursor-pointer border-b border-dotted border-primary/55' : '',
+                    flags.active && !flags.evidence ? 'bg-highlight-soft/60' : '',
+                    flags.word !== null ? 'cursor-pointer rounded-[3px] bg-highlight-soft px-[1px] text-ink [box-decoration-break:clone] hover:bg-highlight' : '',
                 ]
                     .filter(Boolean)
                     .join(' ');
@@ -75,23 +96,16 @@ export function HighlightedText({
                 if (flags.word !== null) {
                     const word = flags.word;
                     return (
-                        <span
+                        <button
                             key={`${start}-${end}`}
-                            role="button"
-                            tabIndex={0}
+                            type="button"
                             data-sentence-active={flags.active ? 'true' : undefined}
-                            title={word.meaning_fa ?? word.definition_en ?? word.word}
-                            onClick={() => onWordClick?.(word)}
-                            onKeyDown={(event) => {
-                                if (event.key === 'Enter' || event.key === ' ') {
-                                    event.preventDefault();
-                                    onWordClick?.(word);
-                                }
-                            }}
-                            className={`rounded-[2px] transition-colors hover:bg-primary/[0.07] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${classes}`}
+                            aria-label={word.meaning_fa !== null && word.meaning_fa !== '' ? `${word.word} — ${word.meaning_fa}` : word.word}
+                            onClick={() => activate(word)}
+                            className={`${classes} text-inherit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
                         >
                             {text.slice(start, end)}
-                        </span>
+                        </button>
                     );
                 }
 
@@ -100,11 +114,7 @@ export function HighlightedText({
                 }
 
                 return (
-                    <span
-                        key={`${start}-${end}`}
-                        data-sentence-active={flags.active ? 'true' : undefined}
-                        className={classes}
-                    >
+                    <span key={`${start}-${end}`} data-sentence-active={flags.active ? 'true' : undefined} className={classes}>
                         {text.slice(start, end)}
                     </span>
                 );

@@ -20,6 +20,7 @@ class Topic extends Model
         'slug',
         'title_en',
         'summary_public',
+        'summary_a1_en',
         'cover_path',
         'source_note',
         'status',

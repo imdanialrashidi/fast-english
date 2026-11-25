@@ -20,7 +20,6 @@ class SitemapController extends Controller
             ['loc' => route('trust.support'), 'lastmod' => null],
             ['loc' => route('trust.terms'), 'lastmod' => null],
             ['loc' => route('trust.privacy'), 'lastmod' => null],
-            ['loc' => route('trust.refund'), 'lastmod' => null],
             ['loc' => route('download'), 'lastmod' => null],
             ['loc' => route('install'), 'lastmod' => null],
         ];

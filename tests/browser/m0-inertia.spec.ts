@@ -41,7 +41,7 @@ test('landing renders the React page with the offer and support paths', async ({
   });
   expect(component).toBe('Landing/Index');
   await expect(page.locator('#app')).not.toBeEmpty();
-  await expect(page.locator('#app')).toContainText('روزی ۱۵ دقیقه بخوان و بشنو');
+  await expect(page.locator('#app')).toContainText('تنها پادکست استاندارد');
 
   // The owner's figures and price are the first thing a buyer reads.
   await expect(page.getByText('۱۶٬۳۵۵').first()).toBeVisible();
@@ -50,9 +50,9 @@ test('landing renders the React page with the offer and support paths', async ({
 
   // Support: chrome strip plus the inline paths, all on the confirmed
   // number, with Bale and Telegram as real external destinations.
-  await expect(page.getByText('09924930667').first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'پیام در بله' }).first()).toHaveAttribute('href', 'https://ble.ir/+989924930667');
-  await expect(page.getByRole('link', { name: 'پیام در تلگرام' }).first()).toHaveAttribute('href', 'https://t.me/+989924930667');
+  await expect(page.getByText('09936908633').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'پیام در بله' }).first()).toHaveAttribute('href', 'https://ble.ir/+989936908633');
+  await expect(page.getByRole('link', { name: 'پیام در تلگرام' }).first()).toHaveAttribute('href', 'https://t.me/+989936908633');
 
   // FAQ and the paid CTA render; no sample path and no audio player.
   await expect(page.locator('#app')).toContainText('برای چه سطحی مناسب است؟');

@@ -47,12 +47,13 @@ function libraryNode(string $track, string $slug, string $kind = 'book', array $
     ]);
 }
 
-test('the reading shelf is paid-only and always has four items', function () {
+test('the reading shelf is visible to learners while the reader stays paid-only', function () {
     $this->get(route('books.index'))->assertRedirect();
 
     $this->actingAs(ContentFixtures::student())
         ->get(route('books.index'))
-        ->assertForbidden();
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('Books/Index'));
 
     $this->actingAs(ContentFixtures::subscribedStudent())
         ->get(route('books.index'))
@@ -136,7 +137,7 @@ test('a story leaf with a published document renders its pages and saves progres
             ->where('node.track', 'story')
             ->has('chapters', 1)
             ->where('chapters.0.pages.0.words.0.meaning_fa', 'عصبانی')
-            ->missing('questions'));
+            ->has('questions', 0));
 
     $this->actingAs($student)
         ->postJson(route('library.progress', ['node' => $node->id]), [

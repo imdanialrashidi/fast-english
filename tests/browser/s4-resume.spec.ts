@@ -50,13 +50,11 @@ test('S4-1 resume: pause saves, reload restores, nothing auto-plays', async ({ s
   expect(returned).toBeGreaterThan(10);
 });
 
-test('S4-1 anonymous listening leaves no saved position', async ({ page }) => {
-  // Paid-only slice: anonymous hits resolve to the public sample, which
-  // carries no learner affordances — nothing to save with, nothing resumed.
-  await page.goto('/sample?topic=city-park&level=A2');
-  await page.waitForFunction(() => Number.isFinite(document.querySelector<HTMLAudioElement>('#lesson-audio')?.duration));
-  await expect(page.locator('#fe-lesson-data')).toHaveCount(0);
+test('S4-1 anonymous listening is closed before any learner state', async ({ page }) => {
+  // Owner instruction 2026-11-25: a guest gets the locked/login state, not
+  // a lesson body, so no learner affordance or save path is exposed.
+  await page.goto(READER);
+  await expect(page.locator('#lesson-audio')).toHaveCount(0);
   await expect(page.locator('#bookmark-toggle')).toHaveCount(0);
   await expect(page.locator('#mark-read')).toHaveCount(0);
-  await expect(page.getByText('ادامه از موقعیت ذخیره‌شده')).toHaveCount(0);
 });

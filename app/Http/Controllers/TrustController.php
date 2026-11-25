@@ -50,11 +50,6 @@ class TrustController extends Controller
         return $this->trustPage('privacy');
     }
 
-    public function refund(): Response
-    {
-        return $this->trustPage('refund');
-    }
-
     private function trustPage(string $page): Response
     {
         $support = SiteSettings::supportContacts();
@@ -95,20 +90,20 @@ class TrustController extends Controller
     {
         $copy = [
             'about' => [
-                'title' => 'درباره Fast English | خواندن و شنیدن انگلیسی',
-                'description' => 'Fast English کتابخانهٔ خواندن و شنیدن انگلیسی در شش سطح A1 تا C2 است: متن و صوت همان نسخه، TED Talk، کتاب American English File و مرور واژه‌ها.',
+                'title' => 'درباره ما | Fast English',
+                'description' => 'فست انگلیش برای فارسی‌زبانانی ساخته شده که می‌خواهند انگلیسی را به‌صورت استاندارد و جذاب یاد بگیرند؛ پادکست در شش سطح، داستان، آیلتس، TED و تمرین.',
             ],
             'cooperation' => [
                 'title' => 'همکاری با Fast English',
-                'description' => 'برای همکاری در تولید محتوا، معرفی محصول یا پشتیبانی با Fast English در تماس باش. کانال رسمی همکاری در این صفحه آمده است.',
+                'description' => 'اگر در آموزش زبان انگلیسی یا تولید محتوای آموزشی فعالیت می‌کنید، معرفی کوتاه، زمینهٔ همکاری و نمونه‌کارتان را برای فست انگلیش بفرستید.',
             ],
             'faq' => [
-                'title' => 'پرسش‌های پرتکرار Fast English',
-                'description' => 'پاسخ پرسش‌های رایج دربارهٔ سطح‌ها، محتوای کتابخانه، خرید اشتراک، تأیید پرداخت، نصب روی گوشی و پشتیبانی Fast English.',
+                'title' => 'پرسش‌های شما | Fast English',
+                'description' => 'پاسخ پرسش‌های شما دربارهٔ مخاطب فست انگلیش، معنی سطح‌های A1 تا C2، روش خرید اشتراک و نصب اپلیکیشن روی اندروید و آیفون.',
             ],
             'support' => [
                 'title' => 'پشتیبانی Fast English',
-                'description' => 'راه‌های تماس با پشتیبانی Fast English برای پیگیری پرداخت، مشکل ورود و پرسش‌های حساب؛ همراه با کانال رسمی پشتیبانی.',
+                'description' => 'برای پرسش‌های قبل از خرید، راهنمایی استفاده از برنامه، مشکل ورود یا پیگیری اشتراک، در بله یا تلگرام به ۰۹۹۳۶۹۰۸۶۳۳ پیام بدهید.',
             ],
             'terms' => [
                 'title' => 'قوانین استفاده | Fast English',
@@ -117,10 +112,6 @@ class TrustController extends Controller
             'privacy' => [
                 'title' => 'حریم خصوصی | Fast English',
                 'description' => 'سیاست حریم خصوصی Fast English: چه داده‌هایی ذخیره می‌شود، چگونه نگهداری می‌شود و چه کسی به آن دسترسی دارد.',
-            ],
-            'refund' => [
-                'title' => 'بازگشت وجه | Fast English',
-                'description' => 'شرایط بازگشت وجه اشتراک Fast English و مسیر پیگیری درخواست بازگشت را در این صفحه ببین.',
             ],
         ];
 

@@ -72,7 +72,6 @@ export interface SharedProps extends InertiaPageProps {
      * Whether a published public sample exists. Public/auth surfaces hide
      * sample links when false instead of sending a guest to a 404.
      */
-    has_public_sample: boolean;
     /** Null on pages that do not render a support note. */
     support: SupportContact | null;
     /** Public pages only; null/absent on auth and app screens. */
@@ -146,6 +145,7 @@ export interface TopicPayload {
     slug: string;
     title_en: string;
     summary_public: string | null;
+    summary_a1_en: string | null;
     cover_url: string | null;
 }
 
@@ -176,6 +176,15 @@ export interface TedSentence {
     text: string;
 }
 
+export interface TedLexiconEntry {
+    level: string;
+    fa: string;
+    en: string | null;
+    pos: string | null;
+    syn: string | null;
+    audio_url: string | null;
+}
+
 export interface TedTalkPayload {
     id: number;
     slug: string;
@@ -190,6 +199,7 @@ export interface TedTalkPayload {
     cover_url: string | null;
     segments: TedSentence[][];
     words: TedWord[];
+    lexicon: Record<string, TedLexiconEntry>;
     source_url: string;
     source_license: string;
 }
@@ -345,6 +355,8 @@ export interface ReadingWord {
     start_utf16: number | null;
     end_utf16: number | null;
     audio_url: string | null;
+    synonym?: string | null;
+    level?: string | null;
 }
 
 export interface ReadingSentence {

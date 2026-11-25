@@ -55,8 +55,6 @@ class BusinessSettings extends Page
 
     public string $privacy = '';
 
-    public string $refund = '';
-
     public function mount(): void
     {
         $destination = PaymentDestination::query()->where('is_active', true)->first();
@@ -72,7 +70,6 @@ class BusinessSettings extends Page
         $this->cardInstructions = $destination?->instructions ?? '';
         $this->terms = SiteSettings::legal('terms') ?? '';
         $this->privacy = SiteSettings::legal('privacy') ?? '';
-        $this->refund = SiteSettings::legal('refund') ?? '';
     }
 
     public function save(): void
@@ -95,7 +92,6 @@ class BusinessSettings extends Page
             'cardInstructions' => ['nullable', 'string', 'max:2000'],
             'terms' => ['required', 'string', 'max:20000'],
             'privacy' => ['required', 'string', 'max:20000'],
-            'refund' => ['required', 'string', 'max:20000'],
         ], [
             'cardNumber.regex' => 'شمارهٔ کارت باید دقیقاً ۱۶ رقم باشد.',
             'supportChannel.required' => 'کانال پشتیبانی الزامی است.',
@@ -103,7 +99,6 @@ class BusinessSettings extends Page
             'cooperationChannel.required' => 'کانال همکاری الزامی است.',
             'terms.required' => 'متن قوانین الزامی است.',
             'privacy.required' => 'متن حریم خصوصی الزامی است.',
-            'refund.required' => 'متن بازگشت وجه الزامی است.',
         ]);
 
         // A card number without a holder/bank can never pass
@@ -130,7 +125,6 @@ class BusinessSettings extends Page
             Setting::put(SiteSettings::COOPERATION_CHANNEL, $this->cooperationChannel);
             Setting::put('legal.terms', $this->terms);
             Setting::put('legal.privacy', $this->privacy);
-            Setting::put('legal.refund', $this->refund);
 
             $destination = PaymentDestination::query()->where('is_active', true)->first()
                 ?? new PaymentDestination;

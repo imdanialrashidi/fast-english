@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Middleware\NormalizeTrailingSlash;
-use Database\Seeders\S1SampleSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Database\Seeders\S1SampleSeeder;
 use Tests\Support\ContentFixtures;
 
 // Public SEO contract: each page owns its server-rendered title,
@@ -15,7 +15,7 @@ test('trust pages ship unique titles descriptions and one social image', functio
     $titles = [];
     $descriptions = [];
 
-    foreach (['about', 'cooperation', 'faq', 'support', 'terms', 'privacy', 'refund'] as $page) {
+    foreach (['about', 'cooperation', 'faq', 'support', 'terms', 'privacy'] as $page) {
         $html = $this->get(route('trust.'.$page))->assertOk()->getContent();
 
         preg_match('/<title inertia>(.*?)<\/title>/s', $html, $title);
@@ -32,8 +32,8 @@ test('trust pages ship unique titles descriptions and one social image', functio
         $descriptions[] = $description[1];
     }
 
-    expect(array_unique($titles))->toHaveCount(7)
-        ->and(array_unique($descriptions))->toHaveCount(7);
+    expect(array_unique($titles))->toHaveCount(6)
+        ->and(array_unique($descriptions))->toHaveCount(6);
 });
 
 test('landing ships organization faq and social metadata in the first paint', function () {
@@ -54,8 +54,8 @@ test('faq page emits faqpage structured data from the same server list', functio
     $props = $this->get(route('trust.faq'))->assertOk()->inertiaProps();
 
     expect($html)->toContain('"@type":"FAQPage"')
-        ->and($html)->toContain('Fast English برای چه کسی ساخته شده است؟')
-        ->and($html)->toContain('سطح‌ها چه معنایی دارند؟')
+        ->and($html)->toContain('فست انگلیش برای چه کسی ساخته شده؟')
+        ->and($html)->toContain('سطح‌ها چه معنی دارند؟')
         ->and($props['faqs'])->toHaveCount(4);
 });
 
@@ -66,9 +66,9 @@ test('public trailing slashes redirect to the canonical slashless url', function
     expect($about->getStatusCode())->toBe(301)
         ->and($about->headers->get('Location'))->toEndWith('/about');
 
-    $sample = $middleware->handle(Request::create('/sample/?level=A1'), fn () => response('ok'));
-    expect($sample->getStatusCode())->toBe(301)
-        ->and($sample->headers->get('Location'))->toEndWith('/sample?level=A1');
+    $install = $middleware->handle(Request::create('/install/?from=faq'), fn () => response('ok'));
+    expect($install->getStatusCode())->toBe(301)
+        ->and($install->headers->get('Location'))->toEndWith('/install?from=faq');
 
     // Private/application paths keep their own routing.
     expect($middleware->handle(Request::create('/app/'), fn () => response('ok'))->getStatusCode())->toBe(200);
@@ -88,8 +88,7 @@ test('google site verification meta is opt-in', function () {
 
 test('the root template preloads the LCP font and the hero cover', function () {
     $this->seed(S1SampleSeeder::class);
-
-    $html = $this->get(route('sample'))->assertOk()->getContent();
+    $html = $this->get(route('landing'))->assertOk()->getContent();
 
     expect($html)->toContain('rel="preload" as="font"')
         ->and($html)->toContain('vazirmatn-arabic-variable.woff2')

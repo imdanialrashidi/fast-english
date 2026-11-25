@@ -21,7 +21,8 @@ use App\Support\Exercises\ExerciseProgress;
  */
 final class DailyPlan
 {
-    public const GOALS = [5, 10, 15];
+    /** Owner instruction 2026-11-25: ten-minute steps from 10 to 60. */
+    public const GOALS = [10, 20, 30, 40, 50, 60];
 
     /**
      * @return array{
@@ -54,7 +55,7 @@ final class DailyPlan
             && $continueProgress->lesson->status === 'published'
             && $continueProgress->lesson->topic !== null
             && $continueProgress->lesson->topic->status === 'published'
-            && ($eligible || $continueProgress->lesson->is_public_sample))
+            && $eligible)
             ? $continueProgress->lesson
             : null;
 
@@ -167,14 +168,19 @@ final class DailyPlan
 
     private static function nextLesson(User $user, ?int $excludeLessonId, bool $eligible): ?Lesson
     {
+        // No lesson is recommended without an active subscription; the
+        // plan shows the subscribe task instead of a sample lesson.
+        if (! $eligible) {
+            return null;
+        }
+
         $query = Lesson::query()
             ->where('status', 'published')
             ->whereHas('topic', fn ($topics) => $topics->where('status', 'published'))
             ->with('topic')
             ->when($excludeLessonId !== null, fn ($q) => $q->where('id', '!=', $excludeLessonId))
-            ->when(! $eligible, fn ($q) => $q->where('is_public_sample', true))
             ->when(
-                is_string($user->preferred_level) && $user->preferred_level !== '' && $eligible,
+                is_string($user->preferred_level) && $user->preferred_level !== '',
                 fn ($q) => $q->where('level', $user->preferred_level)
             )
             ->orderByDesc('id');
@@ -191,7 +197,6 @@ final class DailyPlan
             ->whereHas('topic', fn ($topics) => $topics->where('status', 'published'))
             ->with('topic')
             ->when($excludeLessonId !== null, fn ($q) => $q->where('id', '!=', $excludeLessonId))
-            ->when(! $eligible, fn ($q) => $q->where('is_public_sample', true))
             ->orderByDesc('id')
             ->first();
     }
@@ -210,7 +215,6 @@ final class DailyPlan
             ->where('status', 'published')
             ->whereHas('lessons', function ($lessons) use ($user, $eligible) {
                 $lessons->where('status', 'published')
-                    ->when(! $eligible, fn ($q) => $q->where('is_public_sample', true))
                     ->when(
                         is_string($user->preferred_level) && $user->preferred_level !== '' && $eligible,
                         fn ($q) => $q->where('level', $user->preferred_level)
@@ -220,7 +224,6 @@ final class DailyPlan
             // these; the FK stays so the eager matches back to topics.
             ->with(['lessons' => fn ($lessons) => $lessons
                 ->where('status', 'published')
-                ->when(! $eligible, fn ($q) => $q->where('is_public_sample', true))
                 ->orderBy('id')
                 ->select(['id', 'topic_id', 'level', 'estimated_minutes']),
             ])

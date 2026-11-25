@@ -44,6 +44,30 @@ export const DownloadIndex: FunctionComponent<DownloadProps> & { layout?: (page:
                     </p>
                 </div>
 
+                <section aria-labelledby="download-install-guide" className="grid gap-4 rounded-3xl border border-line bg-surface p-5">
+                    <h2 id="download-install-guide" className="m-0 text-xl leading-8 font-extrabold">
+                        راهنمای نصب روی گوشی
+                    </h2>
+                    <div className="grid gap-3">
+                        <h3 className="m-0 font-bold">iPhone و iPad</h3>
+                        <ol className="m-0 grid list-decimal gap-2 pr-5 leading-8 text-muted">
+                            <li>سایت را در Safari باز کنید.</li>
+                            <li>دکمهٔ سه‌نقطهٔ پایین سمت راست صفحه را بزنید و گزینهٔ <span lang="en" dir="ltr" className="font-en font-bold text-ink">share</span> (به اشتراک‌گذاری) را انتخاب کنید.</li>
+                            <li>در صفحهٔ <span lang="en" dir="ltr" className="font-en font-bold text-ink">share</span> (به اشتراک‌گذاری) گزینهٔ <span lang="en" dir="ltr" className="font-en font-bold text-ink">Add to Home Screen</span> را بزنید.</li>
+                            <li><span lang="en" dir="ltr" className="font-en font-bold text-ink">Add</span> را تأیید کنید.</li>
+                        </ol>
+                    </div>
+                    <div className="grid gap-3 border-t border-line pt-4">
+                        <h3 className="m-0 font-bold">اندروید</h3>
+                        <ol className="m-0 grid list-decimal gap-2 pr-5 leading-8 text-muted">
+                            <li>سایت را در Chrome باز کنید.</li>
+                            <li>منوی سه‌نقطهٔ مرورگر را باز کنید.</li>
+                            <li><span lang="en" dir="ltr" className="font-en font-bold text-ink">Install app</span> یا <span lang="en" dir="ltr" className="font-en font-bold text-ink">Add to Home screen</span> را بزنید.</li>
+                            <li>در پنجرهٔ تأیید، <span lang="en" dir="ltr" className="font-en font-bold text-ink">Install</span> یا <span lang="en" dir="ltr" className="font-en font-bold text-ink">Add</span> را بزنید.</li>
+                        </ol>
+                    </div>
+                </section>
+
                 <div className="grid gap-3 rounded-3xl border border-line bg-surface p-5">
                     <p className="m-0 inline-flex items-center gap-2 text-sm font-bold text-primary">
                         <Smartphone size={18} aria-hidden="true" />

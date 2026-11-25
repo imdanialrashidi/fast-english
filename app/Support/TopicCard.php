@@ -26,6 +26,7 @@ final class TopicCard
      * @return array{
      *   slug: string,
      *   title_en: string,
+     *   title_fa: string|null,
      *   cover_url: string|null,
      *   category_name: string|null,
      *   levels: list<string>,
@@ -38,6 +39,7 @@ final class TopicCard
     {
         $card = self::for($topic);
         unset($card['reader_url']);
+        $card['title_fa'] = $topic->title_fa;
 
         return $card;
     }
@@ -46,6 +48,7 @@ final class TopicCard
      * @return array{
      *   slug: string,
      *   title_en: string,
+     *   title_fa: string|null,
      *   cover_url: string|null,
      *   category_name: string|null,
      *   levels: list<string>,

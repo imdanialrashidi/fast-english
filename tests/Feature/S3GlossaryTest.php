@@ -60,10 +60,9 @@ test('the reader shows the active lesson glossary only, escaped', function () {
         'glossary' => [['word' => 'B1word', 'meaning_fa' => 'معنی ب۱', 'example_en' => 'A <b>bold</b> example.']],
     ]);
 
-    // Paid-only slice: flagged lessons resolve through the public
-    // sample experience; the active-lesson glossary travels with it.
-    $a2Redirect = $this->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'A2']))->assertRedirect();
-    $a2 = $this->followRedirects($a2Redirect)->assertOk();
+    // A subscriber reads the active lesson; its glossary travels with it.
+    $student = ContentFixtures::subscribedStudent();
+    $a2 = $this->actingAs($student)->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'A2']))->assertOk();
     // M1 note: Persian copy travels unicode-escaped in the encoded page,
     // so raw assertSee only fits ASCII; the decoded props carry the claim.
     $a2->assertSee('A2word');
@@ -72,8 +71,7 @@ test('the reader shows the active lesson glossary only, escaped', function () {
         ->where('glossary.0.word', 'A2word')
         ->where('glossary.0.meaning_fa', 'معنی آ۲'));
 
-    $b1Redirect = $this->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'B1']))->assertRedirect();
-    $b1 = $this->followRedirects($b1Redirect)->assertOk();
+    $b1 = $this->actingAs($student)->get(route('reader.show', ['topic' => 's3-gloss', 'level' => 'B1']))->assertOk();
     $b1->assertSee('B1word');
     // Staff-entered HTML in the example travels raw in props and is
     // escaped at render time by React (proven in the browser journey).

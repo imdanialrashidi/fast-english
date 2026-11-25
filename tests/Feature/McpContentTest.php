@@ -286,10 +286,14 @@ test('an agent can create a category, topic, audio lesson, and publish a public 
         ->and($lesson->reviewed_by)->toBe($this->staff->id)
         ->and($lesson->reviewed_at)->not->toBeNull();
 
-    $this->get('/sample')
+    // The retired public sample is gone; the published lesson opens only
+    // through the paid reader session.
+    $this->get('/sample')->assertNotFound();
+    $this->actingAs(\Tests\Support\ContentFixtures::subscribedStudent())
+        ->get(route('reader.show', ['topic' => 'mcp-story', 'level' => 'A2']))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('Sample/Show')
+            ->component('Reader/Show')
             ->where('lesson.title_en', 'MCP Story Lesson')
             ->where('topic.slug', 'mcp-story'));
 

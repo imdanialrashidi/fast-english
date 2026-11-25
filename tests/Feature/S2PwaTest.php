@@ -187,12 +187,7 @@ test('robots allows production', function () {
 });
 
 test('non-production HTML carries a noindex robots header', function () {
-    $this->seed(S1SampleSeeder::class);
-
-    // Paid-only slice: the sample resolves through the public
-    // experience; the noindex blanket holds on the followed page.
-    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'A2']))->assertRedirect();
-    $response = $this->followRedirects($redirect);
+    $response = $this->get(route('landing'));
 
     $response->assertOk();
     expect($response->headers->get('X-Robots-Tag'))->toBe('noindex, nofollow');

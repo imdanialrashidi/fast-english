@@ -55,7 +55,7 @@ export const SubscribeIndex: FunctionComponent<SubscribeProps> & { layout?: (pag
             />
             <div className="mx-auto grid max-w-[680px] gap-5 px-4 py-5">
                 <p className="m-0 text-[1.0625rem] leading-8 text-muted">
-                    پلن را انتخاب کن، مبلغ را کارت‌به‌کارت کن و رسید را بفرست.
+                    پلن را انتخاب کن، مبلغ را کارت‌به‌کارت کن و تصویر رسید را در پنل کاربری بارگذاری کن.
                     {activationSms
                         ? ' بعد از تأیید، اشتراک فعال می‌شود و یک پیامک تأیید برای موبایلت می‌آید.'
                         : ' بعد از تأیید، اشتراک فعال می‌شود.'}

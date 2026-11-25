@@ -24,10 +24,10 @@ class LessonPolicy
 {
     public function view(?User $user, Lesson $lesson): bool
     {
-        if ($lesson->is_public_sample) {
-            return true;
-        }
-
+        // Owner instruction 2026-11-25: a lesson body or its audio never
+        // opens before an active subscription, including the former public
+        // sample. The `is_public_sample` flag remains content metadata only.
+        //
         // One seam for "may this learner see this?": the fresh eligibility
         // path already folds in the disabled check and the staff bypass.
         return Entitlement::eligible($user);

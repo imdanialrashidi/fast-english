@@ -3,6 +3,7 @@
 use App\Http\Middleware\ContentSecurityPolicy;
 use App\Http\Middleware\DisablePasswordResetWhenSmtpMissing;
 use App\Http\Middleware\EnsureEmailVerified;
+use App\Http\Middleware\EnsureProfileComplete;
 use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\NormalizeTrailingSlash;
@@ -51,6 +52,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // Paid-only learner gate (owner requirement): staff +
             // active subscribers pass; all other learner states refuse.
             'subscribed' => RequireSubscription::class,
+            // Owner instruction 2026-11-25: an activated account completes
+            // the profile once before the learning environment opens.
+            'profile.complete' => EnsureProfileComplete::class,
             // S8: staff-only routes (2FA setup/challenge, panel extras).
             'staff' => EnsureStaff::class,
             // Staff step-up gate for staff-only surfaces outside the panel

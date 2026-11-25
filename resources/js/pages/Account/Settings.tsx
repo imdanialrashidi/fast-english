@@ -164,7 +164,7 @@ export const AccountSettings: FunctionComponent<SettingsProps> & { layout?: (pag
                             onChange={(event) => form.setData('daily_goal_minutes', event.target.value)}
                             className={INPUT_CLASS}
                         >
-                            {[5, 10, 15].map((goal) => (
+                            {[10, 20, 30, 40, 50, 60].map((goal) => (
                                 <option key={goal} value={String(goal)}>
                                     {goal} دقیقه
                                 </option>

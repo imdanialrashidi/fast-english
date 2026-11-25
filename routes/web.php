@@ -104,7 +104,6 @@ Route::middleware('marketing.guest')->group(function () {
     Route::get('/support', [TrustController::class, 'support'])->name('trust.support');
     Route::get('/terms', [TrustController::class, 'terms'])->name('trust.terms');
     Route::get('/privacy', [TrustController::class, 'privacy'])->name('trust.privacy');
-    Route::get('/refund', [TrustController::class, 'refund'])->name('trust.refund');
 });
 
 // Install guide (owner 2026-10-26): public for guests and signed-in
@@ -116,10 +115,6 @@ Route::get('/install', [InstallController::class, 'index'])->name('install');
 // A learner who wants the APK must not be bounced to the paid app by the
 // marketing.guest boundary; the page exposes release metadata only.
 Route::get('/download', [DownloadController::class, 'index'])->name('download');
-
-// Public sample entry (scope §6, PUB-01/AC-01): the real published sample
-// without login. Drafts/premium never resolve here; 404 when none exists.
-Route::get('/sample', [LandingController::class, 'sample'])->name('sample');
 
 // S8: /plans is a public price entry (scope §6). Guests land on the offer
 // section of the landing; a signed-in learner goes straight to the
@@ -193,6 +188,22 @@ Route::get('/app/account/settings', [AccountSettingsController::class, 'edit'])
 Route::patch('/app/account/settings', [AccountSettingsController::class, 'update'])
     ->middleware(['auth', 'reject.disabled'])
     ->name('account.settings.update');
+Route::post('/app/account/avatar', [AccountController::class, 'updateAvatar'])
+    ->middleware(['auth', 'reject.disabled', 'throttle:12,1'])
+    ->name('account.avatar.update');
+Route::delete('/app/account/avatar', [AccountController::class, 'deleteAvatar'])
+    ->middleware(['auth', 'reject.disabled'])
+    ->name('account.avatar.destroy');
+
+// Post-activation profile completion (owner instruction 2026-11-25).
+// The route itself must not carry `subscribed`/`profile.complete`, or an
+// activated account would redirect to itself forever.
+Route::get('/app/welcome', [\App\Http\Controllers\OnboardingController::class, 'show'])
+    ->middleware(['auth', 'reject.disabled'])
+    ->name('onboarding.show');
+Route::post('/app/welcome', [\App\Http\Controllers\OnboardingController::class, 'store'])
+    ->middleware(['auth', 'reject.disabled'])
+    ->name('onboarding.store');
 
 // Paid-only learner app (owner requirement): library, Today, saved,
 // words/review, placement, progress, and bookmarks recompute an active
@@ -200,7 +211,7 @@ Route::patch('/app/account/settings', [AccountSettingsController::class, 'update
 // Staff passes through; account/status/checkout/payment pages stay on
 // auth-only so purchasing and status remain reachable without access.
 Route::get('/app', [TopicLibraryController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->middleware(['auth', 'reject.disabled', 'profile.complete'])
     ->name('app.home');
 
 Route::get('/app/saved', [SavedTopicsController::class, 'index'])
@@ -209,7 +220,7 @@ Route::get('/app/saved', [SavedTopicsController::class, 'index'])
 
 // R5 Today — «امروز»: the principal signed-in student destination.
 Route::get('/app/today', [TodayController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->middleware(['auth', 'reject.disabled', 'profile.complete'])
     ->name('today.index');
 
 // R4 vocabulary notebook (VOCAB-01): owner-scoped, private no-store.
@@ -251,17 +262,17 @@ Route::get('/app/review', [ReviewController::class, 'index'])
 // of four items. The coursebook shelf moved one level down; the three
 // reading tracks resolve the library_nodes tree below /app/books/{track}.
 Route::get('/app/books', [LibraryController::class, 'index'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->middleware(['auth', 'reject.disabled', 'profile.complete'])
     ->name('books.index');
 Route::get('/app/books/american-english-file', [FlashcardBookController::class, 'index'])
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->name('books.aef');
 Route::get('/app/books/{track}', [LibraryController::class, 'track'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->middleware(['auth', 'reject.disabled', 'profile.complete'])
     ->whereIn('track', ['story', 'ielts', 'inside-reading'])
     ->name('library.track');
 Route::get('/app/books/{track}/{path}', [LibraryController::class, 'node'])
-    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->middleware(['auth', 'reject.disabled', 'profile.complete'])
     ->whereIn('track', ['story', 'ielts', 'inside-reading'])
     ->where('path', '.*')
     ->name('library.node');
@@ -317,6 +328,10 @@ Route::get('/media/words/{wordAudio}/audio', [FlashcardMediaController::class, '
     ->middleware(['auth', 'reject.disabled', 'subscribed'])
     ->whereNumber('wordAudio')
     ->name('media.word.audio');
+Route::get('/media/words/by-key/{word}/audio', [FlashcardMediaController::class, 'wordByKey'])
+    ->middleware(['auth', 'reject.disabled', 'subscribed'])
+    ->where('word', '[A-Za-z][A-Za-z_ .’\'-]{0,90}')
+    ->name('media.word.audio.key');
 
 // Reading-track progress and IELTS submissions: owner-scoped JSON behind the
 // paid gate. The node document is the authority for both.

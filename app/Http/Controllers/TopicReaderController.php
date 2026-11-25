@@ -7,7 +7,6 @@ use App\Models\Bookmark;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Topic;
-use App\Support\Entitlement;
 use App\Support\Levels;
 use App\Support\ReadingPayload;
 use Illuminate\Http\Request;
@@ -105,15 +104,10 @@ class TopicReaderController extends Controller
             ]);
         }
 
-        // Paid-only gate (owner requirement): the designated public sample
-        // resolves to the public sample experience, never the learner
-        // shell. Every other lesson needs an eligible subscriber or staff;
-        // ineligible page requests get the locked state (403, no premium
-        // props) with one subscription CTA.
-        if ($lesson->is_public_sample && ! Entitlement::eligible($request->user())) {
-            return redirect()->to(route('sample', ['topic' => $topic->slug, 'level' => $lesson->level]));
-        }
-
+        // Paid-only gate (owner instruction 2026-11-25): no lesson body,
+        // glossary, or audio opens before an active subscription. Ineligible
+        // page requests get the locked state (403, no premium props) with
+        // one subscription CTA; staff keep the panel preview bypass.
         $locked = $this->authorizeLesson($request, $lesson);
         if ($locked !== null) {
             return $locked;

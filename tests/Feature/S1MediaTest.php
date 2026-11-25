@@ -2,10 +2,12 @@
 
 use App\Models\Lesson;
 use Database\Seeders\S1SampleSeeder;
+use Tests\Support\ContentFixtures;
 
 // S1-4 route parts: real MP3 over HTTP with Range semantics.
 beforeEach(function () {
     $this->seed(S1SampleSeeder::class);
+    $this->actingAs(ContentFixtures::subscribedStudent());
     $this->lesson = Lesson::where('level', 'A2')
         ->whereHas('topic', fn ($q) => $q->where('slug', 'city-park'))
         ->firstOrFail();

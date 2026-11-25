@@ -39,15 +39,13 @@ test('inertia navigation updates canonical description and open graph once', asy
   await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:type"]')).toHaveCount(1);
 
-  // The sample is the only public content page: article type, one
-  // canonical, one Article graph, and no leftover FAQ tags.
-  await page.goto('/sample');
+  // The sample route is retired; the landing and trust pages keep one
+  // canonical/description/OG set each, with the landing FAQ graph intact.
+  await page.goto('/');
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/sample$/);
-  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article');
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website');
   await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
-  const articleSchema = await page.locator('script[type="application/ld+json"]').evaluate((el) => el.textContent ?? '');
-  expect(articleSchema).toContain('"@type":"Article"');
-  expect(articleSchema).toContain('"datePublished"');
+  const landingSchema = await page.locator('script[type="application/ld+json"]').evaluate((el) => el.textContent ?? '');
+  expect(landingSchema).toContain('"@type":"FAQPage"');
+  expect(landingSchema).toContain('"@type":"SoftwareApplication"');
 });

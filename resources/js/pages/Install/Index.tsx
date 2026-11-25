@@ -72,17 +72,17 @@ export const InstallIndex: FunctionComponent<InstallIndexProps> & { layout?: (pa
                         iPhone و iPad
                     </h2>
                     <p className="m-0 leading-8 text-muted">
-                        در iPhone و iPad فقط Safari گزینهٔ «افزودن به صفحهٔ اصلی» را دارد.
+                        در iPhone و iPad فقط Safari گزینهٔ «افزودن به صفحهٔ اصلی» را دارد؛ همین مسیر را از منوی سه‌نقطه و سپس share (به اشتراک‌گذاری) طی کنید.
                     </p>
                     <ol className="m-0 grid list-none gap-4 p-0">
                         <Step n="۱" title="سایت را در Safari باز کنید">
                             آیکن آبی <En>Safari</En> را از صفحهٔ اصلی گوشی باز کنید و نشانی سایت را در نوار آدرس وارد کنید.
                         </Step>
-                        <Step n="۲" title="دکمهٔ اشتراک‌گذاری را بزنید">
-                            مربعِ با فلشِ رو به بالا، معمولاً در نوار پایین صفحه. اگر نوار را نمی‌بینید، کمی به پایین بکشید.
+                        <Step n="۲" title="سه نقطهٔ پایین سمت راست را بزنید و share را انتخاب کنید">
+                            دکمهٔ سه‌نقطهٔ پایین سمت راست صفحه را بزنید، سپس گزینهٔ <En>share</En> (به اشتراک‌گذاری) را بزنید.
                         </Step>
                         <Step n="۳" title="«افزودن به صفحهٔ اصلی» را انتخاب کنید">
-                            در صفحهٔ اشتراک‌گذاری کمی به پایین بروید و <En>Add to Home Screen</En> را بزنید.
+                            در صفحهٔ <En>share</En> (به اشتراک‌گذاری) کمی به پایین بروید و <En>Add to Home Screen</En> را بزنید.
                         </Step>
                         <Step n="۴" title="«افزودن» را تأیید کنید">
                             <En>Add</En> را بزنید. آیکن Fast English روی صفحهٔ اصلی ساخته می‌شود.

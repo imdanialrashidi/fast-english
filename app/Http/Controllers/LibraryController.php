@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Responses\LockedResponse;
 use App\Models\LibraryNode;
 use App\Models\ReadingAttempt;
 use App\Models\ReadingProgress;
 use App\Models\User;
+use App\Support\Entitlement;
 use App\Support\Library\LibraryPresenter;
 use App\Support\Library\ReadingPayload;
 use Illuminate\Http\Request;
@@ -39,17 +41,17 @@ class LibraryController extends Controller
         ]);
     }
 
-    public function track(Request $request, string $track): Response
+    public function track(Request $request, string $track): Response|\Symfony\Component\HttpFoundation\Response
     {
         return $this->showNode($request, $track, '');
     }
 
-    public function node(Request $request, string $track, string $path): Response
+    public function node(Request $request, string $track, string $path): Response|\Symfony\Component\HttpFoundation\Response
     {
         return $this->showNode($request, $track, $path);
     }
 
-    private function showNode(Request $request, string $track, string $path): Response
+    private function showNode(Request $request, string $track, string $path): Response|\Symfony\Component\HttpFoundation\Response
     {
         $user = $this->learner($request);
 
@@ -67,6 +69,12 @@ class LibraryController extends Controller
         $readable = $document !== null && $document->published_at !== null && $node->status === 'published';
 
         if ($readable) {
+            // The shelf and its browse pages stay visible to every signed-in
+            // learner; the reading document itself is paid content.
+            if (! Entitlement::eligible($user)) {
+                return LockedResponse::forbidden($request, $user);
+            }
+
             $progress = ReadingProgress::query()
                 ->where('user_id', $user->id)
                 ->where('node_id', $node->id)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Responses\LockedResponse;
 use App\Models\TedTalk;
 use App\Models\Topic;
+use App\Support\Lexicon;
 use App\Support\TopicCover;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,6 +38,13 @@ class TedTalkController extends Controller
             return LockedResponse::forbidden($request, $request->user());
         }
 
+        $transcript = '';
+        foreach ((array) $tedTalk->segments as $paragraph) {
+            foreach ((array) $paragraph as $sentence) {
+                $transcript .= (string) ($sentence['text'] ?? '').' ';
+            }
+        }
+
         return Inertia::render('Reader/Ted', [
             'talk' => [
                 'id' => (int) $tedTalk->id,
@@ -52,6 +60,7 @@ class TedTalkController extends Controller
                 'cover_url' => TopicCover::url($tedTalk->cover_path),
                 'segments' => $tedTalk->segments,
                 'words' => $tedTalk->words,
+                'lexicon' => Lexicon::mapFor($transcript),
                 'source_url' => (string) $tedTalk->source_url,
                 'source_license' => (string) $tedTalk->source_license,
             ],

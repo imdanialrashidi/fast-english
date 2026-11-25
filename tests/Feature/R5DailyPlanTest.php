@@ -88,25 +88,25 @@ test('changing the daily goal never changes the preferred level', function () {
     $this->actingAs($student)
         ->patch(route('account.settings.update'), [
             'preferred_level' => 'B1',
-            'daily_goal_minutes' => 15,
+            'daily_goal_minutes' => 30,
         ])
         ->assertRedirect();
 
     $student->refresh();
     expect($student->preferred_level)->toBe('B1')
-        ->and((int) $student->daily_goal_minutes)->toBe(15);
+        ->and((int) $student->daily_goal_minutes)->toBe(30);
 
     // Goal-only change leaves the level untouched.
     $this->actingAs($student)
-        ->patch(route('account.settings.update'), ['daily_goal_minutes' => 5])
+        ->patch(route('account.settings.update'), ['daily_goal_minutes' => 60])
         ->assertRedirect();
 
     $student->refresh();
     expect($student->preferred_level)->toBe('B1')
-        ->and((int) $student->daily_goal_minutes)->toBe(5);
+        ->and((int) $student->daily_goal_minutes)->toBe(60);
 
     // Out-of-range goals and levels are both refused.
     $this->actingAs($student)
-        ->patch(route('account.settings.update'), ['daily_goal_minutes' => 30])
+        ->patch(route('account.settings.update'), ['daily_goal_minutes' => 15])
         ->assertSessionHasErrors('daily_goal_minutes');
 });

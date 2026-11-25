@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { MessageCircle, Phone, Send } from 'lucide-react';
+import { MessageCircle, Send } from 'lucide-react';
 import * as React from 'react';
 import { SeoHead } from '@/components/SeoHead';
 import { supportChannels } from '@/lib/support';
@@ -26,13 +26,12 @@ import type { SharedProps } from '@/types';
 
 const TRUST_LINKS = [
     { href: '/plans', label: 'پلن‌ها و قیمت' },
-    { href: '/about', label: 'درباره' },
+    { href: '/about', label: 'درباره ما' },
     { href: '/cooperation', label: 'همکاری' },
-    { href: '/faq', label: 'پرسش‌های پرتکرار' },
+    { href: '/faq', label: 'پرسش‌های شما' },
     { href: '/support', label: 'پشتیبانی' },
     { href: '/terms', label: 'قوانین' },
     { href: '/privacy', label: 'حریم خصوصی' },
-    { href: '/refund', label: 'بازگشت وجه' },
     { href: '/install', label: 'راهنمای نصب' },
     { href: '/download', label: 'دانلود' },
 ];
@@ -144,14 +143,10 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                         <p className="m-0 flex flex-wrap items-center justify-center gap-x-1.5 text-[0.8125rem]">
                             <MessageCircle size={15} aria-hidden="true" className="text-accent" />
                             <span className="text-surface/70">پشتیبانی:</span>
-                            <a
-                                href={channels.phoneHref}
-                                dir="ltr"
-                                aria-label={`تماس با پشتیبانی ${channels.phone}`}
-                                className="inline-flex min-h-11 items-center font-en font-bold text-surface no-underline hover:underline"
-                            >
+                            <span dir="ltr" className="inline-flex min-h-11 items-center font-en font-bold text-surface">
                                 {channels.phone}
-                            </a>
+                            </span>
+                            <span className="text-surface/60">· بله یا تلگرام</span>
                         </p>
                         <p className="m-0 flex items-center gap-0.5">
                             <a
@@ -191,7 +186,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                                     دانلود
                                 </NavLink>
                                 <NavLink href="/faq" className="hidden sm:flex">
-                                    پرسش‌ها
+                                    پرسش‌های شما
                                 </NavLink>
                                 {!onLogin && <NavLink href="/login" className="flex">ورود</NavLink>}
                                 {!onRegister && (
@@ -238,8 +233,8 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     <div className="grid content-start gap-3">
                         <MarketingBrand onDark href={user !== null ? '/app/today' : '/'} />
                         <p className="m-0 max-w-[52ch] text-sm leading-7 text-surface/75">
-                            کتابخانهٔ خواندن و شنیدن انگلیسی در شش سطح A1 تا C2؛ TED Talk، کتاب American English File، واژه‌نامه و
-                            مرور زمان‌بندی‌شده.
+                            پرطرفدارترین اپلیکیشن یادگیری زبان انگلیسی، مخصوص فارسی‌زبانانی که می‌خواهند انگلیسی را به‌صورت
+                            استاندارد و جذاب یاد بگیرند.
                         </p>
                         {user === null && (
                             <p className="m-0 flex flex-wrap gap-2 pt-1">
@@ -277,27 +272,18 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                             پشتیبانی، قبل و بعد از خرید.
                         </p>
                         <p className="m-0 text-sm leading-7 text-surface/75">
-                            در بله یا تلگرام به شمارهٔ{' '}
+                            پشتیبانی قبل از خرید هم جواب می‌دهد. در بله یا تلگرام به شمارهٔ{' '}
                             <span dir="ltr" className="font-en font-bold text-surface">
                                 {channels.phone}
                             </span>{' '}
-                            پیام بده؛ یا مستقیم تماس بگیر. برای پیگیری پرداخت، شمارهٔ پیگیری یا تصویر رسید را همراه پیام بفرست.
+                            پیام بدهید.
                         </p>
                         <div className="flex flex-wrap items-center gap-2">
-                            <a
-                                href={channels.phoneHref}
-                                dir="ltr"
-                                aria-label={`تماس با پشتیبانی ${channels.phone}`}
-                                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-accent-strong px-4 py-2 text-sm font-bold text-surface no-underline hover:brightness-110"
-                            >
-                                <Phone size={16} aria-hidden="true" />
-                                {channels.phone}
-                            </a>
                             <a
                                 href={channels.bale}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface/25 px-4 py-2 text-sm font-bold text-surface no-underline hover:bg-surface/10"
+                                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-accent-strong px-4 py-2 text-sm font-bold text-surface no-underline hover:brightness-110"
                             >
                                 <MessageCircle size={16} aria-hidden="true" />
                                 پیام در بله
@@ -324,7 +310,7 @@ function Shell({ children }: React.PropsWithChildren): React.JSX.Element {
                     </div>
 
                     <p className="m-0 border-t border-surface/15 pt-4 text-sm text-surface/60 md:col-span-2">
-                        Fast English؛ خواندن و شنیدن واقعی، در سطح خودت.
+                        فست انگلیش؛ یادگیری استاندارد و جذاب انگلیسی، در سطح خودت.
                     </p>
                 </div>
             </footer>}

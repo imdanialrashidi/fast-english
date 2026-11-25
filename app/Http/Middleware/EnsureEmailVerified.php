@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * A signed-in account completes one verification channel: the SMS code
  * when a phone is attached, otherwise the email code. Until then it may
- * reach only the verification surface, auth/logout, the free public
- * sample, and staff authentication routes. Everything else redirects to
- * the right code page so a new registration actually completes the flow
- * instead of silently browsing. The route allowlist also prevents a
- * redirect loop.
+ * reach only the verification surface, auth/logout, download/install,
+ * support pages, and staff authentication routes. Everything else
+ * redirects to the right code page so a new registration actually
+ * completes the flow instead of silently browsing. The route allowlist
+ * also prevents a redirect loop.
  */
 class EnsureEmailVerified
 {
@@ -34,12 +34,6 @@ class EnsureEmailVerified
         'register',
         'register.store',
         'password.*',
-        'sample',
-        // The public sample's own audio stream: the controller still runs
-        // the sample/entitlement policy, so letting the request through is
-        // not a premium leak. Without this, an unverified learner could
-        // read the sample text but its player would 302 to the gate.
-        'media.lesson.audio',
         'download',
         'install',
         'trust.*',

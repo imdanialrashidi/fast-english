@@ -1,11 +1,13 @@
 import { Head } from '@inertiajs/react';
 import { BookOpen, ChevronDown, Clock, Headphones } from 'lucide-react';
 import * as React from 'react';
+import { LexiconText } from '@/components/library/LexiconText';
+import { WordSheet, type WordSheetWord } from '@/components/library/WordSheet';
 import type { FunctionComponent, ReactNode } from 'react';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import AppLayout from '@/layouts/AppLayout';
 import { usePlayerActions } from '@/lib/player';
-import type { SharedProps, TedTalkPayload } from '@/types';
+import type { SharedProps, TedLexiconEntry, TedTalkPayload } from '@/types';
 
 /**
  * Standalone TED talk (owner instruction 2026-11-22).
@@ -29,6 +31,28 @@ export const TedShow: FunctionComponent<TedProps> & { layout?: (page: ReactNode)
 }: TedProps): React.JSX.Element => {
     const { setTrack } = usePlayerActions();
     const minutes = estimateMinutes(talk.duration_seconds);
+    const [activeWord, setActiveWord] = React.useState<WordSheetWord | null>(null);
+    const wordAudioRef = React.useRef<HTMLAudioElement | null>(null);
+
+    const toSheet = (entry: TedLexiconEntry & { word: string }): WordSheetWord => ({
+        word: entry.word,
+        meaning_fa: entry.fa,
+        definition_en: entry.en,
+        part_of_speech: entry.pos,
+        synonym: entry.syn,
+        level: entry.level,
+        audio_url: entry.audio_url,
+    });
+
+    const playWord = (word: WordSheetWord): void => {
+        const element = wordAudioRef.current;
+        if (element === null || word.audio_url === undefined || word.audio_url === null) {
+            return;
+        }
+
+        element.src = word.audio_url;
+        void element.play().catch(() => undefined);
+    };
 
     // Bind the talk to the one persistent element. TED listening never
     // writes lesson progress; the console owns play/seek/speed.
@@ -140,7 +164,17 @@ export const TedShow: FunctionComponent<TedProps> & { layout?: (page: ReactNode)
                 <article lang="en" dir="ltr" aria-label="متن گفتار" className="fe-english-body grid max-w-[68ch] gap-5">
                     {talk.segments.map((paragraph, index) => (
                         <p key={index} className="m-0 text-pretty">
-                            {paragraph.map((sentence) => sentence.text).join(' ')}
+                            {paragraph.map((sentence, sentenceIndex) => (
+                                <React.Fragment key={sentenceIndex}>
+                                    {sentenceIndex > 0 ? ' ' : ''}
+                                    <LexiconText
+                                        text={sentence.text}
+                                        lexicon={talk.lexicon}
+                                        onWordSelect={(entry) => setActiveWord(toSheet(entry))}
+                                        onWordPlay={(entry) => playWord(toSheet(entry))}
+                                    />
+                                </React.Fragment>
+                            ))}
                         </p>
                     ))}
                 </article>
@@ -158,6 +192,8 @@ export const TedShow: FunctionComponent<TedProps> & { layout?: (page: ReactNode)
                     · «{talk.title_en}» اثر {talk.speaker || 'TED'} · مجوز {talk.source_license}
                 </p>
             </div>
+            <WordSheet word={activeWord} onClose={() => setActiveWord(null)} onPlay={playWord} />
+            <audio ref={wordAudioRef} preload="none" className="hidden" />
         </>
     );
 };

@@ -47,6 +47,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmailContr
             // R5: explicit daily goal only (PLAN-01). Changing it never
             // writes preferred_level.
             'daily_goal_minutes' => 'integer',
+            'needs_profile' => 'boolean',
+            'profile_completed_at' => 'datetime',
+            'birth_date_jalali' => 'string',
         ];
     }
 

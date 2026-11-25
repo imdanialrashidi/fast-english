@@ -1,6 +1,7 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './helpers';
 
-// Owner follow-up 2026-10-22: the public sample publishes Media Session
+// Owner follow-up 2026-10-22: the reader publishes Media Session
 // metadata and standard transport handlers. Chromium is the only lab
 // browser here; real lock-screen behavior remains device-unproven.
 
@@ -19,7 +20,7 @@ declare global {
   }
 }
 
-test('sample publishes Media Session metadata and handlers', async ({ page }) => {
+test('the learner reader publishes Media Session metadata and handlers', async ({ sub: page }) => {
   await page.addInitScript(() => {
     const state: MediaState = {
       metadata: null,
@@ -48,7 +49,7 @@ test('sample publishes Media Session metadata and handlers', async ({ page }) =>
     Object.defineProperty(navigator, 'mediaSession', { configurable: true, value: state });
   });
 
-  await page.goto('/sample?topic=city-park&level=A2');
+  await page.goto('/app/topics/city-park?level=A2');
   await expect(page.locator('#lesson-audio')).toBeAttached();
 
   await expect.poll(() => page.evaluate(() => window.__media.metadata?.init.title)).toBe('The City Park');

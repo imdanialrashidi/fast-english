@@ -30,9 +30,8 @@ test('requesting a missing B2 level shows the exact message and available levels
 test('lowercase level input is normalized instead of reported missing', function () {
     // Paid-only slice: b1 is a flagged sample level, so the normalized
     // request redirects to the public sample experience carrying it.
-    $redirect = $this->get(route('reader.show', ['topic' => 'city-park', 'level' => 'b1']))
-        ->assertRedirect(route('sample', ['topic' => 'city-park', 'level' => 'B1']));
-    $this->followRedirects($redirect)
+    $this->actingAs(\Tests\Support\ContentFixtures::subscribedStudent())
+        ->get(route('reader.show', ['topic' => 'city-park', 'level' => 'b1']))
         ->assertOk()
         ->assertSee('Sara loves Saturday mornings');
 });

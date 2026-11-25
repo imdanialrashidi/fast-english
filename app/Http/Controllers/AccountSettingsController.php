@@ -98,7 +98,7 @@ class AccountSettingsController extends Controller
             'preferred_level' => ['nullable', 'in:A1,A2,B1,B2,C1,C2'],
             // R5: the daily goal is an independent explicit choice. It
             // never writes preferred_level and vice versa.
-            'daily_goal_minutes' => ['nullable', 'in:5,10,15'],
+            'daily_goal_minutes' => ['nullable', 'in:10,20,30,40,50,60'],
         ], [
             'phone.unique' => 'این شمارهٔ موبایل قبلاً ثبت شده است.',
         ]);

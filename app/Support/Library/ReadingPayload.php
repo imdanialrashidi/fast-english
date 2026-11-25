@@ -6,6 +6,7 @@ use App\Models\LibraryNode;
 use App\Models\ReadingAttempt;
 use App\Models\ReadingDocument;
 use App\Models\ReadingProgress;
+use App\Support\Lexicon;
 
 /**
  * Turns one stored document into the reader payload. Asset paths are
@@ -68,8 +69,22 @@ final class ReadingPayload
 
         $chapters = is_array($doc['chapters'] ?? null) ? $doc['chapters'] : [];
         $sheet = is_array($meta['sheet'] ?? null) ? $meta['sheet'] : null;
+        $questions = is_array($doc['questions'] ?? null) ? $doc['questions'] : [];
 
         return $base + [
+            'questions' => array_map(fn (array $question): array => [
+                'id' => (string) ($question['id'] ?? ''),
+                'number' => isset($question['number']) ? (int) $question['number'] : null,
+                'type' => (string) ($question['type'] ?? 'tf'),
+                'prompt' => (string) ($question['prompt'] ?? ''),
+                'answer' => (string) ($question['answer'] ?? ''),
+                'explanation_fa' => $question['explanation_fa'] ?? null,
+                'evidence' => is_array($question['evidence'] ?? null) ? [
+                    'page_key' => (string) ($question['evidence']['page_key'] ?? ''),
+                    'start_utf16' => (int) ($question['evidence']['start_utf16'] ?? 0),
+                    'end_utf16' => (int) ($question['evidence']['end_utf16'] ?? 0),
+                ] : null,
+            ], $questions),
             'art' => $sheet === null ? null : [
                 'url' => self::imageUrl($node, $document, (string) ($sheet['file'] ?? '')),
                 'columns' => (int) ($sheet['columns'] ?? 2),
@@ -104,6 +119,10 @@ final class ReadingPayload
         $words = is_array($page['words'] ?? null) ? $page['words'] : [];
         $sentences = is_array($page['sentences'] ?? null) ? $page['sentences'] : [];
 
+        // Owner instruction 2026-11-25: the pre-teaching list follows the
+        // order of the text, never the alphabetical order of the source.
+        usort($words, fn (array $a, array $b): int => ((int) ($a['start_utf16'] ?? PHP_INT_MAX)) <=> ((int) ($b['start_utf16'] ?? PHP_INT_MAX)));
+
         return [
             'id' => (string) ($page['id'] ?? ''),
             'number' => isset($page['number']) ? (int) $page['number'] : null,
@@ -122,9 +141,11 @@ final class ReadingPayload
                 'meaning_fa' => $word['meaning_fa'] ?? null,
                 'definition_en' => $word['definition_en'] ?? null,
                 'part_of_speech' => $word['part_of_speech'] ?? null,
+                'synonym' => $word['synonym'] ?? null,
+                'level' => $word['level'] ?? null,
                 'start_utf16' => isset($word['start_utf16']) ? (int) $word['start_utf16'] : null,
                 'end_utf16' => isset($word['end_utf16']) ? (int) $word['end_utf16'] : null,
-                'audio_url' => self::audioUrl($node, $document, $word['audio']['file'] ?? null),
+                'audio_url' => self::wordAudioUrl($node, $document, $word),
             ], $words),
             'sentences' => array_map(fn (array $sentence): array => [
                 'start_utf16' => (int) ($sentence['start_utf16'] ?? 0),
@@ -160,6 +181,29 @@ final class ReadingPayload
             'word_limit' => isset($question['word_limit']) ? (int) $question['word_limit'] : null,
             'max_answers' => isset($question['max_answers']) ? (int) $question['max_answers'] : null,
         ];
+    }
+
+    /**
+     * A node-local clip wins; otherwise the shared word-audio route serves
+     * the pronunciation by word key. A missing clip is a 404 from that
+     * route, never a broken URL fabricated here.
+     *
+     * @param  array<string, mixed>  $word
+     */
+    private static function wordAudioUrl(LibraryNode $node, ReadingDocument $document, array $word): ?string
+    {
+        $file = is_array($word['audio'] ?? null) ? ($word['audio']['file'] ?? null) : null;
+        if (is_string($file) && $file !== '') {
+            return self::audioUrl($node, $document, $file);
+        }
+
+        $surface = trim((string) ($word['word'] ?? ''));
+
+        if ($surface === '' || ! Lexicon::hasAudio($surface)) {
+            return null;
+        }
+
+        return route('media.word.audio.key', ['word' => $surface]);
     }
 
     private static function audioUrl(LibraryNode $node, ReadingDocument $document, ?string $file): ?string

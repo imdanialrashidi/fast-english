@@ -3,7 +3,9 @@ import { Link } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
 import { HighlightedText } from '@/components/library/HighlightedText';
 import { PanelImage } from '@/components/library/PanelImage';
+import { InsideReadingTrueFalse, PartOfSpeechTable, type StoryQuestion } from '@/components/library/InsideReadingExercises';
 import { WordPreview } from '@/components/library/WordPreview';
+import { WordSheet } from '@/components/library/WordSheet';
 import { postJson } from '@/lib/http';
 import { activeSentenceIndex, formatClock } from '@/lib/reading';
 import { useReaderTrack } from '@/lib/reader-player';
@@ -34,6 +36,7 @@ interface StoryReaderProps {
     endpoints: ReadingEndpoints;
     revision: number;
     credit?: string | null;
+    questions?: StoryQuestion[];
 }
 
 /**
@@ -54,6 +57,7 @@ export function StoryReader({
     endpoints,
     revision,
     credit,
+    questions = [],
 }: StoryReaderProps): React.JSX.Element {
     const flat = useMemo<FlatPage[]>(
         () =>
@@ -73,10 +77,12 @@ export function StoryReader({
 
     const [index, setIndex] = useState(savedIndex >= 0 ? savedIndex : 0);
     const [continuous, setContinuous] = useState(false);
+    const [evidence, setEvidence] = useState<{ start: number; end: number } | null>(null);
     const nextAutoplay = useRef(false);
     const timeRef = useRef(0);
     const endHandled = useRef<string | null>(null);
     const wordAudioRef = useRef<HTMLAudioElement | null>(null);
+    const [activeWord, setActiveWord] = useState<ReadingWord | null>(null);
 
     const entry = flat[index];
     const page = entry?.page;
@@ -241,7 +247,7 @@ export function StoryReader({
                 </div>
             </header>
 
-            <WordPreview words={page.words} onPlay={playWord} />
+            <WordPreview words={page.words} onPlay={(word) => playWord(word as ReadingWord)} />
 
             <article className="mx-auto grid w-full max-w-[72ch] gap-4 rounded-3xl border border-line bg-surface p-4 sm:p-6 lg:p-7">
                 {hasImage && (
@@ -264,7 +270,9 @@ export function StoryReader({
                         sentences={page.sentences}
                         activeIndex={highlightIndex}
                         words={page.words}
-                        onWordClick={playWord}
+                        evidence={evidence}
+                        onWordSelect={setActiveWord}
+                        onWordPlay={playWord}
                     />
                 </p>
 
@@ -308,6 +316,22 @@ export function StoryReader({
                 </div>
             </article>
 
+            {isLast && node.track === 'inside_reading' && (
+                <div className="grid gap-4">
+                    <InsideReadingTrueFalse
+                        questions={questions}
+                        onShowEvidence={(target) => {
+                            const targetIndex = flat.findIndex((item) => item.page.id === target.pageKey);
+                            if (targetIndex >= 0) {
+                                goTo(targetIndex, false);
+                                setEvidence({ start: target.start, end: target.end });
+                            }
+                        }}
+                    />
+                    <PartOfSpeechTable chapters={chapters} />
+                </div>
+            )}
+
             {isLast && (
                 <section className="grid gap-2 rounded-2xl border border-line bg-surface p-4 text-center">
                     <h2 className="m-0 text-lg font-extrabold">پایان این داستان</h2>
@@ -336,6 +360,7 @@ export function StoryReader({
                 <p className="m-0 text-center text-[0.65rem] text-muted">{credit}</p>
             )}
 
+            <WordSheet word={activeWord} onClose={() => setActiveWord(null)} onPlay={(word) => playWord(word as ReadingWord)} />
             <audio ref={wordAudioRef} preload="none" className="hidden" />
             <span className="sr-only" aria-live="polite">
                 صفحهٔ {index + 1} از {flat.length}

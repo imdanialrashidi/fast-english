@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { MessageCircle, Phone, Send } from 'lucide-react';
+import { MessageCircle, Send } from 'lucide-react';
 import { supportChannels } from '@/lib/support';
 import type { SharedProps, SupportContact } from '@/types';
 
@@ -9,7 +9,7 @@ import type { SharedProps, SupportContact } from '@/types';
  * changing them in the panel changes every placement at once.
  *
  * Owner instruction 2026-11-22: support is reachable in Bale or Telegram
- * on 09924930667 from every screen that can block a purchase, a login,
+ * on 09936908633 from every screen that can block a purchase, a login,
  * or an account change.
  */
 export function SupportNote({
@@ -34,29 +34,17 @@ export function SupportNote({
             </p>
             <p className="m-0 text-muted">
                 در بله یا تلگرام به شمارهٔ{' '}
-                <a
-                    href={channels.phoneHref}
-                    dir="ltr"
-                    aria-label={`تماس با پشتیبانی ${channels.phone}`}
-                    className="inline-flex min-h-11 items-center font-en font-bold text-primary"
-                >
+                <span dir="ltr" className="font-en font-bold text-ink">
                     {channels.phone}
-                </a>{' '}
-                پیام بده؛ یا مستقیم تماس بگیر. برای پیگیری پرداخت، شمارهٔ پیگیری یا تصویر رسید را همراه پیام بفرست.
+                </span>{' '}
+                پیام بده. رسید پرداخت فقط در پنل کاربری وب‌سایت بارگذاری می‌شود.
             </p>
             <div className="flex flex-wrap gap-2">
-                <a
-                    href={channels.phoneHref}
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 py-2 font-bold text-surface no-underline hover:bg-primary-hover"
-                >
-                    <Phone size={16} aria-hidden="true" />
-                    تماس
-                </a>
                 <a
                     href={channels.bale}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-field px-4 py-2 font-bold text-ink no-underline hover:bg-surface"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 py-2 font-bold text-surface no-underline hover:bg-primary-hover"
                 >
                     <MessageCircle size={16} aria-hidden="true" />
                     پیام در بله

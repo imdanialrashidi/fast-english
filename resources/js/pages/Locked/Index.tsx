@@ -41,11 +41,11 @@ export const LockedIndex: FunctionComponent<LockedProps> & { layout?: (page: Rea
                     <p aria-hidden="true" className="m-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-canvas text-primary">
                         <Lock size={24} />
                     </p>
-                    <h2 className="m-0 text-2xl leading-[1.7] font-extrabold tracking-tight">برای ادامه، اشتراک فعال لازم است</h2>
+                    <h2 className="m-0 text-2xl leading-[1.7] font-extrabold tracking-tight">لطفاً اشتراک ماهیانه خریداری کنید</h2>
                     <p className="m-0 text-[1.0625rem] leading-8 text-muted">
                         {isGuest
-                            ? 'این بخش یادگیری فقط برای اعضایی است که اشتراک فعال دارند. اول حساب بساز، بعد پلن را انتخاب کن.'
-                            : 'اشتراک فعالی روی حسابت نیست — یا هنوز خرید نکرده‌ای، یا درخواستت در صف بررسی است، یا اشتراکت تمام شده. وضعیتت را ببین و ادامه بده.'}
+                            ? 'این بخش یادگیری فقط برای اعضایی است که اشتراک فعال دارند. اول حساب بساز، بعد اشتراک ماهیانه را انتخاب کن.'
+                            : 'برای دیدن متن، شنیدن صوت و استفاده از آموزش واژگان، اشتراک ماهیانه لازم است. اگر رسید فرستاده‌ای، تا تأیید آن دسترسی باز نمی‌شود.'}
                     </p>
                     <p className="m-0 flex flex-wrap gap-2">
                         {isGuest ? (
@@ -69,7 +69,7 @@ export const LockedIndex: FunctionComponent<LockedProps> & { layout?: (page: Rea
                                 href={subscribeUrl}
                                 className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-full bg-primary px-6 py-2.5 font-bold text-surface no-underline hover:bg-primary-hover"
                             >
-                                مشاهده پلن‌ها و خرید
+                                خرید اشتراک
                             </Link>
                         )}
                     </p>

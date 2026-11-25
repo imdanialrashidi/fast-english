@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, BookOpen, Check, Clock, Compass, GraduationCap, Languages, Play, Sun } from 'lucide-react';
 import type { FunctionComponent, ReactNode } from 'react';
 import AppLayout from '@/layouts/AppLayout';
+import { DailyGoalReminder } from '@/components/DailyGoalReminder';
 import { formatAudioTime } from '@/lib/audio';
 import type { SharedProps, TopicRow } from '@/types';
 
@@ -252,6 +253,7 @@ export const TodayIndex: FunctionComponent<TodayProps> & { layout?: (page: React
                             <div className="min-w-0">
                                 <h2 className="m-0 text-[0.9375rem] leading-6 font-bold">هدف امروز: {fa(plan.goal_minutes)} دقیقه مطالعه</h2>
                                 <p className="m-0 mt-1 text-[0.8125rem] leading-6 text-muted">{fa(plan.learned_minutes)} دقیقه از برنامه امروز انجام شده.</p>
+                                <DailyGoalReminder goalMinutes={plan.goal_minutes} learnedMinutes={plan.learned_minutes} />
                                 <p className="m-0 mt-2 flex flex-wrap gap-2">
                                     {plan.due_words > 0 && (
                                         <Link

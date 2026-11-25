@@ -44,7 +44,6 @@
         <a href="{{ route('trust.support') }}">پشتیبانی</a>
         <a href="{{ route('trust.terms') }}">قوانین</a>
         <a href="{{ route('trust.privacy') }}">حریم خصوصی</a>
-        <a href="{{ route('trust.refund') }}">بازگشت وجه</a>
     </nav>
 </footer>
 </body>

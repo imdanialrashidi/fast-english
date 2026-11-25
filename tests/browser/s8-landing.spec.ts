@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 // Landing contract, owner rewrite 2026-11-22: a paid conversion page with
 // the 16,355 learner figure, the 990,000 → 641,000 offer, real library
-// numbers, TED Talks, and support in Bale/Telegram on 09924930667.
+// numbers, TED Talks, and support in Bale/Telegram on 09936908633.
 // No free sample, no trial CTA, no public audio. No horizontal scroll and
 // every touch target is at least 44px.
 
@@ -11,7 +11,7 @@ async function checkLanding(page, width: number) {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /تنها پادکست استاندارد/ })).toBeVisible();
 
   // No horizontal scroll.
   const scroll = await page.evaluate(() => ({
@@ -45,15 +45,15 @@ test('S8 landing 360: promise, offer, support, and library proof', async ({ page
   await expect(page.getByText('۹۹۰٬۰۰۰ تومان', { exact: true })).toBeVisible();
 
   // The two support number placements are visible without opening a menu.
-  await expect(page.getByText('09924930667').first()).toBeVisible();
+  await expect(page.getByText('09936908633').first()).toBeVisible();
   await expect(page.getByRole('link', { name: 'پیام در بله' }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: 'پیام در تلگرام' }).first()).toBeVisible();
 
   // The paid path and its explicit price are one tap away.
-  await expect(page.getByRole('link', { name: /ثبت‌نام و فعال‌سازی دسترسی/ })).toBeVisible();
-  await expect(page.getByRole('heading', { name: /سخنرانی‌های TED/ })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'قبل از خرید، این‌ها را بدان.' })).toBeVisible();
-  await expect(page.getByText('برای چه سطحی مناسب است؟')).toBeVisible();
+  await expect(page.getByRole('link', { name: /شروع کن با .* تخفیف/ }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'کتابخانهٔ فست انگلیش' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'پرسش‌های شما' })).toBeVisible();
+  await expect(page.getByText('فست انگلیش برای چه کسی ساخته شده؟')).toBeVisible();
 
   // No free sample and no public audio exist on this page.
   await expect(page.locator('audio')).toHaveCount(0);
@@ -81,7 +81,7 @@ test('S8 landing reduced-motion: content renders without animation', async ({ br
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /روزی ۱۵ دقیقه بخوان و بشنو/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /تنها پادکست استاندارد/ })).toBeVisible();
   // No entrance animation may hide the promise when motion is reduced.
   const hero = page.locator('section[aria-label="معرفی Fast English"]');
   await expect(hero).toBeVisible();
@@ -95,14 +95,14 @@ test('S8 landing exposes real support destinations and no audio player', async (
   await page.goto('/');
 
   const bale = page.getByRole('link', { name: 'پیام در بله' }).first();
-  await expect(bale).toHaveAttribute('href', 'https://ble.ir/+989924930667');
+  await expect(bale).toHaveAttribute('href', 'https://ble.ir/+989936908633');
   await expect(bale).toHaveAttribute('target', '_blank');
 
   const telegram = page.getByRole('link', { name: 'پیام در تلگرام' }).first();
-  await expect(telegram).toHaveAttribute('href', 'https://t.me/+989924930667');
+  await expect(telegram).toHaveAttribute('href', 'https://t.me/+989936908633');
 
   const phone = page.getByRole('link', { name: /تماس با پشتیبانی/ }).first();
-  await expect(phone).toHaveAttribute('href', 'tel:+989924930667');
+  await expect(phone).toHaveAttribute('href', 'tel:+989936908633');
 
   await expect(page.locator('audio')).toHaveCount(0);
 });

@@ -1,11 +1,13 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Bookmark,
+    Camera,
     ChevronLeft,
     CreditCard,
     GraduationCap,
     History,
     LogOut,
+    Trash2,
     Settings as SettingsIcon,
     Smartphone,
     Sparkles,
@@ -48,9 +50,13 @@ interface PaymentHistoryRow {
 interface AccountProps extends SharedProps {
     user: {
         name: string;
+        first_name: string | null;
+        last_name: string | null;
         email: string;
         preferred_level: string | null;
         daily_goal_minutes: number;
+        avatar_url: string | null;
+        profile_completed: boolean;
     };
     subscription: {
         active: boolean;
@@ -129,9 +135,34 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
     latestRequest,
     paymentHistory,
 }: AccountProps): React.JSX.Element => {
+    const { errors, status } = usePage<SharedProps>().props;
+    const fileInput = React.useRef<HTMLInputElement | null>(null);
+    const [avatarBusy, setAvatarBusy] = React.useState(false);
+
     const logout = (event: React.FormEvent): void => {
         event.preventDefault();
         router.post('/logout');
+    };
+
+    const uploadAvatar = (file: File): void => {
+        setAvatarBusy(true);
+        router.post(
+            '/app/account/avatar',
+            { avatar: file },
+            {
+                forceFormData: true,
+                preserveScroll: true,
+                onFinish: () => setAvatarBusy(false),
+            },
+        );
+    };
+
+    const removeAvatar = (): void => {
+        setAvatarBusy(true);
+        router.delete('/app/account/avatar', {
+            preserveScroll: true,
+            onFinish: () => setAvatarBusy(false),
+        });
     };
 
     const initial = Array.from(user.name.trim())[0] ?? '؟';
@@ -157,19 +188,75 @@ export const AccountIndex: FunctionComponent<AccountProps> & { layout?: (page: R
             />
             <div className="mx-auto grid max-w-[1120px] gap-5 px-4 py-5 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] md:items-start md:gap-6">
                 <div className="grid gap-5">
+                    {status !== null && (
+                        <p role="status" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-success">
+                            {status}
+                        </p>
+                    )}
+                    {errors.avatar !== undefined && (
+                        <p role="alert" className="m-0 rounded-2xl border border-line bg-surface px-4 py-3 text-danger">
+                            {errors.avatar}
+                        </p>
+                    )}
                     <section aria-label="پروفایل" className="grid gap-4 rounded-3xl border border-line bg-surface p-5">
                         <div className="flex min-w-0 items-center gap-4">
-                            <span
-                                aria-hidden="true"
-                                className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary font-en text-2xl font-extrabold text-surface"
-                            >
-                                {initial}
-                            </span>
+                            {user.avatar_url !== null ? (
+                                <img
+                                    src={user.avatar_url}
+                                    alt={`عکس پروفایل ${user.name}`}
+                                    width={64}
+                                    height={64}
+                                    className="h-16 w-16 shrink-0 rounded-full border border-line bg-canvas object-cover"
+                                />
+                            ) : (
+                                <span
+                                    aria-hidden="true"
+                                    className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary font-en text-2xl font-extrabold text-surface"
+                                >
+                                    {initial}
+                                </span>
+                            )}
                             <div className="min-w-0 flex-1">
                                 <h2 className="fe-title m-0 break-words text-right text-2xl" dir="auto">{user.name}</h2>
                                 <p dir="ltr" className="m-0 mt-0.5 break-all text-right font-en text-sm leading-6 text-muted">
                                     {user.email}
                                 </p>
+                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                    <input
+                                        ref={fileInput}
+                                        id="avatar-file"
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        className="sr-only"
+                                        onChange={(event) => {
+                                            const file = event.target.files?.[0];
+                                            if (file !== undefined) {
+                                                uploadAvatar(file);
+                                            }
+                                            event.currentTarget.value = '';
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInput.current?.click()}
+                                        disabled={avatarBusy}
+                                        className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-canvas px-4 py-2 text-sm font-bold text-ink hover:bg-surface disabled:opacity-60"
+                                    >
+                                        <Camera size={16} aria-hidden="true" />
+                                        {user.avatar_url !== null ? 'تغییر عکس' : 'بارگذاری عکس'}
+                                    </button>
+                                    {user.avatar_url !== null && (
+                                        <button
+                                            type="button"
+                                            onClick={removeAvatar}
+                                            disabled={avatarBusy}
+                                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 py-2 text-sm text-muted hover:bg-canvas hover:text-danger disabled:opacity-60"
+                                        >
+                                            <Trash2 size={16} aria-hidden="true" />
+                                            حذف عکس
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <dl className="m-0 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-4">

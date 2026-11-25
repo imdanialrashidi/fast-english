@@ -86,7 +86,7 @@ test('reading payload owns the reader and sample fields and the preview slice', 
         'glossary',
     ]);
 
-    expect(array_keys($payload['topic']))->toBe(['id', 'slug', 'title_en', 'summary_public', 'cover_url'])
+    expect(array_keys($payload['topic']))->toBe(['id', 'slug', 'title_en', 'summary_public', 'summary_a1_en', 'cover_url'])
         ->and(array_keys($payload['lesson']))->toBe([
             'id',
             'title_en',
@@ -103,7 +103,7 @@ test('reading payload owns the reader and sample fields and the preview slice', 
 
     $preview = ReadingPayload::preview($lesson);
 
-    expect($preview['sample']['reader_url'])->toBe(route('sample', ['topic' => $topic->slug, 'level' => 'A2']))
+    expect($preview['sample']['reader_url'])->toBe(route('reader.show', ['topic' => $topic->slug, 'level' => 'A2']))
         ->and($preview['sampleParagraphs'])->toBe(['One two. Three four!'])
         ->and($preview['sampleAudioUrl'])->toBe(route('media.lesson.audio', $lesson))
         ->and($preview)->not->toHaveKey('sampleSentences')

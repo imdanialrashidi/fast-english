@@ -278,11 +278,26 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                     <h2 lang="en" dir="ltr" className="m-0 text-left font-en text-3xl leading-[1.35] font-extrabold tracking-tight sm:text-4xl">
                         {lesson.title_en}
                     </h2>
-                    {topic.summary_public !== null && topic.summary_public !== '' && (
-                        <p dir="auto" className="m-0 text-[1.0625rem] leading-8 text-muted">
-                            {topic.summary_public}
-                        </p>
-                    )}
+                    {(topic.summary_public !== null && topic.summary_public !== '') || (topic.summary_a1_en !== null && topic.summary_a1_en !== '') ? (
+                        <section aria-label="خلاصهٔ پادکست" className="grid gap-3 rounded-3xl border border-line bg-surface p-4 sm:p-5">
+                            {topic.summary_public !== null && topic.summary_public !== '' && (
+                                <div className="grid gap-1">
+                                    <h3 className="m-0 text-sm font-extrabold text-primary">این پادکست دربارهٔ چیست؟</h3>
+                                    <p dir="auto" className="m-0 text-[1.0625rem] leading-8 text-ink">
+                                        {topic.summary_public}
+                                    </p>
+                                </div>
+                            )}
+                            {topic.summary_a1_en !== null && topic.summary_a1_en !== '' && (
+                                <div className="grid gap-1 border-t border-line pt-3">
+                                    <h3 className="m-0 text-sm font-extrabold text-accent-strong">خلاصهٔ سادهٔ انگلیسی (A1)</h3>
+                                    <p lang="en" dir="ltr" className="m-0 text-left font-en text-[0.98rem] leading-8 text-muted">
+                                        {topic.summary_a1_en}
+                                    </p>
+                                </div>
+                            )}
+                        </section>
+                    ) : null}
                     {topic.cover_url !== null && (
                         <img
                             src={topic.cover_url}
@@ -365,14 +380,6 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                     )}
                 </div>
 
-                <article lang="en" dir="ltr" className="fe-english-body grid gap-5">
-                    {paragraphs.map((paragraph, index) => (
-                        <p key={index} className="m-0 text-left font-en text-[1.125rem] leading-8">
-                            {paragraph}
-                        </p>
-                    ))}
-                </article>
-
                 <section aria-label="واژه‌های کلیدی" className="grid gap-1 rounded-3xl border border-line bg-surface px-5 py-2">
                     <h2 className="m-0 flex items-center gap-2 pt-3 pb-1 text-xl leading-8">
                         <BookOpen size={20} aria-hidden="true" />
@@ -410,6 +417,15 @@ export const ReaderShow: FunctionComponent<ReaderProps> & { layout?: (page: Reac
                         </p>
                     )}
                 </section>
+
+                <article lang="en" dir="ltr" className="fe-english-body grid gap-5">
+                    {paragraphs.map((paragraph, index) => (
+                        <p key={index} className="m-0 text-left font-en text-[1.125rem] leading-8">
+                            {paragraph}
+                        </p>
+                    ))}
+                </article>
+
 
                 {/* Completion belongs after the reading surface, not before it. */}
                 {!isGuest && (

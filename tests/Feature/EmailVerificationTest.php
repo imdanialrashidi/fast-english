@@ -177,12 +177,12 @@ test('an unverified account reaches only the verification and public surfaces', 
     $this->actingAs($user)->get(route('install'))->assertOk();
 });
 
-test('an unverified account can still play the free public sample audio', function () {
+test('an unverified account cannot play lesson audio before verification', function () {
     $this->seed(S1SampleSeeder::class);
     $sample = Lesson::query()->where('is_public_sample', true)->firstOrFail();
     $user = User::factory()->unverified()->create();
 
-    $this->actingAs($user)->get(route('media.lesson.audio', $sample))->assertOk();
+    $this->actingAs($user)->get(route('media.lesson.audio', $sample))->assertRedirect();
 });
 
 test('a verified account is not redirected by the email gate', function () {

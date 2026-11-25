@@ -18,10 +18,10 @@ export interface SupportChannels {
 
 export function supportChannels(support: SupportContact | null): SupportChannels {
     return {
-        phone: support?.phone ?? '09924930667',
-        phoneHref: support?.phone_href ?? 'tel:+989924930667',
-        bale: support?.bale_url ?? 'https://ble.ir/+989924930667',
-        telegram: support?.telegram_url ?? 'https://t.me/+989924930667',
+        phone: support?.phone ?? '09936908633',
+        phoneHref: support?.phone_href ?? 'tel:+989936908633',
+        bale: support?.bale_url ?? 'https://ble.ir/+989936908633',
+        telegram: support?.telegram_url ?? 'https://t.me/+989936908633',
         messenger: support?.messenger ?? 'بله یا تلگرام',
     };
 }

@@ -17,11 +17,13 @@ use Tests\Support\ContentFixtures;
 test('the owner catalog seeder installs exact prices and a safe placeholder', function () {
     $this->seed(PlanCatalogSeeder::class);
 
-    expect(Plan::where('slug', 'monthly')->firstOrFail()->price_toman)->toBe(399000)
-        ->and(Plan::where('slug', 'quarterly')->firstOrFail()->price_toman)->toBe(641000)
-        ->and(Plan::where('slug', 'annual')->firstOrFail()->price_toman)->toBe(3351600)
-        ->and(Plan::where('slug', 'quarterly')->firstOrFail()->duration_days)->toBe(90)
-        ->and(Plan::where('slug', 'annual')->firstOrFail()->duration_days)->toBe(365);
+    $monthly = Plan::where('slug', 'monthly')->firstOrFail();
+    expect($monthly->price_toman)->toBe(641000)
+        ->and($monthly->duration_days)->toBe(30)
+        ->and($monthly->is_active)->toBeTrue()
+        ->and($monthly->name_fa)->toBe('اشتراک ماهیانه')
+        ->and(Plan::where('slug', 'quarterly')->firstOrFail()->is_active)->toBeFalse()
+        ->and(Plan::where('slug', 'annual')->firstOrFail()->is_active)->toBeFalse();
 
     $destination = PaymentDestination::where('is_active', true)->firstOrFail();
 
@@ -42,7 +44,6 @@ test('staff can save contact channels and a real card destination', function () 
         ->set('cardBank', 'بانک نمونه')
         ->set('terms', 'متن قوانین آزمایشی برای این تست.')
         ->set('privacy', 'متن حریم خصوصی آزمایشی برای این تست.')
-        ->set('refund', 'متن بازگشت وجه آزمایشی برای این تست.')
         ->call('save')
         ->assertHasNoErrors();
 

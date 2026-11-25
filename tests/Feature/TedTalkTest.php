@@ -62,7 +62,8 @@ test('guests and ineligible accounts get the locked page without premium text', 
         ->assertRedirect(route('app.home', ['category' => 'ted-talk']));
     $this->actingAs(ContentFixtures::student())
         ->get(route('app.home', ['category' => 'ted-talk']))
-        ->assertForbidden();
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->component('Library/Index'));
 
     // Staff pass without a subscription.
     $this->actingAs(ContentFixtures::staff())
@@ -243,4 +244,19 @@ test('the import command is idempotent, draft-first, and records a staff reviewe
     $this->artisan('ted:import', ['path' => $root])->assertExitCode(0);
     expect($talk->fresh()->status)->toBe('draft')
         ->and(TedTalk::where('slug', 'imported-talk')->count())->toBe(1);
+});
+
+test('the default discover list mixes published ted talks with podcasts', function () {
+    $this->actingAs(ContentFixtures::subscribedStudent())
+        ->get(route('app.home'))
+        ->assertOk();
+
+    $titles = collect($this->actingAs(ContentFixtures::subscribedStudent())
+        ->get(route('app.home'))
+        ->inertiaProps('topics'))
+        ->pluck('title_en')
+        ->all();
+
+    expect($titles)->toContain($this->talk->title_en)
+        ->and($titles)->toContain($this->topic->title_en);
 });

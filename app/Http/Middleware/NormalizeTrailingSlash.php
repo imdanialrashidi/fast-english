@@ -22,10 +22,8 @@ class NormalizeTrailingSlash
         '/support',
         '/terms',
         '/privacy',
-        '/refund',
         '/download',
         '/install',
-        '/sample',
         '/plans',
     ];
 

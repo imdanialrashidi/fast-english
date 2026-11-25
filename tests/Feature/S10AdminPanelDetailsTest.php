@@ -112,7 +112,6 @@ test('persian card digits are normalized and a card without holder is rejected',
         ->set('cardBank', 'بانک نمونه')
         ->set('terms', 'شرایط')
         ->set('privacy', 'حریم خصوصی')
-        ->set('refund', 'بازگشت وجه')
         ->call('save')
         ->assertHasNoErrors();
 
