@@ -1,7 +1,6 @@
 # Owner release — 2026-11-25
 
-Status: implementation complete in the working tree; production data/content
-update and Coolify deploy are the remaining steps.
+Status: implemented, deployed, and verified on production on 2026-11-25.
 
 ## Accepted owner changes
 
@@ -64,5 +63,27 @@ update and Coolify deploy are the remaining steps.
 - Production content update: `content_update.sql` (148 reading documents + 3
   storybooks + 49 topic A1 summaries) and `word_audio_update.sql` (5,379
   pronunciation rows); story audio is 351 page MP3s.
-- Production deployment and live smoke checks are recorded in the handoff
-  after the Coolify release.
+- Production deployment (2026-11-25): image `fe-app:release`
+  (`b0a7d2979a55`, PHP 8.4.26 FPM + nginx + queue/schedule), container
+  `app-uerwghnhy5ezsd3ghxo96ugl-20261125T124636`, domain
+  `https://fastenglishpodcast.ir` returns 200 and `/up` returns 200. The
+  release image is also tagged `uerwghnhy5ezsd3ghxo96ugl_app:5e9bc0ab…` and
+  `:2c96e28` so the compose file can restart it.
+- Production data: 148 reading documents enriched (63 paragraph-level B2+
+  lists on IELTS, 5–12 harder words per Inside Reading paragraph, 400 True/
+  False questions), 49 topic A1 summaries, 5,379 new word-audio rows (7,543
+  total approved keys), and 351 new storybook page MP3s with exact sentence
+  timings.
+- Live checks: non-subscriber sees Discover/Today (200) and receives the
+  «لطفاً اشتراک ماهیانه خریداری کنید» locked page for reader/words; a
+  subscriber sees the readers; TED audio streams through X-Accel; landing,
+  about/cooperation/support/terms/FAQ render the new copy; `/refund` and
+  `/sample` return 404; the monthly 641,000 offer is the only active plan.
+- Remaining operational risk: the host root filesystem is ~98% full (about
+  0.5 GB free). A Coolify no-cache rebuild needs roughly 2–3 GB and failed
+  several times on disk exhaustion; the current image was built from the
+  same tree and started through the compose file. Free disk (old images,
+  logs, host backups) before the next deploy, and keep the PostgreSQL/volume
+  backups. One old media backup of the unrelated `kidotalks` app was moved
+  to `/home/danial/kidotalks-backups-20261125/` (SHA-256 verified) to free
+  space; it should be copied back when the host has room.
