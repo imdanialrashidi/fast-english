@@ -64,14 +64,15 @@ Status: implemented, deployed, and verified on production on 2026-11-25.
   storybooks + 49 topic A1 summaries) and `word_audio_update.sql` (5,379
   pronunciation rows); story audio is 351 page MP3s.
 - Production deployment (2026-11-25): image `fe-app:release`
-  (`b0a7d2979a55`, PHP 8.4.26 FPM + nginx + queue/schedule), container
+  (`3045ebae33cb`, PHP 8.4.26 FPM + nginx + queue/schedule; built from the
+  release tree with the post-build payload fix baked in), container
   `app-uerwghnhy5ezsd3ghxo96ugl-20261125T124636`, domain
   `https://fastenglishpodcast.ir` returns 200 and `/up` returns 200. The
   release image is also tagged `uerwghnhy5ezsd3ghxo96ugl_app:5e9bc0ab…` and
   `:2c96e28` so the compose file can restart it.
 - Production data: 148 reading documents enriched (63 paragraph-level B2+
-  lists on IELTS, 5–12 harder words per Inside Reading paragraph, 400 True/
-  False questions), 49 topic A1 summaries, 5,379 new word-audio rows (7,543
+  lists on IELTS, 5–12 harder words per Inside Reading paragraph (verified min 5, max 12), 400 True/
+  False questions), 50 topic A1 summaries, 5,379 new word-audio rows (7,543
   total approved keys), and 351 new storybook page MP3s with exact sentence
   timings.
 - Live checks: non-subscriber sees Discover/Today (200) and receives the
